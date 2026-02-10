@@ -7,15 +7,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
         select, input { 
             width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
             background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
         }
         select:focus, input:focus { border-bottom: 2px solid #b91c1c; background: #fffcfc; }
         .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.2rem; }
-        .entry-card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; position: relative; }
+        .entry-card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .btn-add { font-size: 10px; font-weight: 800; color: #b91c1c; border: 2px dashed #fca5a5; width: 100%; padding: 12px; border-radius: 16px; margin-bottom: 20px; transition: all 0.3s; }
         .btn-add:hover { background: #fef2f2; border-color: #b91c1c; }
         .btn-remove { position: absolute; top: 15px; right: 15px; color: #cbd5e1; font-weight: bold; font-size: 12px; }
@@ -24,7 +24,38 @@
 </head>
 <body class="pb-12 bg-slate-50">
 
-    <div class="max-w-2xl mx-auto mt-12 px-4">
+    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
+            <div class="border-l-2 border-slate-200 pl-3">
+                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
+                    SENSUS KADER <span class="text-red-700">2026</span>
+                </h1>
+                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
+                    DPD PDI Perjuangan DIY
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
+        <a href="step4.html" class="text-slate-400 hover:text-red-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="flex gap-2">
+            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 05</span>
+    </div>
+
+    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
         <div class="glass-effect p-8 md:p-12 shadow-2xl">
             
             <div class="mb-10 border-b pb-6 text-center md:text-left">
@@ -98,13 +129,18 @@
                 <button onclick="addEntry('job-container')" class="btn-add hover:bg-slate-100">+ TAMBAH RIWAYAT PEKERJAAN</button>
             </section>
 
-            <button onclick="saveStep5()" class="w-full bg-red-700 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-800 transition-all flex justify-center items-center gap-4">
+            <button onclick="saveStep5()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
                 Selesaikan & Review Data
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
             </button>
         </div>
+    </div>
+
+    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
+        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+             alt="Watermark Logo" class="w-80 md:w-96">
     </div>
 
     <script>
@@ -115,19 +151,20 @@
             // Bersihkan input di kloningan
             clone.querySelectorAll('input, select').forEach(i => i.value = "");
             
-            // Tambahkan tombol hapus
-            const removeBtn = document.createElement('button');
-            removeBtn.innerHTML = '✕';
-            removeBtn.className = 'btn-remove';
-            removeBtn.onclick = function() { clone.remove(); };
-            clone.appendChild(removeBtn);
+            // Tambahkan tombol hapus jika belum ada di kloningan
+            if (!clone.querySelector('.btn-remove')) {
+                const removeBtn = document.createElement('button');
+                removeBtn.innerHTML = '✕';
+                removeBtn.className = 'btn-remove';
+                removeBtn.onclick = function() { clone.remove(); };
+                clone.appendChild(removeBtn);
+            }
             
             container.appendChild(clone);
         }
 
         function saveStep5() {
-            // Logika koleksi data dan simpan ke localStorage
-            // Data dari Step 1 sampai 5 sudah siap dikompilasi di review.html
+            // Logika koleksi data dan simpan ke localStorage bisa ditambahkan di sini
             window.location.href = "review.html";
         }
     </script>
