@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 1 - Identitas Dasar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); }
+        
+        /* Custom Input Styling */
+        .input-group { position: relative; margin-bottom: 1.5rem; }
+        input { 
+            width: 100%; 
+            padding: 12px 0; 
+            border: none; 
+            border-bottom: 2px solid #e2e8f0; 
+            background: transparent; 
+            outline: none; 
+            font-weight: 700; 
+            font-size: 15px; 
+            transition: all 0.3s ease;
+        }
+        input:focus { border-bottom: 2px solid #b91c1c; }
+        input::placeholder { color: #cbd5e1; font-weight: 500; }
+        
+        .label-style { 
+            font-size: 10px; 
+            font-weight: 800; 
+            color: #b91c1c; 
+            text-transform: uppercase; 
+            letter-spacing: 0.15em; 
+            display: block;
+        }
+
+        /* Foto Frame */
+        .photo-frame {
+            width: 140px;
+            height: 180px;
+            border: 3px solid #fff;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="pb-12">
+
+    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between">
+        <a href="index.html" class="text-slate-400 hover:text-red-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="flex gap-2">
+            <div class="h-1.5 w-8 rounded-full bg-red-700"></div>
+            <div class="h-1.5 w-8 rounded-full bg-slate-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-slate-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-slate-200"></div>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 01</span>
+    </div>
+
+    <div class="max-w-2xl mx-auto mt-8 px-4">
+        <div class="glass-effect p-8 md:p-12">
+            
+            <div class="mb-10 text-center md:text-left">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Identitas Dasar</h2>
+                <p class="text-slate-400 text-xs font-medium">Lengkapi data diri sesuai dengan dokumen resmi (KTP).</p>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center gap-8 mb-12 border-b border-slate-50 pb-10">
+                <div id="photo-preview" class="photo-frame">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <div class="text-center md:text-left">
+                    <label class="label-style mb-2">Pas Foto Resmi *</label>
+                    <p class="text-[10px] text-slate-400 mb-4 max-w-[200px]">Gunakan foto dengan atribut partai atau pakaian rapi (Max 2MB).</p>
+                    <input type="file" id="foto-input" accept="image/*" class="hidden" onchange="previewImage(this)">
+                    <button onclick="document.getElementById('foto-input').click()" class="bg-slate-900 text-white text-[10px] font-bold py-3 px-6 rounded-xl uppercase tracking-widest hover:bg-red-700 transition-all">Pilih Foto</button>
+                </div>
+            </div>
+
+            <div class="space-y-8">
+                <div>
+                    <label class="label-style">Nama Lengkap (KTP) *</label>
+                    <input type="text" id="nama" placeholder="CONTOH: BUDI SANTOSO, S.H." oninput="this.value = this.value.toUpperCase()">
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-10">
+                    <div>
+                        <label class="label-style">NIK (16 Digit) *</label>
+                        <input type="text" id="nik" maxlength="16" placeholder="3401xxxxxxxxxxxx" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
+                    <div>
+                        <label class="label-style">Nomor KTA</label>
+                        <input type="text" id="kta" placeholder="KOSONGKAN JIKA BELUM ADA">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-10">
+                    <div>
+                        <label class="label-style">Tempat Lahir</label>
+                        <input type="text" id="tmp_lahir" placeholder="KOTA / KAB" oninput="this.value = this.value.toUpperCase()">
+                    </div>
+                    <div>
+                        <label class="label-style">Tanggal Lahir</label>
+                        <input type="date" id="tgl_lahir" class="font-bold text-slate-700">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16">
+                <button onclick="saveAndNext()" class="w-full bg-red-700 text-white font-black py-5 rounded-2xl shadow-xl uppercase text-xs tracking-[0.2em] hover:bg-red-800 transition-all flex justify-center items-center gap-3">
+                    Lanjut: Kontak & Domisili
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let fotoData = "";
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photo-preview').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    fotoData = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveAndNext() {
+            const data = {
+                nama: document.getElementById('nama').value,
+                nik: document.getElementById('nik').value,
+                kta: document.getElementById('kta').value,
+                tmp_lahir: document.getElementById('tmp_lahir').value,
+                tgl_lahir: document.getElementById('tgl_lahir').value,
+                foto: fotoData
+            };
+
+            if(!data.nama || !data.nik || data.nik.length < 16) {
+                alert("Nama dan NIK (16 digit) wajib diisi!");
+                return;
+            }
+
+            localStorage.setItem('step1_data', JSON.stringify(data));
+            window.location.href = "step2.html";
+        }
+
+        // Load existing data if back button pressed
+        window.onload = () => {
+            const saved = localStorage.getItem('step1_data');
+            if(saved) {
+                const d = JSON.parse(saved);
+                document.getElementById('nama').value = d.nama;
+                document.getElementById('nik').value = d.nik;
+                document.getElementById('kta').value = d.kta;
+                document.getElementById('tmp_lahir').value = d.tmp_lahir;
+                document.getElementById('tgl_lahir').value = d.tgl_lahir;
+                if(d.foto) {
+                    document.getElementById('photo-preview').innerHTML = `<img src="${d.foto}" class="w-full h-full object-cover">`;
+                    fotoData = d.foto;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
