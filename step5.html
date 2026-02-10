@@ -164,9 +164,56 @@
         }
 
         function saveStep5() {
-            // Logika koleksi data dan simpan ke localStorage bisa ditambahkan di sini
-            window.location.href = "review.html";
+    // 1. Koleksi Data Organisasi (Array)
+    const orgCards = document.querySelectorAll('#org-container .entry-card');
+    const riwayatOrganisasi = [];
+    
+    orgCards.forEach(card => {
+        const nama = card.querySelector('.org-name').value;
+        if(nama) {
+            riwayatOrganisasi.push({
+                nama: nama,
+                jabatan: card.querySelector('.org-rank').value,
+                periode: card.querySelector('.org-period').value
+            });
         }
+    });
+
+    // 2. Koleksi Data Pekerjaan (Array)
+    const jobCards = document.querySelectorAll('#job-container .entry-card');
+    const riwayatPekerjaan = [];
+    
+    jobCards.forEach(card => {
+        const jenis = card.querySelector('.job-type').value;
+        if(jenis) {
+            riwayatPekerjaan.push({
+                jenis: jenis,
+                instansi: card.querySelector('.job-name').value,
+                jabatan: card.querySelector('.job-rank').value,
+                tahun: card.querySelector('.job-year').value
+            });
+        }
+    });
+
+    // 3. Simpan Ke LocalStorage
+    localStorage.setItem('kader_riwayat_organisasi', JSON.stringify(riwayatOrganisasi));
+    localStorage.setItem('kader_riwayat_pekerjaan', JSON.stringify(riwayatPekerjaan));
+
+    // 4. MAPPING FLAT (Untuk Kolom Database Super Lebar)
+    // Mapping Afiliasi Ormas Besar (Penting untuk pemetaan suara)
+    const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
+    localStorage.setItem('kader_is_nu', textOrg.includes('NU') || textOrg.includes('NAHDLATUL') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_muhammadiyah', textOrg.includes('MUHAMMADIYAH') ? 'Ya' : '-');
+    
+    // Mapping Profesi Strategis
+    const jobType = riwayatPekerjaan.length > 0 ? riwayatPekerjaan[0].jenis : "-";
+    localStorage.setItem('kader_profesi_utama', jobType);
+    localStorage.setItem('kader_is_pengusaha', jobType.includes('WIRASWASTA') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_pns', jobType.includes('ASN') ? 'Ya' : '-');
+
+    // 5. REDIRECT KE FINAL REVIEW
+    window.location.href = "review.html";
+}
     </script>
 </body>
 </html>
