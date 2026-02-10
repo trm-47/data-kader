@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Database Kader - DPD PDI Perjuangan DIY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step-hidden { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen pb-10">
+
+    <div class="bg-red-700 p-6 text-center shadow-lg">
+        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" alt="Logo" class="w-20 mx-auto mb-3 drop-shadow-md">
+        <h1 class="text-white font-bold text-lg uppercase">Database Pendidikan Kader</h1>
+        <p class="text-red-100 text-sm">DPD PDI Perjuangan Daerah Istimewa Yogyakarta</p>
+    </div>
+
+    <div class="max-w-md mx-auto mt-6 px-4">
+        
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+            <div id="progress-bar" class="bg-red-600 h-2 rounded-full" style="width: 20%"></div>
+        </div>
+
+        <div id="step-1" class="bg-white rounded-xl shadow-md p-6 border-t-4 border-red-600">
+            <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Langkah 1: Identitas & Foto</h2>
+            
+            <div class="mb-6 text-center">
+                <label class="block text-gray-700 text-sm font-bold mb-2 text-left">Foto Kader (Selfie/File)</label>
+                <div id="photo-preview" class="w-32 h-40 mx-auto bg-gray-200 border-2 border-dashed border-gray-400 rounded-lg flex items-center justify-center overflow-hidden mb-3">
+                    <span class="text-gray-500 text-xs px-2">Belum ada foto</span>
+                </div>
+                <input type="file" id="foto-input" accept="image/*" capture="user" class="hidden">
+                <button onclick="document.getElementById('foto-input').click()" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-black transition w-full">
+                    📸 Ambil Foto / Pilih File
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">Nama Lengkap</label>
+                    <input type="text" id="nama" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-red-500 outline-none" placeholder="Masukkan nama sesuai KTP">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">NIK</label>
+                    <input type="number" id="nik" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-red-500 outline-none" placeholder="16 digit NIK">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">No. KTA</label>
+                    <input type="text" id="kta" class="w-full border-2 border-gray-300 rounded-lg p-3 focus:border-red-500 outline-none" placeholder="Contoh: 34.01...">
+                </div>
+            </div>
+
+            <button onclick="nextStep(2)" class="w-full mt-8 bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition">
+                Lanjut Ke Alamat & Kontak →
+            </button>
+        </div>
+
+        <div id="step-2" class="step-hidden bg-white rounded-xl shadow-md p-6 border-t-4 border-red-600 text-center">
+            <h2 class="text-xl font-bold mb-4">Langkah 2: Alamat & Kontak</h2>
+            <p class="text-gray-600 mb-6">Data pada langkah 1 sudah tersimpan di memori HP Anda secara otomatis.</p>
+            <button onclick="nextStep(1)" class="text-red-600 font-bold underline">← Kembali</button>
+        </div>
+
+    </div>
+
+    <script>
+        // Fungsi untuk menangani Preview Foto
+        const fotoInput = document.getElementById('foto-input');
+        const photoPreview = document.getElementById('photo-preview');
+
+        fotoInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    // Simpan ke localStorage (Catatan: file besar mungkin butuh penyesuaian)
+                    localStorage.setItem('kader_foto', e.target.result);
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Fungsi Navigasi & Simpan LocalStorage
+        function nextStep(step) {
+            // Simpan data input ke localStorage sebelum pindah
+            localStorage.setItem('kader_nama', document.getElementById('nama').value);
+            localStorage.setItem('kader_nik', document.getElementById('nik').value);
+            localStorage.setItem('kader_kta', document.getElementById('kta').value);
+
+            // Ganti Tampilan
+            document.getElementById('step-1').classList.add('step-hidden');
+            document.getElementById('step-2').classList.add('step-hidden');
+            document.getElementById('step-' + step).classList.remove('step-hidden');
+
+            // Update Progress Bar
+            const progress = (step / 6) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            
+            window.scrollTo(0,0);
+        }
+
+        // Load data lama jika ada saat buka halaman
+        window.onload = function() {
+            if(localStorage.getItem('kader_nama')) document.getElementById('nama').value = localStorage.getItem('kader_nama');
+            if(localStorage.getItem('kader_nik')) document.getElementById('nik').value = localStorage.getItem('kader_nik');
+            if(localStorage.getItem('kader_kta')) document.getElementById('kta').value = localStorage.getItem('kader_kta');
+            if(localStorage.getItem('kader_foto')) {
+                photoPreview.innerHTML = `<img src="${localStorage.getItem('kader_foto')}" class="w-full h-full object-cover">`;
+            }
+        }
+    </script>
+</body>
+</html>
