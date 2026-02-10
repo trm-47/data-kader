@@ -220,10 +220,65 @@
             container.appendChild(clone);
         }
 
-        function saveStep4() {
-            // Logic simpan data...
-            window.location.href = "review.html";
+function saveStep4() {
+    // 1. Tangkap Data Struktural
+    const strukCards = document.querySelectorAll('#struktural-container .entry-card');
+    const riwayatStruktural = [];
+    
+    strukCards.forEach(card => {
+        const tingkat = card.querySelector('.tingkat-pengurus').value;
+        if(tingkat) {
+            riwayatStruktural.push({
+                tingkat: tingkat,
+                jabatan: card.querySelector('.jabatan-nama').value,
+                bidang: card.querySelector('.bidang-nama')?.value || "-",
+                mulai: card.querySelectorAll('input[type="number"]')[0].value,
+                selesai: card.querySelectorAll('input[type="number"]')[1].value
+            });
         }
+    });
+
+    // 2. Tangkap Data Penugasan (Legislatif/Eksekutif)
+    const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
+    const riwayatPenugasan = [];
+
+    tugasCards.forEach(card => {
+        const jenis = card.querySelector('.jenis-tugas').value;
+        if(jenis) {
+            const dataTugas = {
+                jenis: jenis,
+                awal: card.querySelector('.tahun-awal').value,
+                akhir: card.querySelector('.tahun-akhir').value
+            };
+            
+            if(jenis === 'EKSEKUTIF') {
+                dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
+                dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
+            } else {
+                dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
+                dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
+            }
+            riwayatPenugasan.push(dataTugas);
+        }
+    });
+
+    // 3. Simpan Ke LocalStorage
+    localStorage.setItem('kader_riwayat_struktural', JSON.stringify(riwayatStruktural));
+    localStorage.setItem('kader_riwayat_penugasan', JSON.stringify(riwayatPenugasan));
+
+    // 4. MAPPING FLAT (Untuk Kolom "Super Lebar" di Sheets)
+    // Ini yang bikin Admin Dashboard nanti bisa filter per tingkat dengan presisi
+    localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_pac', riwayatStruktural.some(s => s.tingkat.includes('PAC')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_ranting', riwayatStruktural.some(s => s.tingkat.includes('RANTING')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
+
+    // 5. GAS KE REVIEW
+    window.location.href = "review.html";
+}
     </script>
 </body>
 </html>
