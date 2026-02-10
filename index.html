@@ -9,267 +9,295 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; }
         .step-hidden { display: none; }
-        .card-profile { border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); background: #ffffff; }
-        .section-title { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; border-bottom: 1px solid #fee2e2; padding-bottom: 4px; margin-bottom: 12px; }
-        .data-label { font-size: 9px; color: #64748b; font-weight: 600; text-transform: uppercase; }
-        .data-value { font-size: 13px; color: #1e293b; font-weight: 600; line-height: 1.4; }
-        input, select, textarea { border-bottom: 2px solid #e2e8f0 !important; transition: all 0.3s; background: transparent; padding: 8px 0; width: 100%; }
-        input:focus, select:focus { border-bottom: 2px solid #b91c1c !important; outline: none; }
-        .animate-fade { animation: slideUp 0.4s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .card-profile { border-radius: 24px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); background: #ffffff; border: 1px solid #e2e8f0; }
+        .section-title { font-size: 11px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; border-bottom: 2px solid #fee2e2; padding-bottom: 6px; margin-bottom: 16px; margin-top: 24px; }
+        .label-req { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        input, select, textarea { border-bottom: 2px solid #e2e8f0 !important; transition: all 0.3s; background: transparent; padding: 10px 0; width: 100%; font-weight: 600; }
+        input:focus, select:focus { border-bottom: 2px solid #b91c1c !important; outline: none; background: #fffcfc; }
+        .btn-add { font-size: 9px; font-weight: 800; color: #b91c1c; border: 1.5px dashed #fca5a5; width: 100%; padding: 10px; border-radius: 12px; margin-top: 8px; transition: all 0.2s; }
+        .btn-add:hover { background: #fef2f2; border-color: #b91c1c; }
     </style>
 </head>
 <body class="pb-20">
 
     <div class="bg-red-700 pt-12 pb-24 px-6 text-center shadow-lg relative">
-        <div class="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" alt="Logo" class="w-20 mx-auto mb-4 drop-shadow-xl relative">
-        <h1 class="text-white font-extrabold text-xl tracking-tighter relative uppercase">Sistem Database Kader</h1>
-        <p class="text-red-100 text-[9px] mt-1 font-bold tracking-[0.4em] uppercase relative">DPD PDI Perjuangan DIY</p>
+        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" alt="Logo" class="w-20 mx-auto mb-4 drop-shadow-xl">
+        <h1 class="text-white font-extrabold text-xl tracking-tighter uppercase italic">Database Kader Terpusat</h1>
+        <p class="text-red-100 text-[9px] mt-1 font-bold tracking-[0.4em] uppercase">DPD PDI Perjuangan DIY</p>
     </div>
 
     <div class="max-w-2xl mx-auto -mt-16 px-4">
-        <div class="flex justify-between items-center mb-6 px-2 text-white">
-            <div id="step-info" class="text-[10px] font-bold uppercase tracking-widest text-white">Langkah 1: Identitas</div>
-            <div id="step-number" class="text-[10px] font-bold bg-black/20 px-3 py-1 rounded-full italic">1/6</div>
-        </div>
-
         <div class="card-profile p-8 md:p-12 mb-10">
-            <div id="step-1" class="animate-fade">
-                <div class="flex flex-col items-center mb-10">
-                    <div id="photo-preview" class="w-32 h-44 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center overflow-hidden mb-4">
-                        <span class="text-slate-400 text-[9px] font-bold uppercase">Foto Resmi</span>
+            
+            <form id="kaderForm">
+                <div id="step-1" class="step-content">
+                    <div class="flex flex-col items-center mb-10">
+                        <div id="photo-preview" class="w-32 h-44 bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex items-center justify-center overflow-hidden mb-4">
+                            <span class="text-slate-400 text-[9px] font-bold uppercase text-center px-2">Foto Profil Resmi</span>
+                        </div>
+                        <input type="file" id="foto-input" accept="image/*" class="hidden" required>
+                        <button type="button" onclick="document.getElementById('foto-input').click()" class="bg-slate-900 text-white text-[10px] font-bold py-3 px-8 rounded-2xl uppercase tracking-widest">Ambil Foto *</button>
                     </div>
-                    <input type="file" id="foto-input" accept="image/*" class="hidden">
-                    <button onclick="document.getElementById('foto-input').click()" class="bg-slate-900 text-white text-[10px] font-bold py-3 px-8 rounded-2xl hover:bg-red-700 transition-all uppercase tracking-widest">Ambil / Pilih Foto</button>
-                </div>
-                <div class="space-y-6">
-                    <input type="text" id="nama" oninput="this.value = this.value.toUpperCase()" placeholder="NAMA LENGKAP (SESUAI KTP) *">
-                    <input type="text" id="nik" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="NIK (16 DIGIT) *">
-                    <div class="grid grid-cols-2 gap-6">
-                        <input type="text" id="tmp_lahir" placeholder="TEMPAT LAHIR">
-                        <input type="date" id="tgl_lahir" class="text-slate-500">
-                    </div>
-                    <input type="text" id="kta" placeholder="NOMOR KTA *">
-                    <select id="pekerjaan">
-                        <option value="">-- PILIH PEKERJAAN --</option>
-                        <option value="ASN/PNS">ASN/PNS</option><option value="Wiraswasta">WIRASWASTA</option>
-                        <option value="Karyawan">KARYAWAN</option><option value="Petani/Nelayan">PETANI/NELAYAN</option>
-                        <option value="Lainnya">LAINNYA</option>
-                    </select>
-                </div>
-                <button onclick="changeStep(2)" class="w-full mt-12 bg-red-700 text-white font-bold py-5 rounded-2xl shadow-xl transition-all text-[11px] tracking-[0.2em] uppercase">Lanjut Ke Kontak</button>
-            </div>
 
-            <div id="step-2" class="step-hidden animate-fade">
-                <div class="space-y-6">
-                    <h3 class="section-title">Kontak & Alamat</h3>
-                    <input type="tel" id="kontak" placeholder="WHATSAPP AKTIF *">
-                    <input type="email" id="email" placeholder="ALAMAT EMAIL">
-                    <textarea id="alamat" rows="2" placeholder="ALAMAT LENGKAP (DUSUN/JL/KEL)"></textarea>
-                    <div class="grid grid-cols-3 gap-4">
-                        <input type="text" id="rt" placeholder="RT">
-                        <input type="text" id="rw" placeholder="RW">
-                        <input type="text" id="kecamatan" placeholder="KECAMATAN">
+                    <h3 class="section-title">Identitas Dasar</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="label-req">Nama Lengkap (Sesuai KTP) *</label>
+                            <input type="text" id="nama" required oninput="this.value = this.value.toUpperCase()">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-req">NIK (16 Digit) *</label>
+                                <input type="text" id="nik" maxlength="16" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                            <div>
+                                <label class="label-req">Nomor KTA</label>
+                                <input type="text" id="kta">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-req">Tempat Lahir *</label>
+                                <input type="text" id="tmp_lahir" required>
+                            </div>
+                            <div>
+                                <label class="label-req">Tgl Lahir *</label>
+                                <input type="date" id="tgl_lahir" required>
+                            </div>
+                        </div>
                     </div>
-                    <select id="kabkota">
-                        <option value="">-- PILIH KAB/KOTA (DIY) --</option>
-                        <option value="Kota Yogyakarta">KOTA YOGYAKARTA</option>
-                        <option value="Sleman">SLEMAN</option>
-                        <option value="Bantul">BANTUL</option>
-                        <option value="Kulon Progo">KULON PROGO</option>
-                        <option value="Gunungkidul">GUNUNGKIDUL</option>
-                    </select>
-                    <h3 class="section-title mt-6">Media Sosial</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="ig" placeholder="INSTAGRAM">
-                        <input type="text" id="fb" placeholder="FACEBOOK">
-                    </div>
+                    <button type="button" onclick="changeStep(2)" class="w-full mt-10 bg-red-700 text-white font-bold py-5 rounded-2xl shadow-xl uppercase text-[11px] tracking-widest">Lanjut ke Kontak & Alamat</button>
                 </div>
-                <div class="flex gap-4 mt-12">
-                    <button onclick="changeStep(1)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
-                    <button onclick="changeStep(3)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Pendidikan →</button>
-                </div>
-            </div>
 
-            <div id="step-3" class="step-hidden animate-fade">
-                <h3 class="section-title">Riwayat Sekolah</h3>
-                <div id="formal-container">
-                    <div class="edu-item bg-slate-50 p-6 rounded-3xl mb-4">
-                        <select class="jenjang font-bold mb-4">
-                            <option value="">-- JENJANG --</option>
-                            <option value="SMA">SMA/SMK</option><option value="D3">DIPLOMA (D3)</option>
-                            <option value="S1">SARJANA (S1)</option><option value="S2">MAGISTER (S2)</option>
-                        </select>
-                        <input type="text" class="sekolah mb-4" placeholder="NAMA INSTITUSI">
-                        <input type="number" class="tahun-lulus" placeholder="TAHUN LULUS">
+                <div id="step-2" class="step-content step-hidden">
+                    <h3 class="section-title">Kontak & Media Sosial</h3>
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-req">WhatsApp Aktif *</label>
+                                <input type="tel" id="kontak" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                            <div>
+                                <label class="label-req">Email</label>
+                                <input type="email" id="email">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <label class="label-req">Instagram</label>
+                                <input type="text" id="ig" placeholder="@username">
+                            </div>
+                            <div>
+                                <label class="label-req">Facebook</label>
+                                <input type="text" id="fb">
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <button onclick="addRow('formal-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH SEKOLAH</button>
 
-                <h3 class="section-title mt-10">Pendidikan Kader</h3>
-                <div id="kader-container">
-                    <div class="kader-item bg-red-50 p-6 rounded-3xl mb-4">
-                        <select class="jenis-kader font-bold mb-4">
-                            <option value="">-- PILIH KADERISASI --</option>
-                            <option value="Pratama">PRATAMA</option><option value="Madya">MADYA</option>
-                            <option value="Utama">UTAMA</option><option value="-">- (BELUM MENGIKUTI)</option>
-                        </select>
-                        <input type="number" class="tahun-kader" placeholder="TAHUN PELAKSANAAN">
+                    <h3 class="section-title">Alamat Lengkap (Domisili)</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="label-req">Jalan / Dusun / No. Rumah *</label>
+                            <textarea id="alamat" rows="2" required></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div><label class="label-req">RT</label><input type="text" id="rt" maxlength="3"></div>
+                            <div><label class="label-req">RW</label><input type="text" id="rw" maxlength="3"></div>
+                            <div class="col-span-2"><label class="label-req">Kecamatan *</label><input type="text" id="kecamatan" required></div>
+                        </div>
+                        <div>
+                            <label class="label-req">Kabupaten / Kota *</label>
+                            <select id="kabkota" required>
+                                <option value="">-- PILIH WILAYAH --</option>
+                                <option value="Kota Yogyakarta">KOTA YOGYAKARTA</option>
+                                <option value="Sleman">SLEMAN</option>
+                                <option value="Bantul">BANTUL</option>
+                                <option value="Kulon Progo">KULON PROGO</option>
+                                <option value="Gunungkidul">GUNUNGKIDUL</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 mt-10">
+                        <button type="button" onclick="changeStep(1)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
+                        <button type="button" onclick="changeStep(3)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Lanjut ke Riwayat →</button>
                     </div>
                 </div>
-                <button onclick="addRow('kader-container')" class="w-full border-2 border-dashed border-red-100 py-3 rounded-2xl text-[10px] font-bold text-red-300 uppercase">+ TAMBAH KADERISASI</button>
-                <div class="flex gap-4 mt-12">
-                    <button onclick="changeStep(2)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
-                    <button onclick="changeStep(4)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Struktural →</button>
-                </div>
-            </div>
 
-            <div id="step-4" class="step-hidden animate-fade">
-                <h3 class="section-title">Jabatan Struktural Partai</h3>
-                <div id="jabatan-container">
-                    <div class="jab-item bg-slate-50 p-6 rounded-3xl mb-4">
-                        <select class="tingkat-partai font-bold mb-4">
-                            <option value="">-- TINGKATAN --</option>
-                            <option value="DPD">DPD</option><option value="DPC">DPC</option><option value="PAC">PAC</option><option value="Ranting">RANTING</option>
-                        </select>
-                        <input type="text" class="jabatan-nama mb-4" placeholder="JABATAN (CONTOH: KETUA)">
-                        <input type="text" class="periode-jab" placeholder="PERIODE (CONTOH: 2019-2024)">
+                <div id="step-3" class="step-content step-hidden">
+                    <h3 class="section-title">Riwayat Pendidikan Formal</h3>
+                    <div id="edu-container">
+                        <div class="edu-item bg-slate-50 p-6 rounded-3xl mb-4">
+                            <label class="label-req">Jenjang Pendidikan</label>
+                            <select class="jenjang mb-4">
+                                <option value="">-- PILIH JENJANG --</option>
+                                <option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA">SMA/SMK</option>
+                                <option value="D3">DIPLOMA (D3)</option><option value="S1">SARJANA (S1)</option>
+                                <option value="S2">MAGISTER (S2)</option><option value="S3">DOKTOR (S3)</option>
+                            </select>
+                            <input type="text" class="sekolah mb-4" placeholder="Nama Institusi">
+                            <input type="number" class="thn_lulus" placeholder="Tahun Lulus">
+                        </div>
                     </div>
-                </div>
-                <button onclick="addRow('jabatan-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH JABATAN</button>
+                    <button type="button" onclick="addItem('edu-container')" class="btn-add">+ TAMBAH JENJANG SEKOLAH</button>
 
-                <h3 class="section-title mt-10">Penugasan Legislatif/Eksekutif</h3>
-                <div id="tugas-container">
-                    <div class="tugas-item bg-blue-50 p-6 rounded-3xl mb-4">
-                        <input type="text" class="nama-jab-tugas mb-4" placeholder="CONTOH: ANGGOTA DPRD SLEMAN">
-                        <input type="text" class="periode-tugas" placeholder="PERIODE">
+                    <h3 class="section-title">Riwayat Pekerjaan</h3>
+                    <div id="job-container">
+                        <div class="job-item bg-slate-50 p-6 rounded-3xl mb-4">
+                            <input type="text" class="perusahaan mb-4" placeholder="Nama Perusahaan/Instansi">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label class="label-req">Tahun Mulai</label><select class="thn_mulai"></select></div>
+                                <div><label class="label-req">Tahun Selesai</label><select class="thn_akhir"></select></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <button onclick="addRow('tugas-container')" class="w-full border-2 border-dashed border-blue-100 py-3 rounded-2xl text-[10px] font-bold text-blue-300 uppercase">+ TAMBAH PENUGASAN</button>
-                <div class="flex gap-4 mt-12">
-                    <button onclick="changeStep(3)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
-                    <button onclick="changeStep(5)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Organisasi →</button>
-                </div>
-            </div>
+                    <button type="button" onclick="addItem('job-container')" class="btn-add">+ TAMBAH RIWAYAT KERJA</button>
 
-            <div id="step-5" class="step-hidden animate-fade">
-                <h3 class="section-title">Organisasi Kemasyarakatan (Luar Partai)</h3>
-                <div id="org-container">
-                    <div class="org-item bg-slate-50 p-6 rounded-3xl mb-4">
-                        <input type="text" class="org-nama mb-4 font-bold" placeholder="NAMA ORGANISASI (CONTOH: NU/KARANG TARUNA)">
-                        <input type="text" class="org-jab mb-4" placeholder="JABATAN">
-                        <input type="text" class="org-periode" placeholder="PERIODE">
+                    <h3 class="section-title">Riwayat Organisasi (Luar Partai)</h3>
+                    <div id="org-container">
+                        <div class="org-item bg-slate-50 p-6 rounded-3xl mb-4">
+                            <input type="text" class="nama_org mb-4" placeholder="Nama Organisasi">
+                            <input type="text" class="jab_org" placeholder="Jabatan & Periode">
+                        </div>
                     </div>
-                </div>
-                <button onclick="addRow('org-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH ORGANISASI</button>
+                    <button type="button" onclick="addItem('org-container')" class="btn-add">+ TAMBAH RIWAYAT ORGANISASI</button>
 
-                <div class="mt-10 p-8 bg-slate-900 rounded-[2rem] text-white">
-                    <h3 class="section-title border-slate-700 text-slate-400">Kompetensi Tambahan</h3>
-                    <div class="space-y-4">
-                        <p class="text-[10px] uppercase font-bold text-slate-500">Keahlian Khusus / Bakat</p>
-                        <input type="text" id="keahlian" class="border-b border-slate-700 text-white" placeholder="CONTOH: DESIGN GRAFIS, ORASI, IT, DLL">
+                    <h3 class="section-title">Pendidikan Kader Partai</h3>
+                    <div id="kader-container">
+                        <div class="kader-item bg-red-50 p-6 rounded-3xl mb-4">
+                            <select class="tingkat_kader mb-4">
+                                <option value="">-- PILIH TINGKATAN --</option>
+                                <option value="Pratama">KADER PRATAMA</option><option value="Madya">KADER MADYA</option>
+                                <option value="Utama">KADER UTAMA</option><option value="-">BELUM MENGIKUTI</option>
+                            </select>
+                            <input type="number" class="thn_kader" placeholder="Tahun Pelaksanaan">
+                        </div>
                     </div>
-                </div>
-                <div class="flex gap-4 mt-12">
-                    <button onclick="changeStep(4)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
-                    <button onclick="changeStep(6)" class="flex-[2] py-4 bg-green-600 text-white rounded-2xl font-bold uppercase text-[10px]">Review Profil →</button>
-                </div>
-            </div>
+                    <button type="button" onclick="addItem('kader-container')" class="btn-add">+ TAMBAH DATA KADERISASI</button>
 
-            <div id="step-6" class="step-hidden animate-fade">
-                <div class="text-center mb-8">
-                    <h2 class="text-xl font-black text-slate-900">REVIEW DATA KADER</h2>
-                    <p class="text-[10px] text-slate-400 uppercase">Periksa kembali sebelum data masuk ke database</p>
-                </div>
-                <div id="review-area" class="space-y-4">
+                    <h3 class="section-title">Jabatan Struktural & Penugasan</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="label-req">Jabatan Struktural Saat Ini</label>
+                            <input type="text" id="jab_partai" placeholder="Contoh: Ketua PAC Gamping">
+                        </div>
+                        <div>
+                            <label class="label-req">Penugasan Legislatif / Eksekutif / Partai</label>
+                            <textarea id="penugasan" rows="2" placeholder="Contoh: Anggota Fraksi PDI Perjuangan DPRD DIY 2019-2024"></textarea>
+                        </div>
                     </div>
-                <button id="btn-kirim" onclick="kirimKeDatabase()" class="w-full mt-12 bg-red-700 text-white font-black py-6 rounded-[2rem] shadow-2xl hover:bg-red-800 transition-all text-xs tracking-[0.4em] uppercase">Simpan Data Permanen</button>
-            </div>
+
+                    <div class="flex gap-4 mt-12">
+                        <button type="button" onclick="changeStep(2)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
+                        <button type="button" onclick="finalCheck()" class="flex-[2] py-4 bg-red-700 text-white rounded-2xl font-bold uppercase text-[11px] shadow-lg">Simpan Database Permanen</button>
+                    </div>
+                </div>
+            </form>
+
         </div>
     </div>
 
     <script>
-        const scriptURL = 'YOUR_APPS_SCRIPT_URL'; // GANTI DENGAN URL DEPLOY BOS
+        const scriptURL = 'YOUR_APPS_SCRIPT_URL';
         let fotoBase64 = "";
 
-        function changeStep(s) {
-            document.querySelectorAll('[id^="step-"]').forEach(el => el.classList.add('step-hidden'));
-            document.getElementById('step-' + s).classList.remove('step-hidden');
-            document.getElementById('step-info').innerText = "Langkah " + s;
-            document.getElementById('step-number').innerText = s + "/6";
-            if(s === 6) renderReview();
+        // Fungsi Load Tahun Dropdown
+        function fillYear(el) {
+            const current = new Date().getFullYear();
+            let h = '<option value="">Tahun</option>';
+            for(let i=current; i>=1970; i--) h += `<option value="${i}">${i}</option>`;
+            h += '<option value="Sekarang">Sekarang</option>';
+            el.innerHTML = h;
+        }
+
+        function changeStep(n) {
+            document.querySelectorAll('.step-content').forEach(s => s.classList.add('step-hidden'));
+            document.getElementById('step-' + n).classList.remove('step-hidden');
             window.scrollTo(0,0);
         }
 
-        function addRow(id) {
-            const c = document.getElementById(id);
-            const clone = c.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = '');
-            c.appendChild(clone);
-        }
-
-        function renderReview() {
-            const area = document.getElementById('review-area');
-            area.innerHTML = `
-                <div class="bg-slate-50 p-6 rounded-3xl">
-                    <p class="data-label">Nama Lengkap</p><p class="data-value">${document.getElementById('nama').value}</p>
-                    <p class="data-label mt-4">WhatsApp</p><p class="data-value text-green-700">${document.getElementById('kontak').value}</p>
-                    <p class="data-label mt-4">Wilayah</p><p class="data-value">${document.getElementById('kabkota').value}</p>
-                </div>
-                <p class="text-[10px] text-center text-red-500 font-bold uppercase mt-4">Data organisasi & pendidikan akan otomatis digabung sistem</p>
-            `;
-        }
-
-        async function kirimKeDatabase() {
-            const btn = document.getElementById('btn-kirim');
-            btn.innerText = "SEDANG MENGIRIM DATA..."; btn.disabled = true;
-
-            // Gabung Data Pendidikan
-            let eduStr = [];
-            document.querySelectorAll('.edu-item').forEach(i => {
-                if(i.querySelector('.jenjang').value) eduStr.push(`${i.querySelector('.jenjang').value}: ${i.querySelector('.sekolah').value}`);
-            });
-
-            // Gabung Data Organisasi
-            let orgStr = [];
-            document.querySelectorAll('.org-item').forEach(i => {
-                if(i.querySelector('.org-nama').value) orgStr.push(`${i.querySelector('.org-nama').value} (${i.querySelector('.org-jab').value})`);
-            });
-
-            const payload = {
-                nama: document.getElementById('nama').value,
-                nik: document.getElementById('nik').value,
-                wa: document.getElementById('kontak').value,
-                kabkota: document.getElementById('kabkota').value,
-                p_formal: eduStr.join(" | "),
-                p_kader: document.querySelector('.jenis-kader').value,
-                tugas: orgStr.join(" | "), // Memasukkan organisasi ke kolom tugas/catatan
-                jabatan: document.querySelector('.jabatan-nama').value || "-",
-                foto: fotoBase64
-            };
-
-            try {
-                const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
-                const res = await response.json();
-                if(res.result === "success") {
-                    alert("MERDEKA! Data Berhasil Diarsip.");
-                    location.reload();
-                }
-            } catch (e) {
-                alert("Gagal Terkirim. Periksa Koneksi.");
-                btn.innerText = "SIMPAN ULANG"; btn.disabled = false;
+        function addItem(id) {
+            const container = document.getElementById(id);
+            const clone = container.firstElementChild.cloneNode(true);
+            clone.querySelectorAll('input, select').forEach(i => i.value = "");
+            container.appendChild(clone);
+            if(id === 'job-container') {
+                fillYear(clone.querySelector('.thn_mulai'));
+                fillYear(clone.querySelector('.thn_akhir'));
             }
         }
 
+        // Handle Foto
         document.getElementById('foto-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = (ev) => {
                 document.getElementById('photo-preview').innerHTML = `<img src="${ev.target.result}" class="w-full h-full object-cover">`;
                 fotoBase64 = ev.target.result;
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         });
+
+        // Init Tahun Pertama
+        fillYear(document.querySelector('.thn_mulai'));
+        fillYear(document.querySelector('.thn_akhir'));
+
+        async function finalCheck() {
+            // Validasi Sederhana
+            if(!document.getElementById('nama').value || !document.getElementById('nik').value) {
+                alert("Nama dan NIK wajib diisi!");
+                return;
+            }
+
+            const btn = document.querySelector('button[onclick="finalCheck()"]');
+            btn.innerText = "SEDANG MENGIRIM..."; btn.disabled = true;
+
+            // Collect Education
+            let eduData = Array.from(document.querySelectorAll('.edu-item')).map(i => {
+                return `${i.querySelector('.jenjang').value}: ${i.querySelector('.sekolah').value} (${i.querySelector('.thn_lulus').value})`;
+            }).filter(v => v.length > 10).join(" | ");
+
+            // Collect Jobs
+            let jobData = Array.from(document.querySelectorAll('.job-item')).map(i => {
+                return `${i.querySelector('.perusahaan').value} [${i.querySelector('.thn_mulai').value}-${i.querySelector('.thn_akhir').value}]`;
+            }).filter(v => v.length > 5).join(" | ");
+
+            // Collect Org
+            let orgData = Array.from(document.querySelectorAll('.org-item')).map(i => {
+                return `${i.querySelector('.nama_org').value} (${i.querySelector('.jab_org').value})`;
+            }).filter(v => v.length > 5).join(" | ");
+
+            // Collect Kader
+            let kaderData = Array.from(document.querySelectorAll('.kader-item')).map(i => {
+                return `${i.querySelector('.tingkat_kader').value} (${i.querySelector('.thn_kader').value})`;
+            }).join(" | ");
+
+            const payload = {
+                nama: document.getElementById('nama').value,
+                nik: document.getElementById('nik').value,
+                kta: document.getElementById('kta').value,
+                ttl: `${document.getElementById('tmp_lahir').value}, ${document.getElementById('tgl_lahir').value}`,
+                wa: document.getElementById('kontak').value,
+                sosmed: `IG: ${document.getElementById('ig').value} | FB: ${document.getElementById('fb').value}`,
+                alamat: `${document.getElementById('alamat').value} RT${document.getElementById('rt').value}/RW${document.getElementById('rw').value}, Kec. ${document.getElementById('kecamatan').value}, ${document.getElementById('kabkota').value}`,
+                p_formal: eduData,
+                p_kader: kaderData,
+                jabatan: document.getElementById('jab_partai').value,
+                tugas: `KERJA: ${jobData} || ORG: ${orgData} || PENUGASAN: ${document.getElementById('penugasan').value}`,
+                foto: fotoBase64
+            };
+
+            try {
+                const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+                if(result.result === 'success') {
+                    alert("MERDEKA! Data Kader telah berhasil disimpan ke database.");
+                    location.reload();
+                }
+            } catch (error) {
+                alert("Terjadi kesalahan koneksi. Silakan coba lagi.");
+                btn.innerText = "SIMPAN DATABASE PERMANEN"; btn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
