@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
         select, input { 
             width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
             background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
@@ -23,10 +23,40 @@
 </head>
 <body class="pb-12 bg-slate-50">
 
-    <div class="max-w-2xl mx-auto mt-12 px-4">
+    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
+            <div class="border-l-2 border-slate-200 pl-3">
+                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
+                    SENSUS KADER <span class="text-red-700">2026</span>
+                </h1>
+                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
+                    DPD PDI Perjuangan DIY
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
+        <a href="step3.html" class="text-slate-400 hover:text-red-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="flex gap-2">
+            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-red-700"></div>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 04</span>
+    </div>
+
+    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
         <div class="glass-effect p-8 md:p-12 shadow-2xl">
             
-            <div class="mb-10 border-b pb-6">
+            <div class="mb-10 border-b pb-6 text-center md:text-left">
                 <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Portofolio Politik</h2>
                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Riwayat Jabatan & Penugasan Partai</p>
             </div>
@@ -144,6 +174,11 @@
                 </svg>
             </button>
         </div>
+    </div>
+
+    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
+        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+             alt="Watermark Logo" class="w-80 md:w-96">
     </div>
 
     <script>
