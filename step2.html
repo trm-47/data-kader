@@ -24,7 +24,6 @@
         input:focus, select:focus, textarea:focus { border-bottom: 2px solid #b91c1c; }
         .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.5rem; }
         
-        /* Grid Custom untuk RT/RW */
         .address-grid { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; }
     </style>
 </head>
@@ -50,7 +49,7 @@
             
             <div class="mb-10 text-center md:text-left">
                 <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Kontak & Wilayah</h2>
-                <p class="text-slate-400 text-xs font-medium text-balance">Pastikan nomor WhatsApp aktif untuk koordinasi partai.</p>
+                <p class="text-slate-400 text-xs font-medium text-balance">Data komunikasi dan domisili kader untuk pemetaan wilayah.</p>
             </div>
 
             <section class="mb-12">
@@ -72,6 +71,14 @@
                     <div>
                         <label class="label-style">Facebook</label>
                         <input type="text" id="fb" placeholder="NAMA PROFIL">
+                    </div>
+                    <div>
+                        <label class="label-style">Twitter (X)</label>
+                        <input type="text" id="twitter" placeholder="@USERNAME">
+                    </div>
+                    <div>
+                        <label class="label-style">LinkedIn</label>
+                        <input type="text" id="linkedin" placeholder="URL / NAMA PROFIL">
                     </div>
                     <div>
                         <label class="label-style">TikTok</label>
@@ -128,7 +135,7 @@
                 </div>
             </section>
 
-            <div class="mt-16 flex gap-4">
+            <div class="mt-16">
                 <button onclick="saveAndNext()" class="w-full bg-red-700 text-white font-black py-5 rounded-2xl shadow-xl uppercase text-xs tracking-[0.2em] hover:bg-red-800 transition-all flex justify-center items-center gap-3">
                     Lanjut: Riwayat & Kompetensi
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,14 +143,11 @@
                     </svg>
                 </button>
             </div>
-
         </div>
     </div>
 
     <script>
-        function goBack() {
-            window.location.href = "step1.html";
-        }
+        function goBack() { window.location.href = "step1.html"; }
 
         function saveAndNext() {
             const data = {
@@ -151,6 +155,8 @@
                 email: document.getElementById('email').value,
                 ig: document.getElementById('ig').value,
                 fb: document.getElementById('fb').value,
+                twitter: document.getElementById('twitter').value,
+                linkedin: document.getElementById('linkedin').value,
                 tiktok: document.getElementById('tiktok').value,
                 youtube: document.getElementById('youtube').value,
                 alamat: document.getElementById('alamat').value,
@@ -161,7 +167,6 @@
                 kabkota: document.getElementById('kabkota').value
             };
 
-            // Validasi Field Wajib
             if(!data.kontak || !data.alamat || !data.kelurahan || !data.kecamatan || !data.kabkota) {
                 alert("Mohon lengkapi kolom bertanda bintang (*)!");
                 return;
