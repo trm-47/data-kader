@@ -3,40 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 6 - Kompetensi</title>
+    <title>Step 6 - Kompetensi & Keahlian</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
         .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-bottom: 12px; }
         
         /* Checkbox Custom Style */
-        .check-card { transition: all 0.3s ease; border: 2px solid #f1f5f9; cursor: pointer; position: relative; }
-        input[type="checkbox"]:checked + .check-content { border-color: #b91c1c; background-color: #fef2f2; color: #b91c1c; }
-        input[type="checkbox"]:checked + .check-content .check-icon { opacity: 1; }
-        .check-icon { opacity: 0; transition: opacity 0.3s; }
+        .check-content { transition: all 0.3s ease; border: 2px solid #f1f5f9; cursor: pointer; }
+        input[type="checkbox"]:checked + .check-content { border-color: #b91c1c; background-color: #fef2f2; color: #b91c1c; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(185, 28, 28, 0.1); }
+        
+        select, input[type="text"] { 
+            width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
+            background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
+        }
+        select:focus, input[type="text"]:focus { border-bottom: 2px solid #b91c1c; background: #fffcfc; }
     </style>
 </head>
 <body class="pb-12 bg-slate-50">
 
-    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between">
+    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
         <div class="flex items-center gap-3">
-            <img src="https://upload.wikimedia.org/wikipedia/id/thumb/b/bb/PDI-P_Logo.svg/1200px-PDI-P_Logo.svg.png" alt="Logo" class="h-12 w-auto">
-            <div>
-                <h1 class="text-sm font-black leading-none text-slate-900 italic">SENSUS KADER</h1>
-                <p class="text-[9px] font-bold text-red-700 tracking-[0.2em] uppercase">DPD PDI Perjuangan DIY</p>
+            <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
+            <div class="border-l-2 border-slate-200 pl-3">
+                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
+                    SENSUS KADER <span class="text-red-700">2026</span>
+                </h1>
+                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
+                    DPD PDI Perjuangan DIY
+                </p>
             </div>
-        </div>
-        <div class="text-right">
-            <span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Step 06 / 06</span>
         </div>
     </div>
 
-    <div class="max-w-2xl mx-auto mt-6 px-4">
-        <div class="glass-effect p-8 md:p-12">
+    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
+        <a href="step5.html" class="text-slate-400 hover:text-red-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="flex gap-2">
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+        </div>
+        <span class="text-[10px] font-black text-red-700 uppercase tracking-widest text-right">Step 06</span>
+    </div>
+
+    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
+        <div class="glass-effect p-8 md:p-12 shadow-2xl">
             
-            <div class="mb-10 border-b pb-6">
+            <div class="mb-10 border-b pb-6 text-center md:text-left">
                 <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Kompetensi & Keahlian</h2>
                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Pemetaan Sumber Daya Manusia Partai</p>
             </div>
@@ -52,37 +75,43 @@
 
                     <label class="relative">
                         <input type="checkbox" name="lang" value="Inggris" class="hidden peer">
-                        <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Inggris</div>
+                        <div class="check-content p-4 rounded-2xl bg-white font-bold text-[10px] text-center uppercase transition-all">Inggris</div>
                     </label>
 
                     <label class="relative">
                         <input type="checkbox" name="lang" value="Mandarin" class="hidden peer">
-                        <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Mandarin</div>
+                        <div class="check-content p-4 rounded-2xl bg-white font-bold text-[10px] text-center uppercase transition-all">Mandarin</div>
                     </label>
 
                     <label class="relative">
                         <input type="checkbox" id="lang-other-check" class="hidden peer" onchange="toggleOtherLang(this)">
-                        <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Lainnya</div>
+                        <div class="check-content p-4 rounded-2xl bg-white font-bold text-[10px] text-center uppercase transition-all">Lainnya</div>
                     </label>
                 </div>
 
-                <div id="other-lang-field" class="hidden mt-4">
+                <div id="other-lang-field" class="hidden mt-6 animate-pulse">
                     <label class="label-style text-[9px]">Sebutkan Bahasa Lainnya</label>
-                    <input type="text" class="w-full border-b-2 border-slate-200 py-2 outline-none focus:border-red-700 font-bold text-sm uppercase" placeholder="MISAL: ARAB, JEPANG, JAWA KRIMO">
+                    <input type="text" placeholder="MISAL: ARAB, JEPANG, JAWA KRAMA" oninput="this.value = this.value.toUpperCase()">
                 </div>
             </section>
 
             <section class="mb-12">
                 <label class="label-style">Kemampuan Mengoperasikan Komputer</label>
-                <select id="komputer-skill" class="w-full border-b-2 border-slate-200 py-3 font-bold text-sm outline-none focus:border-red-700 bg-transparent">
+                <select id="komputer-skill">
                     <option value="TIDAK BISA">TIDAK BISA</option>
                     <option value="BISA" selected>BISA (MS OFFICE, INTERNET, EMAIL)</option>
                     <option value="ADVANCE">ADVANCE (DESAIN, IT, PROGRAMMING, DATA)</option>
                 </select>
             </section>
 
-            <button onclick="window.location.href='review.html'" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
-                Review Profil Final
+            <section class="mb-12">
+                <label class="label-style">Keahlian Khusus / Sertifikasi</label>
+                <input type="text" placeholder="MISAL: SERTIFIKAT ADVOKAT, SKILL JURNALISTIK, DLL" oninput="this.value = this.value.toUpperCase()">
+                <p class="text-[9px] text-slate-400 mt-2 italic font-medium">* Kosongkan jika tidak ada</p>
+            </section>
+
+            <button onclick="saveFinal()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
+                Pratinjau Profil Final
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
@@ -90,11 +119,25 @@
         </div>
     </div>
 
+    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
+        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+             alt="Watermark Logo" class="w-80 md:w-96">
+    </div>
+
     <script>
         function toggleOtherLang(checkbox) {
             const field = document.getElementById('other-lang-field');
-            if(checkbox.checked) field.classList.remove('hidden');
-            else field.classList.add('hidden');
+            if(checkbox.checked) {
+                field.classList.remove('hidden');
+                field.classList.add('animate-none');
+            } else {
+                field.classList.add('hidden');
+            }
+        }
+
+        function saveFinal() {
+            // Logika penyimpanan data final ke localStorage bisa diletakkan di sini
+            window.location.href = "review.html";
         }
     </script>
 </body>
