@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 3 - Riwayat Terstruktur</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); }
+        select, input, textarea { 
+            width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
+            background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
+        }
+        select:focus, input:focus { border-bottom: 2px solid #b91c1c; background: #fffcfc; }
+        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.2rem; }
+        .entry-card { background: #f8fafc; border-radius: 24px; padding: 24px; margin-bottom: 16px; border: 1px solid #edf2f7; }
+        .btn-add { font-size: 10px; font-weight: 800; color: #b91c1c; border: 2px dashed #fca5a5; width: 100%; padding: 12px; border-radius: 16px; margin-bottom: 20px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="pb-12 bg-slate-50">
+
+    <div class="max-w-2xl mx-auto mt-12 px-4">
+        <div class="glass-effect p-8 md:p-12">
+            
+            <div class="mb-10 border-b pb-6">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Kapasitas & Kaderisasi</h2>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Validasi Data Pendidikan Terpusat</p>
+            </div>
+
+            <section class="mb-12">
+                <h3 class="text-[11px] font-black text-slate-800 bg-slate-100 px-4 py-2 rounded-lg inline-block mb-6 uppercase tracking-widest">Pendidikan Formal</h3>
+                <div id="edu-container">
+                    <div class="entry-card shadow-sm border-l-4 border-l-red-600">
+                        <label class="label-style">Jenjang Pendidikan</label>
+                        <select class="edu-level" onchange="handleEduLogic(this)">
+                            <option value="">-- PILIH JENJANG --</option>
+                            <option value="SD">SD / SEDERAJAT</option>
+                            <option value="SMP">SMP / SEDERAJAT</option>
+                            <option value="SMA">SMA / SMK / SEDERAJAT</option>
+                            <option value="PT">PERGURUAN TINGGI (D3/S1/S2/S3)</option>
+                        </select>
+
+                        <div class="common-fields hidden">
+                            <label class="label-style">Nama Institusi / Sekolah *</label>
+                            <input type="text" class="edu-name" placeholder="CONTOH: SMA N 1 YOGYAKARTA">
+                            
+                            <div class="sma-fields hidden">
+                                <label class="label-style">Jurusan *</label>
+                                <select class="sma-jurusan">
+                                    <option value="">-- PILIH JURUSAN --</option>
+                                    <option>IPA</option><option>IPS</option><option>BAHASA</option><option>KEJURUAN (SMK)</option><option>LAINNYA</option>
+                                </select>
+                            </div>
+
+                            <div class="pt-fields hidden">
+                                <label class="label-style">Fakultas *</label>
+                                <input type="text" class="pt-fakultas" placeholder="CONTOH: FAKULTAS HUKUM">
+                                <label class="label-style">Jurusan / Prodi (Opsional)</label>
+                                <input type="text" class="pt-jurusan" placeholder="CONTOH: ILMU HUKUM">
+                                <label class="label-style">Status Kelulusan</label>
+                                <select class="pt-status">
+                                    <option value="LULUS">LULUS</option>
+                                    <option value="TIDAK LULUS">TIDAK LULUS / DROP OUT</option>
+                                    <option value="MASIH KULIAH">MASIH MENEMPUH PENDIDIKAN</option>
+                                </select>
+                            </div>
+
+                            <label class="label-style">Tahun Lulus / Berakhir</label>
+                            <input type="number" class="edu-year" placeholder="CONTOH: 2010">
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addEdu()" class="btn-add hover:bg-red-50 transition-all">+ TAMBAH JENJANG LAIN</button>
+            </section>
+
+            <section class="mb-12">
+                <h3 class="text-[11px] font-black text-white bg-red-700 px-4 py-2 rounded-lg inline-block mb-6 uppercase tracking-widest text-center">Pendidikan Kader Partai</h3>
+                <div id="kader-container">
+                    <div class="entry-card border-red-100 bg-red-50/30">
+                        <label class="label-style">Jenis Pendidikan Kader</label>
+                        <select class="kader-type" onchange="toggleKaderDetail(this)">
+                            <option value="">-- PILIH SERTIFIKASI --</option>
+                            <option>PRATAMA</option>
+                            <option>MADYA</option>
+                            <option>UTAMA</option>
+                            <option>GURU KADER</option>
+                            <option>KADER PEREMPUAN</option>
+                            <option>LAINNYA</option>
+                            <option value="BELUM">BELUM MENGIKUTI</option>
+                        </select>
+                        <div class="kader-detail hidden">
+                            <div class="grid grid-cols-2 gap-6">
+                                <div>
+                                    <label class="label-style">Tahun</label>
+                                    <input type="number" class="kader-year" placeholder="YYYY">
+                                </div>
+                                <div>
+                                    <label class="label-style">Penyelenggara</label>
+                                    <input type="text" class="kader-host" placeholder="CONTOH: DPD DIY">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addKader()" class="btn-add">+ TAMBAH SERTIFIKASI KADER</button>
+            </section>
+
+            <button onclick="saveStep3()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
+                Lanjut Ke Review Data
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function handleEduLogic(select) {
+            const card = select.closest('.entry-card');
+            const common = card.querySelector('.common-fields');
+            const sma = card.querySelector('.sma-fields');
+            const pt = card.querySelector('.pt-fields');
+
+            if(select.value === "") {
+                common.classList.add('hidden');
+                return;
+            }
+
+            common.classList.remove('hidden');
+            sma.classList.add('hidden');
+            pt.classList.add('hidden');
+
+            if(select.value === 'SMA') sma.classList.remove('hidden');
+            if(select.value === 'PT') pt.classList.remove('hidden');
+        }
+
+        function toggleKaderDetail(select) {
+            const detail = select.closest('.entry-card').querySelector('.kader-detail');
+            if(select.value !== "" && select.value !== "BELUM") detail.classList.remove('hidden');
+            else detail.classList.add('hidden');
+        }
+
+        function addEdu() {
+            const container = document.getElementById('edu-container');
+            const clone = container.firstElementChild.cloneNode(true);
+            clone.querySelectorAll('input, select').forEach(i => i.value = "");
+            clone.querySelector('.common-fields').classList.add('hidden');
+            container.appendChild(clone);
+        }
+
+        function addKader() {
+            const container = document.getElementById('kader-container');
+            const clone = container.firstElementChild.cloneNode(true);
+            clone.querySelectorAll('input, select').forEach(i => i.value = "");
+            clone.querySelector('.kader-detail').classList.add('hidden');
+            container.appendChild(clone);
+        }
+
+        function saveStep3() {
+            // Logic Collect Data and localStorage.setItem...
+            window.location.href = "review.html";
+        }
+    </script>
+</body>
+</html>
