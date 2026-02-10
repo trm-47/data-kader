@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Database Kader DIY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        .tab-active { border-bottom: 3px solid #b91c1c; color: #b91c1c; font-weight: 800; }
+        .table-scroll { overflow-x: auto; max-height: 600px; }
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow: hidden; }
+        .stat-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+            <div>
+                <h1 class="text-2xl font-black text-slate-800">ADMIN DASHBOARD KADER</h1>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">DPD PDI Perjuangan DIY</p>
+            </div>
+            <div class="flex gap-4 mt-4 md:mt-0">
+                <button onclick="fetchData()" class="bg-red-700 text-white px-6 py-2 rounded-xl text-xs font-bold shadow-lg hover:bg-red-800 transition-all">REFRESH DATA</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Total Populasi</p>
+                <h2 id="stat-total" class="text-3xl font-black text-slate-800">0</h2>
+            </div>
+            <div class="stat-card border-l-4 border-red-600">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Hasil Filter</p>
+                <h2 id="stat-filter" class="text-3xl font-black text-red-600">0</h2>
+            </div>
+            <div class="stat-card">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Persentase</p>
+                <h2 id="stat-percent" class="text-3xl font-black text-blue-600">0%</h2>
+            </div>
+            <div class="stat-card flex items-center justify-center">
+                <canvas id="statChart" width="80" height="80"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <input type="text" id="searchName" onkeyup="applyFilters()" placeholder="Cari Nama Kader..." class="bg-slate-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-red-600 outline-none">
+                
+                <select id="filterKader" onchange="applyFilters()" class="bg-slate-50 border-none rounded-xl px-4 py-3 text-sm outline-none">
+                    <option value="">Semua Pend. Kader</option>
+                    <option value="Pratama">Pratama</option>
+                    <option value="Madya">Madya</option>
+                    <option value="Utama">Utama</option>
+                </select>
+
+                <select id="filterTugas" onchange="applyFilters()" class="bg-slate-50 border-none rounded-xl px-4 py-3 text-sm outline-none">
+                    <option value="">Semua Penugasan</option>
+                    <option value="Legislatif">Legislatif</option>
+                    <option value="Eksekutif">Eksekutif</option>
+                    <option value="Struktural">Struktural</option>
+                </select>
+
+                <select id="filterKota" onchange="applyFilters()" class="bg-slate-50 border-none rounded-xl px-4 py-3 text-sm outline-none">
+                    <option value="">Semua Wilayah</option>
+                    <option value="Kota Yogyakarta">Kota Yogyakarta</option>
+                    <option value="Sleman">Sleman</option>
+                    <option value="Bantul">Bantul</option>
+                    <option value="Kulon Progo">Kulon Progo</option>
+                    <option value="Gunungkidul">Gunungkidul</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] shadow-sm overflow-hidden">
+            <div class="flex border-b px-6">
+                <button onclick="switchTab('umum')" id="tab-umum" class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest tab-active">Info Umum</button>
+                <button onclick="switchTab('pendidikan')" id="tab-pendidikan" class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Pendidikan</button>
+                <button onclick="switchTab('jabatan')" id="tab-jabatan" class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Jabatan & Tugas</button>
+            </div>
+
+            <div class="table-scroll">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        <tr id="table-header">
+                            </tr>
+                    </thead>
+                    <tbody id="table-body" class="text-sm">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalDetail" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-slate-900 opacity-50"></div>
+        <div class="modal-container bg-white w-full max-w-2xl mx-auto rounded-[2.5rem] shadow-2xl z-50 overflow-y-auto max-h-[90vh]">
+            <div class="p-8" id="modal-content">
+                </div>
+            <div class="p-6 bg-slate-50 flex justify-end rounded-b-[2.5rem]">
+                <button onclick="closeModal()" class="bg-slate-900 text-white px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest">Tutup Detail</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simulasi URL Script (Ganti dengan URL Bos)
+        const scriptURL = 'https://script.google.com/macros/s/.../exec';
+        let allData = [];
+        let currentTab = 'umum';
+        let myChart;
+
+        // Fetch Data Awal
+        async function fetchData() {
+            // Kita gunakan data dummy untuk demo fungsionalitas
+            allData = [
+                {id: 1, nama: "Budi Santoso", nik: "3404...", kabkota: "Sleman", p_kader: "Utama", p_formal: "S2 Hukum", tugas: "Legislatif", jabatan: "Wakil Ketua", bidang: "Kehormatan", wa: "0812...", email: "budi@mail.com", foto: ""},
+                {id: 2, nama: "Siti Aminah", nik: "3402...", kabkota: "Bantul", p_kader: "Pratama", p_formal: "S1 Ekonomi", tugas: "Struktural", jabatan: "Sekretaris", bidang: "Internal", wa: "0857...", email: "siti@mail.com", foto: ""},
+                // Tambahkan data lainnya
+            ];
+            applyFilters();
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('[id^="tab-"]').forEach(el => el.classList.remove('tab-active', 'text-slate-400'));
+            document.getElementById('tab-' + tab).classList.add('tab-active');
+            renderTable();
+        }
+
+        function renderTable() {
+            const header = document.getElementById('table-header');
+            const body = document.getElementById('table-body');
+            let filtered = getFilteredData();
+
+            // Set Header berdasarkan Tab
+            if(currentTab === 'umum') {
+                header.innerHTML = '<th class="p-6">Nama Kader</th><th class="p-6">Wilayah</th><th class="p-6">WhatsApp</th><th class="p-6">Aksi</th>';
+            } else if(currentTab === 'pendidikan') {
+                header.innerHTML = '<th class="p-6">Nama Kader</th><th class="p-6">Pend. Formal</th><th class="p-6">Pend. Kader</th><th class="p-6">Aksi</th>';
+            } else {
+                header.innerHTML = '<th class="p-6">Nama Kader</th><th class="p-6">Tugas</th><th class="p-6">Jabatan</th><th class="p-6">Aksi</th>';
+            }
+
+            body.innerHTML = '';
+            filtered.forEach(row => {
+                let content = `<td class="p-6 font-bold text-slate-800 cursor-pointer hover:text-red-700" onclick="showDetail(${row.id})">${row.nama}</td>`;
+                
+                if(currentTab === 'umum') {
+                    content += `<td class="p-6">${row.kabkota}</td><td class="p-6 text-green-600 font-bold">${row.wa}</td>`;
+                } else if(currentTab === 'pendidikan') {
+                    content += `<td class="p-6">${row.p_formal}</td><td class="p-6"><span class="bg-red-50 text-red-700 px-3 py-1 rounded-full font-bold text-[10px]">${row.p_kader}</span></td>`;
+                } else {
+                    content += `<td class="p-6">${row.tugas}</td><td class="p-6">${row.jabatan} ${row.bidang}</td>`;
+                }
+
+                content += `<td class="p-6"><button onclick="showDetail(${row.id})" class="text-blue-600 font-bold text-[10px] uppercase">Lihat Detail</button></td>`;
+                body.innerHTML += `<tr class="border-b hover:bg-slate-50 transition-all">${content}</tr>`;
+            });
+
+            updateStats(filtered.length);
+        }
+
+        function getFilteredData() {
+            const name = document.getElementById('searchName').value.toLowerCase();
+            const kader = document.getElementById('filterKader').value;
+            const tugas = document.getElementById('filterTugas').value;
+            const kota = document.getElementById('filterKota').value;
+
+            return allData.filter(d => {
+                return d.nama.toLowerCase().includes(name) &&
+                       (kader === "" || d.p_kader === kader) &&
+                       (tugas === "" || d.tugas === tugas) &&
+                       (kota === "" || d.kabkota === kota);
+            });
+        }
+
+        function updateStats(filteredCount) {
+            const total = allData.length;
+            const percent = total > 0 ? Math.round((filteredCount / total) * 100) : 0;
+            
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-filter').innerText = filteredCount;
+            document.getElementById('stat-percent').innerText = percent + "%";
+
+            // Update Donut Chart
+            if(myChart) myChart.destroy();
+            const ctx = document.getElementById('statChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [filteredCount, total - filteredCount],
+                        backgroundColor: ['#b91c1c', '#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { display: false } } }
+            });
+        }
+
+        function applyFilters() {
+            renderTable();
+        }
+
+        function showDetail(id) {
+            const data = allData.find(d => d.id === id);
+            const content = document.getElementById('modal-content');
+            
+            // Render Resume Premium (Mirip Review Page)
+            content.innerHTML = `
+                <div class="flex gap-6 items-center mb-8 border-b pb-6">
+                    <div class="w-24 h-32 bg-slate-200 rounded-2xl"></div>
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900 uppercase">${data.nama}</h2>
+                        <p class="text-red-700 font-bold tracking-widest text-xs">NIK: ${data.nik}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-8 text-sm">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Pendidikan Formal</p>
+                        <p class="font-bold">${data.p_formal}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mt-4 mb-2">Pendidikan Kader</p>
+                        <p class="font-bold text-red-700">${data.p_kader}</p>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Penugasan & Jabatan</p>
+                        <p class="font-bold">${data.tugas}</p>
+                        <p class="text-xs">${data.jabatan} Bidang ${data.bidang}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mt-4 mb-2">Kontak</p>
+                        <p class="font-bold text-green-600">${data.wa}</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalDetail').classList.remove('opacity-0', 'pointer-events-none');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal() {
+            document.getElementById('modalDetail').classList.add('opacity-0', 'pointer-events-none');
+            document.body.classList.remove('modal-active');
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
