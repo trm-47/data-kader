@@ -232,14 +232,68 @@
             window.location.href = `step${step}.html`;
         }
 
-        function finalSubmit() {
-            const isChecked = document.getElementById('confirm').checked;
-            if(!isChecked) {
-                alert("Mohon centang konfirmasi data sebelum mengirim.");
-                return;
-            }
-            alert("Data Sensus berhasil dikirim ke Database DPD DIY. Merdeka!");
+// Tambahkan/Ganti fungsi finalSubmit di review.html Anda dengan ini:
+
+async function finalSubmit() {
+    const isChecked = document.getElementById('confirm').checked;
+    const btn = event.currentTarget;
+
+    if(!isChecked) {
+        alert("Mohon centang konfirmasi data sebelum mengirim.");
+        return;
+    }
+
+    // Efek Loading Premium
+    btn.disabled = true;
+    btn.innerHTML = `
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>MENGIRIM KE DATABASE...</span>
+    `;
+
+    // Mengumpulkan semua data dari LocalStorage
+    const payload = {
+        nama: localStorage.getItem('kader_nama') || 'Tidak diisi',
+        nik: localStorage.getItem('kader_nik') || 'Tidak diisi',
+        kta: localStorage.getItem('kader_kta') || 'Tidak diisi',
+        wa: localStorage.getItem('kader_wa') || 'Tidak diisi',
+        alamat: localStorage.getItem('kader_alamat') || 'Tidak diisi',
+        kabupaten: localStorage.getItem('kader_kabupaten') || 'Tidak diisi',
+        pendidikan: localStorage.getItem('kader_pendidikan') || 'Tidak diisi',
+        kaderisasi: localStorage.getItem('kader_tingkat') || 'Tidak diisi',
+        jabatan: localStorage.getItem('kader_jabatan') || 'Tidak diisi',
+        pekerjaan: localStorage.getItem('kader_pekerjaan') || 'Tidak diisi',
+        organisasi: localStorage.getItem('kader_organisasi') || 'Tidak diisi',
+        kompetensi: localStorage.getItem('kader_kompetensi') || 'Tidak diisi',
+        fotoBase64: localStorage.getItem('kader_foto') // Data foto mentah
+    };
+
+    const scriptURL = 'URL_WEB_APP_ANDA'; // <--- PASTE URL DISINI BOS
+
+    try {
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if(result.result === "success") {
+            // Bersihkan storage setelah sukses
+            localStorage.clear();
+            window.location.href = "success.html";
+        } else {
+            throw new Error(result.error);
         }
+    } catch (error) {
+        console.error('Error!', error.message);
+        alert("Gagal terhubung ke Server DPD. Pastikan internet stabil.");
+        btn.disabled = false;
+        btn.innerHTML = `KIRIM DATA SENSUS`;
+    }
+}
     </script>
 </body>
 </html>
