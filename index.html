@@ -3,70 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Kader PDI Perjuangan Daerah Istimewa Yogyakarta</title>
+    <title>Sensus Kader PDI Perjuangan DIY 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .hero-gradient {
-            background: radial-gradient(circle at top right, #991b1b, #7f1d1d);
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #0f172a; 
+            overflow: hidden;
         }
+
+        /* Background Animasi Halus */
+        .bg-pattern {
+            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-color: #0f172a;
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; opacity: 0.3;
+        }
+
+        .hero-glow {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; height: 500px;
+            background: radial-gradient(circle at center, rgba(185, 28, 28, 0.15) 0%, transparent 70%);
+            z-index: 1;
+        }
+
         .btn-premium {
-            background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%);
-            box-shadow: 0 10px 20px -5px rgba(185, 28, 28, 0.4);
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+            box-shadow: 0 15px 35px -10px rgba(185, 28, 28, 0.5);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
         .btn-premium:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px -10px rgba(185, 28, 28, 0.6);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px -12px rgba(185, 28, 28, 0.7);
         }
+
         .glass-card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .text-gradient {
+            background: linear-gradient(to bottom, #ffffff 50%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+<body class="min-h-screen flex items-center justify-center p-6 relative">
 
-    <div class="max-w-md w-full text-center">
-        <div class="mb-8 animate-fade-in">
-            <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" alt="Logo PDI Perjuangan" class="w-28 mx-auto drop-shadow-2xl">
+    <div class="bg-pattern"></div>
+    <div class="hero-glow"></div>
+
+    <div class="max-w-md w-full relative z-10 text-center">
+        
+        <div class="mb-10 floating">
+            <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" 
+                 alt="Logo PDI Perjuangan" 
+                 class="w-32 mx-auto drop-shadow-[0_0_35px_rgba(185,28,28,0.4)]">
         </div>
 
         <div class="mb-12">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tighter leading-tight italic uppercase">
-                Sistem Database <br> <span class="text-red-700">Kader Terpusat</span>
+            <p class="text-[10px] font-black text-red-600 uppercase tracking-[0.4em] mb-3">Aplikasi Digital Sensus</p>
+            <h1 class="text-4xl font-black italic uppercase tracking-tighter leading-[0.9] text-white">
+                DATABASE KADER <br> 
+                <span class="text-red-600">TERPUSAT</span>
             </h1>
-            <div class="h-1 w-20 bg-red-700 mx-auto mt-4 rounded-full"></div>
-            <p class="text-slate-500 text-[10px] mt-6 font-bold tracking-[0.3em] uppercase">DPD PDI Perjuangan DIY</p>
+            <p class="text-slate-400 text-[9px] mt-6 font-bold tracking-[0.3em] uppercase opacity-70">
+                DPD PDI Perjuangan Daerah Istimewa Yogyakarta
+            </p>
         </div>
 
-        <div class="glass-card p-8 rounded-[2.5rem] shadow-2xl mb-10 text-left border border-slate-100">
-            <h2 class="text-xs font-black text-slate-800 uppercase tracking-widest mb-4">Instruksi Pengisian:</h2>
-            <ul class="space-y-4 text-[11px] font-semibold text-slate-600">
-                <li class="flex items-start gap-3">
-                    <span class="bg-red-100 text-red-700 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[10px]">1</span>
-                    Siapkan KTP dan KTA (Jika sudah memiliki).
+        <div class="glass-card p-10 mb-10 text-left relative overflow-hidden group">
+            <div class="absolute top-0 right-0 p-4 opacity-5">
+                 <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" class="w-20">
+            </div>
+            
+            <h2 class="text-[10px] font-black text-white uppercase tracking-widest mb-6 border-l-4 border-red-700 pl-3">
+                Persiapan Pengisian
+            </h2>
+            
+            <ul class="space-y-5 text-[11px] font-bold text-slate-300">
+                <li class="flex items-center gap-4 group">
+                    <span class="w-6 h-6 rounded-xl bg-red-700/20 text-red-500 flex items-center justify-center text-[10px] border border-red-700/30">01</span>
+                    Kartu Tanda Penduduk (KTP)
                 </li>
-                <li class="flex items-start gap-3">
-                    <span class="bg-red-100 text-red-700 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[10px]">2</span>
-                    Gunakan foto resmi berpakaian partai/rapi dengan latar polos.
+                <li class="flex items-center gap-4">
+                    <span class="w-6 h-6 rounded-xl bg-red-700/20 text-red-500 flex items-center justify-center text-[10px] border border-red-700/30">02</span>
+                    KTA Partai (Jika Memiliki)
                 </li>
-                <li class="flex items-start gap-3">
-                    <span class="bg-red-100 text-red-700 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[10px]">3</span>
-                    Pastikan koneksi internet stabil saat proses simpan data.
+                <li class="flex items-center gap-4">
+                    <span class="w-6 h-6 rounded-xl bg-red-700/20 text-red-500 flex items-center justify-center text-[10px] border border-red-700/30">03</span>
+                    Foto Resmi Atribut Partai
                 </li>
             </ul>
         </div>
 
-        <a href="step1.html" class="btn-premium w-full block text-white font-bold py-6 rounded-3xl uppercase text-xs tracking-[0.2em]">
-            Mulai Pengisian Data
+        <a href="step1.html" class="btn-premium w-full flex items-center justify-center gap-4 text-white font-black py-7 rounded-[2rem] uppercase text-xs tracking-[0.3em]">
+            <span>MULAI SENSUS KADER</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
         </a>
 
-        <p class="mt-8 text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-            Merdeka! Menang Spektakuler 2026
-        </p>
+        <div class="mt-10 flex flex-col items-center gap-2">
+            <div class="h-[1px] w-12 bg-slate-800"></div>
+            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                Merdeka! Menang Spektakuler <span class="text-slate-400">2026</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="fixed bottom-[-100px] left-[-100px] opacity-[0.03] pointer-events-none z-0">
+        <img src="https://i.imghippo.com/files/LSfZ5782jAI.png" class="w-[600px]">
     </div>
 
 </body>
