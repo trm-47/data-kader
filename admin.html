@@ -247,6 +247,67 @@
         }
 
         window.onload = fetchData;
+
+        function showDetail(id) {
+    const data = allData.find(d => d.id === id);
+    const content = document.getElementById('modal-content');
+    
+    // Default foto jika kader tidak upload foto
+    const fotoUrl = data.foto || 'https://via.placeholder.com/150?text=No+Photo';
+    const logoPartai = "https://i.imghippo.com/files/LSfZ5782jAI.png"; // URL Logo Banteng
+
+    content.innerHTML = `
+        <div class="relative bg-gradient-to-r from-red-800 to-red-600 p-8 rounded-t-[2rem] -m-8 mb-8 text-white overflow-hidden">
+            <div class="absolute right-[-20px] top-[-20px] opacity-10">
+                <img src="${logoPartai}" class="w-40">
+            </div>
+            <div class="flex flex-col md:flex-row gap-6 items-center relative z-10">
+                <div class="w-32 h-44 bg-white rounded-2xl overflow-hidden shadow-2xl border-4 border-white flex-shrink-0">
+                    <img src="${fotoUrl}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/150?text=Foto+Kader'">
+                </div>
+                <div class="text-center md:text-left">
+                    <img src="${logoPartai}" class="w-12 mb-2 mx-auto md:mx-0">
+                    <h2 class="text-2xl font-black uppercase tracking-tighter leading-tight">${data.nama}</h2>
+                    <p class="text-red-100 font-bold tracking-[0.3em] text-[10px] uppercase">KTA: ${data.kta || '-'}</p>
+                    <div class="mt-3 flex flex-wrap gap-2 justify-center md:justify-start">
+                        <span class="bg-white/20 text-white text-[9px] px-3 py-1 rounded-full font-bold uppercase">${data.kabkota}</span>
+                        <span class="bg-black/20 text-white text-[9px] px-3 py-1 rounded-full font-bold uppercase">${data.p_kader}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm pt-4">
+            <div class="space-y-6">
+                <div>
+                    <h4 class="section-title">Informasi Personal</h4>
+                    <p class="data-label">NIK</p><p class="data-value">${data.nik}</p>
+                    <p class="data-label mt-2">Tempat, Tgl Lahir</p><p class="data-value">${data.tmp_lahir}, ${data.tgl_lahir}</p>
+                    <p class="data-label mt-2">Alamat</p><p class="data-value text-slate-500">${data.alamat}</p>
+                </div>
+                <div>
+                    <h4 class="section-title">Pendidikan Formal</h4>
+                    <p class="data-value">${data.p_formal}</p>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h4 class="section-title">Struktural Partai</h4>
+                    <p class="data-value text-red-700 uppercase">${data.jabatan} ${data.bidang ? 'Bidang ' + data.bidang : ''}</p>
+                    <p class="data-label">Tingkatan: ${data.tingkat}</p>
+                </div>
+                <div>
+                    <h4 class="section-title">Kontak & Akses</h4>
+                    <p class="data-label">WhatsApp</p><p class="data-value font-bold text-green-700">${data.wa}</p>
+                    <p class="data-label mt-2">Email</p><p class="data-value">${data.email}</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('modalDetail').classList.remove('opacity-0', 'pointer-events-none');
+    document.body.classList.add('modal-active');
+}
     </script>
 </body>
 </html>
