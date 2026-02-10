@@ -30,7 +30,7 @@
 
     <div class="max-w-2xl mx-auto -mt-16 px-4">
         <div class="flex justify-between items-center mb-6 px-2 text-white">
-            <div id="step-info" class="text-[10px] font-bold uppercase tracking-widest text-white">Langkah 1: Profil & Pekerjaan</div>
+            <div id="step-info" class="text-[10px] font-bold uppercase tracking-widest text-white">Langkah 1: Identitas</div>
             <div id="step-number" class="text-[10px] font-bold bg-black/20 px-3 py-1 rounded-full italic">1/6</div>
         </div>
 
@@ -43,35 +43,35 @@
                     <input type="file" id="foto-input" accept="image/*" class="hidden">
                     <button onclick="document.getElementById('foto-input').click()" class="bg-slate-900 text-white text-[10px] font-bold py-3 px-8 rounded-2xl hover:bg-red-700 transition-all uppercase tracking-widest">Ambil / Pilih Foto</button>
                 </div>
-                
                 <div class="space-y-6">
-                    <h3 class="section-title">Identitas Dasar</h3>
                     <input type="text" id="nama" oninput="this.value = this.value.toUpperCase()" placeholder="NAMA LENGKAP (SESUAI KTP) *">
                     <input type="text" id="nik" maxlength="16" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="NIK (16 DIGIT) *">
-                    <input type="text" id="kta" placeholder="NOMOR KTA (JIKA ADA)">
-                    
-                    <h3 class="section-title mt-8">Riwayat Pekerjaan</h3>
-                    <div id="kerja-container">
-                        <div class="kerja-item bg-slate-50 p-6 rounded-3xl mb-4 relative">
-                            <input type="text" class="nama-perusahaan mb-4 font-bold" placeholder="NAMA INSTANSI / USAHA">
-                            <input type="text" class="posisi-kerja mb-4" placeholder="JABATAN / PROFESI">
-                            <div class="grid grid-cols-2 gap-4">
-                                <select class="tahun-mulai text-xs"></select>
-                                <select class="tahun-selesai text-xs"></select>
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <input type="text" id="tmp_lahir" placeholder="TEMPAT LAHIR">
+                        <input type="date" id="tgl_lahir" class="text-slate-500">
                     </div>
-                    <button onclick="addRow('kerja-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH RIWAYAT KERJA</button>
+                    <input type="text" id="kta" placeholder="NOMOR KTA *">
+                    <select id="pekerjaan">
+                        <option value="">-- PILIH PEKERJAAN --</option>
+                        <option value="ASN/PNS">ASN/PNS</option><option value="Wiraswasta">WIRASWASTA</option>
+                        <option value="Karyawan">KARYAWAN</option><option value="Petani/Nelayan">PETANI/NELAYAN</option>
+                        <option value="Lainnya">LAINNYA</option>
+                    </select>
                 </div>
                 <button onclick="changeStep(2)" class="w-full mt-12 bg-red-700 text-white font-bold py-5 rounded-2xl shadow-xl transition-all text-[11px] tracking-[0.2em] uppercase">Lanjut Ke Kontak</button>
             </div>
 
             <div id="step-2" class="step-hidden animate-fade">
                 <div class="space-y-6">
-                    <h3 class="section-title">Kontak & Domisili</h3>
+                    <h3 class="section-title">Kontak & Alamat</h3>
                     <input type="tel" id="kontak" placeholder="WHATSAPP AKTIF *">
                     <input type="email" id="email" placeholder="ALAMAT EMAIL">
-                    <textarea id="alamat" rows="2" placeholder="ALAMAT LENGKAP"></textarea>
+                    <textarea id="alamat" rows="2" placeholder="ALAMAT LENGKAP (DUSUN/JL/KEL)"></textarea>
+                    <div class="grid grid-cols-3 gap-4">
+                        <input type="text" id="rt" placeholder="RT">
+                        <input type="text" id="rw" placeholder="RW">
+                        <input type="text" id="kecamatan" placeholder="KECAMATAN">
+                    </div>
                     <select id="kabkota">
                         <option value="">-- PILIH KAB/KOTA (DIY) --</option>
                         <option value="Kota Yogyakarta">KOTA YOGYAKARTA</option>
@@ -80,6 +80,11 @@
                         <option value="Kulon Progo">KULON PROGO</option>
                         <option value="Gunungkidul">GUNUNGKIDUL</option>
                     </select>
+                    <h3 class="section-title mt-6">Media Sosial</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="ig" placeholder="INSTAGRAM">
+                        <input type="text" id="fb" placeholder="FACEBOOK">
+                    </div>
                 </div>
                 <div class="flex gap-4 mt-12">
                     <button onclick="changeStep(1)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
@@ -93,23 +98,30 @@
                     <div class="edu-item bg-slate-50 p-6 rounded-3xl mb-4">
                         <select class="jenjang font-bold mb-4">
                             <option value="">-- JENJANG --</option>
-                            <option value="SMA">SMA/SMK</option><option value="D3">D3</option><option value="S1">S1</option><option value="S2">S2</option>
+                            <option value="SMA">SMA/SMK</option><option value="D3">DIPLOMA (D3)</option>
+                            <option value="S1">SARJANA (S1)</option><option value="S2">MAGISTER (S2)</option>
                         </select>
-                        <input type="text" class="sekolah mb-4" placeholder="NAMA SEKOLAH/KAMPUS">
+                        <input type="text" class="sekolah mb-4" placeholder="NAMA INSTITUSI">
+                        <input type="number" class="tahun-lulus" placeholder="TAHUN LULUS">
                     </div>
                 </div>
                 <button onclick="addRow('formal-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH SEKOLAH</button>
 
                 <h3 class="section-title mt-10">Pendidikan Kader</h3>
-                <div class="kader-item bg-red-50 p-6 rounded-3xl">
-                    <select id="jenis-kader" class="font-bold">
-                        <option value="">-- PILIH KADERISASI TERAKHIR --</option>
-                        <option value="Pratama">PRATAMA</option><option value="Madya">MADYA</option><option value="Utama">UTAMA</option><option value="-">BELUM MENGIKUTI</option>
-                    </select>
+                <div id="kader-container">
+                    <div class="kader-item bg-red-50 p-6 rounded-3xl mb-4">
+                        <select class="jenis-kader font-bold mb-4">
+                            <option value="">-- PILIH KADERISASI --</option>
+                            <option value="Pratama">PRATAMA</option><option value="Madya">MADYA</option>
+                            <option value="Utama">UTAMA</option><option value="-">- (BELUM MENGIKUTI)</option>
+                        </select>
+                        <input type="number" class="tahun-kader" placeholder="TAHUN PELAKSANAAN">
+                    </div>
                 </div>
+                <button onclick="addRow('kader-container')" class="w-full border-2 border-dashed border-red-100 py-3 rounded-2xl text-[10px] font-bold text-red-300 uppercase">+ TAMBAH KADERISASI</button>
                 <div class="flex gap-4 mt-12">
                     <button onclick="changeStep(2)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
-                    <button onclick="changeStep(4)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Jabatan →</button>
+                    <button onclick="changeStep(4)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Struktural →</button>
                 </div>
             </div>
 
@@ -121,10 +133,20 @@
                             <option value="">-- TINGKATAN --</option>
                             <option value="DPD">DPD</option><option value="DPC">DPC</option><option value="PAC">PAC</option><option value="Ranting">RANTING</option>
                         </select>
-                        <input type="text" class="jabatan-nama" placeholder="JABATAN (CONTOH: KETUA)">
+                        <input type="text" class="jabatan-nama mb-4" placeholder="JABATAN (CONTOH: KETUA)">
+                        <input type="text" class="periode-jab" placeholder="PERIODE (CONTOH: 2019-2024)">
                     </div>
                 </div>
                 <button onclick="addRow('jabatan-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH JABATAN</button>
+
+                <h3 class="section-title mt-10">Penugasan Legislatif/Eksekutif</h3>
+                <div id="tugas-container">
+                    <div class="tugas-item bg-blue-50 p-6 rounded-3xl mb-4">
+                        <input type="text" class="nama-jab-tugas mb-4" placeholder="CONTOH: ANGGOTA DPRD SLEMAN">
+                        <input type="text" class="periode-tugas" placeholder="PERIODE">
+                    </div>
+                </div>
+                <button onclick="addRow('tugas-container')" class="w-full border-2 border-dashed border-blue-100 py-3 rounded-2xl text-[10px] font-bold text-blue-300 uppercase">+ TAMBAH PENUGASAN</button>
                 <div class="flex gap-4 mt-12">
                     <button onclick="changeStep(3)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
                     <button onclick="changeStep(5)" class="flex-[2] py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px]">Organisasi →</button>
@@ -132,49 +154,52 @@
             </div>
 
             <div id="step-5" class="step-hidden animate-fade">
-                <h3 class="section-title">Organisasi Kemasyarakatan</h3>
+                <h3 class="section-title">Organisasi Kemasyarakatan (Luar Partai)</h3>
                 <div id="org-container">
                     <div class="org-item bg-slate-50 p-6 rounded-3xl mb-4">
-                        <input type="text" class="org-nama mb-4 font-bold" placeholder="NAMA ORGANISASI">
-                        <input type="text" class="org-jab" placeholder="JABATAN">
+                        <input type="text" class="org-nama mb-4 font-bold" placeholder="NAMA ORGANISASI (CONTOH: NU/KARANG TARUNA)">
+                        <input type="text" class="org-jab mb-4" placeholder="JABATAN">
+                        <input type="text" class="org-periode" placeholder="PERIODE">
                     </div>
                 </div>
                 <button onclick="addRow('org-container')" class="w-full border-2 border-dashed border-slate-200 py-3 rounded-2xl text-[10px] font-bold text-slate-400 uppercase">+ TAMBAH ORGANISASI</button>
+
+                <div class="mt-10 p-8 bg-slate-900 rounded-[2rem] text-white">
+                    <h3 class="section-title border-slate-700 text-slate-400">Kompetensi Tambahan</h3>
+                    <div class="space-y-4">
+                        <p class="text-[10px] uppercase font-bold text-slate-500">Keahlian Khusus / Bakat</p>
+                        <input type="text" id="keahlian" class="border-b border-slate-700 text-white" placeholder="CONTOH: DESIGN GRAFIS, ORASI, IT, DLL">
+                    </div>
+                </div>
                 <div class="flex gap-4 mt-12">
                     <button onclick="changeStep(4)" class="flex-1 py-4 text-slate-400 font-bold uppercase text-[10px]">Kembali</button>
-                    <button onclick="changeStep(6)" class="flex-[2] py-4 bg-green-600 text-white rounded-2xl font-bold uppercase text-[10px]">Review & Kirim →</button>
+                    <button onclick="changeStep(6)" class="flex-[2] py-4 bg-green-600 text-white rounded-2xl font-bold uppercase text-[10px]">Review Profil →</button>
                 </div>
             </div>
 
             <div id="step-6" class="step-hidden animate-fade">
                 <div class="text-center mb-8">
-                    <h2 class="text-xl font-black text-slate-900">FINAL CHECK</h2>
-                    <p class="text-[10px] text-slate-400 uppercase">Pastikan semua data riwayat sudah terisi</p>
+                    <h2 class="text-xl font-black text-slate-900">REVIEW DATA KADER</h2>
+                    <p class="text-[10px] text-slate-400 uppercase">Periksa kembali sebelum data masuk ke database</p>
                 </div>
-                <div id="review-summary" class="bg-slate-50 p-6 rounded-3xl space-y-4"></div>
+                <div id="review-area" class="space-y-4">
+                    </div>
                 <button id="btn-kirim" onclick="kirimKeDatabase()" class="w-full mt-12 bg-red-700 text-white font-black py-6 rounded-[2rem] shadow-2xl hover:bg-red-800 transition-all text-xs tracking-[0.4em] uppercase">Simpan Data Permanen</button>
             </div>
         </div>
     </div>
 
     <script>
-        const scriptURL = 'YOUR_APPS_SCRIPT_URL'; 
+        const scriptURL = 'YOUR_APPS_SCRIPT_URL'; // GANTI DENGAN URL DEPLOY BOS
         let fotoBase64 = "";
 
-        // Fungsi generate dropdown tahun
-        function fillYearDropdowns(container) {
-            const startSelect = container.querySelector('.tahun-mulai');
-            const endSelect = container.querySelector('.tahun-selesai');
-            const currentYear = new Date().getFullYear();
-            
-            let options = '<option value="">Tahun...</option>';
-            for(let i = currentYear; i >= 1970; i--) {
-                options += `<option value="${i}">${i}</option>`;
-            }
-            options += `<option value="Sekarang">Sekarang</option>`;
-            
-            startSelect.innerHTML = options;
-            endSelect.innerHTML = options;
+        function changeStep(s) {
+            document.querySelectorAll('[id^="step-"]').forEach(el => el.classList.add('step-hidden'));
+            document.getElementById('step-' + s).classList.remove('step-hidden');
+            document.getElementById('step-info').innerText = "Langkah " + s;
+            document.getElementById('step-number').innerText = s + "/6";
+            if(s === 6) renderReview();
+            window.scrollTo(0,0);
         }
 
         function addRow(id) {
@@ -182,34 +207,34 @@
             const clone = c.firstElementChild.cloneNode(true);
             clone.querySelectorAll('input, select').forEach(i => i.value = '');
             c.appendChild(clone);
-            if(id === 'kerja-container') fillYearDropdowns(clone);
         }
 
-        function changeStep(s) {
-            document.querySelectorAll('[id^="step-"]').forEach(el => el.classList.add('step-hidden'));
-            document.getElementById('step-' + s).classList.remove('step-hidden');
-            document.getElementById('step-info').innerText = s === 6 ? "Review Akhir" : "Langkah " + s;
-            document.getElementById('step-number').innerText = s + "/6";
-            if(s === 6) {
-                document.getElementById('review-summary').innerHTML = `
-                    <p class="data-label">Nama</p><p class="data-value">${document.getElementById('nama').value}</p>
-                    <p class="data-label mt-4">NIK</p><p class="data-value">${document.getElementById('nik').value}</p>
-                `;
-            }
-            window.scrollTo(0,0);
+        function renderReview() {
+            const area = document.getElementById('review-area');
+            area.innerHTML = `
+                <div class="bg-slate-50 p-6 rounded-3xl">
+                    <p class="data-label">Nama Lengkap</p><p class="data-value">${document.getElementById('nama').value}</p>
+                    <p class="data-label mt-4">WhatsApp</p><p class="data-value text-green-700">${document.getElementById('kontak').value}</p>
+                    <p class="data-label mt-4">Wilayah</p><p class="data-value">${document.getElementById('kabkota').value}</p>
+                </div>
+                <p class="text-[10px] text-center text-red-500 font-bold uppercase mt-4">Data organisasi & pendidikan akan otomatis digabung sistem</p>
+            `;
         }
 
         async function kirimKeDatabase() {
             const btn = document.getElementById('btn-kirim');
-            btn.innerText = "MEMPROSES..."; btn.disabled = true;
+            btn.innerText = "SEDANG MENGIRIM DATA..."; btn.disabled = true;
 
-            // Gabung Riwayat Kerja
-            let kerjaArr = [];
-            document.querySelectorAll('.kerja-item').forEach(i => {
-                const nama = i.querySelector('.nama-perusahaan').value;
-                const thnMulai = i.querySelector('.tahun-mulai').value;
-                const thnSelesai = i.querySelector('.tahun-selesai').value;
-                if(nama) kerjaArr.push(`${nama} [${thnMulai}-${thnSelesai}]`);
+            // Gabung Data Pendidikan
+            let eduStr = [];
+            document.querySelectorAll('.edu-item').forEach(i => {
+                if(i.querySelector('.jenjang').value) eduStr.push(`${i.querySelector('.jenjang').value}: ${i.querySelector('.sekolah').value}`);
+            });
+
+            // Gabung Data Organisasi
+            let orgStr = [];
+            document.querySelectorAll('.org-item').forEach(i => {
+                if(i.querySelector('.org-nama').value) orgStr.push(`${i.querySelector('.org-nama').value} (${i.querySelector('.org-jab').value})`);
             });
 
             const payload = {
@@ -217,9 +242,9 @@
                 nik: document.getElementById('nik').value,
                 wa: document.getElementById('kontak').value,
                 kabkota: document.getElementById('kabkota').value,
-                p_formal: Array.from(document.querySelectorAll('.edu-item')).map(i => i.querySelector('.jenjang').value).join(", "),
-                p_kader: document.getElementById('jenis-kader').value,
-                tugas: kerjaArr.join(" | "), // Riwayat kerja masuk ke kolom tugas/catatan
+                p_formal: eduStr.join(" | "),
+                p_kader: document.querySelector('.jenis-kader').value,
+                tugas: orgStr.join(" | "), // Memasukkan organisasi ke kolom tugas/catatan
                 jabatan: document.querySelector('.jabatan-nama').value || "-",
                 foto: fotoBase64
             };
@@ -228,17 +253,14 @@
                 const response = await fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload) });
                 const res = await response.json();
                 if(res.result === "success") {
-                    alert("MERDEKA! Data Berhasil Disimpan.");
+                    alert("MERDEKA! Data Berhasil Diarsip.");
                     location.reload();
                 }
             } catch (e) {
-                alert("Gagal. Cek koneksi internet.");
+                alert("Gagal Terkirim. Periksa Koneksi.");
                 btn.innerText = "SIMPAN ULANG"; btn.disabled = false;
             }
         }
-
-        // Inisialisasi dropdown tahun untuk baris pertama
-        fillYearDropdowns(document.querySelector('.kerja-item'));
 
         document.getElementById('foto-input').addEventListener('change', function(e) {
             const reader = new FileReader();
