@@ -216,9 +216,66 @@
         }
 
         function saveStep3() {
-            // Logika simpan data ke localStorage bisa ditambahkan di sini
-            window.location.href = "review.html";
+    // 1. Ambil Semua Data Pendidikan (Array)
+    const eduCards = document.querySelectorAll('#edu-container .entry-card');
+    const riwayatPendidikan = [];
+
+    eduCards.forEach(card => {
+        const level = card.querySelector('.edu-level').value;
+        if (level) {
+            riwayatPendidikan.push({
+                jenjang: level,
+                nama: card.querySelector('.edu-name').value,
+                tahun: card.querySelector('.edu-year').value,
+                jurusan: card.querySelector('.sma-jurusan')?.value || card.querySelector('.pt-jurusan')?.value || "-",
+                fakultas: card.querySelector('.pt-fakultas')?.value || "-",
+                status: card.querySelector('.pt-status')?.value || "LULUS"
+            });
         }
+    });
+
+    // 2. Ambil Semua Data Kaderisasi (Array)
+    const kaderCards = document.querySelectorAll('#kader-container .entry-card');
+    const riwayatKaderisasi = [];
+
+    kaderCards.forEach(card => {
+        const type = card.querySelector('.kader-type').value;
+        if (type && type !== "BELUM") {
+            riwayatKaderisasi.push({
+                tingkat: type,
+                tahun: card.querySelector('.kader-year').value,
+                penyelenggara: card.querySelector('.kader-host').value
+            });
+        }
+    });
+
+    // 3. Simpan ke LocalStorage dalam bentuk JSON string
+    // Kita simpan mentahnya agar mudah diolah di halaman Review
+    localStorage.setItem('kader_riwayat_pendidikan', JSON.stringify(riwayatPendidikan));
+    localStorage.setItem('kader_riwayat_kaderisasi', JSON.stringify(riwayatKaderisasi));
+
+    // 4. Mapping Spesifik untuk Kolom "Super Lebar" (Agar mempermudah Script Google Sheets)
+    // Kita inisialisasi semua sebagai "-" agar tidak error
+    const mapping = ['SD', 'SMP', 'SMA', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
+    mapping.forEach(m => {
+        localStorage.setItem(`kader_nama_${m}`, "-");
+        localStorage.setItem(`kader_tahun_${m}`, "-");
+    });
+
+    // Isi data yang ada ke mapping spesifik
+    riwayatPendidikan.forEach(item => {
+        localStorage.setItem(`kader_nama_${item.jenjang}`, item.nama);
+        localStorage.setItem(`kader_tahun_${item.jenjang}`, item.tahun);
+    });
+
+    // Mapping khusus Kaderisasi
+    localStorage.setItem('kader_is_pratama', riwayatKaderisasi.some(k => k.tingkat === 'PRATAMA') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_madya', riwayatKaderisasi.some(k => k.tingkat === 'MADYA') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_utama', riwayatKaderisasi.some(k => k.tingkat === 'UTAMA') ? 'Ya' : '-');
+
+    // Lanjut ke halaman review
+    window.location.href = "review.html";
+}
     </script>
 </body>
 </html>
