@@ -157,201 +157,147 @@
 <script>
     window.addEventListener('load', loadRekapitulasi);
 
-    function slide(direction) {
-        const slider = document.getElementById('rekapSlider');
-        const scrollAmount = slider.offsetWidth * 0.9;
-        slider.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+function slide(direction) {
+    const slider = document.getElementById('rekapSlider');
+    const scrollAmount = slider.offsetWidth * 0.9;
+    slider.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+}
+
+function loadRekapitulasi() {
+    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    
+    // 1. Render Foto
+    if (data.foto) {
+        document.getElementById('fotoPreviewRekap').innerHTML = `
+            <img src="${data.foto}" style="width:110px; height:110px; border-radius:20px; object-fit:cover; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">`;
     }
 
-    function loadRekapitulasi() {
-        const data = JSON.parse(localStorage.getItem('kaderData')) || {};
-        
-        // 1. Render Foto
-        if (data.foto) {
-            document.getElementById('fotoPreviewRekap').innerHTML = `
-                <img src="${data.foto}" style="width:110px; height:110px; border-radius:20px; object-fit:cover; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">`;
-        }
+    // 2. Render Data Pribadi
+    const pribadiFields = {
+        'Nama Lengkap': data.nama_lengkap,
+        'NIK': data.nik,
+        'No. KTA': data.no_kta || '-',
+        'Jenis Kelamin': data.jenis_kelamin,
+        'Kontak/WA': data.kontak,
+        'Pekerjaan': data.pekerjaan,
+        'Alamat': `${data.alamat || '-'}, RT ${data.rt || '0'}/RW ${data.rw || '0'}`,
+        'Wilayah': `${data.kelurahan || '-'}, ${data.kecamatan || '-'}, ${data.kab_kota || '-'}`
+    };
 
-        // 2. Render Data Pribadi (Premium Grid)
-        const pribadiFields = {
-            'Nama Lengkap': data.nama_lengkap,
-            'NIK': data.nik,
-            'No. KTA': data.no_kta || '-',
-            'Jenis Kelamin': data.jenis_kelamin,
-            'Kontak/WA': data.kontak,
-            'Pekerjaan': data.pekerjaan,
-            'Alamat': `${data.alamat || '-'}, RT ${data.rt || '0'}/RW ${data.rw || '0'}`,
-            'Wilayah': `${data.kelurahan || '-'}, ${data.kecamatan || '-'}, ${data.kab_kota || '-'}`
-        };
+    let htmlPribadi = '<div class="rekap-grid">';
+    Object.entries(pribadiFields).forEach(([label, val]) => {
+        htmlPribadi += `
+            <div class="rekap-item-premium">
+                <div class="rekap-label">${label}</div>
+                <div class="rekap-value">${val || '-'}</div>
+            </div>`;
+    });
+    htmlPribadi += '</div>';
+    document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
 
-        let htmlPribadi = '<div class="rekap-grid">';
-        Object.entries(pribadiFields).forEach(([label, val]) => {
-            htmlPribadi += `
-                <div class="rekap-item-premium">
-                    <div class="rekap-label">${label}</div>
-                    <div class="rekap-value">${val || '-'}</div>
-                </div>`;
-        });
-        htmlPribadi += '</div>';
-        document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
+    // 3. Render Pendidikan Formal
+    document.getElementById('rekapFormal').innerHTML = data.riwayat_pendidikan?.length 
+        ? data.riwayat_pendidikan.map(p => `<div class="data-box"><b>${p.jenjang}: ${p.nama}</b><br><span style="font-size:11px;">${p.info || ''} | ${p.kota || ''} (${p.tahun || ''})</span></div>`).join('') 
+        : '<p style="color:gray; font-size:12px;">Tidak ada data.</p>';
 
-        // 3. Render Pendidikan Formal
-        document.getElementById('rekapFormal').innerHTML = data.riwayat_pendidikan?.length 
-            ? data.riwayat_pendidikan.map(p => `<div class="data-box"><b>${p.jenjang}: ${p.nama}</b><br><span style="font-size:11px;">${p.info || ''} | ${p.kota || ''} (${p.tahun || ''})</span></div>`).join('') 
-            : '<p style="color:gray; font-size:12px;">Tidak ada data.</p>';
+    // 4. Render Pendidikan Kader
+    document.getElementById('rekapKader').innerHTML = data.riwayat_kader?.length 
+        ? data.riwayat_kader.map(k => `<div class="data-box" style="border-left-color: #D71920;"><b>Kader ${k.jenis}</b><br><span style="font-size:11px;">${k.penyelenggara} (${k.tahun})</span></div>`).join('') 
+        : '<p style="color:gray; font-size:12px;">Tidak ada data.</p>';
 
-        // 4. Render Pendidikan Kader
-        document.getElementById('rekapKader').innerHTML = data.riwayat_kader?.length 
-            ? data.riwayat_kader.map(k => `<div class="data-box" style="border-left-color: #D71920;"><b>Kader ${k.jenis}</b><br><span style="font-size:11px;">${k.penyelenggara} (${k.tahun})</span></div>`).join('') 
-            : '<p style="color:gray; font-size:12px;">Tidak ada data.</p>';
-
-// 5. Render Organisasi (Menampilkan Nama & Tingkatan)
-const orgData = data.riwayat_organisasi || [];
-document.getElementById('rekapOrganisasi').innerHTML = orgData.length 
-    ? orgData.map(o => `
-        <div class="data-box" style="border-left-color: #2563eb; background: #f0f9ff;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-                <b style="color: #1e40af; font-size: 13px;">${o.nama}</b>
-                <span style="font-size: 9px; background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">
-                    ${o.tingkat || 'Lokal'}
-                </span>
-            </div>
-            <div style="font-size: 11px; color: #475569; margin-top: 4px;">
-                ${o.jabatan} <span style="color: #cbd5e1; margin: 0 5px;">|</span> ${o.periode}
-            </div>
-        </div>`).join('')
-    : '<p style="color:gray; font-size:12px; text-align:center;">Tidak ada riwayat organisasi.</p>';
-
-// 6. Render Jabatan & Kerja
-const jPartai = data.riwayat_jabatan_partai || [];
-const jTugas = data.riwayat_penugasan_partai || []; // Data Baru
-const jKerja = data.riwayat_pekerjaan || [];
-
-// Render Struktur Partai (Review Rekap)
-const jPartai = data.riwayat_jabatan_partai || [];
-
-document.getElementById('rekapJabatanPartai').innerHTML = jPartai.length 
-    ? jPartai.map(j => `
-        <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
-                <div style="font-size: 11px; font-weight: 800; color: #ef4444; text-transform: uppercase;">
-                    ${j.tingkatan} </div>
-                <div style="font-size: 10px; color: #64748b;">${j.periode}</div>
-            </div>
-            <div style="font-size: 14px; font-weight: 800; color: #1e293b; margin-top: 2px;">
-                ${j.jabatan} ${j.bidang ? '<span style="font-weight:400;">- ' + j.bidang + '</span>' : ''}
-            </div>
-            <div style="font-size: 11px; color: #475569; margin-top: 3px; display: flex; align-items: center; gap: 4px;">
-                <span>📍</span> <span>${j.lokasi || '-'}</span>
-            </div>
-        </div>`).join('') 
-    : '<p style="color:gray; font-size:12px;">Data tidak ditemukan.</p>';
-
-// Tambahkan Render Penugasan Partai di bawah Jabatan Partai
-const htmlPenugasan = jTugas.length 
-    ? jTugas.map(t => `
-        <div class="data-box" style="border-left-color: #f59e0b; background: #fffbeb;">
-            <div style="font-size: 11px; font-weight: 700; color: #d97706;">${t.jenis} ${t.lembaga ? '('+t.lembaga+')' : ''}</div>
-            <div style="font-size: 13px; font-weight: 800; color: #1e293b;">${t.jabatan}</div>
-            <div style="font-size: 11px; color: #64748b;">Wilayah: ${t.lokasi} | ${t.periode}</div>
-        </div>`).join('')
-    : '';
-
-// Masukkan ke wadah (Pastikan di HTML rekap ada div id="rekapPenugasan" atau gabungkan saja)
-document.getElementById('rekapJabatanPartai').innerHTML += jTugas.length ? '<h4 style="font-size: 10px; color: #94a3b8; margin: 15px 0 5px;">PENUGASAN KHUSUS</h4>' + htmlPenugasan : '';
-
-// Render Pengalaman Kerja
-document.getElementById('rekapPekerjaan').innerHTML = jKerja.length 
-    ? jKerja.map(p => `<div class="data-box" style="border-left-color: #64748b;"><b>${p.perusahaan}</b><br><span style="font-size:11px;">${p.jabatan}</span></div>`).join('') 
-    : '-';
-
-// Render Pengalaman Kerja
-document.getElementById('rekapPekerjaan').innerHTML = jKerja.length 
-    ? jKerja.map(p => `
-        <div class="data-box" style="border-left-color: #64748b; background: #f8fafc;">
-            <div style="font-size: 13px; font-weight: 800; color: #1e293b;">${p.perusahaan}</div>
-            <div style="font-size: 12px; font-weight: 600; color: #475569; margin-top: 2px;">${p.jabatan}</div>
-            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">
-                💼 Profesional Record
-            </div>
-        </div>`).join('') 
-    : '<p style="color:gray; font-size:12px;">Tidak ada riwayat pekerjaan.</p>';
-
-        // 7. Render Lainnya & Medsos (Logo Media Sosial Asli)
-const ms = data.media_sosial || {};
-
-// Link Logo Asli (High Quality PNG)
-const icons = {
-    fb: "https://cdn-icons-png.flaticon.com/512/124/124010.png",
-    ig: "https://cdn-icons-png.flaticon.com/512/174/174855.png",
-    tt: "https://cdn-icons-png.flaticon.com/512/3046/3046121.png",
-    tw: "https://cdn-icons-png.flaticon.com/512/5968/5968830.png", // X Logo
-    yt: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
-    li: "https://cdn-icons-png.flaticon.com/512/174/174857.png"
-};
-
-document.getElementById('rekapLainnya').innerHTML = `
-    <div class="rekap-grid">
-        <div class="rekap-item-premium">
-            <div class="rekap-label">Bahasa</div>
-            <div class="rekap-value">${data.kompetensi_bahasa || '-'}</div>
-        </div>
-        <div class="rekap-item-premium">
-            <div class="rekap-label">Komputer</div>
-            <div class="rekap-value">${data.kemampuan_komputer || '-'}</div>
-        </div>
-        
-        <div class="rekap-item-premium" style="grid-column: span 2;">
-            <div class="rekap-label" style="margin-bottom:10px;">Media Sosial</div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${icons.ig}" style="width:18px; height:18px;">
-                    <span style="font-size:12px; color:#475569;">${ms.instagram || '-'}</span>
+    // 5. Render Organisasi Non-Partai
+    const orgData = data.riwayat_organisasi || [];
+    document.getElementById('rekapOrganisasi').innerHTML = orgData.length 
+        ? orgData.map(o => `
+            <div class="data-box" style="border-left-color: #2563eb; background: #f0f9ff;">
+                <div style="display: flex; justify-content: space-between;">
+                    <b style="color: #1e40af;">${o.nama}</b>
+                    <span style="font-size: 9px; background: #dbeafe; padding: 2px 5px; border-radius: 4px;">${o.tingkat || 'Lokal'}</span>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${icons.tt}" style="width:18px; height:18px;">
-                    <span style="font-size:12px; color:#475569;">${ms.tiktok || '-'}</span>
-                </div>
+                <div style="font-size: 11px;">${o.jabatan} | ${o.periode}</div>
+            </div>`).join('')
+        : '<p style="color:gray; font-size:12px;">Tidak ada riwayat organisasi.</p>';
 
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${icons.fb}" style="width:18px; height:18px;">
-                    <span style="font-size:12px; color:#475569;">${ms.facebook || '-'}</span>
-                </div>
+    // 6. Render Jabatan & Kerja
+    const jPartai = data.riwayat_jabatan_partai || [];
+    const jTugas = data.riwayat_penugasan_partai || [];
+    const jKerja = data.riwayat_pekerjaan || [];
 
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${icons.tw}" style="width:18px; height:18px;">
-                    <span style="font-size:12px; color:#475569;">${ms.twitter_x || '-'}</span>
+    // Struktur Partai
+    document.getElementById('rekapJabatanPartai').innerHTML = jPartai.length 
+        ? jPartai.map(j => `
+            <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="font-size: 11px; font-weight: 800; color: #ef4444;">${j.tingkatan || 'STRUKTUR'}</div>
+                    <div style="font-size: 10px;">${j.periode}</div>
                 </div>
+                <div style="font-size: 13px; font-weight: 800;">${j.jabatan} ${j.bidang ? '- ' + j.bidang : ''}</div>
+                <div style="font-size: 11px; color: #475569;">📍 ${j.lokasi || '-'}</div>
+            </div>`).join('') 
+        : '<p style="color:gray; font-size:12px;">Tidak ada jabatan partai.</p>';
 
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${icons.yt}" style="width:18px; height:18px;">
-                    <span style="font-size:12px; color:#475569;">${ms.youtube || '-'}</span>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <img src="${icons.li}" style="width:18px; height:18px;">
-                    <span style="font-size:12px; color:#475569;">${ms.linkedin || '-'}</span>
-                </div>
-
-            </div>
-        </div>
-    </div>`;
+    // Penugasan Khusus
+    if (jTugas.length) {
+        const htmlPenugasan = jTugas.map(t => `
+            <div class="data-box" style="border-left-color: #f59e0b; background: #fffbeb;">
+                <div style="font-size: 11px; font-weight: 700; color: #d97706;">${t.jenis}</div>
+                <div style="font-size: 13px; font-weight: 800;">${t.jabatan}</div>
+                <div style="font-size: 11px;">${t.lokasi} | ${t.periode}</div>
+            </div>`).join('');
+        document.getElementById('rekapJabatanPartai').innerHTML += '<h4 style="font-size: 10px; color: #94a3b8; margin: 15px 0 5px;">PENUGASAN KHUSUS</h4>' + htmlPenugasan;
     }
 
-    async function submitSeluruhData() {
-        // Efek loading simpel
-        const btn = event.target;
-        btn.disabled = true;
-        btn.innerHTML = "Mengirim...";
-        
-        // Di sini nantinya fungsi kirim ke Google Sheets Bos
-        setTimeout(() => {
-            alert("Merdeka! Seluruh data berhasil dikirim.");
-            btn.innerHTML = "TERKIRIM ✅";
-        }, 2000);
-    }
+    // Pekerjaan Profesional
+    document.getElementById('rekapPekerjaan').innerHTML = jKerja.length 
+        ? jKerja.map(p => `
+            <div class="data-box" style="border-left-color: #64748b; background: #f8fafc;">
+                <div style="font-size: 13px; font-weight: 800;">${p.perusahaan}</div>
+                <div style="font-size: 12px;">${p.jabatan}</div>
+            </div>`).join('') 
+        : '<p style="color:gray; font-size:12px;">Tidak ada riwayat pekerjaan.</p>';
+
+    // 7. Render Lainnya & Medsos
+    const ms = data.media_sosial || {};
+    const icons = {
+        fb: "https://cdn-icons-png.flaticon.com/512/124/124010.png",
+        ig: "https://cdn-icons-png.flaticon.com/512/174/174855.png",
+        tt: "https://cdn-icons-png.flaticon.com/512/3046/3046121.png",
+        tw: "https://cdn-icons-png.flaticon.com/512/5968/5968830.png",
+        yt: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+        li: "https://cdn-icons-png.flaticon.com/512/174/174857.png"
+    };
+
+    document.getElementById('rekapLainnya').innerHTML = `
+        <div class="rekap-grid">
+            <div class="rekap-item-premium">
+                <div class="rekap-label">Bahasa</div>
+                <div class="rekap-value">${data.kompetensi_bahasa || '-'}</div>
+            </div>
+            <div class="rekap-item-premium">
+                <div class="rekap-label">Komputer</div>
+                <div class="rekap-value">${data.kemampuan_komputer || '-'}</div>
+            </div>
+            <div class="rekap-item-premium" style="grid-column: span 2;">
+                <div class="rekap-label" style="margin-bottom:10px;">Media Sosial</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;"><img src="${icons.ig}" style="width:16px;"> <span style="font-size:11px;">${ms.instagram || '-'}</span></div>
+                    <div style="display: flex; align-items: center; gap: 8px;"><img src="${icons.tt}" style="width:16px;"> <span style="font-size:11px;">${ms.tiktok || '-'}</span></div>
+                    <div style="display: flex; align-items: center; gap: 8px;"><img src="${icons.fb}" style="width:16px;"> <span style="font-size:11px;">${ms.facebook || '-'}</span></div>
+                    <div style="display: flex; align-items: center; gap: 8px;"><img src="${icons.tw}" style="width:16px;"> <span style="font-size:11px;">${ms.twitter_x || '-'}</span></div>
+                </div>
+            </div>
+        </div>`;
+}
+
+async function submitSeluruhData() {
+    const btn = event.target;
+    btn.disabled = true;
+    btn.innerHTML = "Mengirim...";
+    setTimeout(() => {
+        alert("Merdeka! Seluruh data berhasil dikirim.");
+        btn.innerHTML = "TERKIRIM ✅";
+    }, 2000);
+}
 </script>
 </body>
 </html>
