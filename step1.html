@@ -164,24 +164,31 @@
             }
         }
 
-        function saveAndNext() {
-            const data = {
-                nama: document.getElementById('nama').value,
-                nik: document.getElementById('nik').value,
-                kta: document.getElementById('kta').value,
-                tmp_lahir: document.getElementById('tmp_lahir').value,
-                tgl_lahir: document.getElementById('tgl_lahir').value,
-                foto: fotoData
-            };
+function saveAndNext() {
+    // 1. Ambil nilai input
+    const nama = document.getElementById('nama').value;
+    const nik = document.getElementById('nik').value;
+    const kta = document.getElementById('kta').value;
+    const tmp_lahir = document.getElementById('tmp_lahir').value;
+    const tgl_lahir = document.getElementById('tgl_lahir').value;
 
-            if(!data.nama || !data.nik || data.nik.length < 16) {
-                alert("Nama dan NIK (16 digit) wajib diisi!");
-                return;
-            }
+    // 2. Validasi
+    if(!nama || !nik || nik.length < 16) {
+        alert("Nama dan NIK (16 digit) wajib diisi!");
+        return;
+    }
 
-            localStorage.setItem('step1_data', JSON.stringify(data));
-            window.location.href = "step2.html";
-        }
+    // 3. SIMPAN SATU-PERSATU (Agar terbaca di review.html)
+    localStorage.setItem('kader_nama', nama);
+    localStorage.setItem('kader_nik', nik);
+    localStorage.setItem('kader_kta', kta);
+    localStorage.setItem('kader_tempat_lahir', tmp_lahir);
+    localStorage.setItem('kader_tgl_lahir', tgl_lahir);
+    localStorage.setItem('kader_foto', fotoData); // Simpan foto base64
+
+    // 4. Gas ke halaman berikutnya
+    window.location.href = "step2.html";
+}
 
         window.onload = () => {
             const saved = localStorage.getItem('step1_data');
