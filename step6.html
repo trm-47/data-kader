@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Final Step - Form Kader</title>
+    <title>Tahap Terakhir - Form Kader</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -24,7 +24,7 @@
 
         <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Riwayat Organisasi Kemasyarakatan</h3>
         <div class="input-group">
-            <input type="text" id="org_nama" placeholder="Nama Organisasi (Contoh: NU, Muhammadiyah, Karang Taruna)" class="input-field">
+            <input type="text" id="org_nama" placeholder="Nama Organisasi (NU, Muhammadiyah, dll)" class="input-field">
             <input type="text" id="org_jabatan" placeholder="Jabatan" class="input-field" style="margin-top:8px;">
             <input type="text" id="org_periode" placeholder="Periode (Contoh: 2020-2023)" class="input-field" style="margin-top:8px;">
             <button type="button" onclick="addOrganisasi()" class="btn-outline-sm" style="width:100%; margin-top:8px;">➕ Tambah Organisasi</button>
@@ -53,17 +53,17 @@
             </select>
         </div>
 
-<h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Akun Media Sosial & Profesional</h3>
-<div class="input-group">
-    <input type="text" id="medsos_fb" placeholder="Link/Nama Facebook" class="input-field" style="margin-bottom:8px;">
-    <input type="text" id="medsos_ig" placeholder="Username Instagram" class="input-field" style="margin-bottom:8px;">
-    <input type="text" id="medsos_tiktok" placeholder="Username TikTok" class="input-field" style="margin-bottom:8px;">
-    <input type="text" id="medsos_twitter" placeholder="Username Twitter (X)" class="input-field" style="margin-bottom:8px;">
-    <input type="text" id="medsos_youtube" placeholder="Nama/Link Channel YouTube" class="input-field" style="margin-bottom:8px;">
-    <input type="text" id="medsos_linkedin" placeholder="Link Profil LinkedIn" class="input-field">
-</div>
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Akun Media Sosial & Profesional</h3>
+        <div class="input-group">
+            <input type="text" id="medsos_fb" placeholder="Link/Nama Facebook" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_ig" placeholder="Username Instagram" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_tiktok" placeholder="Username TikTok" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_twitter" placeholder="Username Twitter (X)" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_youtube" placeholder="Nama/Link Channel YouTube" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_linkedin" placeholder="Link Profil LinkedIn" class="input-field">
+        </div>
 
-    <div class="nav-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
+        <div class="nav-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
             <button onclick="window.location.href='step5.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
             <button onclick="goToReview()" class="btn-primary" style="flex: 1; background: #2563eb; border-color: #2563eb;">Review Data</button>
         </div>
@@ -72,29 +72,46 @@
 
 <script src="script.js"></script>
 <script>
-    // Load data organisasi saat halaman dibuka
     window.addEventListener('load', () => {
-        if (typeof renderOrganisasi === 'function') {
-            renderOrganisasi();
+        // Render List Organisasi
+        if (typeof renderOrganisasi === 'function') renderOrganisasi();
+
+        // Auto-Fill data yang sudah tersimpan sebelumnya
+        const savedData = JSON.parse(localStorage.getItem('kaderData'));
+        if (savedData) {
+            // Load Medsos
+            if (savedData.media_sosial) {
+                document.getElementById('medsos_fb').value = savedData.media_sosial.facebook || '';
+                document.getElementById('medsos_ig').value = savedData.media_sosial.instagram || '';
+                document.getElementById('medsos_tiktok').value = savedData.media_sosial.tiktok || '';
+                document.getElementById('medsos_twitter').value = savedData.media_sosial.twitter_x || '';
+                document.getElementById('medsos_youtube').value = savedData.media_sosial.youtube || '';
+                document.getElementById('medsos_linkedin').value = savedData.media_sosial.linkedin || '';
+            }
+            // Load Komputer
+            if (savedData.kemampuan_komputer) document.getElementById('komputer').value = savedData.kemampuan_komputer;
+            // Load Bahasa Lainnya
+            if (savedData.bahasa_lainnya_input) document.getElementById('bahasa_lainnya').value = savedData.bahasa_lainnya_input;
         }
     });
 
-    // Fungsi navigasi ke halaman Rekap
     function goToReview() {
         try {
             let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
-            // 1. Ambil Kompetensi Bahasa
+            // 1. Ambil Bahasa
             const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
             let bahasaList = Array.from(checkboxes).map(cb => cb.value);
             const lainnya = document.getElementById('bahasa_lainnya').value.trim();
+            
+            // Simpan input "lainnya" secara terpisah untuk auto-fill nanti
+            data.bahasa_lainnya_input = lainnya; 
             if(lainnya) bahasaList.push(lainnya);
 
-            // 2. Simpan Kompetensi & Komputer
             data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
             data.kemampuan_komputer = document.getElementById('komputer').value;
 
-            // 3. Ambil Semua Akun Medsos
+            // 2. Ambil Medsos
             data.media_sosial = {
                 facebook: document.getElementById('medsos_fb').value.trim() || '-',
                 instagram: document.getElementById('medsos_ig').value.trim() || '-',
@@ -104,15 +121,11 @@
                 linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
             };
 
-            // 4. Update LocalStorage
             localStorage.setItem('kaderData', JSON.stringify(data));
-
-            // 5. Pindah Halaman
             window.location.href = 'rekap.html';
             
         } catch (error) {
-            console.error("Gagal menyimpan data:", error);
-            alert("Ada kendala teknis, pastikan semua input sudah benar.");
+            alert("Terjadi kesalahan saat menyimpan. Coba lagi.");
         }
     }
 </script>
