@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Data Pribadi - Step 1</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -17,20 +16,23 @@
     <div class="form-card">
         <div class="header-form">
             <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" class="logo-small" alt="PDI Perjuangan">
-            <div>
-                <h2>Data Pribadi</h2>
-            </div>
+            <h2>Data Pribadi</h2>
+            <p class="subtitle">Lengkapi identitas diri sesuai KTP</p>
         </div>
 
-        <div class="photo-upload-container">
-            <div id="photoPreview" class="photo-preview"><span>Foto Kader</span></div>
+        <div class="photo-upload-container" onclick="document.getElementById('photoInput').click()">
+            <div id="photoPreview" class="photo-preview">
+                <span style="font-size: 10px; color: var(--soft-slate); text-align: center; padding: 10px;">
+                    Ketuk untuk<br>Foto / Selfie
+                </span>
+            </div>
             <input type="file" id="photoInput" accept="image/*" capture="user" hidden>
-            <button type="button" onclick="document.getElementById('photoInput').click()" class="btn-outline-sm">📸 Foto / Selfie</button>
+            <button type="button" class="btn-outline-sm" style="margin-top: 10px; pointer-events: none;">📸 Ambil Foto</button>
         </div>
 
         <div class="input-group">
             <label>Nama Lengkap <span class="required">*</span></label>
-            <input type="text" id="nama_lengkap" placeholder="Sesuai KTP" class="input-field">
+            <input type="text" id="nama_lengkap" placeholder="Nama Sesuai KTP" class="input-field">
         </div>
 
         <div class="input-group">
@@ -47,58 +49,59 @@
             </div>
         </div>
 
-        <div class="input-group">
-            <label>NIK <span class="required">*</span></label>
-            <input type="number" id="nik" placeholder="16 Digit NIK" class="input-field">
+        <div class="flex-row">
+            <div class="input-group">
+                <label>NIK <span class="required">*</span></label>
+                <input type="number" id="nik" placeholder="16 Digit NIK" class="input-field">
+            </div>
+            <div class="input-group">
+                <label>No. KTA</label>
+                <input type="text" id="no_kta" placeholder="Jika ada" class="input-field">
+            </div>
         </div>
 
         <div class="input-group">
-            <label>No. KTA <span class="required">*</span></label>
-            <input type="text" id="no_kta" placeholder="Isi - jika belum ada" class="input-field">
+            <label>Alamat Domisili <span class="required">*</span></label>
+            <input type="text" id="alamat" placeholder="Nama Jalan / Dusun" class="input-field">
         </div>
 
-        <div class="input-group">
-            <label>Alamat Lengkap <span class="required">*</span></label>
-            <input type="text" id="alamat" placeholder="Jl / Dusun" class="input-field">
-        </div>
-
-        <div style="display: flex; gap: 10px;">
-            <div class="input-group" style="flex: 1;">
+        <div class="flex-row">
+            <div class="input-group">
                 <label>RT <span class="required">*</span></label>
-                <input type="text" id="rt" placeholder="RT" class="input-field">
+                <input type="text" id="rt" placeholder="000" class="input-field">
             </div>
-            <div class="input-group" style="flex: 1;">
+            <div class="input-group">
                 <label>RW <span class="required">*</span></label>
-                <input type="text" id="rw" placeholder="RW" class="input-field">
+                <input type="text" id="rw" placeholder="000" class="input-field">
             </div>
         </div>
 
         <div class="input-group">
-            <label>Kelurahan <span class="required">*</span></label>
-            <input type="text" id="kelurahan" placeholder="Kelurahan" class="input-field">
+            <label>Kelurahan / Desa <span class="required">*</span></label>
+            <input type="text" id="kelurahan" placeholder="Nama Kelurahan" class="input-field">
         </div>
 
         <div class="input-group">
             <label>Kecamatan <span class="required">*</span></label>
-            <input type="text" id="kecamatan" placeholder="Kecamatan" class="input-field">
+            <input type="text" id="kecamatan" placeholder="Nama Kecamatan" class="input-field">
         </div>
 
         <div class="input-group">
             <label>Kabupaten / Kota <span class="required">*</span></label>
-            <input type="text" id="kab_kota" placeholder="Kab/Kota" class="input-field">
+            <input type="text" id="kab_kota" placeholder="Contoh: Sleman / Yogyakarta" class="input-field">
         </div>
 
         <div class="input-group">
             <label>Pekerjaan <span class="required">*</span></label>
-            <input type="text" id="pekerjaan" placeholder="Pekerjaan" class="input-field">
+            <input type="text" id="pekerjaan" placeholder="Contoh: Wiraswasta" class="input-field">
         </div>
 
         <div class="input-group">
-            <label>Kontak / WhatsApp <span class="required">*</span></label>
-            <input type="tel" id="kontak" placeholder="No. HP" class="input-field">
+            <label>WhatsApp <span class="required">*</span></label>
+            <input type="tel" id="kontak" placeholder="0812xxxx" class="input-field">
         </div>
 
-        <button onclick="saveStep1()" class="btn-primary">Lanjut</button>
+        <button onclick="saveStep1()" class="btn-primary" style="margin-top: 20px;">LANJUT KE STEP 2</button>
     </div>
 </div>
 
