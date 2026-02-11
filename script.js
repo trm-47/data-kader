@@ -524,67 +524,86 @@ function goToReview() {
 
 // 1. Fungsi Memuat Data ke Halaman Review
 function loadRekap() {
-    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    console.log("Memulai proses rekap data..."); // Untuk ngecek di Inspect Element
+    const data = JSON.parse(localStorage.getItem('kaderData'));
     
-    // 1. Render Foto
-    const fotoContainer = document.getElementById('fotoPreviewRekap');
-    if (fotoContainer && data.foto) {
-        fotoContainer.innerHTML = `<img src="${data.foto}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #b91c1c;">`;
+    if (!data) {
+        alert("Data tidak ditemukan di penyimpanan lokal!");
+        return;
     }
 
-    // 2. Render Data Pribadi
+    // --- 1. RENDER FOTO ---
+    const fotoContainer = document.getElementById('fotoPreviewRekap');
+    if (fotoContainer) {
+        fotoContainer.innerHTML = data.foto 
+            ? `<img src="${data.foto}" style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:4px solid #b91c1c; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">`
+            : `<div style="width:100px; height:100px; background:#ddd; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:auto;">No Photo</div>`;
+    }
+
+    // --- 2. RENDER DATA PRIBADI ---
     const rekapPribadi = document.getElementById('rekapPribadi');
     if (rekapPribadi) {
         rekapPribadi.innerHTML = `
-            <div class="rekap-item"><div class="rekap-label">Nama</div><div class="rekap-value">${data.nama_lengkap || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Nama Lengkap</div><div class="rekap-value">${data.nama_lengkap || '-'}</div></div>
             <div class="rekap-item"><div class="rekap-label">NIK</div><div class="rekap-value">${data.nik || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">KTA</div><div class="rekap-value">${data.no_kta || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">Alamat</div><div class="rekap-value">${data.alamat || '-'}, RT ${data.rt}/RW ${data.rw}, ${data.kelurahan}, ${data.kecamatan}, ${data.kab_kota}</div></div>
+            <div class="rekap-item"><div class="rekap-label">No. KTA</div><div class="rekap-value">${data.no_kta || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">WhatsApp</div><div class="rekap-value">${data.kontak || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Alamat</div><div class="rekap-value">${data.alamat || '-'}, RT ${data.rt}/RW ${data.rw}, Kel. ${data.kelurahan}, Kec. ${data.kecamatan}, ${data.kab_kota}</div></div>
             <div class="rekap-item"><div class="rekap-label">Pekerjaan</div><div class="rekap-value">${data.pekerjaan || '-'}</div></div>
         `;
     }
 
-    // 3. Render Jabatan Partai (Sesuai Pilihan: DPP/DPD/DPC)
+    // --- 3. RENDER JABATAN PARTAI (Sering bikin macet kalau kosong) ---
     const rekapJabatan = document.getElementById('rekapJabatanPartai');
     if (rekapJabatan) {
-        const jPartai = data.riwayat_jabatan_partai || [];
-        rekapJabatan.innerHTML = jPartai.length ? jPartai.map(j => `
-            <div class="data-box" style="border-left: 4px solid #b91c1c; background: #fff5f5; padding:10px; margin-bottom:8px; border-radius:8px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <b style="color:#b91c1c; font-size:11px; text-transform:uppercase;">${j.tingkatan}</b>
-                    <span style="font-size:10px; color:#64748b;">${j.periode}</span>
+        const listJabatan = data.riwayat_jabatan_partai || [];
+        if (listJabatan.length > 0) {
+            rekapJabatan.innerHTML = listJabatan.map(j => `
+                <div style="background:#fff; border-left:4px solid #b91c1c; padding:10px; margin-bottom:8px; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+                    <div style="font-size:10px; color:#b91c1c; font-weight:bold; text-transform:uppercase;">${j.tingkatan}</div>
+                    <div style="font-weight:bold; font-size:14px; color:#1e293b;">${j.jabatan} ${j.bidang ? '- ' + j.bidang : ''}</div>
+                    <div style="font-size:11px; color:#64748b;">📍 ${j.lokasi} | Periode: ${j.periode}</div>
                 </div>
-                <div style="font-weight:bold; font-size:13px;">${j.jabatan} ${j.bidang ? '- ' + j.bidang : ''}</div>
-                <div style="font-size:11px; color:#475569;">📍 ${j.lokasi || '-'}</div>
-            </div>
-        `).join('') : '<p style="color:gray; font-size:12px;">Tidak ada riwayat jabatan partai.</p>';
+            `).join('');
+        } else {
+            rekapJabatan.innerHTML = '<p style="color:gray; font-size:12px; text-align:center;">Tidak ada riwayat jabatan partai</p>';
+        }
     }
 
-    // 4. Render Pendidikan Formal
+    // --- 4. RENDER PENDIDIKAN FORMAL ---
     const rekapEdu = document.getElementById('rekapPendidikan');
     if (rekapEdu) {
-        rekapEdu.innerHTML = data.riwayat_pendidikan?.map(e => `
-            <div class="rekap-item">
-                <div class="rekap-label">${e.jenjang}</div>
-                <div class="rekap-value">${e.nama} (${e.tahun})<br><small>${e.info || ''}</small></div>
-            </div>
-        `).join('') || '<p style="color:gray;">Tidak ada data pendidikan.</p>';
+        const listEdu = data.riwayat_pendidikan || [];
+        rekapEdu.innerHTML = listEdu.length > 0 
+            ? listEdu.map(e => `
+                <div class="rekap-item">
+                    <div class="rekap-label">${e.jenjang}</div>
+                    <div class="rekap-value"><b>${e.nama}</b><br><small>${e.info || ''} (Lulus: ${e.tahun})</small></div>
+                </div>`).join('')
+            : '<p style="color:gray; font-size:12px;">Data pendidikan kosong</p>';
     }
 
-    // 5. Render Medsos & Skill
+    // --- 5. RENDER MEDSOS & SKILL ---
     const rekapMedsos = document.getElementById('rekapMedsos');
-    const medsos = data.media_sosial || {};
     if (rekapMedsos) {
+        const m = data.media_sosial || {};
         rekapMedsos.innerHTML = `
-            <div class="rekap-item"><div class="rekap-label">Bahasa</div><div class="rekap-value">${data.kompetensi_bahasa || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">Komputer</div><div class="rekap-value">${data.kemampuan_komputer || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">WhatsApp</div><div class="rekap-value">${data.kontak || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">Instagram</div><div class="rekap-value">${medsos.instagram || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">TikTok</div><div class="rekap-value">${medsos.tiktok || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Kemampuan Bahasa</div><div class="rekap-value">${data.kompetensi_bahasa || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Skill Komputer</div><div class="rekap-value">${data.kemampuan_komputer || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Instagram</div><div class="rekap-value">${m.instagram || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">TikTok</div><div class="rekap-value">${m.tiktok || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Facebook</div><div class="rekap-value">${m.facebook || '-'}</div></div>
         `;
     }
 }
 
+// PASTIKAN INI ADA DI PALING BAWAH FILE JS BOS
+window.onload = function() {
+    // Jalankan loadRekap hanya jika kita ada di halaman rekap
+    if (document.getElementById('rekapPribadi') || document.getElementById('rekapJabatanPartai')) {
+        loadRekap();
+    }
+};
 // 2. Fungsi Kirim Data ke Google Sheets
 async function submitSeluruhData() {
     const data = JSON.parse(localStorage.getItem('kaderData'));
@@ -679,3 +698,10 @@ function deletePenugasan(index) {
     localStorage.setItem('kaderData', JSON.stringify(data));
     renderPenugasan();
 }
+
+window.onload = function() {
+    // Jalankan loadRekap hanya jika kita ada di halaman rekap
+    if (document.getElementById('rekapPribadi') || document.getElementById('rekapJabatanPartai')) {
+        loadRekap();
+    }
+};
