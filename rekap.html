@@ -211,20 +211,38 @@
             ? orgData.map(o => `<div class="data-box" style="border-left-color: #2563eb;"><b>${o.nama}</b><br><span style="font-size:11px;">${o.jabatan} | ${o.periode}</span></div>`).join('')
             : '<p style="color:gray; font-size:12px;">Tidak ada riwayat organisasi.</p>';
 
-// 6. Render Jabatan & Kerja (Executive Timeline Design)
+// 6. Render Jabatan & Kerja
 const jPartai = data.riwayat_jabatan_partai || [];
+const jTugas = data.riwayat_penugasan_partai || []; // Data Baru
 const jKerja = data.riwayat_pekerjaan || [];
 
-// Render Struktur Partai
+// Render Struktur Partai (Termasuk Tingkatan)
 document.getElementById('rekapJabatanPartai').innerHTML = jPartai.length 
     ? jPartai.map(j => `
-        <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
-            <div style="font-size: 13px; font-weight: 800; color: #b91c1c;">${j.jabatan}</div>
-            <div style="font-size: 11px; color: #4b5563; margin-top: 2px;">
-                <span style="background: #fee2e2; padding: 2px 8px; border-radius: 10px; font-weight: 700;">${j.periode}</span>
-            </div>
+        <div class="data-box" style="border-left-color: var(--primary-color);">
+            <div style="font-size: 11px; font-weight: 700; color: #ef4444;">${j.tingkatan}</div>
+            <div style="font-size: 13px; font-weight: 800; color: #1e293b;">${j.jabatan} ${j.bidang ? '- ' + j.bidang : ''}</div>
+            <div style="font-size: 11px; color: #64748b;">Periode: ${j.periode}</div>
         </div>`).join('') 
-    : '<p style="color:gray; font-size:12px;">Tidak ada riwayat struktur.</p>';
+    : '-';
+
+// Tambahkan Render Penugasan Partai di bawah Jabatan Partai
+const htmlPenugasan = jTugas.length 
+    ? jTugas.map(t => `
+        <div class="data-box" style="border-left-color: #f59e0b; background: #fffbeb;">
+            <div style="font-size: 11px; font-weight: 700; color: #d97706;">${t.jenis} ${t.lembaga ? '('+t.lembaga+')' : ''}</div>
+            <div style="font-size: 13px; font-weight: 800; color: #1e293b;">${t.jabatan}</div>
+            <div style="font-size: 11px; color: #64748b;">Wilayah: ${t.lokasi} | ${t.periode}</div>
+        </div>`).join('')
+    : '';
+
+// Masukkan ke wadah (Pastikan di HTML rekap ada div id="rekapPenugasan" atau gabungkan saja)
+document.getElementById('rekapJabatanPartai').innerHTML += jTugas.length ? '<h4 style="font-size: 10px; color: #94a3b8; margin: 15px 0 5px;">PENUGASAN KHUSUS</h4>' + htmlPenugasan : '';
+
+// Render Pengalaman Kerja
+document.getElementById('rekapPekerjaan').innerHTML = jKerja.length 
+    ? jKerja.map(p => `<div class="data-box" style="border-left-color: #64748b;"><b>${p.perusahaan}</b><br><span style="font-size:11px;">${p.jabatan}</span></div>`).join('') 
+    : '-';
 
 // Render Pengalaman Kerja
 document.getElementById('rekapPekerjaan').innerHTML = jKerja.length 
