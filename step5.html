@@ -164,7 +164,7 @@
         }
 
         function saveStep5() {
-    // 1. Koleksi Data Organisasi (Array)
+    // 1. Koleksi Data Organisasi
     const orgCards = document.querySelectorAll('#org-container .entry-card');
     const riwayatOrganisasi = [];
     
@@ -173,13 +173,13 @@
         if(nama) {
             riwayatOrganisasi.push({
                 nama: nama,
-                jabatan: card.querySelector('.org-rank').value,
-                periode: card.querySelector('.org-period').value
+                jabatan: card.querySelector('.org-rank').value || "-",
+                periode: card.querySelector('.org-period').value || "-"
             });
         }
     });
 
-    // 2. Koleksi Data Pekerjaan (Array)
+    // 2. Koleksi Data Pekerjaan
     const jobCards = document.querySelectorAll('#job-container .entry-card');
     const riwayatPekerjaan = [];
     
@@ -188,31 +188,30 @@
         if(jenis) {
             riwayatPekerjaan.push({
                 jenis: jenis,
-                instansi: card.querySelector('.job-name').value,
-                jabatan: card.querySelector('.job-rank').value,
-                tahun: card.querySelector('.job-year').value
+                instansi: card.querySelector('.job-name').value || "-",
+                jabatan: card.querySelector('.job-rank').value || "-",
+                tahun: card.querySelector('.job-year').value || "-"
             });
         }
     });
 
-    // 3. Simpan Ke LocalStorage
-    localStorage.setItem('kader_riwayat_organisasi', JSON.stringify(riwayatOrganisasi));
-    localStorage.setItem('kader_riwayat_pekerjaan', JSON.stringify(riwayatPekerjaan));
+    // 3. Simpan Ke LocalStorage (JSON untuk Database)
+    localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(riwayatOrganisasi));
+    localStorage.setItem('kader_riwayat_pekerjaan_json', JSON.stringify(riwayatPekerjaan));
 
-    // 4. MAPPING FLAT (Untuk Kolom Database Super Lebar)
-    // Mapping Afiliasi Ormas Besar (Penting untuk pemetaan suara)
+    // 4. MAPPING FLAT (Penting untuk Filter Dashboard)
     const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
-    localStorage.setItem('kader_is_nu', textOrg.includes('NU') || textOrg.includes('NAHDLATUL') ? 'Ya' : '-');
-    localStorage.setItem('kader_is_muhammadiyah', textOrg.includes('MUHAMMADIYAH') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_nu', (textOrg.includes('NU ') || textOrg.includes('NAHDLATUL')) ? 'YA' : '-');
+    localStorage.setItem('kader_is_muhammadiyah', textOrg.includes('MUHAMMADIYAH') ? 'YA' : '-');
     
-    // Mapping Profesi Strategis
-    const jobType = riwayatPekerjaan.length > 0 ? riwayatPekerjaan[0].jenis : "-";
-    localStorage.setItem('kader_profesi_utama', jobType);
-    localStorage.setItem('kader_is_pengusaha', jobType.includes('WIRASWASTA') ? 'Ya' : '-');
-    localStorage.setItem('kader_is_pns', jobType.includes('ASN') ? 'Ya' : '-');
+    // Profesi Utama (Ambil input pertama sebagai yang terbaru)
+    const profesiUtama = riwayatPekerjaan.length > 0 ? riwayatPekerjaan[0].jenis : "TIDAK BEKERJA";
+    localStorage.setItem('kader_pekerjaan', profesiUtama);
+    localStorage.setItem('kader_is_pengusaha', profesiUtama.includes('WIRASWASTA') ? 'YA' : '-');
 
-    // 5. REDIRECT KE FINAL REVIEW
-    window.location.href = "step6.html";
+    // 5. REDIRECT KE FINAL REVIEW (Halaman Pratinjau Semua Data)
+    // Jika Bos belum buat step6, arahkan ke review.html
+    window.location.href = "step6.html"; 
 }
     </script>
 </body>
