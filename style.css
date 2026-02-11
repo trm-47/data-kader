@@ -1,234 +1,216 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+
 :root {
-    --primary-color: #D71920; /* Merah PDI Perjuangan */
-    --dark-bg: #111827;
-    --text-main: #1f2937;
-    --text-light: #6b7280;
-    --white: #ffffff;
-    --border-radius: 16px;
+    --primary-color: #D71920; /* Merah PDI Perjuangan */
+    --primary-dark: #A50E13;
+    --dark-slate: #0F172A;
+    --soft-slate: #64748B;
+    --glass: rgba(255, 255, 255, 0.9);
+    --border-radius-lg: 24px;
+    --border-radius-md: 16px;
+    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
 }
 
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f8fafc;
-    color: var(--text-main);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 15px; /* Padding luar agar tidak nempel pinggir HP */
+    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+    color: var(--dark-slate);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px 15px;
 }
 
 .container {
-    width: 100%;
-    max-width: 450px;
+    width: 100%;
+    max-width: 450px;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* --- Form Card & Header --- */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Card Utama --- */
 .form-card {
-    background: white;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border-top: 5px solid var(--primary-color);
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 32px 28px;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-premium);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
 }
 
+.form-card::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), #FF4D4D);
+}
+
+/* --- Header --- */
 .header-form {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f3f4f6;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
 .logo-small {
-    width: 50px;
-    height: auto;
+    width: 65px;
+    height: auto;
+    filter: drop-shadow(0 8px 12px rgba(215, 25, 32, 0.2));
+    margin-bottom: 16px;
 }
 
 h2 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--dark-bg);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--dark-slate);
+    margin-bottom: 4px;
 }
 
 .subtitle {
-    font-size: 12px;
-    color: var(--text-light);
+    font-size: 13px;
+    color: var(--soft-slate);
+    font-weight: 500;
 }
 
-/* --- Progress Bar --- */
+/* --- Progress Bar Premium --- */
 .progress-container {
-    width: 100%;
-    height: 6px;
-    background: #e2e8f0;
-    border-radius: 10px;
-    margin-bottom: 15px;
+    width: 100%;
+    height: 8px;
+    background: #E2E8F0;
+    border-radius: 100px;
+    margin: 25px 0;
+    overflow: hidden;
 }
 
 .progress-bar {
-    height: 100%;
-    background: var(--primary-color);
-    border-radius: 10px;
-    transition: width 0.4s ease;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    border-radius: 100px;
+    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* --- Inputs & Groups --- */
+/* --- Input Group --- */
 .input-group {
-    margin-bottom: 15px;
-    text-align: left;
+    margin-bottom: 20px;
 }
 
 .input-group label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 6px;
-    color: var(--text-main);
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--dark-slate);
+    padding-left: 4px;
 }
 
-.required { color: var(--primary-color); }
-
 .input-field {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 10px;
-    font-size: 14px;
-    outline: none;
-    transition: all 0.2s;
-    background: #fdfdfd;
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #F1F5F9;
+    border-radius: var(--border-radius-md);
+    font-size: 15px;
+    font-weight: 500;
+    background: #F8FAFC;
+    transition: all 0.3s ease;
+    outline: none;
 }
 
 .input-field:focus {
-    border-color: var(--primary-color);
-    background: #fff;
-    box-shadow: 0 0 0 3px rgba(215, 25, 32, 0.1);
+    background: #FFF;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(215, 25, 32, 0.1);
+    transform: translateY(-2px);
 }
 
-/* --- Photo Area --- */
+/* --- Photo Upload --- */
 .photo-upload-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 25px;
-    background: #f8fafc;
-    padding: 15px;
-    border-radius: 12px;
+    background: #F8FAFC;
+    border: 2px dashed #CBD5E1;
+    border-radius: var(--border-radius-md);
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.photo-upload-container:hover {
+    border-color: var(--primary-color);
+    background: #FFF1F2;
 }
 
 .photo-preview {
-    width: 90px;
-    height: 90px;
-    background: #e2e8f0;
-    border: 2px dashed #cbd5e1;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 10px;
-    color: var(--text-light);
-    overflow: hidden;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid white;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-/* --- Buttons --- */
+/* --- Buttons Luxury --- */
 .btn-primary {
-    width: 100%;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    padding: 16px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 10px;
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: var(--border-radius-md);
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px -5px rgba(215, 25, 32, 0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 10px rgba(215, 25, 32, 0.2);
 }
 
 .btn-outline-sm {
-    background: white;
-    border: 1.5px solid #e2e8f0;
-    padding: 8px 15px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
+    background: transparent;
+    border: 2px solid #E2E8F0;
+    padding: 12px 20px;
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--soft-slate);
+    transition: all 0.3s ease;
+    cursor: pointer;
 }
 
-/* Agar form RT/RW sejajar rapi */
-div[style*="display: flex"] {
-    gap: 10px;
+.btn-outline-sm:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #FFF1F2;
 }
 
-/* Style Khusus Halaman Rekap (Slider) */
-/* Slider Utama */
-    .slider-wrapper {
-        display: flex;
-        overflow-x: auto;
-        /* Snapping agar kartu berhenti tepat di tengah */
-        scroll-snap-type: x mandatory; 
-        scroll-behavior: smooth;
-        gap: 12px;
-        padding: 10px 20px 20px 20px; /* Padding samping agar kartu tidak nempel layar */
-        -webkit-overflow-scrolling: touch; /* Licin di iOS */
-    }
-    
-    /* Sembunyikan Scrollbar */
-    .slider-wrapper::-webkit-scrollbar { display: none; }
+/* Grid Layout for RT/RW */
+.flex-row {
+    display: flex;
+    gap: 12px;
+}
 
-    .rekap-card {
-        min-width: 85%; /* 85% supaya kartu berikutnya terlihat sedikit (ngajak di-swipe) */
-        scroll-snap-align: center;
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-        max-height: 65vh;
-        overflow-y: auto;
-        border: 1px solid #f1f5f9;
-        position: relative;
-    }
-
-    .rekap-item { 
-        margin-bottom: 12px; 
-        border-bottom: 1px dashed #eee; 
-        padding-bottom: 5px; 
-    }
-    
-    .rekap-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-    .rekap-value { font-size: 14px; font-weight: 600; color: #1e293b; line-height: 1.4; }
-    
-    .edit-link { 
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        background: #fef2f2;
-        color: #b91c1c;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 10px; 
-        text-decoration: none; 
-        font-weight: 700; 
-        border: 1px solid #fee2e2;
-    }
-
-    .btn-final { 
-        background: #16a34a; 
-        color: white; 
-        width: 100%; 
-        padding: 16px; 
-        border: none; 
-        border-radius: 12px; 
-        font-weight: 700; 
-        font-size: 16px;
-        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
-        cursor: pointer; 
-    }
-
-tolong cek
+.flex-row > div {
+    flex: 1;
+}
