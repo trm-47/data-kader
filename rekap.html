@@ -224,16 +224,21 @@ function loadRekapitulasi() {
     const jKerja = data.riwayat_pekerjaan || [];
 
     // Struktur Partai
-    document.getElementById('rekapJabatanPartai').innerHTML = jPartai.length 
-        ? jPartai.map(j => `
-            <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
-                <div style="display: flex; justify-content: space-between;">
-                    <div style="font-size: 11px; font-weight: 800; color: #ef4444;">${j.tingkatan || 'STRUKTUR'}</div>
-                    <div style="font-size: 10px;">${j.periode}</div>
-                </div>
-                <div style="font-size: 13px; font-weight: 800;">${j.jabatan} ${j.bidang ? '- ' + j.bidang : ''}</div>
-                <div style="font-size: 11px; color: #475569;">📍 ${j.lokasi || '-'}</div>
-            </div>`).join('') 
+// Di dalam map jPartai
+document.getElementById('rekapJabatanPartai').innerHTML = jPartai.map(j => `
+    <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
+        <div style="display: flex; justify-content: space-between;">
+            <div style="font-size: 11px; font-weight: 800; color: #ef4444; text-transform: uppercase;">
+                ${j.tingkatan} </div>
+            <div style="font-size: 10px; color: #64748b;">${j.periode}</div>
+        </div>
+        <div style="font-size: 14px; font-weight: 800; color: #1e293b;">
+            ${j.jabatan} ${j.bidang ? '- ' + j.bidang : ''}
+        </div>
+        <div style="font-size: 11px; color: #475569; margin-top: 3px;">
+            📍 ${j.lokasi || '-'}
+        </div>
+    </div>`).join('');
         : '<p style="color:gray; font-size:12px;">Tidak ada jabatan partai.</p>';
 
     // Penugasan Khusus
