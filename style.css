@@ -227,3 +227,52 @@ body {
     background: linear-gradient(90deg, var(--primary-red), #FF4D4D);
     box-shadow: 0 2px 10px rgba(215, 25, 32, 0.3);
 }
+/* Styling Khusus Review Data agar Rapi & Mewah */
+.rekap-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Membagi data jadi 2 kolom */
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.rekap-item-premium {
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Kolom Alamat & Wilayah dibuat lebar penuh agar tidak sesak */
+.rekap-item-premium:nth-child(7), 
+.rekap-item-premium:nth-child(8) {
+    grid-column: span 2;
+}
+
+.rekap-label {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--soft-slate);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.rekap-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark-void);
+    line-height: 1.4;
+}
+
+/* Edit Link Style */
+.edit-link {
+    background: #FFF1F2;
+    color: var(--primary-red);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+    border: 1px solid rgba(215, 25, 32, 0.1);
+}
