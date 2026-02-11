@@ -182,142 +182,172 @@
     </div>
 
     <script>
-        // Simpan template kartu agar tidak hilang saat container dikosongkan
-        let strukturalTemplate;
-        let penugasanTemplate;
+    // Penampung template agar kloning kartu sempurna
+    let strukturalTemplate;
+    let penugasanTemplate;
 
-        function toggleBidang(select) {
-            const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
-            if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
-                wrapper.classList.remove('hidden');
-            } else {
-                wrapper.classList.add('hidden');
-            }
+    window.onload = function() {
+        // 1. Ambil "cetakan" asli kartu sebelum dimanipulasi
+        strukturalTemplate = document.querySelector('#struktural-container .entry-card').cloneNode(true);
+        penugasanTemplate = document.querySelector('#penugasan-container .entry-card').cloneNode(true);
+
+        // 2. Load data lama jika ada
+        loadSavedData();
+    };
+
+    function toggleBidang(select) {
+        const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
+        // Bidang muncul jika jabatan adalah Wakil Ketua atau Wakil Sekretaris
+        if(select.value.includes('WAKIL')) {
+            wrapper.classList.remove('hidden');
+        } else {
+            wrapper.classList.add('hidden');
+            wrapper.querySelector('input').value = ""; // Bersihkan jika disembunyikan
         }
+    }
 
-        function handleTugasLogic(select) {
-            const card = select.closest('.entry-card');
-            const eks = card.querySelector('.eksekutif-fields');
-            const leg = card.querySelector('.legislatif-fields');
-            eks.classList.add('hidden');
-            leg.classList.add('hidden');
-            if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
-            if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
-        }
+    function handleTugasLogic(select) {
+        const card = select.closest('.entry-card');
+        const eks = card.querySelector('.eksekutif-fields');
+        const leg = card.querySelector('.legislatif-fields');
+        eks.classList.add('hidden');
+        leg.classList.add('hidden');
+        
+        if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
+        if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
+    }
 
-        function addStruktural() {
-            const container = document.getElementById('struktural-container');
-            const clone = strukturalTemplate.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.bidang-wrapper').classList.add('hidden');
-            container.appendChild(clone);
-        }
+    function addStruktural() {
+        const container = document.getElementById('struktural-container');
+        const clone = strukturalTemplate.cloneNode(true);
+        clone.querySelectorAll('input, select').forEach(i => i.value = "");
+        clone.querySelector('.bidang-wrapper').classList.add('hidden');
+        
+        // Tambahkan tombol hapus
+        const delBtn = document.createElement('button');
+        delBtn.className = "text-[9px] font-black text-red-400 mt-4 block uppercase";
+        delBtn.innerHTML = "× Hapus Baris Jabatan";
+        delBtn.onclick = () => clone.remove();
+        clone.appendChild(delBtn);
 
-        function addPenugasan() {
-            const container = document.getElementById('penugasan-container');
-            const clone = penugasanTemplate.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.eksekutif-fields').classList.add('hidden');
-            clone.querySelector('.legislatif-fields').classList.add('hidden');
-            container.appendChild(clone);
-        }
+        container.appendChild(clone);
+        return clone;
+    }
 
-        function saveStep4() {
-            const strukCards = document.querySelectorAll('#struktural-container .entry-card');
-            const riwayatStruktural = [];
-            strukCards.forEach(card => {
-                const tingkat = card.querySelector('.tingkat-pengurus').value;
-                const jabatan = card.querySelector('.jabatan-nama').value;
-                if(tingkat && jabatan) {
-                    riwayatStruktural.push({
-                        tingkat: tingkat,
-                        jabatan: jabatan,
-                        bidang: card.querySelector('.bidang-nama').value || "-",
-                        mulai: card.querySelector('.thn-mulai').value || "?",
-                        selesai: card.querySelector('.thn-selesai').value || "Sekarang"
-                    });
-                }
-            });
+    function addPenugasan() {
+        const container = document.getElementById('penugasan-container');
+        const clone = penugasanTemplate.cloneNode(true);
+        clone.querySelectorAll('input, select').forEach(i => i.value = "");
+        clone.querySelector('.eksekutif-fields').classList.add('hidden');
+        clone.querySelector('.legislatif-fields').classList.add('hidden');
+        
+        const delBtn = document.createElement('button');
+        delBtn.className = "text-[9px] font-black text-red-400 mt-4 block uppercase";
+        delBtn.innerHTML = "× Hapus Baris Penugasan";
+        delBtn.onclick = () => clone.remove();
+        clone.appendChild(delBtn);
 
-            const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
-            const riwayatPenugasan = [];
-            tugasCards.forEach(card => {
-                const jenis = card.querySelector('.jenis-tugas').value;
-                if(jenis) {
-                    const dataTugas = {
-                        jenis: jenis,
-                        awal: card.querySelector('.tahun-awal').value,
-                        akhir: card.querySelector('.tahun-akhir').value
-                    };
-                    if(jenis === 'EKSEKUTIF') {
-                        dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
-                        dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
-                    } else {
-                        dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
-                        dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
+        container.appendChild(clone);
+        return clone;
+    }
+
+    function loadSavedData() {
+        const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
+        const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
+
+        if(savedStruk) {
+            const dataArr = JSON.parse(savedStruk);
+            if(dataArr.length > 0) {
+                const container = document.getElementById('struktural-container');
+                container.innerHTML = ''; 
+                dataArr.forEach(item => {
+                    const card = addStruktural();
+                    card.querySelector('.tingkat-pengurus').value = item.tingkat;
+                    card.querySelector('.jabatan-nama').value = item.jabatan;
+                    card.querySelector('.thn-mulai').value = item.mulai;
+                    card.querySelector('.thn-selesai').value = item.selesai;
+                    if(item.bidang && item.bidang !== "-") {
+                        card.querySelector('.bidang-nama').value = item.bidang;
+                        card.querySelector('.bidang-wrapper').classList.remove('hidden');
                     }
-                    riwayatPenugasan.push(dataTugas);
-                }
-            });
-
-            localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
-            localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
-            window.location.href = "step5.html"; 
+                });
+            }
         }
 
-        window.onload = function() {
-            // Ambil "cetakan" sebelum container dimanipulasi
-            strukturalTemplate = document.querySelector('#struktural-container .entry-card').cloneNode(true);
-            penugasanTemplate = document.querySelector('#penugasan-container .entry-card').cloneNode(true);
+        if(savedTugas) {
+            const dataArr = JSON.parse(savedTugas);
+            if(dataArr.length > 0) {
+                const container = document.getElementById('penugasan-container');
+                container.innerHTML = '';
+                dataArr.forEach(item => {
+                    const card = addPenugasan();
+                    const selectJenis = card.querySelector('.jenis-tugas');
+                    selectJenis.value = item.jenis;
+                    handleTugasLogic(selectJenis);
+                    
+                    card.querySelector('.tahun-awal').value = item.awal;
+                    card.querySelector('.tahun-akhir').value = item.akhir;
 
-            const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
-            const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
-
-            // Handle Load Data Struktural
-            if(savedStruk) {
-                const data = JSON.parse(savedStruk);
-                if(data.length > 0) {
-                    const container = document.getElementById('struktural-container');
-                    container.innerHTML = ''; 
-                    data.forEach(item => {
-                        addStruktural();
-                        const lastCard = container.lastElementChild;
-                        lastCard.querySelector('.tingkat-pengurus').value = item.tingkat;
-                        lastCard.querySelector('.jabatan-nama').value = item.jabatan;
-                        lastCard.querySelector('.thn-mulai').value = item.mulai === "?" ? "" : item.mulai;
-                        lastCard.querySelector('.thn-selesai').value = item.selesai === "Sekarang" ? "" : item.selesai;
-                        if(item.bidang !== "-") {
-                            lastCard.querySelector('.bidang-nama').value = item.bidang;
-                            lastCard.querySelector('.bidang-wrapper').classList.remove('hidden');
-                        }
-                    });
-                }
+                    if(item.jenis === 'EKSEKUTIF') {
+                        card.querySelector('.eksekutif-fields select').value = item.wilayah;
+                        card.querySelector('.eksekutif-fields input').value = item.jabatan;
+                    } else if(item.jenis === 'LEGISLATIF') {
+                        card.querySelector('.legislatif-fields select').value = item.lembaga;
+                        card.querySelector('.legislatif-fields input').value = item.dapil;
+                    }
+                });
             }
+        }
+    }
 
-            // Handle Load Data Penugasan
-            if(savedTugas) {
-                const data = JSON.parse(savedTugas);
-                if(data.length > 0) {
-                    const container = document.getElementById('penugasan-container');
-                    container.innerHTML = '';
-                    data.forEach(item => {
-                        addPenugasan();
-                        const lastCard = container.lastElementChild;
-                        lastCard.querySelector('.jenis-tugas').value = item.jenis;
-                        lastCard.querySelector('.tahun-awal').value = item.awal;
-                        lastCard.querySelector('.tahun-akhir').value = item.akhir;
-                        handleTugasLogic(lastCard.querySelector('.jenis-tugas'));
-                        if(item.jenis === 'EKSEKUTIF') {
-                            lastCard.querySelector('.eksekutif-fields select').value = item.wilayah;
-                            lastCard.querySelector('.eksekutif-fields input').value = item.jabatan;
-                        } else {
-                            lastCard.querySelector('.legislatif-fields select').value = item.lembaga;
-                            lastCard.querySelector('.legislatif-fields input').value = item.dapil;
-                        }
-                    });
-                }
+    function saveStep4() {
+        // --- PROSES SIMPAN STRUKTURAL ---
+        const strukCards = document.querySelectorAll('#struktural-container .entry-card');
+        const listStruktural = [];
+        strukCards.forEach(card => {
+            const tkt = card.querySelector('.tingkat-pengurus').value;
+            const jab = card.querySelector('.jabatan-nama').value;
+            if(tkt && jab) {
+                listStruktural.push({
+                    tingkat: tkt,
+                    jabatan: jab,
+                    bidang: card.querySelector('.bidang-nama').value || "-",
+                    mulai: card.querySelector('.thn-mulai').value || "",
+                    selesai: card.querySelector('.thn-selesai').value || "SEKARANG"
+                });
             }
-        };
-    </script>
+        });
+
+        // --- PROSES SIMPAN PENUGASAN ---
+        const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
+        const listPenugasan = [];
+        tugasCards.forEach(card => {
+            const jenis = card.querySelector('.jenis-tugas').value;
+            if(jenis) {
+                let itemTugas = {
+                    jenis: jenis,
+                    awal: card.querySelector('.tahun-awal').value,
+                    akhir: card.querySelector('.tahun-akhir').value
+                };
+
+                if(jenis === 'EKSEKUTIF') {
+                    itemTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
+                    itemTugas.jabatan = card.querySelector('.eksekutif-fields input').value || "-";
+                } else {
+                    itemTugas.lembaga = card.querySelector('.legislatif-fields select').value;
+                    itemTugas.dapil = card.querySelector('.legislatif-fields input').value || "-";
+                }
+                listPenugasan.push(itemTugas);
+            }
+        });
+
+        // Masukkan ke LocalStorage dalam bentuk STRING JSON
+        localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(listStruktural));
+        localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(listPenugasan));
+
+        // Lanjut
+        window.location.href = "step5.html"; 
+    }
+</script>
 </body>
 </html>
