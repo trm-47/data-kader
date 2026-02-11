@@ -1,79 +1,235 @@
+sebentar sebentar... 
 :root {
-    --primary-color: #D71920;
-    --dark-bg: #111827;
-    --text-main: #1f2937;
-    --text-light: #64748b;
-    --white: #ffffff;
-    --border-radius: 16px;
+    --primary-color: #D71920; /* Merah PDI Perjuangan */
+    --dark-bg: #111827;
+    --text-main: #1f2937;
+    --text-light: #6b7280;
+    --white: #ffffff;
+    --border-radius: 16px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f8fafc;
-    color: var(--text-main);
-    padding: 15px;
-    line-height: 1.5;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 15px; /* Padding luar agar tidak nempel pinggir HP */
 }
 
-.container { width: 100%; max-width: 450px; margin: 0 auto; }
+.container {
+    width: 100%;
+    max-width: 450px;
+}
 
-/* Form Card */
+/* --- Form Card & Header --- */
 .form-card {
-    background: white;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border-top: 5px solid var(--primary-color);
+    background: white;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-top: 5px solid var(--primary-color);
 }
 
 .header-form {
-    display: flex; align-items: center; gap: 15px;
-    margin-bottom: 20px; padding-bottom: 15px;
-    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f3f4f6;
 }
 
-.logo-small { width: 45px; height: auto; }
+.logo-small {
+    width: 50px;
+    height: auto;
+}
 
-/* Inputs */
+h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dark-bg);
+}
+
+.subtitle {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+/* --- Progress Bar --- */
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+/* --- Inputs & Groups --- */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+.required { color: var(--primary-color); }
+
 .input-field {
-    width: 100%; padding: 12px;
-    border: 1.5px solid #e2e8f0; border-radius: 10px;
-    font-size: 14px; outline: none; margin-bottom: 10px;
-}
-.input-field:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(215, 25, 32, 0.1); }
-
-/* Slider Rekap (Swipeable) */
-.slider-wrapper {
-    display: flex; overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth; gap: 12px;
-    padding: 10px 0 20px 0;
-    -webkit-overflow-scrolling: touch;
-}
-.slider-wrapper::-webkit-scrollbar { display: none; }
-
-.rekap-card {
-    min-width: 88%; scroll-snap-align: center;
-    background: white; padding: 20px;
-    border-radius: 15px; border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    max-height: 65vh; overflow-y: auto; position: relative;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s;
+    background: #fdfdfd;
 }
 
-/* Items di Rekap */
-.rekap-item { margin-bottom: 12px; border-bottom: 1px dashed #eee; padding-bottom: 5px; }
-.rekap-label { font-size: 10px; color: var(--text-light); text-transform: uppercase; }
-.rekap-value { font-size: 14px; font-weight: 600; color: var(--dark-bg); }
+.input-field:focus {
+    border-color: var(--primary-color);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(215, 25, 32, 0.1);
+}
 
-/* Buttons */
+/* --- Photo Area --- */
+.photo-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.photo-preview {
+    width: 90px;
+    height: 90px;
+    background: #e2e8f0;
+    border: 2px dashed #cbd5e1;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: var(--text-light);
+    overflow: hidden;
+}
+
+/* --- Buttons --- */
 .btn-primary {
-    width: 100%; background: var(--primary-color); color: white;
-    padding: 15px; border: none; border-radius: 12px;
-    font-weight: 700; cursor: pointer;
+    width: 100%;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
 }
-.btn-final { background: #16a34a; color: white; padding: 16px; border-radius: 12px; border: none; width: 100%; font-weight: 700; font-size: 16px; margin-top: 15px; cursor: pointer; }
-.btn-outline-sm { background: white; border: 1px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
 
-.edit-link { position: absolute; top: 15px; right: 15px; font-size: 11px; font-weight: 700; color: var(--primary-color); text-decoration: none; background: #fff1f2; padding: 4px 8px; border-radius: 6px; }
+.btn-outline-sm {
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Agar form RT/RW sejajar rapi */
+div[style*="display: flex"] {
+    gap: 10px;
+}
+
+/* Style Khusus Halaman Rekap (Slider) */
+/* Slider Utama */
+    .slider-wrapper {
+        display: flex;
+        overflow-x: auto;
+        /* Snapping agar kartu berhenti tepat di tengah */
+        scroll-snap-type: x mandatory; 
+        scroll-behavior: smooth;
+        gap: 12px;
+        padding: 10px 20px 20px 20px; /* Padding samping agar kartu tidak nempel layar */
+        -webkit-overflow-scrolling: touch; /* Licin di iOS */
+    }
+    
+    /* Sembunyikan Scrollbar */
+    .slider-wrapper::-webkit-scrollbar { display: none; }
+
+    .rekap-card {
+        min-width: 85%; /* 85% supaya kartu berikutnya terlihat sedikit (ngajak di-swipe) */
+        scroll-snap-align: center;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        max-height: 65vh;
+        overflow-y: auto;
+        border: 1px solid #f1f5f9;
+        position: relative;
+    }
+
+    .rekap-item { 
+        margin-bottom: 12px; 
+        border-bottom: 1px dashed #eee; 
+        padding-bottom: 5px; 
+    }
+    
+    .rekap-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .rekap-value { font-size: 14px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+    
+    .edit-link { 
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px; 
+        text-decoration: none; 
+        font-weight: 700; 
+        border: 1px solid #fee2e2;
+    }
+
+    .btn-final { 
+        background: #16a34a; 
+        color: white; 
+        width: 100%; 
+        padding: 16px; 
+        border: none; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        cursor: pointer; 
+    }
+
+tolong cek
