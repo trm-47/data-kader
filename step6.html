@@ -127,32 +127,42 @@
         }
 
         function saveStep6() {
-            // 1. Koleksi Data Bahasa
-            let daftarBahasa = ['INDONESIA']; // Indonesia wajib
-            const checkboxes = document.querySelectorAll('input[name="lang"]:checked');
-            checkboxes.forEach(cb => {
-                daftarBahasa.push(cb.value.toUpperCase());
-            });
-
-            const otherCheck = document.getElementById('lang-other-check');
-            const otherInput = document.getElementById('lang-other-input');
-            if(otherCheck.checked && otherInput.value) {
-                daftarBahasa.push(otherInput.value.toUpperCase());
-            }
-
-            // 2. Koleksi Skill Komputer
-            const skill = document.getElementById('komputer-skill').value;
-
-            // 3. Simpan ke LocalStorage
-            localStorage.setItem('kader_bahasa', daftarBahasa.join(', '));
-            localStorage.setItem('kader_komputer', skill);
-
-            // 4. Mapping Logika untuk Database (Jika Advance, tandai potensi IT)
-            localStorage.setItem('kader_is_it_expert', (skill === 'ADVANCE') ? 'YA' : '-');
-
-            // 5. Lanjut ke Review
-            window.location.href = "review.html";
+    // 1. Koleksi Data Bahasa
+    let daftarBahasa = ['INDONESIA']; // Indonesia default
+    const checkboxes = document.querySelectorAll('input[name="lang"]:checked');
+    
+    checkboxes.forEach(cb => {
+        const val = cb.value.toUpperCase();
+        if(!daftarBahasa.includes(val)) {
+            daftarBahasa.push(val);
         }
+    });
+
+    // Ambil input bahasa lainnya jika checkbox-nya dicentang
+    const otherCheck = document.getElementById('lang-other-check');
+    const otherInput = document.getElementById('lang-other-input');
+    if(otherCheck.checked && otherInput.value.trim() !== "") {
+        const otherVal = otherInput.value.trim().toUpperCase();
+        // Cegah duplikasi jika user ketik "INGGRIS" padahal sudah ada di pilihan
+        if(!daftarBahasa.includes(otherVal)) {
+            daftarBahasa.push(otherVal);
+        }
+    }
+
+    // 2. Koleksi Skill Komputer
+    const skill = document.getElementById('komputer-skill').value;
+
+    // 3. Simpan ke LocalStorage
+    localStorage.setItem('kader_bahasa', daftarBahasa.join(', '));
+    localStorage.setItem('kader_komputer', skill);
+
+    // 4. Mapping Logika untuk Database (Penting untuk filter SDM)
+    localStorage.setItem('kader_is_it_expert', (skill === 'ADVANCE') ? 'YA' : '-');
+    localStorage.setItem('kader_is_multilingual', (daftarBahasa.length > 2) ? 'YA' : '-');
+
+    // 5. GAS KE REVIEW FINAL
+    window.location.href = "review.html";
+}
     </script>
 </body>
 </html>
