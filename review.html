@@ -122,34 +122,32 @@
                     </div>
                 </div>
 
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div>
-                                <h2 class="font-black text-2xl italic uppercase tracking-tighter text-slate-900">Kualifikasi</h2>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Langkah 03 - Kaderisasi</p>
-                            </div>
-                            <button onclick="goTo(3)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="label-view">Pendidikan Terakhir</p>
-                                <p class="value-view" id="v-pendidikan">-</p>
-                            </div>
-                            <div>
-                                <p class="label-view">Jenjang Kaderisasi</p>
-                                <div id="v-kader-badge" class="mt-1">
-                                    <span class="bg-red-700 text-white px-4 py-2 rounded-xl font-black text-xs inline-block uppercase tracking-widest" id="v-kader-tingkat">-</span>
-                                </div>
-                            </div>
-                            <div>
-                                <p class="label-view">Tahun Kaderisasi</p>
-                                <p class="value-view" id="v-kader-tahun">-</p>
-                            </div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
+<div class="swiper-slide">
+    <div class="review-card">
+        <div class="flex justify-between items-start mb-6">
+            <div>
+                <h2 class="font-black text-2xl italic uppercase tracking-tighter text-slate-900">Kualifikasi</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Langkah 03 - Kaderisasi</p>
+            </div>
+            <button onclick="goTo(3)" class="btn-edit">EDIT</button>
+        </div>
+        
+        <div class="space-y-4 overflow-y-auto pr-2 max-h-[380px] text-left">
+            <div>
+                <p class="label-view">Riwayat Pendidikan Formal</p>
+                <div id="v-pendidikan-list" class="space-y-2 mt-2">
                     </div>
-                </div>
+            </div>
+            
+            <div class="pt-4 border-t border-slate-100">
+                <p class="label-view">Sertifikasi Kaderisasi Partai</p>
+                <div id="v-kader-list" class="space-y-2 mt-2">
+                    </div>
+            </div>
+        </div>
+        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
+    </div>
+</div>
 
                 <div class="swiper-slide">
                     <div class="review-card">
@@ -249,103 +247,129 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // 1. Inisialisasi Swiper
-        var swiper = new Swiper(".mySwiper", {
-            effect: "cards",
-            grabCursor: true,
-            pagination: { el: ".swiper-pagination", clickable: true },
+var swiper = new Swiper(".mySwiper", {
+    effect: "cards",
+    grabCursor: true,
+    pagination: { el: ".swiper-pagination", clickable: true },
+});
+
+// 2. Load Data From LocalStorage
+document.addEventListener('DOMContentLoaded', () => {
+    const get = (key) => localStorage.getItem(key) || '-';
+
+    // --- DATA DASAR (Identitas & Kontak) ---
+    document.getElementById('v-nama').innerText = get('kader_nama');
+    document.getElementById('v-confirm-nama').innerText = get('kader_nama').toUpperCase();
+    document.getElementById('v-nik').innerText = get('kader_nik');
+    document.getElementById('v-kta').innerText = get('kader_kta');
+    document.getElementById('v-tempat-lahir').innerText = get('kader_tempat_lahir');
+    document.getElementById('v-tgl-lahir').innerText = get('kader_tgl_lahir');
+    document.getElementById('v-gender').innerText = get('kader_gender');
+    document.getElementById('v-wa').innerText = get('kader_wa');
+    document.getElementById('v-alamat').innerText = get('kader_alamat');
+    document.getElementById('v-kecamatan').innerText = get('kader_kecamatan');
+    document.getElementById('v-kabupaten').innerText = get('kader_kabupaten');
+    document.getElementById('v-email').innerText = get('kader_email');
+    document.getElementById('v-penugasan').innerText = get('kader_penugasan');
+    document.getElementById('v-bahasa').innerText = get('kader_bahasa');
+    document.getElementById('v-komputer').innerText = get('kader_komputer');
+    
+    if(get('kader_is_it_expert') === 'YA') {
+        document.getElementById('v-it-expert').classList.remove('hidden');
+    }
+
+    // --- STEP 3: PENDIDIKAN (LIST) ---
+    const eduData = JSON.parse(localStorage.getItem('kader_riwayat_pendidikan_json') || '[]');
+    const eduContainer = document.getElementById('v-pendidikan-list');
+    if(eduData.length > 0) {
+        eduContainer.innerHTML = eduData.map(e => `
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 text-left">
+                <p class="text-[11px] font-black text-slate-800 uppercase">${e.jenjang} - ${e.nama}</p>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tight">
+                    ${e.jurusan !== '-' ? e.jurusan : ''} ${e.fakultas !== '-' ? '| ' + e.fakultas : ''} | Lulus: ${e.tahun}
+                </p>
+            </div>
+        `).join('');
+    } else {
+        eduContainer.innerHTML = '<p class="text-slate-400 italic text-xs">BELUM ADA DATA PENDIDIKAN</p>';
+    }
+
+    // --- STEP 3: KADERISASI (LIST) ---
+    const kaderData = JSON.parse(localStorage.getItem('kader_riwayat_kaderisasi_json') || '[]');
+    const kaderContainer = document.getElementById('v-kader-list');
+    if(kaderData.length > 0) {
+        kaderContainer.innerHTML = kaderData.map(k => `
+            <div class="flex items-center gap-3 p-2 bg-red-50 rounded-xl border border-red-100 text-left">
+                <div class="bg-red-700 text-white text-[9px] font-black px-2 py-1 rounded-md min-w-[60px] text-center">${k.tingkat}</div>
+                <div>
+                    <p class="text-[10px] font-bold text-slate-800 uppercase leading-none">${k.penyelenggara}</p>
+                    <p class="text-[8px] text-red-600 font-bold mt-1 tracking-widest">${k.tahun}</p>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        kaderContainer.innerHTML = '<p class="text-slate-400 italic text-xs">BELUM ADA DATA KADERISASI</p>';
+    }
+
+    // --- STEP 4: STRUKTURAL (LIST) ---
+    const strukData = JSON.parse(localStorage.getItem('kader_riwayat_struktural') || '[]');
+    const strukContainer = document.getElementById('v-struk-list');
+    if(strukData.length > 0) {
+        strukContainer.innerHTML = strukData.map(s => `
+            <div class="p-3 border-l-4 border-red-700 bg-slate-50 mb-3 rounded-r-xl shadow-sm text-left">
+                <p class="text-[11px] font-black text-slate-800">${s.jabatan} <span class="text-red-700">${s.tingkat}</span></p>
+                <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter italic">${s.mulai} — ${s.selesai}</p>
+            </div>
+        `).join('');
+    } else {
+        strukContainer.innerHTML = '<p class="text-slate-400 italic text-xs">TIDAK ADA JABATAN STRUKTURAL</p>';
+    }
+
+    // --- STEP 5: PROFESI & ORMAS ---
+    const jobData = JSON.parse(localStorage.getItem('kader_riwayat_pekerjaan_json') || '[]');
+    document.getElementById('v-profesi').innerText = jobData.length > 0 ? jobData[0].jenis : get('kader_profesi');
+
+    const orgData = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
+    document.getElementById('v-ormas').innerText = orgData.length > 0 ? orgData.map(o => o.nama).join(', ') : '-';
+});
+
+// 3. Navigasi
+function goTo(step) {
+    window.location.href = `step${step}.html`;
+}
+
+// 4. Submit Akhir
+async function finalSubmit() {
+    const isChecked = document.getElementById('confirm').checked;
+    if(!isChecked) {
+        alert("Mohon centang pernyataan konfirmasi sebagai validasi data Anda.");
+        return;
+    }
+
+    document.getElementById('loading-screen').style.display = 'flex';
+    
+    const allData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        allData[key] = localStorage.getItem(key);
+    }
+
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwUtdW-bWOfCaa6XCvHmk-6j966oR04SEQd1QV-mgsExlQNLJxkFbxN_TuJNYYRl7Dq/exec';
+
+    try {
+        await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(allData)
         });
-
-        // 2. Load Data From LocalStorage
-        document.addEventListener('DOMContentLoaded', () => {
-            const get = (key) => localStorage.getItem(key) || '-';
-
-            // Data Dasar
-            document.getElementById('v-nama').innerText = get('kader_nama');
-            document.getElementById('v-confirm-nama').innerText = get('kader_nama').toUpperCase();
-            document.getElementById('v-nik').innerText = get('kader_nik');
-            document.getElementById('v-kta').innerText = get('kader_kta');
-            document.getElementById('v-tempat-lahir').innerText = get('kader_tempat_lahir');
-            document.getElementById('v-tgl-lahir').innerText = get('kader_tgl_lahir');
-            document.getElementById('v-gender').innerText = get('kader_gender');
-            document.getElementById('v-wa').innerText = get('kader_wa');
-            document.getElementById('v-alamat').innerText = get('kader_alamat');
-            document.getElementById('v-kecamatan').innerText = get('kader_kecamatan');
-            document.getElementById('v-kabupaten').innerText = get('kader_kabupaten');
-            document.getElementById('v-email').innerText = get('kader_email');
-            document.getElementById('v-pendidikan').innerText = get('kader_pendidikan');
-            document.getElementById('v-kader-tingkat').innerText = get('kader_tingkat');
-            document.getElementById('v-kader-tahun').innerText = get('kader_tahun_kaderisasi');
-            document.getElementById('v-penugasan').innerText = get('kader_penugasan');
-            document.getElementById('v-bahasa').innerText = get('kader_bahasa');
-            document.getElementById('v-komputer').innerText = get('kader_komputer');
-            
-            if(get('kader_is_it_expert') === 'YA') {
-                document.getElementById('v-it-expert').classList.remove('hidden');
-            }
-
-            // --- BAGIAN PENARIKAN DATA JSON (STRUKTURAL, PROFESI, ORMAS) ---
-            
-            // Handle Riwayat Struktural (Step 4)
-            const strukData = JSON.parse(localStorage.getItem('kader_riwayat_struktural') || '[]');
-            const strukContainer = document.getElementById('v-struk-list');
-
-            if(strukData.length > 0) {
-                strukContainer.innerHTML = strukData.map(s => `
-                    <div class="p-3 border-l-4 border-red-700 bg-slate-50 mb-3 rounded-r-xl shadow-sm text-left">
-                        <p class="text-[11px] font-black text-slate-800">${s.jabatan} <span class="text-red-700">${s.tingkat}</span></p>
-                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter italic">${s.mulai} — ${s.selesai}</p>
-                    </div>
-                `).join('');
-            } else {
-                strukContainer.innerHTML = '<p class="text-slate-400 italic text-xs">TIDAK ADA JABATAN STRUKTURAL</p>';
-            }
-
-            // Handle Profesi Utama (Step 5)
-            const jobData = JSON.parse(localStorage.getItem('kader_riwayat_pekerjaan_json') || '[]');
-            document.getElementById('v-profesi').innerText = jobData.length > 0 ? jobData[0].jenis : get('kader_profesi');
-
-            // Handle Organisasi (Step 5)
-            const orgData = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
-            document.getElementById('v-ormas').innerText = orgData.length > 0 ? orgData.map(o => o.nama).join(', ') : '-';
-        });
-
-        // 3. Navigasi
-        function goTo(step) {
-            window.location.href = `step${step}.html`;
-        }
-
-        // 4. Submit Akhir
-        async function finalSubmit() {
-            const isChecked = document.getElementById('confirm').checked;
-            if(!isChecked) {
-                alert("Mohon centang pernyataan konfirmasi sebagai validasi data Anda.");
-                return;
-            }
-
-            document.getElementById('loading-screen').style.display = 'flex';
-            
-            const allData = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                allData[key] = localStorage.getItem(key);
-            }
-
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwUtdW-bWOfCaa6XCvHmk-6j966oR04SEQd1QV-mgsExlQNLJxkFbxN_TuJNYYRl7Dq/exec';
-
-            try {
-                await fetch(scriptURL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(allData)
-                });
-                localStorage.clear();
-                window.location.href = "success.html";
-            } catch (error) {
-                document.getElementById('loading-screen').style.display = 'none';
-                alert("Terjadi kesalahan jaringan. Data gagal terkirim.");
-                console.error('Error!', error.message);
-            }
-        }
+        localStorage.clear();
+        window.location.href = "success.html";
+    } catch (error) {
+        document.getElementById('loading-screen').style.display = 'none';
+        alert("Terjadi kesalahan jaringan. Data gagal terkirim.");
+        console.error('Error!', error.message);
+    }
+}
     </script>
 </body>
 </html>
