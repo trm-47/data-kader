@@ -153,16 +153,31 @@
         }
 
         // 2. Render Data Pribadi
-        const pribadiFields = {
-            'Nama Lengkap': data.nama_lengkap,
-            'NIK': data.nik,
-            'Jenis Kelamin': data.jenis_kelamin,
-            'Alamat': `${data.alamat || '-'}, RT ${data.rt || '0'}/RW ${data.rw || '0'}, ${data.kelurahan || '-'}, ${data.kecamatan || '-'}, ${data.kab_kota || '-'}`,
-            'Kontak/WA': data.kontak
-        };
-        document.getElementById('rekapPribadi').innerHTML = Object.entries(pribadiFields)
-            .map(([label, val]) => `<div class="rekap-item"><div class="rekap-label">${label}</div><div class="rekap-value">${val || '-'}</div></div>`).join('');
+        // --- GANTI BAGIAN NOMOR 2 DI rekap.html DENGAN INI ---
 
+// 2. Render Data Pribadi (Premium Grid)
+const pribadiFields = {
+    'Nama Lengkap': data.nama_lengkap,
+    'NIK': data.nik,
+    'No. KTA': data.no_kta || '-',
+    'Jenis Kelamin': data.jenis_kelamin,
+    'Kontak/WA': data.kontak,
+    'Pekerjaan': data.pekerjaan,
+    'Alamat': `${data.alamat || '-'}, RT ${data.rt || '0'}/RW ${data.rw || '0'}`,
+    'Wilayah': `${data.kelurahan || '-'}, ${data.kecamatan || '-'}, ${data.kab_kota || '-'}`
+};
+
+let htmlPribadi = '<div class="rekap-grid">';
+Object.entries(pribadiFields).forEach(([label, val]) => {
+    htmlPribadi += `
+        <div class="rekap-item-premium">
+            <div class="rekap-label">${label}</div>
+            <div class="rekap-value">${val}</div>
+        </div>`;
+});
+htmlPribadi += '</div>';
+
+document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
         // 3. Render Pendidikan Formal
         document.getElementById('rekapFormal').innerHTML = data.riwayat_pendidikan?.length 
             ? data.riwayat_pendidikan.map(p => `<div class="data-box"><b>${p.jenjang}: ${p.nama}</b><br><span style="font-size:11px;">${p.info || ''} | ${p.kota || ''} (${p.tahun || ''})</span></div>`).join('') 
