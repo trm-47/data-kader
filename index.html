@@ -2,36 +2,45 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Database Pendidikan Kader - DPD PDI Perjuangan DIY</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="container">
-        <div class="welcome-card">
-            <div class="logo-area">
-                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo">
+        <div class="form-card" style="text-align: center;">
+            <div class="header-form">
+                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
+                
+                <p class="subtitle" style="letter-spacing: 2px; font-weight: 800; color: var(--primary-color);">
+                    DATABASE PENDIDIKAN KADER
+                </p>
+                <h2 style="font-size: 26px; margin-top: 10px;">DPD PDI PERJUANGAN</h2>
+                <h2 class="region-name" style="color: var(--soft-slate); font-size: 16px; font-weight: 600;">
+                    DAERAH ISTIMEWA YOGYAKARTA
+                </h2>
             </div>
             
-            <p class="label-top">DATABASE PENDIDIKAN KADER</p>
-            <h1>DPD PDI PERJUANGAN</h1>
-            <h2 class="region-name">DAERAH ISTIMEWA YOGYAKARTA</h2>
-            
-            <div class="features-brief">
-                <p>Silakan lengkapi data Riwayat Pendidikan, Jabatan Partai, dan Pengalaman Organisasi Anda secara akurat.</p>
+            <div class="features-brief" style="margin: 25px 0; padding: 20px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
+                <p style="font-size: 14px; line-height: 1.6; color: var(--text-main);">
+                    Selamat datang, Kamerad. Silakan lengkapi data <b>Riwayat Pendidikan</b>, <b>Jabatan Partai</b>, dan <b>Pengalaman Organisasi</b> Anda untuk memperkuat basis data digital partai.
+                </p>
             </div>
 
-            <button onclick="startForm()" class="btn-primary">Mulai Pengisian Form</button>
-            <p class="footer-note">Sistem Informasi Kader Digital © 2026</p>
+            <button onclick="startForm()" class="btn-primary">MULAI PENGISIAN FORM</button>
+            
+            <p style="margin-top: 25px; font-size: 11px; color: var(--soft-slate); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+                Sistem Informasi Kader Digital © 2026
+            </p>
         </div>
     </div>
 
     <script>
         function startForm() {
-            // Bersihkan data lama agar tidak campur aduk
+            // Bersihkan data lama agar fresh
             localStorage.clear();
+            // Langsung meluncur ke step 1
             window.location.href = 'step1.html';
         }
     </script>
