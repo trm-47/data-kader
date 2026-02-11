@@ -248,17 +248,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        // Swiper Init
+        // 1. Inisialisasi Swiper
         var swiper = new Swiper(".mySwiper", {
             effect: "cards",
             grabCursor: true,
             pagination: { el: ".swiper-pagination", clickable: true },
         });
 
-        // Load Data From LocalStorage
+        // 2. Load Data From LocalStorage
         document.addEventListener('DOMContentLoaded', () => {
             const get = (key) => localStorage.getItem(key) || '-';
 
+            // Data Dasar
             document.getElementById('v-nama').innerText = get('kader_nama');
             document.getElementById('v-confirm-nama').innerText = get('kader_nama').toUpperCase();
             document.getElementById('v-nik').innerText = get('kader_nik');
@@ -275,45 +276,45 @@
             document.getElementById('v-kader-tingkat').innerText = get('kader_tingkat');
             document.getElementById('v-kader-tahun').innerText = get('kader_tahun_kaderisasi');
             document.getElementById('v-penugasan').innerText = get('kader_penugasan');
-            document.getElementById('v-profesi').innerText = get('kader_profesi');
-            document.getElementById('v-ormas').innerText = get('kader_ormas');
             document.getElementById('v-bahasa').innerText = get('kader_bahasa');
             document.getElementById('v-komputer').innerText = get('kader_komputer');
             
-            if(get('kader_is_it_expert') === 'YA') document.getElementById('v-it-expert').classList.remove('hidden');
-
-            // --- CARI DAN GANTI BAGIAN INI DI DALAM DOMContentLoaded ---
-
-const strukData = JSON.parse(localStorage.getItem('kader_riwayat_struktural') || '[]');
-const strukContainer = document.getElementById('v-struk-list');
-
-// GANTI DENGAN VERSI GANTENG INI:
-if(strukData.length > 0) {
-    strukContainer.innerHTML = strukData.map(s => `
-        <div class="p-3 border-l-4 border-red-700 bg-slate-50 mb-3 rounded-r-xl">
-            <p class="text-[11px] font-black text-slate-800">${s.jabatan} <span class="text-red-700">${s.tingkat}</span></p>
-            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter italic">${s.mulai} — ${s.selesai}</p>
-        </div>
-    `).join('');
-} else {
-    strukContainer.innerHTML = '<p class="text-slate-400 italic text-xs">TIDAK ADA JABATAN STRUKTURAL</p>';
-}
-
-// KHUSUS UNTUK PROFESI & ORMAS (STEP 5), TAMBAHKAN INI JUGA:
-const jobData = JSON.parse(localStorage.getItem('kader_riwayat_pekerjaan_json') || '[]');
-document.getElementById('v-profesi').innerText = jobData.length > 0 ? jobData[0].jenis : get('kader_pekerjaan');
-
-const orgData = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
-document.getElementById('v-ormas').innerText = orgData.length > 0 ? orgData.map(o => o.nama).join(', ') : '-';
-            } else {
-                strukContainer.innerText = 'TIDAK ADA JABATAN';
+            if(get('kader_is_it_expert') === 'YA') {
+                document.getElementById('v-it-expert').classList.remove('hidden');
             }
+
+            // --- BAGIAN PENARIKAN DATA JSON (STRUKTURAL, PROFESI, ORMAS) ---
+            
+            // Handle Riwayat Struktural (Step 4)
+            const strukData = JSON.parse(localStorage.getItem('kader_riwayat_struktural') || '[]');
+            const strukContainer = document.getElementById('v-struk-list');
+
+            if(strukData.length > 0) {
+                strukContainer.innerHTML = strukData.map(s => `
+                    <div class="p-3 border-l-4 border-red-700 bg-slate-50 mb-3 rounded-r-xl shadow-sm text-left">
+                        <p class="text-[11px] font-black text-slate-800">${s.jabatan} <span class="text-red-700">${s.tingkat}</span></p>
+                        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter italic">${s.mulai} — ${s.selesai}</p>
+                    </div>
+                `).join('');
+            } else {
+                strukContainer.innerHTML = '<p class="text-slate-400 italic text-xs">TIDAK ADA JABATAN STRUKTURAL</p>';
+            }
+
+            // Handle Profesi Utama (Step 5)
+            const jobData = JSON.parse(localStorage.getItem('kader_riwayat_pekerjaan_json') || '[]');
+            document.getElementById('v-profesi').innerText = jobData.length > 0 ? jobData[0].jenis : get('kader_profesi');
+
+            // Handle Organisasi (Step 5)
+            const orgData = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
+            document.getElementById('v-ormas').innerText = orgData.length > 0 ? orgData.map(o => o.nama).join(', ') : '-';
         });
 
+        // 3. Navigasi
         function goTo(step) {
             window.location.href = `step${step}.html`;
         }
 
+        // 4. Submit Akhir
         async function finalSubmit() {
             const isChecked = document.getElementById('confirm').checked;
             if(!isChecked) {
@@ -321,31 +322,24 @@ document.getElementById('v-ormas').innerText = orgData.length > 0 ? orgData.map(
                 return;
             }
 
-            // Tampilkan Loading
             document.getElementById('loading-screen').style.display = 'flex';
             
-            // Kumpulkan semua data dari localStorage
             const allData = {};
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 allData[key] = localStorage.getItem(key);
             }
 
-            // URL Google Apps Script Bos (Ganti dengan URL Deployment Bos)
             const scriptURL = 'https://script.google.com/macros/s/AKfycbwUtdW-bWOfCaa6XCvHmk-6j966oR04SEQd1QV-mgsExlQNLJxkFbxN_TuJNYYRl7Dq/exec';
 
             try {
-                // Proses kirim data ke Google Sheets
                 await fetch(scriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify(allData)
                 });
-
-                // Jika berhasil, bersihkan storage dan lempar ke success.html
                 localStorage.clear();
                 window.location.href = "success.html";
-
             } catch (error) {
                 document.getElementById('loading-screen').style.display = 'none';
                 alert("Terjadi kesalahan jaringan. Data gagal terkirim.");
