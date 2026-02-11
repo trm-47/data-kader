@@ -1,209 +1,72 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Profil Kader - Sensus 2026</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Profil - Sensus 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: white; overflow-x: hidden; }
-        .swiper { width: 100%; padding-top: 20px; padding-bottom: 60px !important; }
-        .review-card { background: #ffffff; color: #1e293b; border-radius: 32px; padding: 32px; min-height: 520px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .swiper { width: 100%; padding: 20px 0 60px; }
+        .review-card { background: #fff; color: #1e293b; border-radius: 32px; padding: 32px; min-height: 520px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); position: relative; overflow: hidden; display: flex; flex-direction: column; }
         .review-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, #b91c1c, #ef4444); }
         .label-view { font-size: 9px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 2px; }
         .value-view { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; text-transform: uppercase; }
-        .btn-edit { font-size: 10px; font-weight: 800; padding: 6px 16px; border-radius: 12px; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; transition: all 0.2s; }
-        .btn-edit:hover { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
-        .swiper-pagination-bullet { background: #475569 !important; opacity: 1; }
+        .btn-edit { font-size: 10px; font-weight: 800; padding: 6px 16px; border-radius: 12px; background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
         .swiper-pagination-bullet-active { background: #ef4444 !important; width: 24px; border-radius: 10px; }
-        .card-watermark { position: absolute; bottom: -30px; right: -30px; opacity: 0.05; width: 180px; pointer-events: none; transform: rotate(-15deg); }
-        #loading-screen { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
+        .card-watermark { position: absolute; bottom: -30px; right: -30px; opacity: 0.05; width: 180px; transform: rotate(-15deg); }
+        #loading-screen { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="pb-10">
-    <div id="loading-screen">
-        <div class="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-xs font-black tracking-[0.3em] uppercase">Mengirim Data...</p>
-    </div>
-
+    <div id="loading-screen"><div class="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin mb-4"></div><p class="text-xs font-black tracking-[0.3em]">MENGIRIM DATA...</p></div>
     <div class="max-w-xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" alt="Logo" class="h-12 w-auto">
-            <div class="border-l-2 border-slate-700 pl-3">
-                <h1 class="text-sm font-black text-white italic tracking-tighter uppercase">Review <span class="text-red-600">Profil</span></h1>
-                <p class="text-[8px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">Sensus Kader 2026</p>
-            </div>
-        </div>
-        <div class="text-right"><p class="text-[10px] font-black text-red-600 uppercase tracking-widest">Final Check</p></div>
+        <div class="flex items-center gap-3"><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="h-12 w-auto"><div class="border-l-2 border-slate-700 pl-3"><h1 class="text-sm font-black text-white italic tracking-tighter uppercase">Review <span class="text-red-600">Profil</span></h1><p class="text-[8px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">Sensus Kader 2026</p></div></div>
     </div>
-
     <div class="max-w-xl mx-auto mt-6 px-6">
-        <div class="swiper mySwiper">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div><h2 class="font-black text-2xl italic uppercase text-slate-900">Identitas</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Personal</p></div>
-                            <button onclick="goTo(1)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-1">
-                            <div><p class="label-view">Nama Lengkap</p><p class="value-view" id="v-nama">-</p></div>
-                            <div><p class="label-view">NIK</p><p class="value-view" id="v-nik">-</p></div>
-                            <div><p class="label-view">Nomor KTA</p><p class="value-view" id="v-kta">-</p></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><p class="label-view">Tempat Lahir</p><p class="value-view" id="v-tempat-lahir">-</p></div>
-                                <div><p class="label-view">Tgl Lahir</p><p class="value-view" id="v-tgl-lahir">-</p></div>
-                            </div>
-                            <div><p class="label-view">Jenis Kelamin</p><p class="value-view" id="v-gender">-</p></div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div><h2 class="font-black text-2xl italic uppercase text-slate-900">Kontak</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Domisili</p></div>
-                            <button onclick="goTo(2)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-1">
-                            <div><p class="label-view">WhatsApp</p><p class="value-view text-red-700" id="v-wa">-</p></div>
-                            <div><p class="label-view">Alamat Lengkap</p><p class="value-view text-[13px] leading-tight" id="v-alamat">-</p></div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div><p class="label-view">Kecamatan</p><p class="value-view" id="v-kecamatan">-</p></div>
-                                <div><p class="label-view">Kab/Kota</p><p class="value-view" id="v-kabupaten">-</p></div>
-                            </div>
-                            <div><p class="label-view">Email</p><p class="value-view lowercase" id="v-email">-</p></div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div><h2 class="font-black text-2xl italic uppercase text-slate-900">Kualifikasi</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Kaderisasi</p></div>
-                            <button onclick="goTo(3)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-4">
-                            <div><p class="label-view">Pendidikan Terakhir</p><p class="value-view" id="v-pendidikan">-</p></div>
-                            <div><p class="label-view">Jenjang Kaderisasi</p><div id="v-kader-badge" class="mt-1"><span class="bg-red-700 text-white px-4 py-2 rounded-xl font-black text-xs inline-block uppercase tracking-widest" id="v-kader-tingkat">-</span></div></div>
-                            <div><p class="label-view">Tahun Kaderisasi</p><p class="value-view" id="v-kader-tahun">-</p></div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div><h2 class="font-black text-2xl italic uppercase text-slate-900">Penugasan</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Jabatan</p></div>
-                            <button onclick="goTo(4)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-4 overflow-y-auto pr-2 max-h-[350px]">
-                            <div><p class="label-view">Jabatan Struktural</p><div id="v-struk-list" class="space-y-2 text-[13px] font-bold text-slate-700 mt-2"></div></div>
-                            <div class="pt-4 border-t border-slate-100"><p class="label-view">Penugasan Publik</p><div id="v-penugasan">-</div></div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div><h2 class="font-black text-2xl italic uppercase text-slate-900">Sosial</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Pekerjaan</p></div>
-                            <button onclick="goTo(5)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-4">
-                            <div><p class="label-view">Profesi Utama</p><div id="v-profesi">-</div></div>
-                            <div><p class="label-view">Organisasi / Ormas</p><div id="v-ormas" class="flex flex-wrap gap-1"></div></div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
-                    </div>
-                </div>
-
-                <div class="swiper-slide">
-                    <div class="review-card">
-                        <div class="flex justify-between items-start mb-6">
-                            <div><h2 class="font-black text-2xl italic uppercase text-slate-900">Kompetensi</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Skill</p></div>
-                            <button onclick="goTo(6)" class="btn-edit">EDIT</button>
-                        </div>
-                        <div class="space-y-4">
-                            <div><p class="label-view">Bahasa Dikuasai</p><p class="value-view text-xs" id="v-bahasa">-</p></div>
-                            <div><p class="label-view">Skill Komputer</p><p class="value-view" id="v-komputer">-</p></div>
-                            <div id="v-it-expert" class="hidden"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase italic">Potensi Tim Cyber/IT Partai</span></div>
-                        </div>
-                        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark">
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-pagination"></div>
-        </div>
-
+        <div class="swiper mySwiper"><div class="swiper-wrapper">
+            <div class="swiper-slide"><div class="review-card"><div class="flex justify-between items-start mb-6"><div><h2 class="font-black text-2xl italic uppercase text-slate-900">Identitas</h2><p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Langkah 01</p></div><button onclick="goTo(1)" class="btn-edit">EDIT</button></div><div class="space-y-1"><div><p class="label-view">Nama Lengkap</p><p class="value-view" id="v-nama">-</p></div><div><p class="label-view">NIK</p><p class="value-view" id="v-nik">-</p></div><div><p class="label-view">Nomor KTA</p><p class="value-view" id="v-kta">-</p></div><div class="grid grid-cols-2 gap-4"><div><p class="label-view">Tempat Lahir</p><p class="value-view" id="v-tempat-lahir">-</p></div><div><p class="label-view">Tgl Lahir</p><p class="value-view" id="v-tgl-lahir">-</p></div></div><div><p class="label-view">Gender</p><p class="value-view" id="v-gender">-</p></div></div><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark"></div></div>
+            <div class="swiper-slide"><div class="review-card"><div class="flex justify-between items-start mb-6"><div><h2 class="font-black text-2xl italic uppercase text-slate-900">Kontak</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Langkah 02</p></div><button onclick="goTo(2)" class="btn-edit">EDIT</button></div><div class="space-y-1"><div><p class="label-view">WhatsApp</p><p class="value-view text-red-700" id="v-wa">-</p></div><div><p class="label-view">Alamat</p><p class="value-view text-[13px] leading-tight" id="v-alamat">-</p></div><div class="grid grid-cols-2 gap-4"><div><p class="label-view">Kecamatan</p><p class="value-view" id="v-kecamatan">-</p></div><div><p class="label-view">Kab/Kota</p><p class="value-view" id="v-kabupaten">-</p></div></div><div><p class="label-view">Email</p><p class="value-view lowercase" id="v-email">-</p></div></div><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark"></div></div>
+            <div class="swiper-slide"><div class="review-card"><div class="flex justify-between items-start mb-6"><div><h2 class="font-black text-2xl italic uppercase text-slate-900">Kualifikasi</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Langkah 03</p></div><button onclick="goTo(3)" class="btn-edit">EDIT</button></div><div class="space-y-4"><div><p class="label-view">Pendidikan</p><p class="value-view" id="v-pendidikan">-</p></div><div><p class="label-view">Kaderisasi</p><div id="v-kader-badge" class="mt-1"><span class="bg-red-700 text-white px-4 py-2 rounded-xl font-black text-xs inline-block uppercase" id="v-kader-tingkat">-</span></div></div><div><p class="label-view">Tahun</p><p class="value-view" id="v-kader-tahun">-</p></div></div><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark"></div></div>
+            <div class="swiper-slide"><div class="review-card"><div class="flex justify-between items-start mb-6"><div><h2 class="font-black text-2xl italic uppercase text-slate-900">Jabatan</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Langkah 04</p></div><button onclick="goTo(4)" class="btn-edit">EDIT</button></div><div class="space-y-4 overflow-y-auto pr-2 max-h-[350px]"><div><p class="label-view">Struktural</p><div id="v-struk-list" class="space-y-2 mt-2"></div></div><div class="pt-4 border-t"><p class="label-view">Publik</p><div id="v-penugasan" class="space-y-2"></div></div></div><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark"></div></div>
+            <div class="swiper-slide"><div class="review-card"><div class="flex justify-between items-start mb-6"><div><h2 class="font-black text-2xl italic uppercase text-slate-900">Sosial</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Langkah 05</p></div><button onclick="goTo(5)" class="btn-edit">EDIT</button></div><div class="space-y-4"><div><p class="label-view">Profesi</p><div id="v-profesi" class="space-y-2"></div></div><div class="pt-4 border-t"><p class="label-view">Organisasi</p><div id="v-ormas" class="flex flex-wrap gap-1"></div></div></div><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark"></div></div>
+            <div class="swiper-slide"><div class="review-card"><div class="flex justify-between items-start mb-6"><div><h2 class="font-black text-2xl italic uppercase text-slate-900">Skill</h2><p class="text-[10px] text-slate-400 font-bold uppercase">Langkah 06</p></div><button onclick="goTo(6)" class="btn-edit">EDIT</button></div><div class="space-y-4"><div><p class="label-view">Bahasa</p><p class="value-view text-xs" id="v-bahasa">-</p></div><div><p class="label-view">Komputer</p><p class="value-view" id="v-komputer">-</p></div><div id="v-it-expert" class="hidden"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase italic">Potensi IT</span></div></div><img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="card-watermark"></div></div>
+        </div><div class="swiper-pagination"></div></div>
         <div class="mt-4 space-y-4 relative z-10">
-            <div class="bg-slate-900/50 p-5 rounded-3xl border border-slate-800 backdrop-blur-sm">
-                <label class="flex items-start gap-4 cursor-pointer group">
-                    <input type="checkbox" id="confirm" class="w-6 h-6 mt-1 rounded-lg accent-red-600 shrink-0">
-                    <span class="text-[11px] text-slate-400 font-medium leading-relaxed">Saya <span id="v-confirm-nama" class="text-white font-bold underline">KADER</span> mengonfirmasi bahwa seluruh data di atas adalah benar sesuai Sensus 2026.</span>
-                </label>
-            </div>
-            <button onclick="finalSubmit()" id="btn-submit" class="w-full bg-red-700 text-white font-black py-6 rounded-3xl shadow-xl uppercase text-[12px] tracking-[0.3em] flex justify-center items-center gap-4">KIRIM DATA SENSUS</button>
+            <div class="bg-slate-900/50 p-5 rounded-3xl border border-slate-800 backdrop-blur-sm"><label class="flex items-start gap-4 cursor-pointer"><input type="checkbox" id="confirm" class="w-6 h-6 mt-1 rounded-lg accent-red-600 shrink-0"><span class="text-[11px] text-slate-400">Saya <span id="v-confirm-nama" class="text-white font-bold underline">KADER</span> mengonfirmasi data ini benar.</span></label></div>
+            <button onclick="finalSubmit()" id="btn-submit" class="w-full bg-red-700 text-white font-black py-6 rounded-3xl shadow-xl uppercase text-[12px] tracking-[0.3em]">KIRIM DATA SENSUS</button>
         </div>
     </div>
-
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 var swiper = new Swiper(".mySwiper", { effect: "cards", grabCursor: true, pagination: { el: ".swiper-pagination", clickable: true } });
-const get = (k) => { let v = localStorage.getItem(k); return (v && v!=='undefined' && v!=='null') ? v : '-'; };
-const parseJSON = (k) => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch(e) { return []; } };
-
+const get = (k) => { let v = localStorage.getItem(k); return (v && v!=='undefined' && v!=='null' && v!=='') ? v : '-'; };
+const parseJSON = (k) => { try { let d = localStorage.getItem(k); return (d && d!=='undefined') ? JSON.parse(d) : []; } catch(e) { return []; } };
 document.addEventListener('DOMContentLoaded', () => {
-    const nm = get('kader_nama');
-    document.getElementById('v-nama').innerText = nm;
-    document.getElementById('v-confirm-nama').innerText = nm.toUpperCase();
+    const nm = get('kader_nama'); document.getElementById('v-nama').innerText = nm; document.getElementById('v-confirm-nama').innerText = nm.toUpperCase();
     ['nik','kta','tempat_lahir','tgl_lahir','gender','wa','email','alamat','kecamatan','kabupaten','pendidikan','tingkat','tahun_kaderisasi','bahasa','komputer'].forEach(f => {
-        let el = document.getElementById('v-' + f.replace(/_/g, '-'));
-        if(el) el.innerText = get('kader_' + f);
+        let el = document.getElementById('v-' + f.replace(/_/g, '-')); if(el) el.innerText = get('kader_' + f);
     });
-
-    // Lists (Step 4, 5)
     const sl = parseJSON('kader_riwayat_struktural_json');
-    document.getElementById('v-struk-list').innerHTML = sl.length ? sl.map(i => `<div class="p-3 bg-slate-50 rounded-xl border-l-4 border-red-600"><p class="text-[9px] font-black text-red-700 mb-1">${i.tingkat}</p><p class="text-sm font-bold text-slate-800">${i.jabatan}</p><p class="text-[10px] text-slate-400">${i.mulai} - ${i.selesai || 'Sekarang'}</p></div>`).join('') : '-';
-
+    document.getElementById('v-struk-list').innerHTML = sl.length ? sl.map(i => `<div class="p-3 bg-slate-50 rounded-xl border-l-4 border-red-600"><p class="text-[9px] font-black text-red-700 mb-1">${i.tingkat}</p><p class="text-sm font-bold text-slate-800">${i.jabatan}</p><p class="text-[10px] text-slate-400">${i.mulai}-${i.selesai||'Sekarang'}</p></div>`).join('') : '<p class="text-xs italic text-slate-400">Tidak ada data</p>';
     const tl = parseJSON('kader_riwayat_penugasan_json');
-    document.getElementById('v-penugasan').innerHTML = tl.length ? tl.map(t => `<div class="mb-2 pb-2 border-b border-slate-100 last:border-0"><p class="text-[9px] font-black text-blue-600 uppercase">${t.jenis}</p><p class="text-[12px] font-bold text-slate-800">${t.jenis==='EKSEKUTIF'?t.jabatan:t.lembaga}</p></div>`).join('') : '-';
-
+    document.getElementById('v-penugasan').innerHTML = tl.length ? tl.map(t => `<div class="p-2 border-b border-slate-100 last:border-0"><p class="text-[9px] font-black text-blue-600 uppercase">${t.jenis}</p><p class="text-[12px] font-bold text-slate-800">${t.jabatan||t.lembaga}</p></div>`).join('') : '<p class="text-xs italic text-slate-400">-</p>';
     const jl = parseJSON('kader_riwayat_pekerjaan_json');
-    document.getElementById('v-profesi').innerHTML = jl.length ? jl.map(j => `<div class="mb-2"><p class="text-slate-900 font-bold text-sm">${j.jenis}</p><p class="text-[10px] text-slate-500">Jabatan: ${j.jabatan}</p></div>`).join('') : get('kader_profesi');
-
+    document.getElementById('v-profesi').innerHTML = jl.length ? jl.map(j => `<div class="mb-2"><p class="text-slate-900 font-bold text-sm">${j.jenis}</p><p class="text-[10px] text-slate-500">${j.jabatan}</p></div>`).join('') : get('kader_profesi');
     const ol = parseJSON('kader_riwayat_organisasi_json');
     document.getElementById('v-ormas').innerHTML = ol.length ? ol.map(o => `<span class="bg-slate-100 px-2 py-1 rounded text-[10px] font-bold text-slate-700">${o.nama}</span>`).join('') : '-';
-
     if(get('kader_is_it_expert') === 'YA') document.getElementById('v-it-expert').classList.remove('hidden');
 });
-
 function goTo(s) { window.location.href = `step${s}.html`; }
-
 async function finalSubmit() {
     if(!document.getElementById('confirm').checked) return alert("Centang konfirmasi.");
-    const btn = document.getElementById('btn-submit');
-    btn.disabled = true; document.getElementById('loading-screen').style.display = 'flex';
-    
-    const allData = {};
-    for (let i = 0; i < localStorage.length; i++) { let k = localStorage.key(i); allData[k] = localStorage.getItem(k); }
+    const btn = document.getElementById('btn-submit'); btn.disabled = true; document.getElementById('loading-screen').style.display = 'flex';
+    const allData = {}; for (let i = 0; i < localStorage.length; i++) { let k = localStorage.key(i); allData[k] = localStorage.getItem(k); }
     allData['submit_timestamp'] = new Date().toLocaleString('id-ID');
-
     try {
-        await fetch('https://script.google.com/macros/s/AKfycbwUtdW-bWOfCaa6XCvHmk-6j966oR04SEQd1QV-mgsExlQNLJxkFbxN_TuJNYYRl7Dq/exec', {
-            method: 'POST', mode: 'no-cors', body: JSON.stringify(allData)
-        });
+        await fetch('https://script.google.com/macros/s/AKfycbwUtdW-bWOfCaa6XCvHmk-6j966oR04SEQd1QV-mgsExlQNLJxkFbxN_TuJNYYRl7Dq/exec', { method: 'POST', mode: 'no-cors', body: JSON.stringify(allData) });
         localStorage.clear(); window.location.href = "success.html";
-    } catch (e) {
-        document.getElementById('loading-screen').style.display = 'none'; btn.disabled = false; alert("Gagal mengirim.");
-    }
+    } catch (e) { document.getElementById('loading-screen').style.display = 'none'; btn.disabled = false; alert("Gagal mengirim."); }
 }
-</script>
-</body>
-</html>
+</script></body></html>
