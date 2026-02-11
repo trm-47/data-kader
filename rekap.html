@@ -49,18 +49,27 @@
             margin-bottom: 10px;
             border-left: 4px solid var(--primary-color);
         }
+
         .rekap-card::before {
-    content: "";
-    position: absolute;
-    bottom: -20px;
-    right: -20px;
-    width: 150px;
-    height: 150px;
-    background: url('https://i.ibb.co.com/N2K0XRMW/logo-pdi.png') no-repeat;
-    background-size: contain;
-    opacity: 0.03; /* Sangat samar, hanya terlihat jika jeli */
-    z-index: 0;
-}
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 150px;
+            height: 150px;
+            background: url('https://i.ibb.co.com/N2K0XRMW/logo-pdi.png') no-repeat;
+            background-size: contain;
+            opacity: 0.03;
+            z-index: 0;
+        }
+
+        /* Divider Sultan */
+        .rekap-divider {
+            border: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #eee, transparent);
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -111,21 +120,28 @@
 
         <div class="rekap-card">
             <div class="section-title">
-                <span>5. Skill & Medsos</span>
+                <span>5. Organisasi & Medsos</span>
                 <a href="step6.html" class="edit-link">EDIT</a>
             </div>
+            
+            <h4 style="font-size: 11px; color: var(--soft-slate); margin: 0 0 10px;">ORGANISASI NON-PARTAI</h4>
+            <div id="rekapOrganisasi"></div>
+            
+            <hr class="rekap-divider">
+            
+            <h4 style="font-size: 11px; color: var(--soft-slate); margin: 0 0 10px;">SKILL & MEDIA SOSIAL</h4>
             <div id="rekapLainnya"></div>
         </div>
     </div>
 
     <div class="nav-slider" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
-        <button onclick="slide('left')" class="btn-outline-sm">⬅️</button>
-        <button onclick="slide('right')" class="btn-outline-sm">➡️</button>
+        <button onclick="slide('left')" class="btn-outline-sm">⬅️ Prev</button>
+        <button onclick="slide('right')" class="btn-outline-sm">Next ➡️</button>
     </div>
 
     <div style="padding: 0 5px;">
         <p style="font-size: 12px; color: #ef4444; text-align: center; margin-bottom: 15px; font-weight: 600;">
-            * Pastikan semua data sudah benar sebelum dikirim.
+            * Pastikan semua data sudah benar sebelum dikirim ke pusat.
         </p>
         <button onclick="submitSeluruhData()" class="btn-final">KIRIM DATA SEKARANG</button>
         <button onclick="window.history.back()" class="btn-outline-sm" style="width: 100%; margin-top: 10px;">Cek Kembali</button>
@@ -136,7 +152,6 @@
 <script>
     window.addEventListener('load', loadRekapitulasi);
 
-    // Fungsi Navigasi Slider
     function slide(direction) {
         const slider = document.getElementById('rekapSlider');
         const scrollAmount = slider.offsetWidth * 0.9;
@@ -149,35 +164,32 @@
         // 1. Render Foto
         if (data.foto) {
             document.getElementById('fotoPreviewRekap').innerHTML = `
-                <img src="${data.foto}" style="width:110px; height:110px; border-radius:20px; object-fit:cover; border: 4px solid white; box-shadow: var(--shadow-premium);">`;
+                <img src="${data.foto}" style="width:110px; height:110px; border-radius:20px; object-fit:cover; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">`;
         }
 
-        // 2. Render Data Pribadi
-        // --- GANTI BAGIAN NOMOR 2 DI rekap.html DENGAN INI ---
+        // 2. Render Data Pribadi (Premium Grid)
+        const pribadiFields = {
+            'Nama Lengkap': data.nama_lengkap,
+            'NIK': data.nik,
+            'No. KTA': data.no_kta || '-',
+            'Jenis Kelamin': data.jenis_kelamin,
+            'Kontak/WA': data.kontak,
+            'Pekerjaan': data.pekerjaan,
+            'Alamat': `${data.alamat || '-'}, RT ${data.rt || '0'}/RW ${data.rw || '0'}`,
+            'Wilayah': `${data.kelurahan || '-'}, ${data.kecamatan || '-'}, ${data.kab_kota || '-'}`
+        };
 
-// 2. Render Data Pribadi (Premium Grid)
-const pribadiFields = {
-    'Nama Lengkap': data.nama_lengkap,
-    'NIK': data.nik,
-    'No. KTA': data.no_kta || '-',
-    'Jenis Kelamin': data.jenis_kelamin,
-    'Kontak/WA': data.kontak,
-    'Pekerjaan': data.pekerjaan,
-    'Alamat': `${data.alamat || '-'}, RT ${data.rt || '0'}/RW ${data.rw || '0'}`,
-    'Wilayah': `${data.kelurahan || '-'}, ${data.kecamatan || '-'}, ${data.kab_kota || '-'}`
-};
+        let htmlPribadi = '<div class="rekap-grid">';
+        Object.entries(pribadiFields).forEach(([label, val]) => {
+            htmlPribadi += `
+                <div class="rekap-item-premium">
+                    <div class="rekap-label">${label}</div>
+                    <div class="rekap-value">${val || '-'}</div>
+                </div>`;
+        });
+        htmlPribadi += '</div>';
+        document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
 
-let htmlPribadi = '<div class="rekap-grid">';
-Object.entries(pribadiFields).forEach(([label, val]) => {
-    htmlPribadi += `
-        <div class="rekap-item-premium">
-            <div class="rekap-label">${label}</div>
-            <div class="rekap-value">${val}</div>
-        </div>`;
-});
-htmlPribadi += '</div>';
-
-document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
         // 3. Render Pendidikan Formal
         document.getElementById('rekapFormal').innerHTML = data.riwayat_pendidikan?.length 
             ? data.riwayat_pendidikan.map(p => `<div class="data-box"><b>${p.jenjang}: ${p.nama}</b><br><span style="font-size:11px;">${p.info || ''} | ${p.kota || ''} (${p.tahun || ''})</span></div>`).join('') 
@@ -185,10 +197,16 @@ document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
 
         // 4. Render Pendidikan Kader
         document.getElementById('rekapKader').innerHTML = data.riwayat_kader?.length 
-            ? data.riwayat_kader.map(k => `<div class="data-box" style="border-left-color: #ef4444;"><b>Kader ${k.jenis}</b><br><span style="font-size:11px;">${k.penyelenggara} (${k.tahun})</span></div>`).join('') 
+            ? data.riwayat_kader.map(k => `<div class="data-box" style="border-left-color: #D71920;"><b>Kader ${k.jenis}</b><br><span style="font-size:11px;">${k.penyelenggara} (${k.tahun})</span></div>`).join('') 
             : '<p style="color:gray; font-size:12px;">Tidak ada data.</p>';
 
-        // 5. Render Jabatan & Kerja
+        // 5. Render Organisasi (Sesuai Permintaan)
+        const orgData = data.riwayat_organisasi || [];
+        document.getElementById('rekapOrganisasi').innerHTML = orgData.length 
+            ? orgData.map(o => `<div class="data-box" style="border-left-color: #2563eb;"><b>${o.nama}</b><br><span style="font-size:11px;">${o.jabatan} | ${o.periode}</span></div>`).join('')
+            : '<p style="color:gray; font-size:12px;">Tidak ada riwayat organisasi.</p>';
+
+        // 6. Render Jabatan & Kerja
         document.getElementById('rekapJabatanPartai').innerHTML = data.riwayat_jabatan_partai?.length 
             ? data.riwayat_jabatan_partai.map(j => `<div style="font-size:13px; margin-bottom:8px; font-weight:600;">• ${j.jabatan} <span style="font-weight:400; color:gray;">(${j.periode})</span></div>`).join('') 
             : '-';
@@ -196,21 +214,43 @@ document.getElementById('rekapPribadi').innerHTML = htmlPribadi;
             ? data.riwayat_pekerjaan.map(p => `<div style="font-size:13px; margin-bottom:8px; font-weight:600;">• ${p.perusahaan} <br><span style="font-weight:400; color:gray; font-size:11px;">Jabatan: ${p.jabatan}</span></div>`).join('') 
             : '-';
 
-        // 6. Render Lainnya & Medsos
+        // 7. Render Lainnya & Medsos
         const ms = data.media_sosial || {};
         document.getElementById('rekapLainnya').innerHTML = `
-            <div class="rekap-item"><div class="rekap-label">Bahasa</div><div class="rekap-value">${data.kompetensi_bahasa || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">Komputer</div><div class="rekap-value">${data.kemampuan_komputer || '-'}</div></div>
-            <div class="rekap-item"><div class="rekap-label">Medsos</div>
-                <div class="rekap-value" style="font-size:12px; line-height:1.6;">
-                    IG: ${ms.instagram || '-'}<br>TikTok: ${ms.tiktok || '-'}<br>FB: ${ms.facebook || '-'}
+            <div class="rekap-grid">
+                <div class="rekap-item-premium">
+                    <div class="rekap-label">Bahasa</div>
+                    <div class="rekap-value">${data.kompetensi_bahasa || '-'}</div>
+                </div>
+                <div class="rekap-item-premium">
+                    <div class="rekap-label">Komputer</div>
+                    <div class="rekap-value">${data.kemampuan_komputer || '-'}</div>
+                </div>
+                <div class="rekap-item-premium" style="grid-column: span 2;">
+                    <div class="rekap-label">Media Sosial</div>
+                    <div class="rekap-value" style="font-size:12px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top:5px;">
+                        <span>📸 IG: ${ms.instagram || '-'}</span>
+                        <span>📱 TT: ${ms.tiktok || '-'}</span>
+                        <span>🔵 FB: ${ms.facebook || '-'}</span>
+                        <span>🐦 TW: ${ms.twitter_x || '-'}</span>
+                        <span>📺 YT: ${ms.youtube || '-'}</span>
+                        <span>💼 LI: ${ms.linkedin || '-'}</span>
+                    </div>
                 </div>
             </div>`;
     }
 
     async function submitSeluruhData() {
-        // Logika kirim ke Google Sheets yang kita bahas sebelumnya
-        alert("Merdeka! Data Anda sedang diproses.");
+        // Efek loading simpel
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = "Mengirim...";
+        
+        // Di sini nantinya fungsi kirim ke Google Sheets Bos
+        setTimeout(() => {
+            alert("Merdeka! Seluruh data berhasil dikirim.");
+            btn.innerHTML = "TERKIRIM ✅";
+        }, 2000);
     }
 </script>
 </body>
