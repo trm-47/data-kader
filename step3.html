@@ -165,159 +165,183 @@
     </div>
 
     <script>
-        // --- AUTO LOAD DATA SAAT HALAMAN DIBUKA ---
-        window.onload = function() {
-            loadData();
-        };
+    // --- AUTO LOAD DATA SAAT HALAMAN DIBUKA ---
+    window.onload = function() {
+        loadData();
+    };
 
-        function handleEduLogic(select) {
-            const card = select.closest('.entry-card');
-            const common = card.querySelector('.common-fields');
-            const sma = card.querySelector('.sma-fields');
-            const pt = card.querySelector('.pt-fields');
-            const val = select.value;
+    function handleEduLogic(select) {
+        const card = select.closest('.entry-card');
+        const common = card.querySelector('.common-fields');
+        const sma = card.querySelector('.sma-fields');
+        const pt = card.querySelector('.pt-fields');
+        const val = select.value;
 
-            if(val === "") {
-                common.classList.add('hidden');
-                return;
-            }
-
-            common.classList.remove('hidden');
-            
-            if(val === 'SMA') {
-                sma.classList.remove('hidden');
-                pt.classList.add('hidden');
-            } 
-            else if(['D1','D2','D3','D4','S1','S2','S3'].includes(val)) {
-                pt.classList.remove('hidden');
-                sma.classList.add('hidden');
-            }
-            else {
-                sma.classList.add('hidden');
-                pt.classList.add('hidden');
-            }
+        if(val === "") {
+            common.classList.add('hidden');
+            return;
         }
 
-        function toggleKaderDetail(select) {
-            const detail = select.closest('.entry-card').querySelector('.kader-detail');
-            if(select.value !== "" && select.value !== "BELUM") detail.classList.remove('hidden');
-            else detail.classList.add('hidden');
+        common.classList.remove('hidden');
+        
+        if(val === 'SMA') {
+            sma.classList.remove('hidden');
+            pt.classList.add('hidden');
+        } 
+        else if(['D1','D2','D3','D4','S1','S2','S3'].includes(val)) {
+            pt.classList.remove('hidden');
+            sma.classList.add('hidden');
         }
+        else {
+            sma.classList.add('hidden');
+            pt.classList.add('hidden');
+        }
+    }
 
-        function addEdu() {
+    function toggleKaderDetail(select) {
+        const detail = select.closest('.entry-card').querySelector('.kader-detail');
+        if(select.value !== "" && select.value !== "BELUM") detail.classList.remove('hidden');
+        else detail.classList.add('hidden');
+    }
+
+    function addEdu() {
+        const container = document.getElementById('edu-container');
+        const clone = container.firstElementChild.cloneNode(true);
+        // Reset semua input di clone
+        clone.querySelectorAll('input, select').forEach(i => i.value = "");
+        clone.querySelector('.common-fields').classList.add('hidden');
+        clone.querySelector('.sma-fields').classList.add('hidden');
+        clone.querySelector('.pt-fields').classList.add('hidden');
+        
+        // Tambahkan tombol hapus jika lebih dari 1
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = "× HAPUS JENJANG";
+        deleteBtn.className = "text-[9px] font-black text-red-400 mt-4 block hover:text-red-700";
+        deleteBtn.onclick = function() { clone.remove(); };
+        clone.appendChild(deleteBtn);
+
+        container.appendChild(clone);
+        return clone;
+    }
+
+    function addKader() {
+        const container = document.getElementById('kader-container');
+        const clone = container.firstElementChild.cloneNode(true);
+        clone.querySelectorAll('input, select').forEach(i => i.value = "");
+        clone.querySelector('.kader-detail').classList.add('hidden');
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML = "× HAPUS SERTIFIKASI";
+        deleteBtn.className = "text-[9px] font-black text-red-400 mt-4 block hover:text-red-700";
+        deleteBtn.onclick = function() { clone.remove(); };
+        clone.appendChild(deleteBtn);
+
+        container.appendChild(clone);
+        return clone;
+    }
+
+    function loadData() {
+        const savedEdu = localStorage.getItem('kader_riwayat_pendidikan_json');
+        const savedKader = localStorage.getItem('kader_riwayat_kaderisasi_json');
+
+        if (savedEdu) {
+            const eduData = JSON.parse(savedEdu);
             const container = document.getElementById('edu-container');
-            const clone = container.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.common-fields').classList.add('hidden');
-            container.appendChild(clone);
-            return clone; // Return clone for loadData logic
+            // Bersihkan container dulu jika ada data tersimpan
+            container.innerHTML = ""; 
+            
+            eduData.forEach((data) => {
+                const card = addEdu(); // Buat card baru
+                const levelSelect = card.querySelector('.edu-level');
+                levelSelect.value = data.jenjang;
+                handleEduLogic(levelSelect);
+                card.querySelector('.edu-name').value = data.nama;
+                card.querySelector('.edu-year').value = data.tahun;
+                if (data.jenjang === 'SMA') {
+                    card.querySelector('.sma-jurusan').value = data.jurusan;
+                } else if (data.fakultas !== "-") {
+                    if(card.querySelector('.pt-fakultas')) card.querySelector('.pt-fakultas').value = data.fakultas;
+                    if(card.querySelector('.pt-jurusan')) card.querySelector('.pt-jurusan').value = data.jurusan;
+                    if(card.querySelector('.pt-status')) card.querySelector('.pt-status').value = data.status;
+                }
+            });
         }
 
-        function addKader() {
+        if (savedKader) {
+            const kaderData = JSON.parse(savedKader);
             const container = document.getElementById('kader-container');
-            const clone = container.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.kader-detail').classList.add('hidden');
-            container.appendChild(clone);
-            return clone; // Return clone for loadData logic
-        }
+            container.innerHTML = "";
 
-        function loadData() {
-            const savedEdu = localStorage.getItem('kader_riwayat_pendidikan_json');
-            const savedKader = localStorage.getItem('kader_riwayat_kaderisasi_json');
-
-            if (savedEdu) {
-                const eduData = JSON.parse(savedEdu);
-                const container = document.getElementById('edu-container');
-                eduData.forEach((data, index) => {
-                    if (index > 0) addEdu();
-                    const cards = container.querySelectorAll('.entry-card');
-                    const currentCard = cards[index];
-                    const levelSelect = currentCard.querySelector('.edu-level');
-                    levelSelect.value = data.jenjang;
-                    handleEduLogic(levelSelect);
-                    currentCard.querySelector('.edu-name').value = data.nama;
-                    currentCard.querySelector('.edu-year').value = data.tahun;
-                    if (data.jenjang === 'SMA') {
-                        currentCard.querySelector('.sma-jurusan').value = data.jurusan;
-                    } else if (data.fakultas !== "-") {
-                        currentCard.querySelector('.pt-fakultas').value = data.fakultas;
-                        currentCard.querySelector('.pt-jurusan').value = data.jurusan;
-                        currentCard.querySelector('.pt-status').value = data.status;
-                    }
-                });
-            }
-
-            if (savedKader) {
-                const kaderData = JSON.parse(savedKader);
-                const container = document.getElementById('kader-container');
-                kaderData.forEach((data, index) => {
-                    if (index > 0) addKader();
-                    const cards = container.querySelectorAll('.entry-card');
-                    const currentCard = cards[index];
-                    const typeSelect = currentCard.querySelector('.kader-type');
-                    typeSelect.value = data.tingkat;
-                    toggleKaderDetail(typeSelect);
-                    if (data.tingkat !== "BELUM") {
-                        currentCard.querySelector('.kader-year').value = data.tahun;
-                        currentCard.querySelector('.kader-host').value = data.penyelenggara;
-                    }
-                });
-            }
-        }
-
-        function saveStep3() {
-            const eduCards = document.querySelectorAll('#edu-container .entry-card');
-            const riwayatPendidikan = [];
-            let pendidikanTerakhir = "-";
-            let tahunLulusTerakhir = "-";
-
-            eduCards.forEach(card => {
-                const level = card.querySelector('.edu-level').value;
-                if (level) {
-                    const nama = card.querySelector('.edu-name').value;
-                    const tahun = card.querySelector('.edu-year').value;
-                    riwayatPendidikan.push({
-                        jenjang: level,
-                        nama: nama,
-                        tahun: tahun || "-",
-                        jurusan: level === 'SMA' ? card.querySelector('.sma-jurusan').value : (card.querySelector('.pt-jurusan')?.value || "-"),
-                        fakultas: card.querySelector('.pt-fakultas')?.value || "-",
-                        status: card.querySelector('.pt-status')?.value || "LULUS"
-                    });
-                    pendidikanTerakhir = level + " " + nama;
-                    tahunLulusTerakhir = tahun || "-";
+            kaderData.forEach((data) => {
+                const card = addKader();
+                const typeSelect = card.querySelector('.kader-type');
+                typeSelect.value = data.tingkat;
+                toggleKaderDetail(typeSelect);
+                if (data.tingkat !== "BELUM") {
+                    card.querySelector('.kader-year').value = data.tahun;
+                    card.querySelector('.kader-host').value = data.penyelenggara;
                 }
             });
-
-            const kaderCards = document.querySelectorAll('#kader-container .entry-card');
-            const riwayatKaderisasi = [];
-            let sertifikatTertinggi = "BELUM KADERISASI";
-            let tahunKaderTertinggi = "-";
-
-            kaderCards.forEach(card => {
-                const type = card.querySelector('.kader-type').value;
-                if (type && type !== "BELUM") {
-                    const thn = card.querySelector('.kader-year').value;
-                    riwayatKaderisasi.push({
-                        tingkat: type,
-                        tahun: thn || "-",
-                        penyelenggara: card.querySelector('.kader-host').value || "-"
-                    });
-                    sertifikatTertinggi = type;
-                    tahunKaderTertinggi = thn || "-";
-                }
-            });
-
-            localStorage.setItem('kader_riwayat_pendidikan_json', JSON.stringify(riwayatPendidikan));
-            localStorage.setItem('kader_riwayat_kaderisasi_json', JSON.stringify(riwayatKaderisasi));
-            localStorage.setItem('kader_pendidikan', pendidikanTerakhir);
-            localStorage.setItem('kader_tahun_lulus', tahunLulusTerakhir);
-            localStorage.setItem('kader_tingkat', sertifikatTertinggi);
-            localStorage.setItem('kader_tahun_kaderisasi', tahunKaderTertinggi);
-
-            window.location.href = "step4.html";
         }
-    </script>
+    }
+
+    function saveStep3() {
+        // --- 1. PROSES PENDIDIKAN ---
+        const eduCards = document.querySelectorAll('#edu-container .entry-card');
+        const riwayatPendidikan = [];
+        
+        eduCards.forEach(card => {
+            const level = card.querySelector('.edu-level').value;
+            if (level) {
+                riwayatPendidikan.push({
+                    jenjang: level,
+                    nama: card.querySelector('.edu-name').value || "-",
+                    tahun: card.querySelector('.edu-year').value || "-",
+                    jurusan: level === 'SMA' ? card.querySelector('.sma-jurusan').value : (card.querySelector('.pt-jurusan')?.value || "-"),
+                    fakultas: card.querySelector('.pt-fakultas')?.value || "-",
+                    status: card.querySelector('.pt-status')?.value || "LULUS"
+                });
+            }
+        });
+
+        // --- 2. PROSES KADERISASI ---
+        const kaderCards = document.querySelectorAll('#kader-container .entry-card');
+        const riwayatKaderisasi = [];
+        
+        kaderCards.forEach(card => {
+            const type = card.querySelector('.kader-type').value;
+            if (type && type !== "BELUM") {
+                riwayatKaderisasi.push({
+                    tingkat: type,
+                    tahun: card.querySelector('.kader-year').value || "-",
+                    penyelenggara: card.querySelector('.kader-host').value || "-"
+                });
+            }
+        });
+
+        // --- 3. SIMPAN KE LOCALSTORAGE ---
+        // Simpan versi Detil (Array JSON)
+        localStorage.setItem('kader_riwayat_pendidikan_json', JSON.stringify(riwayatPendidikan));
+        localStorage.setItem('kader_riwayat_kaderisasi_json', JSON.stringify(riwayatKaderisasi));
+
+        // Simpan versi Ringkasan (Untuk Headings Review)
+        if(riwayatPendidikan.length > 0) {
+            const lastEdu = riwayatPendidikan[riwayatPendidikan.length - 1];
+            localStorage.setItem('kader_pendidikan', `${lastEdu.jenjang} ${lastEdu.nama}`);
+            localStorage.setItem('kader_tahun_lulus', lastEdu.tahun);
+        }
+
+        if(riwayatKaderisasi.length > 0) {
+            const lastKader = riwayatKaderisasi[riwayatKaderisasi.length - 1];
+            localStorage.setItem('kader_tingkat', lastKader.tingkat);
+            localStorage.setItem('kader_tahun_kaderisasi', lastKader.tahun);
+        } else {
+            localStorage.setItem('kader_tingkat', 'BELUM KADERISASI');
+            localStorage.setItem('kader_tahun_kaderisasi', '-');
+        }
+
+        window.location.href = "step4.html";
+    }
+</script>
 </body>
 </html>
