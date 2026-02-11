@@ -370,3 +370,77 @@ function deletePekerjaan(index) {
     localStorage.setItem('kaderData', JSON.stringify(data));
     renderPekerjaan();
 }
+
+/* ==========================================
+   LOGIKA STEP 6: ORGANISASI & FINAL SUBMIT
+   ========================================== */
+
+function addOrganisasi() {
+    const nama = document.getElementById('org_nama').value.trim();
+    const jabatan = document.getElementById('org_jabatan').value.trim();
+    const periode = document.getElementById('org_periode').value.trim();
+
+    if (!nama || !jabatan || !periode) {
+        alert("Lengkapi data organisasi!");
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_organisasi || [];
+    list.push({ nama, jabatan, periode });
+    data.riwayat_organisasi = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+
+    document.getElementById('org_nama').value = '';
+    document.getElementById('org_jabatan').value = '';
+    document.getElementById('org_periode').value = '';
+    renderOrganisasi();
+}
+
+function renderOrganisasi() {
+    const container = document.getElementById('orgList');
+    if(!container) return;
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_organisasi || [];
+
+    container.innerHTML = list.map((item, index) => `
+        <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #64748b; display: flex; justify-content: space-between;">
+            <div style="font-size: 12px;"><b>${item.nama}</b> - ${item.jabatan} (${item.periode})</div>
+            <button onclick="deleteOrg(${index})" style="color:red; border:none; background:none;">&times;</button>
+        </div>
+    `).join('');
+}
+
+function deleteOrg(index) {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    data.riwayat_organisasi.splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderOrganisasi();
+}
+
+function finalSubmit() {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+
+    // Ambil Kompetensi Bahasa
+    const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
+    let bahasaList = Array.from(checkboxes).map(cb => cb.value);
+    const lainnya = document.getElementById('bahasa_lainnya').value.trim();
+    if(lainnya) bahasaList.push(lainnya);
+
+    // Ambil Komputer & Medsos
+    data.kompetensi_bahasa = bahasaList.join(', ');
+    data.kemampuan_komputer = document.getElementById('komputer').value;
+    data.media_sosial = {
+        facebook: document.getElementById('medsos_fb').value || '-',
+        instagram: document.getElementById('medsos_ig').value || '-',
+        tiktok: document.getElementById('medsos_tiktok').value || '-'
+    };
+
+    localStorage.setItem('kaderData', JSON.stringify(data));
+
+    console.log("DATA FINAL SIAP KIRIM:", data);
+    alert("Data Berhasil Disimpan Lokal! Menghubungkan ke Database...");
+    
+    // Di sini nanti Bos bisa hubungkan ke Google Sheets API atau database Backend
+    // window.location.href = 'finish.html';
+}
