@@ -221,24 +221,31 @@
         }
 
 function saveStep4() {
-    // 1. Tangkap Data Struktural
+    // 1. Ambil Data Struktural
     const strukCards = document.querySelectorAll('#struktural-container .entry-card');
     const riwayatStruktural = [];
-    
+    let jabatanSekarang = "-";
+
     strukCards.forEach(card => {
         const tingkat = card.querySelector('.tingkat-pengurus').value;
-        if(tingkat) {
+        const jabatan = card.querySelector('.jabatan-nama').value;
+        const thnMulai = card.querySelector('.thn-mulai').value;
+        const thnSelesai = card.querySelector('.thn-selesai').value;
+
+        if(tingkat && jabatan) {
             riwayatStruktural.push({
                 tingkat: tingkat,
-                jabatan: card.querySelector('.jabatan-nama').value,
+                jabatan: jabatan,
                 bidang: card.querySelector('.bidang-nama')?.value || "-",
-                mulai: card.querySelectorAll('input[type="number"]')[0].value,
-                selesai: card.querySelectorAll('input[type="number"]')[1].value
+                mulai: thnMulai,
+                selesai: thnSelesai
             });
+            // Ambil salah satu untuk ringkasan di Review
+            jabatanSekarang = `${jabatan} ${tingkat}`;
         }
     });
 
-    // 2. Tangkap Data Penugasan (Legislatif/Eksekutif)
+    // 2. Ambil Data Penugasan (Legislatif/Eksekutif)
     const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
     const riwayatPenugasan = [];
 
@@ -262,12 +269,15 @@ function saveStep4() {
         }
     });
 
-    // 3. Simpan Ke LocalStorage
-    localStorage.setItem('kader_riwayat_struktural', JSON.stringify(riwayatStruktural));
-    localStorage.setItem('kader_riwayat_penugasan', JSON.stringify(riwayatPenugasan));
+    // 3. Simpan Ke LocalStorage (Versi JSON & Versi Flat untuk Review)
+    localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
+    localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
+    
+    // String simpel untuk Review.html
+    localStorage.setItem('kader_jabatan_ringkas', jabatanSekarang);
+    localStorage.setItem('kader_total_penugasan', riwayatPenugasan.length > 0 ? riwayatPenugasan[0].jenis : "-");
 
-    // 4. MAPPING FLAT (Untuk Kolom "Super Lebar" di Sheets)
-    // Ini yang bikin Admin Dashboard nanti bisa filter per tingkat dengan presisi
+    // 4. MAPPING UNTUK GOOGLE SHEETS (Checklist)
     localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
     localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
     localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
@@ -276,8 +286,8 @@ function saveStep4() {
     localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
     localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
 
-    // 5. GAS KE REVIEW
-    window.location.href = "step5.html";
+    // 5. GAS KE STEP 5 (Atau langsung ke Review jika ini step terakhir)
+    window.location.href = "step5.html"; 
 }
     </script>
 </body>
