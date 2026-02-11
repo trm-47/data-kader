@@ -3,127 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sensus Kader PDI Perjuangan DIY 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #0f172a; 
-            overflow: hidden;
-        }
-
-        /* Background Animasi Halus */
-        .bg-pattern {
-            background-image: url('https://www.transparenttextures.com/patterns/cubes.png');
-            background-color: #0f172a;
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; opacity: 0.3;
-        }
-
-        .hero-glow {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; height: 500px;
-            background: radial-gradient(circle at center, rgba(185, 28, 28, 0.15) 0%, transparent 70%);
-            z-index: 1;
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
-            box-shadow: 0 15px 35px -10px rgba(185, 28, 28, 0.5);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .btn-premium:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 40px -12px rgba(185, 28, 28, 0.7);
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 40px;
-        }
-
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-    </style>
+    <title>Sistem Data Kader | Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen flex items-center justify-center p-6 relative">
+<body>
 
-    <div class="bg-pattern"></div>
-    <div class="hero-glow"></div>
-
-    <div class="max-w-md w-full relative z-10 text-center">
-        
-        <div class="mb-10 floating">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-                 alt="Logo PDI Perjuangan" 
-                 class="w-32 mx-auto drop-shadow-[0_0_35px_rgba(185,28,28,0.4)]">
-        </div>
-
-        <div class="mb-12">
-            <p class="text-[10px] font-black text-red-600 uppercase tracking-[0.4em] mb-3">Aplikasi Digital Sensus</p>
-            <h1 class="text-4xl font-black italic uppercase tracking-tighter leading-[0.9] text-white">
-                DATABASE KADER <br> 
-                <span class="text-red-600">TERPUSAT</span>
-            </h1>
-            <p class="text-slate-400 text-[9px] mt-6 font-bold tracking-[0.3em] uppercase opacity-70">
-                DPD PDI Perjuangan Daerah Istimewa Yogyakarta
-            </p>
-        </div>
-
-        <div class="glass-card p-10 mb-10 text-left relative overflow-hidden group">
-            <div class="absolute top-0 right-0 p-4 opacity-5">
-                 <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="w-20">
+    <div class="container">
+        <div class="welcome-card">
+            <div class="logo-area">
+                <img src="https://via.placeholder.com/100" alt="Logo Partai" class="logo">
             </div>
             
-            <h2 class="text-[10px] font-black text-white uppercase tracking-widest mb-6 border-l-4 border-red-700 pl-3">
-                Persiapan Pengisian
-            </h2>
+            <h1>Pendataan Kader Digital</h1>
+            <p>Selamat datang. Pastikan Anda menyiapkan pas foto dan data riwayat hidup untuk pengisian yang akurat.</p>
             
-            <ul class="space-y-5 text-[11px] font-bold text-slate-300">
-                <li class="flex items-center gap-4">
-                    <span class="w-6 h-6 rounded-xl bg-red-700/20 text-red-500 flex items-center justify-center text-[10px] border border-red-700/30">01</span>
-                    Kartu Tanda Penduduk (KTP)
-                </li>
-                <li class="flex items-center gap-4">
-                    <span class="w-6 h-6 rounded-xl bg-red-700/20 text-red-500 flex items-center justify-center text-[10px] border border-red-700/30">02</span>
-                    KTA Partai (Jika Memiliki)
-                </li>
-                <li class="flex items-center gap-4">
-                    <span class="w-6 h-6 rounded-xl bg-red-700/20 text-red-500 flex items-center justify-center text-[10px] border border-red-700/30">03</span>
-                    Foto Resmi Atribut Partai
-                </li>
-            </ul>
-        </div>
+            <div class="features-brief">
+                <div class="item">✓ Multi-step Form</div>
+                <div class="item">✓ Auto-save Data</div>
+                <div class="item">✓ Resume Profesional</div>
+            </div>
 
-        <a href="step1.html" class="btn-premium w-full flex items-center justify-center gap-4 text-white font-black py-7 rounded-[2rem] uppercase text-xs tracking-[0.3em]">
-            <span>MULAI SENSUS KADER</span>
-            <svg xmlns="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-        </a>
-
-        <div class="mt-10 flex flex-col items-center gap-3">
-            <div class="h-[1px] w-12 bg-slate-800"></div>
-            <p class="text-[8px] text-slate-500 font-bold uppercase tracking-[0.2em] leading-relaxed">
-                © Sekretariat DPD PDI Perjuangan <br> 
-                Daerah Istimewa Yogyakarta 2026
-            </p>
+            <button onclick="startForm()" class="btn-primary">Mulai Pengisian</button>
+            <p class="footer-note">Aplikasi dioptimalkan untuk perangkat Android & iOS</p>
         </div>
     </div>
 
-    <div class="fixed bottom-[-100px] left-[-100px] opacity-[0.03] pointer-events-none z-0">
-        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="w-[600px]">
-    </div>
-
+    <script>
+        function startForm() {
+            // Kita bersihkan data lama jika ingin memulai dari nol
+            localStorage.clear();
+            window.location.href = 'step1.html';
+        }
+    </script>
 </body>
 </html>
