@@ -72,7 +72,49 @@
 
 <script src="script.js"></script>
 <script>
-    window.addEventListener('load', renderOrganisasi);
+    // Load data organisasi saat halaman dibuka
+    window.addEventListener('load', () => {
+        if (typeof renderOrganisasi === 'function') {
+            renderOrganisasi();
+        }
+    });
+
+    // Fungsi navigasi ke halaman Rekap
+    function goToReview() {
+        try {
+            let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+
+            // 1. Ambil Kompetensi Bahasa
+            const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
+            let bahasaList = Array.from(checkboxes).map(cb => cb.value);
+            const lainnya = document.getElementById('bahasa_lainnya').value.trim();
+            if(lainnya) bahasaList.push(lainnya);
+
+            // 2. Simpan Kompetensi & Komputer
+            data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
+            data.kemampuan_komputer = document.getElementById('komputer').value;
+
+            // 3. Ambil Semua Akun Medsos
+            data.media_sosial = {
+                facebook: document.getElementById('medsos_fb').value.trim() || '-',
+                instagram: document.getElementById('medsos_ig').value.trim() || '-',
+                tiktok: document.getElementById('medsos_tiktok').value.trim() || '-',
+                twitter_x: document.getElementById('medsos_twitter').value.trim() || '-',
+                youtube: document.getElementById('medsos_youtube').value.trim() || '-',
+                linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
+            };
+
+            // 4. Update LocalStorage
+            localStorage.setItem('kaderData', JSON.stringify(data));
+
+            // 5. Pindah Halaman
+            window.location.href = 'rekap.html';
+            
+        } catch (error) {
+            console.error("Gagal menyimpan data:", error);
+            alert("Ada kendala teknis, pastikan semua input sudah benar.");
+        }
+    }
 </script>
 </body>
 </html>
