@@ -10,8 +10,6 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
         .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
         .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-bottom: 12px; }
-        
-        /* Checkbox Custom Style */
         .check-content { transition: all 0.3s ease; cursor: pointer; }
         input[type="checkbox"]:checked + .check-content { border-color: #b91c1c; background-color: #fef2f2; color: #b91c1c; }
     </style>
@@ -68,12 +66,12 @@
                     </label>
 
                     <label class="relative">
-                        <input type="checkbox" name="lang" value="Inggris" class="hidden peer">
+                        <input type="checkbox" name="lang" value="INGGRIS" class="hidden peer">
                         <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Inggris</div>
                     </label>
 
                     <label class="relative">
-                        <input type="checkbox" name="lang" value="Mandarin" class="hidden peer">
+                        <input type="checkbox" name="lang" value="MANDARIN" class="hidden peer">
                         <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Mandarin</div>
                     </label>
 
@@ -127,42 +125,73 @@
         }
 
         function saveStep6() {
-    // 1. Koleksi Data Bahasa
-    let daftarBahasa = ['INDONESIA']; // Indonesia default
-    const checkboxes = document.querySelectorAll('input[name="lang"]:checked');
-    
-    checkboxes.forEach(cb => {
-        const val = cb.value.toUpperCase();
-        if(!daftarBahasa.includes(val)) {
-            daftarBahasa.push(val);
+            let daftarBahasa = ['INDONESIA'];
+            const checkboxes = document.querySelectorAll('input[name="lang"]:checked');
+            
+            checkboxes.forEach(cb => {
+                const val = cb.value.toUpperCase();
+                if(!daftarBahasa.includes(val)) {
+                    daftarBahasa.push(val);
+                }
+            });
+
+            const otherCheck = document.getElementById('lang-other-check');
+            const otherInput = document.getElementById('lang-other-input');
+            if(otherCheck.checked && otherInput.value.trim() !== "") {
+                const otherVal = otherInput.value.trim().toUpperCase();
+                if(!daftarBahasa.includes(otherVal)) {
+                    daftarBahasa.push(otherVal);
+                }
+            }
+
+            const skill = document.getElementById('komputer-skill').value;
+
+            // Simpan data utama
+            localStorage.setItem('kader_bahasa', daftarBahasa.join(', '));
+            localStorage.setItem('kader_komputer', skill);
+
+            // Mapping Logika untuk Database
+            localStorage.setItem('kader_is_it_expert', (skill === 'ADVANCE') ? 'YA' : '-');
+            localStorage.setItem('kader_is_multilingual', (daftarBahasa.length > 2) ? 'YA' : '-');
+
+            window.location.href = "review.html";
         }
-    });
 
-    // Ambil input bahasa lainnya jika checkbox-nya dicentang
-    const otherCheck = document.getElementById('lang-other-check');
-    const otherInput = document.getElementById('lang-other-input');
-    if(otherCheck.checked && otherInput.value.trim() !== "") {
-        const otherVal = otherInput.value.trim().toUpperCase();
-        // Cegah duplikasi jika user ketik "INGGRIS" padahal sudah ada di pilihan
-        if(!daftarBahasa.includes(otherVal)) {
-            daftarBahasa.push(otherVal);
-        }
-    }
+        // --- FUNGSI LOAD DATA SAAT HALAMAN DIBUKA ---
+        window.onload = function() {
+            const savedBahasa = localStorage.getItem('kader_bahasa');
+            const savedKomputer = localStorage.getItem('kader_komputer');
 
-    // 2. Koleksi Skill Komputer
-    const skill = document.getElementById('komputer-skill').value;
+            // 1. Restore Dropdown Komputer
+            if(savedKomputer) {
+                document.getElementById('komputer-skill').value = savedKomputer;
+            }
 
-    // 3. Simpan ke LocalStorage
-    localStorage.setItem('kader_bahasa', daftarBahasa.join(', '));
-    localStorage.setItem('kader_komputer', skill);
+            // 2. Restore Checkbox Bahasa
+            if(savedBahasa) {
+                const listBahasa = savedBahasa.split(', ').map(s => s.trim().toUpperCase());
+                
+                // Cek Bahasa Standar (Inggris/Mandarin)
+                const langCheckboxes = document.querySelectorAll('input[name="lang"]');
+                langCheckboxes.forEach(cb => {
+                    if(listBahasa.includes(cb.value.toUpperCase())) {
+                        cb.checked = true;
+                    }
+                });
 
-    // 4. Mapping Logika untuk Database (Penting untuk filter SDM)
-    localStorage.setItem('kader_is_it_expert', (skill === 'ADVANCE') ? 'YA' : '-');
-    localStorage.setItem('kader_is_multilingual', (daftarBahasa.length > 2) ? 'YA' : '-');
+                // Cek Bahasa "Lainnya"
+                // Kita cari bahasa di list yang bukan Indonesia, Inggris, atau Mandarin
+                const standar = ['INDONESIA', 'INGGRIS', 'MANDARIN'];
+                const lainLain = listBahasa.filter(b => !standar.includes(b));
 
-    // 5. GAS KE REVIEW FINAL
-    window.location.href = "review.html";
-}
+                if(lainLain.length > 0) {
+                    const otherCheck = document.getElementById('lang-other-check');
+                    otherCheck.checked = true;
+                    toggleOtherLang(otherCheck);
+                    document.getElementById('lang-other-input').value = lainLain.join(', ');
+                }
+            }
+        };
     </script>
 </body>
 </html>
