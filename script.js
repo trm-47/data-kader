@@ -1,46 +1,106 @@
 /* ==========================================
-   LOGIKA STEP 1: DATA PRIBADI
+    LOGIKA STEP 1: DATA PRIBADI (SULTAN EDITION)
    ========================================== */
 
 function saveStep1() {
+    // 1. Ambil elemen gender
     const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
+    
+    // 2. Daftar ID field sesuai HTML
     const fields = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
     
     let dataStep1 = {
         jenis_kelamin: genderEl ? genderEl.value : ''
     };
 
+    // 3. Loop ambil nilai
     fields.forEach(f => {
         const el = document.getElementById(f);
         dataStep1[f] = el ? el.value.trim() : '';
     });
 
-    // Validasi Mandatory: Semua harus diisi atau diisi "-"
+    // 4. Validasi Premium
     const isMissing = fields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin;
-
     if (isMissing) {
-        alert("Semua kolom wajib diisi! Jika tidak ada, isi dengan tanda minus (-)");
+        // Efek goyang (shake) pada tombol jika gagal bisa ditambah nanti, sementara alert premium:
+        alert("⚠️ Instruksi: Semua kolom wajib diisi. Gunakan (-) jika tidak ada data.");
         return;
     }
 
+    // 5. MERGE DATA (Agar Foto tidak hilang)
+    // Kita ambil data lama (mungkin sudah ada foto dari handler di bawah)
     let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
     
+    // Gabungkan: Data Lama + Data Baru dari Step 1
+    const finalData = { ...existing, ...dataStep1 };
+    
+    localStorage.setItem('kaderData', JSON.stringify(finalData));
+    
+    // 6. Transisi Halus ke Step 2
     window.location.href = 'step2.html';
 }
 
-// Handler Foto Selfie
+/* ==========================================
+    HANDLER FOTO SELFIE (PREMIUM PREVIEW)
+   ========================================== */
 document.getElementById('photoInput')?.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validasi Ukuran (Opsional tapi disarankan agar localStorage tidak penuh)
+    if (file.size > 2 * 1024 * 1024) { // 2MB
+        alert("Ukuran foto terlalu besar, maksimal 2MB ya Bos.");
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = function() {
         const preview = document.getElementById('photoPreview');
-        if(preview) preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        if(preview) {
+            // Styling preview agar sesuai dengan class .photo-preview di CSS Luxury
+            preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            preview.style.border = "3px solid var(--primary-red)";
+        }
         
+        // Simpan foto ke localStorage secara instan
         let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
         existing.foto = reader.result;
         localStorage.setItem('kaderData', JSON.stringify(existing));
     }
-    if (e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+    reader.readAsDataURL(file);
+});
+
+/* ==========================================
+    AUTO-LOAD DATA (Jika user klik Back)
+   ========================================== */
+window.addEventListener('DOMContentLoaded', () => {
+    // Jika user balik lagi ke Step 1, isi otomatis field yang sudah pernah diisi
+    const savedData = JSON.parse(localStorage.getItem('kaderData'));
+    if (savedData) {
+        if (savedData.nama_lengkap) document.getElementById('nama_lengkap').value = savedData.nama_lengkap;
+        if (savedData.nik) document.getElementById('nik').value = savedData.nik;
+        if (savedData.no_kta) document.getElementById('no_kta').value = savedData.no_kta;
+        if (savedData.alamat) document.getElementById('alamat').value = savedData.alamat;
+        if (savedData.rt) document.getElementById('rt').value = savedData.rt;
+        if (savedData.rw) document.getElementById('rw').value = savedData.rw;
+        if (savedData.kelurahan) document.getElementById('kelurahan').value = savedData.kelurahan;
+        if (savedData.kecamatan) document.getElementById('kecamatan').value = savedData.kecamatan;
+        if (savedData.kab_kota) document.getElementById('kab_kota').value = savedData.kab_kota;
+        if (savedData.pekerjaan) document.getElementById('pekerjaan').value = savedData.pekerjaan;
+        if (savedData.kontak) document.getElementById('kontak').value = savedData.kontak;
+        
+        // Load Gender
+        if (savedData.jenis_kelamin) {
+            const radio = document.querySelector(`input[name="jenis_kelamin"][value="${savedData.jenis_kelamin}"]`);
+            if (radio) radio.checked = true;
+        }
+
+        // Load Foto Preview
+        if (savedData.foto) {
+            const preview = document.getElementById('photoPreview');
+            if (preview) preview.innerHTML = `<img src="${savedData.foto}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+        }
+    }
 });
 
 /* ==========================================
