@@ -310,3 +310,63 @@ function deleteJabatanPartai(index) {
     localStorage.setItem('kaderData', JSON.stringify(data));
     renderJabatan();
 }
+
+/* ==========================================
+   LOGIKA STEP 5: RIWAYAT PEKERJAAN
+   ========================================== */
+
+function addPekerjaan() {
+    const perusahaan = document.getElementById('nama_perusahaan').value.trim();
+    const jabatan = document.getElementById('jabatan_kerja').value.trim();
+    const masa = document.getElementById('masa_kerja').value.trim();
+
+    if (!perusahaan || !jabatan || !masa) {
+        alert("Lengkapi data pekerjaan! Jika tidak ada, isi dengan tanda (-)");
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let listPekerjaan = data.riwayat_pekerjaan || [];
+
+    listPekerjaan.push({ perusahaan, jabatan, masa });
+    data.riwayat_pekerjaan = listPekerjaan;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+
+    // Reset Form
+    document.getElementById('nama_perusahaan').value = '';
+    document.getElementById('jabatan_kerja').value = '';
+    document.getElementById('masa_kerja').value = '';
+
+    renderPekerjaan();
+}
+
+function renderPekerjaan() {
+    const container = document.getElementById('pekerjaanList');
+    if(!container) return;
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_pekerjaan || [];
+
+    if (list.length === 0) {
+        container.innerHTML = '<p style="font-size: 12px; color: #94a3b8; text-align: center;">Belum ada riwayat pekerjaan.</p>';
+        return;
+    }
+
+    container.innerHTML = list.map((item, index) => `
+        <div style="background: #f1f5f9; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #475569; display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b;">${item.perusahaan}</div>
+                <div style="font-size: 11px; color: #475569;">Jabatan: ${item.jabatan}</div>
+                <div style="font-size: 11px; color: #64748b;">Masa: ${item.masa}</div>
+            </div>
+            <button onclick="deletePekerjaan(${index})" style="background: none; border: none; color: #ef4444; font-size: 20px; cursor:pointer;">&times;</button>
+        </div>
+    `).join('');
+}
+
+function deletePekerjaan(index) {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    data.riwayat_pekerjaan.splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPekerjaan();
+}
