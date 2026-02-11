@@ -721,3 +721,8 @@ window.addEventListener('DOMContentLoaded', () => {
         renderPenugasan();
     }
 });
+// Fungsi pembantu agar tidak error jika field tidak lengkap
+function safeSet(id, content) {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = content;
+}
