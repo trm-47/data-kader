@@ -49,35 +49,35 @@
             </div>
         </div>
 
-        <div id="wrap_pt" style="display: none;">
-            <div class="input-group">
-                <label>Fakultas <span class="required">*</span></label>
-                <input type="text" id="fakultas" placeholder="Contoh: Hukum" class="input-field">
-            </div>
-            <div class="input-group">
-                <label>Jurusan / Program Studi</label>
-                <input type="text" id="jurusan_pt" placeholder="Contoh: Ilmu Hukum" class="input-field">
-            </div>
-        </div>
-
         <div class="input-group">
-            <label>Nama Sekolah / Kampus <span class="required">*</span></label>
-            <input type="text" id="nama_sekolah" placeholder="Nama Instansi" class="input-field">
-        </div>
+    <label>Jenjang / Tingkat <span class="required">*</span></label>
+    <select id="jenjang" class="input-field" onchange="toggleExtraFields()">
+        <option value="">-- Pilih Jenjang --</option>
+        <option value="SD">SD</option>
+        <option value="SMP">SMP</option>
+        <option value="SMA/SMK">SMA / SMK</option>
+        <option value="D1">D1</option>
+        <option value="D2">D2</option>
+        <option value="D3">D3</option>
+        <option value="D4">D4</option>
+        <option value="S1">S1</option>
+        <option value="S2">S2</option>
+        <option value="S3">S3</option>
+    </select>
+</div>
 
-        <div class="input-group">
-            <label>Kota <span class="required">*</span></label>
-            <input type="text" id="kota_sekolah" placeholder="Kota Lokasi" class="input-field">
-        </div>
-
-        <div id="wrap_pt" style="display: none;">
+<div id="wrap_pt" style="display: none;">
+    <div class="input-group">
+        <label>Nama Perguruan Tinggi <span class="required">*</span></label>
+        <input type="text" id="nama_pt" placeholder="Contoh: Universitas Gadjah Mada" class="input-field">
+    </div>
     <div class="input-group">
         <label>Fakultas <span class="required">*</span></label>
-        <input type="text" id="fakultas" placeholder="Contoh: Hukum" class="input-field">
+        <input type="text" id="fakultas" placeholder="Contoh: Ilmu Sosial dan Ilmu Politik" class="input-field">
     </div>
     <div class="input-group">
         <label>Jurusan / Program Studi</label>
-        <input type="text" id="jurusan_pt" placeholder="Contoh: Ilmu Hukum" class="input-field">
+        <input type="text" id="jurusan_pt" placeholder="Contoh: Sosiologi" class="input-field">
     </div>
     <div class="input-group">
         <label>Status Kelulusan <span class="required">*</span></label>
