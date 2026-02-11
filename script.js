@@ -421,26 +421,34 @@ function deleteOrg(index) {
 function finalSubmit() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
-    // Ambil Kompetensi Bahasa
+    // 1. Ambil Kompetensi Bahasa
     const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
     let bahasaList = Array.from(checkboxes).map(cb => cb.value);
     const lainnya = document.getElementById('bahasa_lainnya').value.trim();
     if(lainnya) bahasaList.push(lainnya);
 
-    // Ambil Komputer & Medsos
+    // 2. Simpan Kompetensi ke Object Utama
     data.kompetensi_bahasa = bahasaList.join(', ');
     data.kemampuan_komputer = document.getElementById('komputer').value;
+
+    // 3. Ambil Semua Akun Medsos (Jika kosong diisi "-")
     data.media_sosial = {
-        facebook: document.getElementById('medsos_fb').value || '-',
-        instagram: document.getElementById('medsos_ig').value || '-',
-        tiktok: document.getElementById('medsos_tiktok').value || '-'
+        facebook: document.getElementById('medsos_fb').value.trim() || '-',
+        instagram: document.getElementById('medsos_ig').value.trim() || '-',
+        tiktok: document.getElementById('medsos_tiktok').value.trim() || '-',
+        twitter_x: document.getElementById('medsos_twitter').value.trim() || '-',
+        youtube: document.getElementById('medsos_youtube').value.trim() || '-',
+        linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
     };
 
+    // 4. Update LocalStorage Terakhir
     localStorage.setItem('kaderData', JSON.stringify(data));
 
-    console.log("DATA FINAL SIAP KIRIM:", data);
-    alert("Data Berhasil Disimpan Lokal! Menghubungkan ke Database...");
+    // 5. Eksekusi Kirim (Contoh Alert)
+    console.log("DATA SIAP DIKIRIM KE DATABASE:", data);
     
-    // Di sini nanti Bos bisa hubungkan ke Google Sheets API atau database Backend
-    // window.location.href = 'finish.html';
+    alert("SELAMAT! Data kader atas nama " + data.nama_lengkap + " telah lengkap dan berhasil disimpan secara lokal.");
+    
+    // Opsi: Arahkan ke halaman ringkasan atau kirim ke Google Sheets
+    // kirimKeGoogleSheets(data); 
 }
