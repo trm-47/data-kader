@@ -96,14 +96,14 @@
                             <input type="text" class="bidang-nama" placeholder="CONTOH: BIDANG PEMUDA & OLAHRAGA" oninput="this.value = this.value.toUpperCase()">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="label-style">Tahun Mulai</label>
-                                    <input type="number" class="thn-mulai" placeholder="20XX"> </div>
-                                <div>
-                                    <label class="label-style">Tahun Selesai</label>
-                                    <input type="number" class="thn-selesai" placeholder="20XX"> </div>
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="label-style">Tahun Mulai</label>
+                                <input type="number" class="thn-mulai" placeholder="20XX">
+                            </div>
+                            <div>
+                                <label class="label-style">Tahun Selesai</label>
+                                <input type="number" class="thn-selesai" placeholder="20XX">
                             </div>
                         </div>
                     </div>
@@ -182,170 +182,148 @@
     </div>
 
     <script>
-        // --- FITUR AUTO-LOAD DATA SAAT HALAMAN DIBUKA ---
-window.onload = function() {
-    const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
-    const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
-
-    // Load Data Struktural
-    if (savedStruk) {
-        const strukData = JSON.parse(savedStruk);
-        const container = document.getElementById('struktural-container');
-        if(strukData.length > 0) container.innerHTML = ''; 
-        
-        strukData.forEach(data => {
-            addStruktural();
-            const cards = container.querySelectorAll('.entry-card');
-            const lastCard = cards[cards.length - 1];
-            
-            lastCard.querySelector('.tingkat-pengurus').value = data.tingkat;
-            const jabSelect = lastCard.querySelector('.jabatan-nama');
-            jabSelect.value = data.jabatan;
-            
-            // Trigger manual untuk memunculkan input Bidang jika jabatannya Wakil
-            toggleBidang(jabSelect);
-            
-            if(data.bidang !== "-") lastCard.querySelector('.bidang-nama').value = data.bidang;
-            lastCard.querySelector('.thn-mulai').value = data.mulai === "?" ? "" : data.mulai;
-            lastCard.querySelector('.thn-selesai').value = data.selesai === "Sekarang" ? "" : data.selesai;
-        });
-    }
-
-    // Load Data Penugasan
-    if (savedTugas) {
-        const tugasData = JSON.parse(savedTugas);
-        const container = document.getElementById('penugasan-container');
-        if(tugasData.length > 0) container.innerHTML = '';
-
-        tugasData.forEach(data => {
-            addPenugasan();
-            const cards = container.querySelectorAll('.entry-card');
-            const lastCard = cards[cards.length - 1];
-            
-            const jenisSelect = lastCard.querySelector('.jenis-tugas');
-            jenisSelect.value = data.jenis;
-            
-            // Trigger manual untuk memunculkan field Eksekutif/Legislatif
-            handleTugasLogic(jenisSelect);
-            
-            lastCard.querySelector('.tahun-awal').value = data.awal;
-            lastCard.querySelector('.tahun-akhir').value = data.akhir;
-            
-            if(data.jenis === 'EKSEKUTIF') {
-                lastCard.querySelector('.eksekutif-fields select').value = data.wilayah;
-                lastCard.querySelector('.eksekutif-fields input').value = data.jabatan;
-            } else if(data.jenis === 'LEGISLATIF') {
-                lastCard.querySelector('.legislatif-fields select').value = data.lembaga;
-                lastCard.querySelector('.legislatif-fields input').value = data.dapil;
+        function toggleBidang(select) {
+            const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
+            if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
             }
-        });
-    }
-};
-        // --- Fungsi Pendukung (Tetap) ---
-function toggleBidang(select) {
-    const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
-    if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
-        wrapper.classList.remove('hidden');
-    } else {
-        wrapper.classList.add('hidden');
-    }
-}
+        }
 
-function handleTugasLogic(select) {
-    const card = select.closest('.entry-card');
-    const eks = card.querySelector('.eksekutif-fields');
-    const leg = card.querySelector('.legislatif-fields');
-    
-    eks.classList.add('hidden');
-    leg.classList.add('hidden');
+        function handleTugasLogic(select) {
+            const card = select.closest('.entry-card');
+            const eks = card.querySelector('.eksekutif-fields');
+            const leg = card.querySelector('.legislatif-fields');
+            
+            eks.classList.add('hidden');
+            leg.classList.add('hidden');
 
-    if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
-    if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
-}
+            if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
+            if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
+        }
 
-function addStruktural() {
-    const container = document.getElementById('struktural-container');
-    const clone = container.firstElementChild.cloneNode(true);
-    clone.querySelectorAll('input, select').forEach(i => i.value = "");
-    clone.querySelector('.bidang-wrapper').classList.add('hidden');
-    container.appendChild(clone);
-}
+        function addStruktural() {
+            const container = document.getElementById('struktural-container');
+            const clone = container.firstElementChild.cloneNode(true);
+            clone.querySelectorAll('input, select').forEach(i => i.value = "");
+            clone.querySelector('.bidang-wrapper').classList.add('hidden');
+            container.appendChild(clone);
+        }
 
-function addPenugasan() {
-    const container = document.getElementById('penugasan-container');
-    const clone = container.firstElementChild.cloneNode(true);
-    clone.querySelectorAll('input, select').forEach(i => i.value = "");
-    clone.querySelector('.eksekutif-fields').classList.add('hidden');
-    clone.querySelector('.legislatif-fields').classList.add('hidden');
-    container.appendChild(clone);
-}
+        function addPenugasan() {
+            const container = document.getElementById('penugasan-container');
+            const clone = container.firstElementChild.cloneNode(true);
+            clone.querySelectorAll('input, select').forEach(i => i.value = "");
+            clone.querySelector('.eksekutif-fields').classList.add('hidden');
+            clone.querySelector('.legislatif-fields').classList.add('hidden');
+            container.appendChild(clone);
+        }
 
-// --- PERBAIKAN FUNGSI SIMPAN ---
-function saveStep4() {
-    // 1. Ambil Data Struktural
-    const strukCards = document.querySelectorAll('#struktural-container .entry-card');
-    const riwayatStruktural = [];
-    
-    strukCards.forEach(card => {
-        const tingkat = card.querySelector('.tingkat-pengurus').value;
-        const jabatan = card.querySelector('.jabatan-nama').value;
-        const thnMulai = card.querySelector('.thn-mulai').value;
-        const thnSelesai = card.querySelector('.thn-selesai').value;
-        const bidang = card.querySelector('.bidang-nama').value;
+        function saveStep4() {
+            const strukCards = document.querySelectorAll('#struktural-container .entry-card');
+            const riwayatStruktural = [];
+            
+            strukCards.forEach(card => {
+                const tingkat = card.querySelector('.tingkat-pengurus').value;
+                const jabatan = card.querySelector('.jabatan-nama').value;
+                const thnMulai = card.querySelector('.thn-mulai').value;
+                const thnSelesai = card.querySelector('.thn-selesai').value;
+                const bidang = card.querySelector('.bidang-nama').value;
 
-        if(tingkat && jabatan) {
-            riwayatStruktural.push({
-                tingkat: tingkat,
-                jabatan: jabatan,
-                bidang: (jabatan.includes('WAKIL') && bidang) ? bidang : "-",
-                mulai: thnMulai || "?",
-                selesai: thnSelesai || "Sekarang"
+                if(tingkat && jabatan) {
+                    riwayatStruktural.push({
+                        tingkat: tingkat,
+                        jabatan: jabatan,
+                        bidang: (jabatan.includes('WAKIL') && bidang) ? bidang : "-",
+                        mulai: thnMulai || "?",
+                        selesai: thnSelesai || "Sekarang"
+                    });
+                }
             });
-        }
-    });
 
-    // 2. Ambil Data Penugasan (Legislatif/Eksekutif)
-    const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
-    const riwayatPenugasan = [];
+            const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
+            const riwayatPenugasan = [];
 
-    tugasCards.forEach(card => {
-        const jenis = card.querySelector('.jenis-tugas').value;
-        if(jenis) {
-            const dataTugas = {
-                jenis: jenis,
-                awal: card.querySelector('.tahun-awal').value,
-                akhir: card.querySelector('.tahun-akhir').value
-            };
+            tugasCards.forEach(card => {
+                const jenis = card.querySelector('.jenis-tugas').value;
+                if(jenis) {
+                    const dataTugas = {
+                        jenis: jenis,
+                        awal: card.querySelector('.tahun-awal').value,
+                        akhir: card.querySelector('.tahun-akhir').value
+                    };
+                    
+                    if(jenis === 'EKSEKUTIF') {
+                        dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
+                        dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
+                    } else if(jenis === 'LEGISLATIF') {
+                        dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
+                        dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
+                    }
+                    riwayatPenugasan.push(dataTugas);
+                }
+            });
+
+            localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
+            localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
             
-            if(jenis === 'EKSEKUTIF') {
-                // Mengambil value dari select dan input di dalam .eksekutif-fields
-                dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
-                dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
-            } else if(jenis === 'LEGISLATIF') {
-                // Mengambil value dari select dan input di dalam .legislatif-fields
-                dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
-                dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
-            }
-            riwayatPenugasan.push(dataTugas);
+            localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
+            localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
+            localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
+            localStorage.setItem('kader_is_pac', riwayatStruktural.some(s => s.tingkat.includes('PAC')) ? 'Ya' : '-');
+            localStorage.setItem('kader_is_ranting', riwayatStruktural.some(s => s.tingkat.includes('RANTING')) ? 'Ya' : '-');
+            localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
+            localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
+
+            window.location.href = "step5.html"; 
         }
-    });
 
-    // 3. Simpan Ke LocalStorage (JSON Utama untuk Review Detail)
-    localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
-    localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
-    
-    // 4. MAPPING FLAG (Untuk mempermudah filtering di Google Sheets nanti)
-    localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
-    localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
-    localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
-    localStorage.setItem('kader_is_pac', riwayatStruktural.some(s => s.tingkat.includes('PAC')) ? 'Ya' : '-');
-    localStorage.setItem('kader_is_ranting', riwayatStruktural.some(s => s.tingkat.includes('RANTING')) ? 'Ya' : '-');
-    localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
-    localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
+        // --- TAMBAHAN FUNGSI ONLOAD ---
+        window.onload = function() {
+            const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
+            const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
 
-    // 5. Lanjut ke Step Berikutnya
-    window.location.href = "step5.html"; 
-}
+            if(savedStruk) {
+                const data = JSON.parse(savedStruk);
+                const container = document.getElementById('struktural-container');
+                container.innerHTML = ''; 
+                data.forEach(item => {
+                    addStruktural();
+                    const lastCard = container.lastElementChild;
+                    lastCard.querySelector('.tingkat-pengurus').value = item.tingkat;
+                    lastCard.querySelector('.jabatan-nama').value = item.jabatan;
+                    lastCard.querySelector('.thn-mulai').value = item.mulai === "?" ? "" : item.mulai;
+                    lastCard.querySelector('.thn-selesai').value = item.selesai === "Sekarang" ? "" : item.selesai;
+                    if(item.bidang !== "-") {
+                        lastCard.querySelector('.bidang-nama').value = item.bidang;
+                        lastCard.querySelector('.bidang-wrapper').classList.remove('hidden');
+                    }
+                });
+            }
+
+            if(savedTugas) {
+                const data = JSON.parse(savedTugas);
+                const container = document.getElementById('penugasan-container');
+                container.innerHTML = '';
+                data.forEach(item => {
+                    addPenugasan();
+                    const lastCard = container.lastElementChild;
+                    lastCard.querySelector('.jenis-tugas').value = item.jenis;
+                    lastCard.querySelector('.tahun-awal').value = item.awal;
+                    lastCard.querySelector('.tahun-akhir').value = item.akhir;
+                    handleTugasLogic(lastCard.querySelector('.jenis-tugas'));
+                    
+                    if(item.jenis === 'EKSEKUTIF') {
+                        lastCard.querySelector('.eksekutif-fields select').value = item.wilayah;
+                        lastCard.querySelector('.eksekutif-fields input').value = item.jabatan;
+                    } else {
+                        lastCard.querySelector('.legislatif-fields select').value = item.lembaga;
+                        lastCard.querySelector('.legislatif-fields input').value = item.dapil;
+                    }
+                });
+            }
+        };
     </script>
 </body>
 </html>
