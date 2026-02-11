@@ -451,3 +451,79 @@ function goToReview() {
     // 5. Lempar ke Halaman Rekap (Slider)
     window.location.href = 'rekap.html';
 }
+
+// 1. Fungsi Memuat Data ke Halaman Review
+function loadRekap() {
+    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    
+    // Render Foto
+    const fotoContainer = document.getElementById('fotoPreviewRekap');
+    if (fotoContainer && data.foto) {
+        fotoContainer.innerHTML = `<img src="${data.foto}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-color);">`;
+    }
+
+    // Render Pribadi
+    const rekapPribadi = document.getElementById('rekapPribadi');
+    if (rekapPribadi) {
+        rekapPribadi.innerHTML = `
+            <div class="rekap-item"><div class="rekap-label">Nama</div><div class="rekap-value">${data.nama_lengkap || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">NIK</div><div class="rekap-value">${data.nik || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Alamat</div><div class="rekap-value">${data.alamat || '-'}, RT ${data.rt}/RW ${data.rw}, ${data.kecamatan}</div></div>
+        `;
+    }
+
+    // Render Pendidikan
+    const rekapEdu = document.getElementById('rekapPendidikan');
+    if (rekapEdu) {
+        rekapEdu.innerHTML = data.riwayat_pendidikan?.map(e => `
+            <div class="rekap-item">
+                <div class="rekap-label">${e.jenjang}</div>
+                <div class="rekap-value">${e.nama} (${e.tahun})</div>
+            </div>
+        `).join('') || '<p style="font-size:12px;color:gray;">Tidak ada data pendidikan formal</p>';
+    }
+
+    // Render Medsos & Skill
+    const rekapMedsos = document.getElementById('rekapMedsos');
+    const medsos = data.media_sosial || {};
+    if (rekapMedsos) {
+        rekapMedsos.innerHTML = `
+            <div class="rekap-item"><div class="rekap-label">Bahasa</div><div class="rekap-value">${data.kompetensi_bahasa || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">WhatsApp</div><div class="rekap-value">${data.kontak || '-'}</div></div>
+            <div class="rekap-item"><div class="rekap-label">Medsos</div><div class="rekap-value" style="font-size:12px;">IG: ${medsos.instagram || '-'}<br>TikTok: ${medsos.tiktok || '-'}</div></div>
+        `;
+    }
+}
+
+// 2. Fungsi Kirim Data ke Google Sheets
+async function submitSeluruhData() {
+    const data = JSON.parse(localStorage.getItem('kaderData'));
+    const btn = document.getElementById('btnSubmit');
+    
+    if(!data) return alert("Data kosong!");
+
+    btn.disabled = true;
+    btn.innerHTML = "⏳ Sedang Mengirim...";
+    
+    // GANTI DENGAN URL APPS SCRIPT BOS
+    const URL_API = 'URL_PUNYA_BOS_DI_SINI'; 
+
+    try {
+        // Gunakan fetch dengan mode no-cors untuk Google Apps Script
+        await fetch(URL_API, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        alert("MERDEKA! Data Kader Berhasil Terkirim ke Pusat.");
+        localStorage.clear();
+        window.location.href = 'finish.html';
+    } catch (e) {
+        console.error(e);
+        alert("Waduh, gagal kirim. Cek koneksi internet Bos.");
+        btn.disabled = false;
+        btn.innerHTML = "KIRIM DATA SEKARANG";
+    }
+}
