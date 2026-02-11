@@ -1,329 +1,293 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 4 - Riwayat Jabatan & Penugasan</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
-        select, input { 
-            width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
-            background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
-        }
-        select:focus, input:focus { border-bottom: 2px solid #b91c1c; background: #fffcfc; }
-        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.2rem; }
-        .entry-card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .section-header { border-left: 4px solid #b91c1c; padding-left: 12px; margin-bottom: 20px; }
-        .btn-add { font-size: 10px; font-weight: 800; color: #b91c1c; border: 2px dashed #fca5a5; width: 100%; padding: 12px; border-radius: 16px; margin-bottom: 20px; }
-        .hidden { display: none; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 4 - Riwayat Jabatan & Penugasan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
+        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
+        select, input { 
+            width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
+            background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
+        }
+        select:focus, input:focus { border-bottom: 2px solid #b91c1c; background: #fffcfc; }
+        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.2rem; }
+        .entry-card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .section-header { border-left: 4px solid #b91c1c; padding-left: 12px; margin-bottom: 20px; }
+        .btn-add { font-size: 10px; font-weight: 800; color: #b91c1c; border: 2px dashed #fca5a5; width: 100%; padding: 12px; border-radius: 16px; margin-bottom: 20px; }
+        .hidden { display: none; }
+    </style>
 </head>
 <body class="pb-12 bg-slate-50">
 
-    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
-            <div class="border-l-2 border-slate-200 pl-3">
-                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
-                    SENSUS KADER <span class="text-red-700">2026</span>
-                </h1>
-                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
-                    DPD PDI Perjuangan DIY
-                </p>
-            </div>
-        </div>
-    </div>
+    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
+                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
+            <div class="border-l-2 border-slate-200 pl-3">
+                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
+                    SENSUS KADER <span class="text-red-700">2026</span>
+                </h1>
+                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
+                    DPD PDI Perjuangan DIY
+                </p>
+            </div>
+        </div>
+    </div>
 
-    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
-        <a href="step3.html" class="text-slate-400 hover:text-red-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-        </a>
-        <div class="flex gap-2">
-            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-8 rounded-full bg-red-700"></div>
-        </div>
-        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 04</span>
-    </div>
+    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
+        <a href="step3.html" class="text-slate-400 hover:text-red-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        <div class="flex gap-2">
+            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
+            <div class="h-1.5 w-8 rounded-full bg-red-700"></div>
+        </div>
+        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 04</span>
+    </div>
 
-    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
-        <div class="glass-effect p-8 md:p-12 shadow-2xl">
-            
-            <div class="mb-10 border-b pb-6 text-center md:text-left">
-                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Portofolio Politik</h2>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Riwayat Jabatan & Penugasan Partai</p>
-            </div>
+    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
+        <div class="glass-effect p-8 md:p-12 shadow-2xl">
+            
+            <div class="mb-10 border-b pb-6 text-center md:text-left">
+                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Portofolio Politik</h2>
+                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Riwayat Jabatan & Penugasan Partai</p>
+            </div>
 
-            <section class="mb-12">
-                <div class="section-header">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Riwayat Jabatan Struktural</h3>
-                </div>
-                
-                <div id="struktural-container">
-                    <div class="entry-card bg-slate-50/50">
-                        <label class="label-style">Tingkat Kepengurusan</label>
-                        <select class="tingkat-pengurus">
-                            <option value="">-- PILIH TINGKAT --</option>
-                            <option>DPP (PUSAT)</option>
-                            <option>DPD (PROVINSI)</option>
-                            <option>DPC (KABUPATEN/KOTA)</option>
-                            <option>PAC (KECAMATAN)</option>
-                            <option>RANTING (KELURAHAN)</option>
-                            <option>ANAK RANTING (RW/DUSUN)</option>
-                        </select>
+            <section class="mb-12">
+                <div class="section-header">
+                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Riwayat Jabatan Struktural</h3>
+                </div>
+                
+                <div id="struktural-container">
+                    <div class="entry-card bg-slate-50/50">
+                        <label class="label-style">Tingkat Kepengurusan</label>
+                        <select class="tingkat-pengurus">
+                            <option value="">-- PILIH TINGKAT --</option>
+                            <option>DPP (PUSAT)</option>
+                            <option>DPD (PROVINSI)</option>
+                            <option>DPC (KABUPATEN/KOTA)</option>
+                            <option>PAC (KECAMATAN)</option>
+                            <option>RANTING (KELURAHAN)</option>
+                            <option>ANAK RANTING (RW/DUSUN)</option>
+                        </select>
 
-                        <label class="label-style">Jabatan</label>
-                        <select class="jabatan-nama" onchange="toggleBidang(this)">
-                            <option value="">-- PILIH JABATAN --</option>
-                            <option>KETUA</option>
-                            <option>SEKRETARIS</option>
-                            <option>BENDAHARA</option>
-                            <option value="WAKIL KETUA">WAKIL KETUA</option>
-                            <option value="WAKIL SEKRETARIS">WAKIL SEKRETARIS</option>
-                            <option>WAKIL BENDAHARA</option>
-                            <option>ANGGOTA</option>
-                        </select>
+                        <label class="label-style">Jabatan</label>
+                        <select class="jabatan-nama" onchange="toggleBidang(this)">
+                            <option value="">-- PILIH JABATAN --</option>
+                            <option>KETUA</option>
+                            <option>SEKRETARIS</option>
+                            <option>BENDAHARA</option>
+                            <option value="WAKIL KETUA">WAKIL KETUA</option>
+                            <option value="WAKIL SEKRETARIS">WAKIL SEKRETARIS</option>
+                            <option>WAKIL BENDAHARA</option>
+                            <option>ANGGOTA</option>
+                        </select>
 
-                        <div class="bidang-wrapper hidden">
-                            <label class="label-style">Bidang / Departemen *</label>
-                            <input type="text" class="bidang-nama" placeholder="CONTOH: BIDANG PEMUDA & OLAHRAGA" oninput="this.value = this.value.toUpperCase()">
-                        </div>
+                        <div class="bidang-wrapper hidden">
+                            <label class="label-style">Bidang / Departemen *</label>
+                            <input type="text" class="bidang-nama" placeholder="CONTOH: BIDANG PEMUDA & OLAHRAGA" oninput="this.value = this.value.toUpperCase()">
+                        </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <label class="label-style">Tahun Mulai</label>
-                                <input type="number" class="thn-mulai" placeholder="20XX">
-                            </div>
-                            <div>
-                                <label class="label-style">Tahun Selesai</label>
-                                <input type="number" class="thn-selesai" placeholder="20XX">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="addStruktural()" class="btn-add hover:bg-red-50">+ TAMBAH JABATAN STRUKTURAL</button>
-            </section>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="label-style">Tahun Mulai</label>
+                                    <input type="number" class="thn-mulai" placeholder="20XX"> </div>
+                                <div>
+                                    <label class="label-style">Tahun Selesai</label>
+                                    <input type="number" class="thn-selesai" placeholder="20XX"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addStruktural()" class="btn-add hover:bg-red-50">+ TAMBAH JABATAN STRUKTURAL</button>
+            </section>
 
-            <section class="mb-12">
-                <div class="section-header border-l-blue-600">
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Penugasan Eksekutif / Legislatif</h3>
-                </div>
+            <section class="mb-12">
+                <div class="section-header border-l-blue-600">
+                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Penugasan Eksekutif / Legislatif</h3>
+                </div>
 
-                <div id="penugasan-container">
-                    <div class="entry-card bg-slate-50/50">
-                        <label class="label-style">Jenis Penugasan</label>
-                        <select class="jenis-tugas" onchange="handleTugasLogic(this)">
-                            <option value="">-- PILIH JENIS --</option>
-                            <option value="EKSEKUTIF">EKSEKUTIF (KEPALA DAERAH/WAKIL)</option>
-                            <option value="LEGISLATIF">LEGISLATIF (PARLEMEN)</option>
-                        </select>
+                <div id="penugasan-container">
+                    <div class="entry-card bg-slate-50/50">
+                        <label class="label-style">Jenis Penugasan</label>
+                        <select class="jenis-tugas" onchange="handleTugasLogic(this)">
+                            <option value="">-- PILIH JENIS --</option>
+                            <option value="EKSEKUTIF">EKSEKUTIF (KEPALA DAERAH/WAKIL)</option>
+                            <option value="LEGISLATIF">LEGISLATIF (PARLEMEN)</option>
+                        </select>
 
-                        <div class="eksekutif-fields hidden">
-                            <label class="label-style">Tingkat Wilayah</label>
-                            <select>
-                                <option>PUSAT (PRESIDEN/WAKIL)</option>
-                                <option>PROVINSI (GUBERNUR/WAKIL)</option>
-                                <option>KABUPATEN/KOTA (BUPATI/WALIKOTA/WAKIL)</option>
-                            </select>
-                            <label class="label-style">Nama Jabatan</label>
-                            <input type="text" placeholder="CONTOH: BUPATI SLEMAN" oninput="this.value = this.value.toUpperCase()">
-                        </div>
+                        <div class="eksekutif-fields hidden">
+                            <label class="label-style">Tingkat Wilayah</label>
+                            <select>
+                                <option>PUSAT (PRESIDEN/WAKIL)</option>
+                                <option>PROVINSI (GUBERNUR/WAKIL)</option>
+                                <option>KABUPATEN/KOTA (BUPATI/WALIKOTA/WAKIL)</option>
+                            </select>
+                            <label class="label-style">Nama Jabatan</label>
+                            <input type="text" placeholder="CONTOH: BUPATI SLEMAN" oninput="this.value = this.value.toUpperCase()">
+                        </div>
 
-                        <div class="legislatif-fields hidden">
-                            <label class="label-style">Lembaga Legislatif</label>
-                            <select>
-                                <option>DPR RI (PUSAT)</option>
-                                <option>DPD RI</option>
-                                <option>DPRD PROVINSI</option>
-                                <option>DPRD KABUPATEN / KOTA</option>
-                            </select>
-                            <label class="label-style">Dapil / Wilayah</label>
-                            <input type="text" placeholder="CONTOH: DIY 1" oninput="this.value = this.value.toUpperCase()">
-                        </div>
+                        <div class="legislatif-fields hidden">
+                            <label class="label-style">Lembaga Legislatif</label>
+                            <select>
+                                <option>DPR RI (PUSAT)</option>
+                                <option>DPD RI</option>
+                                <option>DPRD PROVINSI</option>
+                                <option>DPRD KABUPATEN / KOTA</option>
+                            </select>
+                            <label class="label-style">Dapil / Wilayah</label>
+                            <input type="text" placeholder="CONTOH: DIY 1" oninput="this.value = this.value.toUpperCase()">
+                        </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-2">
-                            <div>
-                                <label class="label-style">Periode Awal</label>
-                                <select class="tahun-awal">
-                                    <script>for(let i=2024; i>=1999; i--) document.write(`<option>${i}</option>`);</script>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="label-style">Periode Akhir</label>
-                                <select class="tahun-akhir">
-                                    <script>for(let i=2029; i>=2004; i--) document.write(`<option>${i}</option>`);</script>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="addPenugasan()" class="btn-add hover:bg-blue-50">+ TAMBAH PENUGASAN LAIN</button>
-            </section>
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <div>
+                                <label class="label-style">Periode Awal</label>
+                                <select class="tahun-awal">
+                                    <script>for(let i=2024; i>=1999; i--) document.write(`<option>${i}</option>`);</script>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="label-style">Periode Akhir</label>
+                                <select class="tahun-akhir">
+                                    <script>for(let i=2029; i>=2004; i--) document.write(`<option>${i}</option>`);</script>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addPenugasan()" class="btn-add hover:bg-blue-50">+ TAMBAH PENUGASAN LAIN</button>
+            </section>
 
-            <button onclick="saveStep4()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
-                Afiliasi dan Profesi
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </button>
-        </div>
-    </div>
+            <button onclick="saveStep4()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
+                Afiliasi dan Profesi
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </button>
+        </div>
+    </div>
 
-    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
-        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-             alt="Watermark Logo" class="w-80 md:w-96">
-    </div>
+    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
+        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
+             alt="Watermark Logo" class="w-80 md:w-96">
+    </div>
 
-    <script>
-        function toggleBidang(select) {
-            const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
-            if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
-                wrapper.classList.remove('hidden');
-            } else {
-                wrapper.classList.add('hidden');
-            }
-        }
+    <script>
+        // --- Fungsi Pendukung (Tetap) ---
+function toggleBidang(select) {
+    const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
+    if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
+        wrapper.classList.remove('hidden');
+    } else {
+        wrapper.classList.add('hidden');
+    }
+}
 
-        function handleTugasLogic(select) {
-            const card = select.closest('.entry-card');
-            const eks = card.querySelector('.eksekutif-fields');
-            const leg = card.querySelector('.legislatif-fields');
-            
-            eks.classList.add('hidden');
-            leg.classList.add('hidden');
+function handleTugasLogic(select) {
+    const card = select.closest('.entry-card');
+    const eks = card.querySelector('.eksekutif-fields');
+    const leg = card.querySelector('.legislatif-fields');
+    
+    eks.classList.add('hidden');
+    leg.classList.add('hidden');
 
-            if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
-            if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
-        }
+    if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
+    if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
+}
 
-        function addStruktural() {
-            const container = document.getElementById('struktural-container');
-            const clone = container.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.bidang-wrapper').classList.add('hidden');
-            container.appendChild(clone);
-        }
+function addStruktural() {
+    const container = document.getElementById('struktural-container');
+    const clone = container.firstElementChild.cloneNode(true);
+    clone.querySelectorAll('input, select').forEach(i => i.value = "");
+    clone.querySelector('.bidang-wrapper').classList.add('hidden');
+    container.appendChild(clone);
+}
 
-        function addPenugasan() {
-            const container = document.getElementById('penugasan-container');
-            const clone = container.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.eksekutif-fields').classList.add('hidden');
-            clone.querySelector('.legislatif-fields').classList.add('hidden');
-            container.appendChild(clone);
-        }
+function addPenugasan() {
+    const container = document.getElementById('penugasan-container');
+    const clone = container.firstElementChild.cloneNode(true);
+    clone.querySelectorAll('input, select').forEach(i => i.value = "");
+    clone.querySelector('.eksekutif-fields').classList.add('hidden');
+    clone.querySelector('.legislatif-fields').classList.add('hidden');
+    container.appendChild(clone);
+}
 
-        function saveStep4() {
-            const strukCards = document.querySelectorAll('#struktural-container .entry-card');
-            const riwayatStruktural = [];
-            
-            strukCards.forEach(card => {
-                const tingkat = card.querySelector('.tingkat-pengurus').value;
-                const jabatan = card.querySelector('.jabatan-nama').value;
-                const thnMulai = card.querySelector('.thn-mulai').value;
-                const thnSelesai = card.querySelector('.thn-selesai').value;
-                const bidang = card.querySelector('.bidang-nama').value;
+// --- PERBAIKAN FUNGSI SIMPAN ---
+function saveStep4() {
+    // 1. Ambil Data Struktural
+    const strukCards = document.querySelectorAll('#struktural-container .entry-card');
+    const riwayatStruktural = [];
+    
+    strukCards.forEach(card => {
+        const tingkat = card.querySelector('.tingkat-pengurus').value;
+        const jabatan = card.querySelector('.jabatan-nama').value;
+        const thnMulai = card.querySelector('.thn-mulai').value;
+        const thnSelesai = card.querySelector('.thn-selesai').value;
+        const bidang = card.querySelector('.bidang-nama').value;
 
-                if(tingkat && jabatan) {
-                    riwayatStruktural.push({
-                        tingkat: tingkat,
-                        jabatan: jabatan,
-                        bidang: (jabatan.includes('WAKIL') && bidang) ? bidang : "-",
-                        mulai: thnMulai || "?",
-                        selesai: thnSelesai || "Sekarang"
-                    });
-                }
-            });
+        if(tingkat && jabatan) {
+            riwayatStruktural.push({
+                tingkat: tingkat,
+                jabatan: jabatan,
+                bidang: (jabatan.includes('WAKIL') && bidang) ? bidang : "-",
+                mulai: thnMulai || "?",
+                selesai: thnSelesai || "Sekarang"
+            });
+        }
+    });
 
-            const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
-            const riwayatPenugasan = [];
+    // 2. Ambil Data Penugasan (Legislatif/Eksekutif)
+    const tugasCards = document.querySelectorAll('#penugasan-container .entry-card');
+    const riwayatPenugasan = [];
 
-            tugasCards.forEach(card => {
-                const jenis = card.querySelector('.jenis-tugas').value;
-                if(jenis) {
-                    const dataTugas = {
-                        jenis: jenis,
-                        awal: card.querySelector('.tahun-awal').value,
-                        akhir: card.querySelector('.tahun-akhir').value
-                    };
-                    
-                    if(jenis === 'EKSEKUTIF') {
-                        dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
-                        dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
-                    } else if(jenis === 'LEGISLATIF') {
-                        dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
-                        dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
-                    }
-                    riwayatPenugasan.push(dataTugas);
-                }
-            });
+    tugasCards.forEach(card => {
+        const jenis = card.querySelector('.jenis-tugas').value;
+        if(jenis) {
+            const dataTugas = {
+                jenis: jenis,
+                awal: card.querySelector('.tahun-awal').value,
+                akhir: card.querySelector('.tahun-akhir').value
+            };
+            
+            if(jenis === 'EKSEKUTIF') {
+                // Mengambil value dari select dan input di dalam .eksekutif-fields
+                dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
+                dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
+            } else if(jenis === 'LEGISLATIF') {
+                // Mengambil value dari select dan input di dalam .legislatif-fields
+                dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
+                dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
+            }
+            riwayatPenugasan.push(dataTugas);
+        }
+    });
 
-            localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
-            localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
-            
-            localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
-            localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
-            localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
-            localStorage.setItem('kader_is_pac', riwayatStruktural.some(s => s.tingkat.includes('PAC')) ? 'Ya' : '-');
-            localStorage.setItem('kader_is_ranting', riwayatStruktural.some(s => s.tingkat.includes('RANTING')) ? 'Ya' : '-');
-            localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
-            localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
+    // 3. Simpan Ke LocalStorage (JSON Utama untuk Review Detail)
+    localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
+    localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
+    
+    // 4. MAPPING FLAG (Untuk mempermudah filtering di Google Sheets nanti)
+    localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_pac', riwayatStruktural.some(s => s.tingkat.includes('PAC')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_ranting', riwayatStruktural.some(s => s.tingkat.includes('RANTING')) ? 'Ya' : '-');
+    localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
+    localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
 
-            window.location.href = "step5.html"; 
-        }
-
-        // --- TAMBAHAN FUNGSI ONLOAD ---
-        window.onload = function() {
-            const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
-            const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
-
-            if(savedStruk) {
-                const data = JSON.parse(savedStruk);
-                const container = document.getElementById('struktural-container');
-                container.innerHTML = ''; 
-                data.forEach(item => {
-                    addStruktural();
-                    const lastCard = container.lastElementChild;
-                    lastCard.querySelector('.tingkat-pengurus').value = item.tingkat;
-                    lastCard.querySelector('.jabatan-nama').value = item.jabatan;
-                    lastCard.querySelector('.thn-mulai').value = item.mulai === "?" ? "" : item.mulai;
-                    lastCard.querySelector('.thn-selesai').value = item.selesai === "Sekarang" ? "" : item.selesai;
-                    if(item.bidang !== "-") {
-                        lastCard.querySelector('.bidang-nama').value = item.bidang;
-                        lastCard.querySelector('.bidang-wrapper').classList.remove('hidden');
-                    }
-                });
-            }
-
-            if(savedTugas) {
-                const data = JSON.parse(savedTugas);
-                const container = document.getElementById('penugasan-container');
-                container.innerHTML = '';
-                data.forEach(item => {
-                    addPenugasan();
-                    const lastCard = container.lastElementChild;
-                    lastCard.querySelector('.jenis-tugas').value = item.jenis;
-                    lastCard.querySelector('.tahun-awal').value = item.awal;
-                    lastCard.querySelector('.tahun-akhir').value = item.akhir;
-                    handleTugasLogic(lastCard.querySelector('.jenis-tugas'));
-                    
-                    if(item.jenis === 'EKSEKUTIF') {
-                        lastCard.querySelector('.eksekutif-fields select').value = item.wilayah;
-                        lastCard.querySelector('.eksekutif-fields input').value = item.jabatan;
-                    } else {
-                        lastCard.querySelector('.legislatif-fields select').value = item.lembaga;
-                        lastCard.querySelector('.legislatif-fields input').value = item.dapil;
-                    }
-                });
-            }
-        };
-    </script>
+    // 5. Lanjut ke Step Berikutnya
+    window.location.href = "step5.html"; 
+}
+    </script>
 </body>
 </html>
