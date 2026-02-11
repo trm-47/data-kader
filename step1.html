@@ -1,35 +1,54 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sensus 2026 - Step 1</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Identitas Kader - Step 1</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-[#0f172a] text-white p-6">
-    <div class="max-w-md mx-auto">
-        <div class="mb-8"><h2 class="text-2xl font-black text-red-600 italic">LANGKAH 01</h2><p class="text-[10px] text-slate-500 tracking-widest uppercase">Identitas Personal</p></div>
-        <div class="space-y-4">
-            <div><label class="text-[10px] text-slate-500 font-bold uppercase">Nama Lengkap (Sesuai KTP)</label><input id="nama" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1 uppercase"></div>
-            <div><label class="text-[10px] text-slate-500 font-bold uppercase">NIK</label><input id="nik" type="number" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1"></div>
-            <div><label class="text-[10px] text-slate-500 font-bold uppercase">Nomor KTA</label><input id="kta" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1"></div>
-            <div class="grid grid-cols-2 gap-4">
-                <div><label class="text-[10px] text-slate-500 font-bold uppercase">Tempat Lahir</label><input id="tempat_lahir" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1 uppercase"></div>
-                <div><label class="text-[10px] text-slate-500 font-bold uppercase">Tgl Lahir</label><input id="tgl_lahir" type="date" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1"></div>
-            </div>
-        </div>
-        <button onclick="save()" class="w-full mt-10 bg-red-700 p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-red-900/20">Lanjut ke Kontak</button>
+<body>
+
+<div class="container">
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 20%"></div>
     </div>
-    <script>
-        function save() {
-            const fields = ['nama','nik','kta','tempat_lahir','tgl_lahir'];
-            fields.forEach(f => localStorage.setItem('kader_'+f, document.getElementById(f).value));
-            window.location.href = 'step2.html';
-        }
-        window.onload = () => {
-            ['nama','nik','kta','tempat_lahir','tgl_lahir'].forEach(f => {
-                if(localStorage.getItem('kader_'+f)) document.getElementById(f).value = localStorage.getItem('kader_'+f);
-            });
-        }
-    </script>
+
+    <div class="form-card">
+        <h2>Identitas Diri</h2>
+        <p class="subtitle">Unggah foto terbaik Anda dan lengkapi data dasar.</p>
+
+        <div class="photo-upload-container">
+            <div id="photoPreview" class="photo-preview">
+                <span>Pilih Foto / Selfie</span>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" capture="user" hidden>
+            <button type="button" onclick="document.getElementById('photoInput').click()" class="btn-outline">
+                📸 Ambil Foto
+            </button>
+        </div>
+
+        <div class="input-group">
+            <label>Nama Lengkap (Sesuai KTP) <span class="required">*</span></label>
+            <input type="text" id="nama_lengkap" placeholder="Masukkan nama tanpa gelar" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>NIK <span class="required">*</span></label>
+            <input type="number" id="nik" placeholder="16 digit NIK" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Tempat Lahir <span class="required">*</span></label>
+            <input type="text" id="tempat_lahir" placeholder="Contoh: Jakarta" class="input-field">
+        </div>
+
+        <div class="nav-buttons">
+            <button onclick="saveAndNext()" class="btn-primary">Lanjut ke Pendidikan</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
