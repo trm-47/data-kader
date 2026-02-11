@@ -299,10 +299,13 @@ function deleteKader(index) {
    ========================================== */
 
 function addJabatanPartai() {
-    const tingkat = document.getElementById('tingkatan_partai').value;
+    const tingkatan = document.getElementById('tingkatan_partai').value; // Ubah nama variabel agar sinkron
     const jabatan = document.getElementById('jabatan_partai').value;
     const periode = document.getElementById('periode_partai').value.trim();
     let bidang = "";
+
+    // Tambahan: Ambil lokasi (Kita gunakan prompt agar tidak ubah HTML, atau Bos bisa tambah input field di HTML)
+    const lokasi = prompt("Sebutkan Wilayah/Lokasi (Contoh: DPC Kota Surabaya / PAC Tegalsari):") || "-";
 
     // Cek jika butuh bidang
     if (jabatan === 'Wakil Ketua' || jabatan === 'Wakil Sekretaris') {
@@ -313,7 +316,7 @@ function addJabatanPartai() {
         }
     }
 
-    if (!tingkat || !jabatan || !periode) {
+    if (!tingkatan || !jabatan || !periode) {
         alert("Lengkapi data jabatan partai!");
         return;
     }
@@ -321,10 +324,13 @@ function addJabatanPartai() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let listJabatan = data.riwayat_jabatan_partai || [];
 
+    // Simpan ke array dengan struktur yang lengkap untuk rekap.html
     listJabatan.push({ 
-        tingkat, 
-        jabatan: bidang ? `${jabatan} ${bidang}` : jabatan, 
-        periode 
+        tingkatan: tingkatan, // Pastikan kuncinya 'tingkatan' bukan 'tingkat'
+        jabatan: jabatan,
+        bidang: bidang,
+        lokasi: lokasi, // Tambahan lokasi
+        periode: periode 
     });
 
     data.riwayat_jabatan_partai = listJabatan;
@@ -337,7 +343,8 @@ function addJabatanPartai() {
     document.getElementById('bidang_jabatan').value = '';
     document.getElementById('wrap_bidang').style.display = 'none';
 
-    renderJabatan();
+    // Jika Bos punya fungsi renderJabatan di script.js, panggil ini
+    if (typeof renderJabatan === 'function') renderJabatan();
 }
 
 function renderJabatan() {
