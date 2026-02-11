@@ -365,9 +365,9 @@ function renderJabatan() {
     container.innerHTML = list.map((item, index) => `
         <div style="background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #b91c1c; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
             <div style="flex: 1;">
-                <div style="font-size: 13px; font-weight: 700; color: #1e293b;">${item.jabatan}</div>
-                <div style="font-size: 11px; color: #b91c1c; font-weight:600;">${item.tingkat}</div>
-                <div style="font-size: 11px; color: #64748b;">Periode: ${item.periode}</div>
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b;">${item.jabatan} ${item.bidang ? '- ' + item.bidang : ''}</div>
+                <div style="font-size: 11px; color: #b91c1c; font-weight:600; text-transform: uppercase;">${item.tingkatan}</div>
+                <div style="font-size: 11px; color: #64748b;">📍 ${item.lokasi} | Periode: ${item.periode}</div>
             </div>
             <button onclick="deleteJabatanPartai(${index})" style="background: none; border: none; color: #ef4444; font-size: 20px; cursor:pointer;">&times;</button>
         </div>
