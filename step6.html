@@ -166,36 +166,41 @@
         }
     });
 
-    function goToReview() {
-        try {
-            let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+function goToReview() {
+    try {
+        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
-            const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
-            let bahasaList = Array.from(checkboxes).map(cb => cb.value);
-            const lainnya = document.getElementById('bahasa_lainnya').value.trim();
-            
-            data.bahasa_lainnya_input = lainnya; 
-            if(lainnya) bahasaList.push(lainnya);
+        // 1. Ambil yang dicentang (Indonesia, Inggris, dll)
+        const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
+        const bahasaList = Array.from(checkboxes).map(cb => cb.value);
+        
+        // Simpan ke kompetensi_bahasa (untuk kolom tetap)
+        data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
 
-            data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
-            data.kemampuan_komputer = document.getElementById('komputer').value;
+        // 2. Ambil input manual "Lainnya" (untuk baris baru di Sheet 8)
+        const inputLainnya = document.getElementById('bahasa_lainnya');
+        data.bahasa_lainnya_input = inputLainnya ? inputLainnya.value.trim() : ''; 
 
-            data.media_sosial = {
-                facebook: document.getElementById('medsos_fb').value.trim() || '-',
-                instagram: document.getElementById('medsos_ig').value.trim() || '-',
-                tiktok: document.getElementById('medsos_tiktok').value.trim() || '-',
-                twitter_x: document.getElementById('medsos_twitter').value.trim() || '-',
-                youtube: document.getElementById('medsos_youtube').value.trim() || '-',
-                linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
-            };
+        // 3. Skill Komputer & Medsos
+        data.kemampuan_komputer = document.getElementById('komputer').value;
+        data.media_sosial = {
+            facebook: document.getElementById('medsos_fb').value.trim() || '-',
+            instagram: document.getElementById('medsos_ig').value.trim() || '-',
+            tiktok: document.getElementById('medsos_tiktok').value.trim() || '-',
+            twitter_x: document.getElementById('medsos_twitter').value.trim() || '-',
+            youtube: document.getElementById('medsos_youtube').value.trim() || '-',
+            linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
+        };
 
-            localStorage.setItem('kaderData', JSON.stringify(data));
-            window.location.href = 'rekap.html';
-        } catch (error) {
-            console.error("Error Detail:", error);
-            alert("Terjadi kesalahan saat menyimpan.");
-        }
+        // 4. Simpan & Pindah Halaman
+        localStorage.setItem('kaderData', JSON.stringify(data));
+        window.location.href = 'rekap.html';
+
+    } catch (error) {
+        console.error("Error Detail:", error);
+        alert("Terjadi kesalahan saat menyimpan. Cek apakah ada field yang hilang di HTML.");
     }
+}
 </script>
 </body>
 </html>
