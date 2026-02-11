@@ -169,32 +169,48 @@
     <script>
         function goBack() { window.location.href = "step1.html"; }
 
-        function saveAndNext() {
-            const data = {
-                kontak: document.getElementById('kontak').value,
-                email: document.getElementById('email').value,
-                ig: document.getElementById('ig').value,
-                fb: document.getElementById('fb').value,
-                twitter: document.getElementById('twitter').value,
-                linkedin: document.getElementById('linkedin').value,
-                tiktok: document.getElementById('tiktok').value,
-                youtube: document.getElementById('youtube').value,
-                alamat: document.getElementById('alamat').value,
-                rt: document.getElementById('rt').value,
-                rw: document.getElementById('rw').value,
-                kelurahan: document.getElementById('kelurahan').value,
-                kecamatan: document.getElementById('kecamatan').value,
-                kabkota: document.getElementById('kabkota').value
-            };
+function saveAndNext() {
+    // 1. Ambil semua nilai
+    const kontak = document.getElementById('kontak').value;
+    const email = document.getElementById('email').value;
+    const ig = document.getElementById('ig').value;
+    const fb = document.getElementById('fb').value;
+    const twitter = document.getElementById('twitter').value;
+    const linkedin = document.getElementById('linkedin').value;
+    const tiktok = document.getElementById('tiktok').value;
+    const youtube = document.getElementById('youtube').value;
+    const alamat = document.getElementById('alamat').value;
+    const rt = document.getElementById('rt').value;
+    const rw = document.getElementById('rw').value;
+    const kelurahan = document.getElementById('kelurahan').value;
+    const kecamatan = document.getElementById('kecamatan').value;
+    const kabkota = document.getElementById('kabkota').value;
 
-            if(!data.kontak || !data.alamat || !data.kelurahan || !data.kecamatan || !data.kabkota) {
-                alert("Mohon lengkapi kolom bertanda bintang (*)!");
-                return;
-            }
+    // 2. Validasi Kolom Wajib
+    if(!kontak || !alamat || !kelurahan || !kecamatan || !kabkota) {
+        alert("Mohon lengkapi kolom bertanda bintang (*)!");
+        return;
+    }
 
-            localStorage.setItem('step2_data', JSON.stringify(data));
-            window.location.href = "step3.html";
-        }
+    // 3. SIMPAN SATU-PERSATU (Agar terbaca di review.html & Masuk Kolom Sheet)
+    localStorage.setItem('kader_wa', kontak);
+    localStorage.setItem('kader_email', email);
+    localStorage.setItem('kader_ig', ig);
+    localStorage.setItem('kader_fb', fb);
+    localStorage.setItem('kader_twitter', twitter);
+    localStorage.setItem('kader_linkedin', linkedin);
+    localStorage.setItem('kader_tiktok', tiktok);
+    localStorage.setItem('kader_youtube', youtube);
+    localStorage.setItem('kader_alamat', alamat);
+    localStorage.setItem('kader_rt', rt);
+    localStorage.setItem('kader_rw', rw);
+    localStorage.setItem('kader_kelurahan', kelurahan);
+    localStorage.setItem('kader_kecamatan', kecamatan);
+    localStorage.setItem('kader_kabupaten', kabkota); // Sesuai kunci di review.html
+
+    // 4. Lanjut
+    window.location.href = "step3.html";
+}
 
         window.onload = () => {
             const saved = localStorage.getItem('step2_data');
