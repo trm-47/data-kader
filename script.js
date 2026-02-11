@@ -577,7 +577,7 @@ async function submitSeluruhData() {
     btn.innerHTML = "⏳ Sedang Mengirim...";
     
     // GANTI DENGAN URL APPS SCRIPT BOS
-    const URL_API = 'https://script.google.com/macros/s/AKfycbwflsBKkTi1In1Tlc4Yy6BQ5sSS5_zS3RdaBV7da5Br_chZlCfv0QWWol6PrnNwY7jxGQ/exec'; 
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec'; 
 
     try {
         // Gunakan fetch dengan mode no-cors untuk Google Apps Script
