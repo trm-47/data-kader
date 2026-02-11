@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Data Kader | Premium</title>
+    <title>Database Pendidikan Kader - DPD PDI Perjuangan DIY</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -12,26 +12,25 @@
     <div class="container">
         <div class="welcome-card">
             <div class="logo-area">
-                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo Partai" class="logo">
+                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo">
             </div>
             
-            <h1>Pendataan Kader Digital</h1>
-            <p>Selamat datang. Pastikan Anda menyiapkan pas foto dan data riwayat hidup untuk pengisian yang akurat.</p>
+            <p class="label-top">DATABASE PENDIDIKAN KADER</p>
+            <h1>DPD PDI PERJUANGAN</h1>
+            <h2 class="region-name">DAERAH ISTIMEWA YOGYAKARTA</h2>
             
             <div class="features-brief">
-                <div class="item">✓ Multi-step Form</div>
-                <div class="item">✓ Auto-save Data</div>
-                <div class="item">✓ Resume Profesional</div>
+                <p>Silakan lengkapi data Riwayat Pendidikan, Jabatan Partai, dan Pengalaman Organisasi Anda secara akurat.</p>
             </div>
 
-            <button onclick="startForm()" class="btn-primary">Mulai Pengisian</button>
-            <p class="footer-note">Aplikasi dioptimalkan untuk perangkat Android & iOS</p>
+            <button onclick="startForm()" class="btn-primary">Mulai Pengisian Form</button>
+            <p class="footer-note">Sistem Informasi Kader Digital © 2026</p>
         </div>
     </div>
 
     <script>
         function startForm() {
-            // Kita bersihkan data lama jika ingin memulai dari nol
+            // Bersihkan data lama agar tidak campur aduk
             localStorage.clear();
             window.location.href = 'step1.html';
         }
