@@ -182,6 +182,65 @@
     </div>
 
     <script>
+        // --- FITUR AUTO-LOAD DATA SAAT HALAMAN DIBUKA ---
+window.onload = function() {
+    const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
+    const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
+
+    // Load Data Struktural
+    if (savedStruk) {
+        const strukData = JSON.parse(savedStruk);
+        const container = document.getElementById('struktural-container');
+        if(strukData.length > 0) container.innerHTML = ''; 
+        
+        strukData.forEach(data => {
+            addStruktural();
+            const cards = container.querySelectorAll('.entry-card');
+            const lastCard = cards[cards.length - 1];
+            
+            lastCard.querySelector('.tingkat-pengurus').value = data.tingkat;
+            const jabSelect = lastCard.querySelector('.jabatan-nama');
+            jabSelect.value = data.jabatan;
+            
+            // Trigger manual untuk memunculkan input Bidang jika jabatannya Wakil
+            toggleBidang(jabSelect);
+            
+            if(data.bidang !== "-") lastCard.querySelector('.bidang-nama').value = data.bidang;
+            lastCard.querySelector('.thn-mulai').value = data.mulai === "?" ? "" : data.mulai;
+            lastCard.querySelector('.thn-selesai').value = data.selesai === "Sekarang" ? "" : data.selesai;
+        });
+    }
+
+    // Load Data Penugasan
+    if (savedTugas) {
+        const tugasData = JSON.parse(savedTugas);
+        const container = document.getElementById('penugasan-container');
+        if(tugasData.length > 0) container.innerHTML = '';
+
+        tugasData.forEach(data => {
+            addPenugasan();
+            const cards = container.querySelectorAll('.entry-card');
+            const lastCard = cards[cards.length - 1];
+            
+            const jenisSelect = lastCard.querySelector('.jenis-tugas');
+            jenisSelect.value = data.jenis;
+            
+            // Trigger manual untuk memunculkan field Eksekutif/Legislatif
+            handleTugasLogic(jenisSelect);
+            
+            lastCard.querySelector('.tahun-awal').value = data.awal;
+            lastCard.querySelector('.tahun-akhir').value = data.akhir;
+            
+            if(data.jenis === 'EKSEKUTIF') {
+                lastCard.querySelector('.eksekutif-fields select').value = data.wilayah;
+                lastCard.querySelector('.eksekutif-fields input').value = data.jabatan;
+            } else if(data.jenis === 'LEGISLATIF') {
+                lastCard.querySelector('.legislatif-fields select').value = data.lembaga;
+                lastCard.querySelector('.legislatif-fields input').value = data.dapil;
+            }
+        });
+    }
+};
         // --- Fungsi Pendukung (Tetap) ---
 function toggleBidang(select) {
     const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
