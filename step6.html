@@ -25,6 +25,15 @@
         <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Riwayat Organisasi Kemasyarakatan</h3>
         <div class="input-group">
             <input type="text" id="org_nama" placeholder="Nama Organisasi (NU, Muhammadiyah, dll)" class="input-field">
+            
+            <select id="org_tingkat" class="input-field" style="margin-top:8px;">
+                <option value="">-- Pilih Tingkatan --</option>
+                <option value="Pusat / Nasional">Pusat / Nasional</option>
+                <option value="Provinsi">Provinsi</option>
+                <option value="Kabupaten / Kota">Kabupaten / Kota</option>
+                <option value="Kecamatan / Lokal">Kecamatan / Lokal</option>
+            </select>
+
             <input type="text" id="org_jabatan" placeholder="Jabatan" class="input-field" style="margin-top:8px;">
             <input type="text" id="org_periode" placeholder="Periode (Contoh: 2020-2023)" class="input-field" style="margin-top:8px;">
             <button type="button" onclick="addOrganisasi()" class="btn-outline-sm" style="width:100%; margin-top:8px;">➕ Tambah Organisasi</button>
@@ -72,14 +81,69 @@
 
 <script src="script.js"></script>
 <script>
-    window.addEventListener('load', () => {
-        // 1. Render List Organisasi (panggil fungsi dari script.js)
-        if (typeof renderOrganisasi === 'function') renderOrganisasi();
+    // FUNGSI TAMBAH ORGANISASI DENGAN TINGKATAN
+    function addOrganisasi() {
+        const nama = document.getElementById('org_nama').value.trim();
+        const tingkat = document.getElementById('org_tingkat').value;
+        const jabatan = document.getElementById('org_jabatan').value.trim();
+        const periode = document.getElementById('org_periode').value.trim();
 
-        // 2. Auto-Fill data yang sudah tersimpan sebelumnya
+        if (!nama || !tingkat || !jabatan) {
+            alert("Nama, Tingkatan, dan Jabatan wajib diisi!");
+            return;
+        }
+
+        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+        if (!data.riwayat_organisasi) data.riwayat_organisasi = [];
+
+        // Simpan data tingkatan ke dalam array
+        data.riwayat_organisasi.push({
+            nama: nama,
+            tingkat: tingkat,
+            jabatan: jabatan,
+            periode: periode || '-'
+        });
+
+        localStorage.setItem('kaderData', JSON.stringify(data));
+        
+        // Reset field input
+        document.getElementById('org_nama').value = '';
+        document.getElementById('org_tingkat').value = '';
+        document.getElementById('org_jabatan').value = '';
+        document.getElementById('org_periode').value = '';
+
+        renderOrganisasi();
+    }
+
+    // FUNGSI RENDER LIST ORGANISASI
+    function renderOrganisasi() {
+        const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+        const orgList = document.getElementById('orgList');
+        if (!orgList) return;
+
+        const items = data.riwayat_organisasi || [];
+        orgList.innerHTML = items.map((org, index) => `
+            <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #2563eb; position: relative;">
+                <div style="font-size: 12px; font-weight: 700; color: #1e40af;">${org.nama} (${org.tingkat})</div>
+                <div style="font-size: 11px; color: #475569;">${org.jabatan} | ${org.periode}</div>
+                <button onclick="deleteOrganisasi(${index})" style="position: absolute; right: 10px; top: 10px; border: none; background: none; color: #ef4444; cursor: pointer;">❌</button>
+            </div>
+        `).join('');
+    }
+
+    function deleteOrganisasi(index) {
+        let data = JSON.parse(localStorage.getItem('kaderData'));
+        data.riwayat_organisasi.splice(index, 1);
+        localStorage.setItem('kaderData', JSON.stringify(data));
+        renderOrganisasi();
+    }
+
+    window.addEventListener('load', () => {
+        renderOrganisasi();
+
         const savedData = JSON.parse(localStorage.getItem('kaderData'));
         if (savedData) {
-            // Load Medsos
+            // ... Load data Medsos, Bahasa, Komputer ... (Kode sama seperti sebelumnya)
             if (savedData.media_sosial) {
                 document.getElementById('medsos_fb').value = savedData.media_sosial.facebook !== '-' ? savedData.media_sosial.facebook : '';
                 document.getElementById('medsos_ig').value = savedData.media_sosial.instagram !== '-' ? savedData.media_sosial.instagram : '';
@@ -89,7 +153,6 @@
                 document.getElementById('medsos_linkedin').value = savedData.media_sosial.linkedin !== '-' ? savedData.media_sosial.linkedin : '';
             }
 
-            // Load Checkbox Bahasa
             if (savedData.kompetensi_bahasa) {
                 const bahasaArray = savedData.kompetensi_bahasa.split(', ');
                 const checkboxes = document.querySelectorAll('input[name="bahasa"]');
@@ -98,7 +161,6 @@
                 });
             }
 
-            // Load Inputan Lainnya
             if (savedData.bahasa_lainnya_input) document.getElementById('bahasa_lainnya').value = savedData.bahasa_lainnya_input;
             if (savedData.kemampuan_komputer) document.getElementById('komputer').value = savedData.kemampuan_komputer;
         }
@@ -106,22 +168,18 @@
 
     function goToReview() {
         try {
-            // Ambil data lama biar gak nimpa data dari Step 1-5
             let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
-            // 1. Ambil Bahasa
             const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
             let bahasaList = Array.from(checkboxes).map(cb => cb.value);
             const lainnya = document.getElementById('bahasa_lainnya').value.trim();
             
-            // Simpan input mentah "lainnya" buat kebutuhan auto-fill nanti
             data.bahasa_lainnya_input = lainnya; 
             if(lainnya) bahasaList.push(lainnya);
 
             data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
             data.kemampuan_komputer = document.getElementById('komputer').value;
 
-            // 2. Ambil Medsos (Simpan "-" kalau kosong)
             data.media_sosial = {
                 facebook: document.getElementById('medsos_fb').value.trim() || '-',
                 instagram: document.getElementById('medsos_ig').value.trim() || '-',
@@ -131,17 +189,11 @@
                 linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
             };
 
-            // 3. Simpan & Pindah Halaman
             localStorage.setItem('kaderData', JSON.stringify(data));
-            
-            // Debugging (bisa dihapus kalau sudah oke)
-            console.log("Data tersimpan, pindah ke rekap...");
-            
             window.location.href = 'rekap.html';
-            
         } catch (error) {
             console.error("Error Detail:", error);
-            alert("Terjadi kesalahan saat menyimpan. Pastikan fitur LocalStorage browser aktif.");
+            alert("Terjadi kesalahan saat menyimpan.");
         }
     }
 </script>
