@@ -206,13 +206,32 @@
             ? orgData.map(o => `<div class="data-box" style="border-left-color: #2563eb;"><b>${o.nama}</b><br><span style="font-size:11px;">${o.jabatan} | ${o.periode}</span></div>`).join('')
             : '<p style="color:gray; font-size:12px;">Tidak ada riwayat organisasi.</p>';
 
-        // 6. Render Jabatan & Kerja
-        document.getElementById('rekapJabatanPartai').innerHTML = data.riwayat_jabatan_partai?.length 
-            ? data.riwayat_jabatan_partai.map(j => `<div style="font-size:13px; margin-bottom:8px; font-weight:600;">• ${j.jabatan} <span style="font-weight:400; color:gray;">(${j.periode})</span></div>`).join('') 
-            : '-';
-        document.getElementById('rekapPekerjaan').innerHTML = data.riwayat_pekerjaan?.length 
-            ? data.riwayat_pekerjaan.map(p => `<div style="font-size:13px; margin-bottom:8px; font-weight:600;">• ${p.perusahaan} <br><span style="font-weight:400; color:gray; font-size:11px;">Jabatan: ${p.jabatan}</span></div>`).join('') 
-            : '-';
+// 6. Render Jabatan & Kerja (Executive Timeline Design)
+const jPartai = data.riwayat_jabatan_partai || [];
+const jKerja = data.riwayat_pekerjaan || [];
+
+// Render Struktur Partai
+document.getElementById('rekapJabatanPartai').innerHTML = jPartai.length 
+    ? jPartai.map(j => `
+        <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
+            <div style="font-size: 13px; font-weight: 800; color: #b91c1c;">${j.jabatan}</div>
+            <div style="font-size: 11px; color: #4b5563; margin-top: 2px;">
+                <span style="background: #fee2e2; padding: 2px 8px; border-radius: 10px; font-weight: 700;">${j.periode}</span>
+            </div>
+        </div>`).join('') 
+    : '<p style="color:gray; font-size:12px;">Tidak ada riwayat struktur.</p>';
+
+// Render Pengalaman Kerja
+document.getElementById('rekapPekerjaan').innerHTML = jKerja.length 
+    ? jKerja.map(p => `
+        <div class="data-box" style="border-left-color: #64748b; background: #f8fafc;">
+            <div style="font-size: 13px; font-weight: 800; color: #1e293b;">${p.perusahaan}</div>
+            <div style="font-size: 12px; font-weight: 600; color: #475569; margin-top: 2px;">${p.jabatan}</div>
+            <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px;">
+                💼 Profesional Record
+            </div>
+        </div>`).join('') 
+    : '<p style="color:gray; font-size:12px;">Tidak ada riwayat pekerjaan.</p>';
 
         // 7. Render Lainnya & Medsos
         const ms = data.media_sosial || {};
