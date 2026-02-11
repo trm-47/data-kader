@@ -2,235 +2,106 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 2 - Kontak & Domisili</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; overflow-x: hidden; } /* Tambah overflow-x agar watermark aman */
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
-        
-        input, select, textarea { 
-            width: 100%; 
-            padding: 12px 0; 
-            border: none; 
-            border-bottom: 2px solid #e2e8f0; 
-            background: transparent; 
-            outline: none; 
-            font-weight: 700; 
-            font-size: 14px; 
-            transition: all 0.3s ease;
-        }
-        input:focus, select:focus, textarea:focus { border-bottom: 2px solid #b91c1c; }
-        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.5rem; }
-        
-        .address-grid { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 1rem; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pendidikan Formal - Step 2</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="pb-12">
+<body>
 
-    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.pngg" 
-                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
-            <div class="border-l-2 border-slate-200 pl-3">
-                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
-                    SENSUS KADER <span class="text-red-700">2026</span>
-                </h1>
-                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
-                    DPD PDI Perjuangan DIY
-                </p>
-            </div>
-        </div>
+<div class="container">
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 40%"></div>
     </div>
 
-    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
-        <button onclick="goBack()" class="text-slate-400 hover:text-red-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+    <div class="form-card">
+        <div class="header-form">
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
+            <div>
+                <h2>Pendidikan Formal</h2>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Jenjang / Tingkat <span class="required">*</span></label>
+            <select id="jenjang" class="input-field" onchange="toggleExtraFields()">
+                <option value="">-- Pilih Jenjang --</option>
+                <option value="SD">SD</option>
+                <option value="SMP">SMP</option>
+                <option value="SMA/SMK">SMA / SMK</option>
+                <option value="PT">Perguruan Tinggi (D3-S3)</option>
+            </select>
+        </div>
+
+        <div id="wrap_sma" style="display: none;">
+            <div class="input-group">
+                <label>Jurusan SMA/SMK <span class="required">*</span></label>
+                <select id="jurusan_sma" class="input-field" onchange="toggleLainnya()">
+                    <option value="IPA">IPA</option>
+                    <option value="IPS">IPS</option>
+                    <option value="Bahasa">Bahasa</option>
+                    <option value="Lainnya">Lainnya</option>
+                </select>
+            </div>
+            <div id="wrap_lainnya" class="input-group" style="display: none;">
+                <label>Sebutkan Jurusan <span class="required">*</span></label>
+                <input type="text" id="jurusan_lainnya" placeholder="Input Jurusan" class="input-field">
+            </div>
+        </div>
+
+        <div id="wrap_pt" style="display: none;">
+            <div class="input-group">
+                <label>Fakultas <span class="required">*</span></label>
+                <input type="text" id="fakultas" placeholder="Contoh: Hukum" class="input-field">
+            </div>
+            <div class="input-group">
+                <label>Jurusan / Program Studi</label>
+                <input type="text" id="jurusan_pt" placeholder="Contoh: Ilmu Hukum" class="input-field">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Nama Sekolah / Kampus <span class="required">*</span></label>
+            <input type="text" id="nama_sekolah" placeholder="Nama Instansi" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Kota <span class="required">*</span></label>
+            <input type="text" id="kota_sekolah" placeholder="Kota Lokasi" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Tahun Lulus <span class="required">*</span></label>
+            <input type="text" id="tahun_lulus" placeholder="Contoh: 2010" class="input-field">
+        </div>
+
+        <button type="button" onclick="addPendidikan()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px; border-color: var(--primary-color); color: var(--primary-color);">
+            ➕ Tambah Riwayat
         </button>
-        <div class="flex gap-2">
-            <div class="h-1.5 w-8 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-8 rounded-full bg-red-700"></div>
-            <div class="h-1.5 w-8 rounded-full bg-slate-200"></div>
-            <div class="h-1.5 w-8 rounded-full bg-slate-200"></div>
-        </div>
-        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Step 02</span>
-    </div>
 
-    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
-        <div class="glass-effect p-8 md:p-12">
-            
-            <div class="mb-10 text-center md:text-left">
-                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Kontak & Wilayah</h2>
-                <p class="text-slate-400 text-xs font-medium text-balance">Data komunikasi dan domisili kader untuk pemetaan wilayah.</p>
-            </div>
+        <div id="pendidikanList" style="margin-bottom: 20px;"></div>
 
-            <section class="mb-12">
-                <h3 class="text-[11px] font-black text-slate-800 bg-slate-100 px-4 py-2 rounded-lg inline-block mb-6 uppercase tracking-widest">Digital Presence</h3>
-                
-                <div class="grid md:grid-cols-2 gap-x-10 gap-y-4">
-                    <div>
-                        <label class="label-style">WhatsApp Aktif *</label>
-                        <input type="tel" id="kontak" placeholder="08XXXXXXXXXX" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                    </div>
-                    <div>
-                        <label class="label-style">Email</label>
-                        <input type="email" id="email" placeholder="ALAMAT@EMAIL.COM">
-                    </div>
-                    <div>
-                        <label class="label-style">Instagram</label>
-                        <input type="text" id="ig" placeholder="@USERNAME">
-                    </div>
-                    <div>
-                        <label class="label-style">Facebook</label>
-                        <input type="text" id="fb" placeholder="NAMA PROFIL">
-                    </div>
-                    <div>
-                        <label class="label-style">Twitter (X)</label>
-                        <input type="text" id="twitter" placeholder="@USERNAME">
-                    </div>
-                    <div>
-                        <label class="label-style">LinkedIn</label>
-                        <input type="text" id="linkedin" placeholder="URL / NAMA PROFIL">
-                    </div>
-                    <div>
-                        <label class="label-style">TikTok</label>
-                        <input type="text" id="tiktok" placeholder="@USERNAME">
-                    </div>
-                    <div>
-                        <label class="label-style">YouTube Channel</label>
-                        <input type="text" id="youtube" placeholder="NAMA CHANNEL">
-                    </div>
-                </div>
-            </section>
-
-            <section>
-                <h3 class="text-[11px] font-black text-slate-800 bg-slate-100 px-4 py-2 rounded-lg inline-block mb-6 uppercase tracking-widest">Domisili Lengkap (DIY)</h3>
-                
-                <div class="space-y-6">
-                    <div>
-                        <label class="label-style">Alamat (Jalan/Dusun/No. Rumah) *</label>
-                        <textarea id="alamat" rows="1" placeholder="TULIS ALAMAT LENGKAP"></textarea>
-                    </div>
-
-                    <div class="address-grid">
-                        <div>
-                            <label class="label-style">RT</label>
-                            <input type="text" id="rt" placeholder="000">
-                        </div>
-                        <div>
-                            <label class="label-style">RW</label>
-                            <input type="text" id="rw" placeholder="000">
-                        </div>
-                        <div>
-                            <label class="label-style">Kelurahan / Desa *</label>
-                            <input type="text" id="kelurahan" placeholder="NAMA DESA" oninput="this.value = this.value.toUpperCase()">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-10">
-                        <div>
-                            <label class="label-style">Kecamatan *</label>
-                            <input type="text" id="kecamatan" placeholder="NAMA KECAMATAN" oninput="this.value = this.value.toUpperCase()">
-                        </div>
-                        <div>
-                            <label class="label-style">Kabupaten / Kota *</label>
-                            <select id="kabkota">
-                                <option value="">-- PILIH --</option>
-                                <option>KOTA YOGYAKARTA</option>
-                                <option>SLEMAN</option>
-                                <option>BANTUL</option>
-                                <option>KULON PROGO</option>
-                                <option>GUNUNGKIDUL</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div class="mt-16">
-                <button onclick="saveAndNext()" class="w-full bg-red-700 text-white font-black py-5 rounded-2xl shadow-xl uppercase text-xs tracking-[0.2em] hover:bg-red-800 transition-all flex justify-center items-center gap-3">
-                    Lanjut: Riwayat & Kompetensi
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </button>
-            </div>
+        <div class="nav-buttons" style="display: flex; gap: 10px;">
+            <button onclick="window.location.href='step1.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
+            <button onclick="nextStep()" class="btn-primary" style="flex: 1;">Lanjut</button>
         </div>
     </div>
+</div>
 
-    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
-        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.pngg" 
-             alt="Watermark Logo" class="w-80 md:w-96">
-    </div>
-
-
+<script src="script.js"></script>
 <script>
-    function goBack() { window.location.href = "step1.html"; }
-
-    function saveAndNext() {
-        // 1. Ambil semua nilai
-        const kontak = document.getElementById('kontak').value;
-        const email = document.getElementById('email').value;
-        const ig = document.getElementById('ig').value;
-        const fb = document.getElementById('fb').value;
-        const twitter = document.getElementById('twitter').value;
-        const linkedin = document.getElementById('linkedin').value;
-        const tiktok = document.getElementById('tiktok').value;
-        const youtube = document.getElementById('youtube').value;
-        const alamat = document.getElementById('alamat').value;
-        const rt = document.getElementById('rt').value;
-        const rw = document.getElementById('rw').value;
-        const kelurahan = document.getElementById('kelurahan').value;
-        const kecamatan = document.getElementById('kecamatan').value;
-        const kabkota = document.getElementById('kabkota').value;
-
-        // 2. Validasi Kolom Wajib
-        if(!kontak || !alamat || !kelurahan || !kecamatan || !kabkota) {
-            alert("Mohon lengkapi kolom bertanda bintang (*)!");
-            return;
-        }
-
-        // 3. SIMPAN KE LOCALSTORAGE
-        localStorage.setItem('kader_wa', kontak);
-        localStorage.setItem('kader_email', email);
-        localStorage.setItem('kader_ig', ig);
-        localStorage.setItem('kader_fb', fb);
-        localStorage.setItem('kader_twitter', twitter);
-        localStorage.setItem('kader_linkedin', linkedin);
-        localStorage.setItem('kader_tiktok', tiktok);
-        localStorage.setItem('kader_youtube', youtube);
-        localStorage.setItem('kader_alamat', alamat);
-        localStorage.setItem('kader_rt', rt);
-        localStorage.setItem('kader_rw', rw);
-        localStorage.setItem('kader_kelurahan', kelurahan);
-        localStorage.setItem('kader_kecamatan', kecamatan);
-        localStorage.setItem('kader_kabupaten', kabkota);
-
-        // 4. Lanjut
-        window.location.href = "step3.html";
+    function toggleExtraFields() {
+        const jenjang = document.getElementById('jenjang').value;
+        document.getElementById('wrap_sma').style.display = (jenjang === 'SMA/SMK') ? 'block' : 'none';
+        document.getElementById('wrap_pt').style.display = (jenjang === 'PT') ? 'block' : 'none';
     }
 
-    // FUNGSI LOAD DATA SAAT HALAMAN DIBUKA
-    window.onload = () => {
-        // Gunakan pengaman || "" agar tidak muncul tulisan "null" di input
-        document.getElementById('kontak').value = localStorage.getItem('kader_wa') || "";
-        document.getElementById('email').value = localStorage.getItem('kader_email') || "";
-        document.getElementById('ig').value = localStorage.getItem('kader_ig') || "";
-        document.getElementById('fb').value = localStorage.getItem('kader_fb') || "";
-        document.getElementById('twitter').value = localStorage.getItem('kader_twitter') || "";
-        document.getElementById('linkedin').value = localStorage.getItem('kader_linkedin') || "";
-        document.getElementById('tiktok').value = localStorage.getItem('kader_tiktok') || "";
-        document.getElementById('youtube').value = localStorage.getItem('kader_youtube') || "";
-        document.getElementById('alamat').value = localStorage.getItem('kader_alamat') || "";
-        document.getElementById('rt').value = localStorage.getItem('kader_rt') || "";
-        document.getElementById('rw').value = localStorage.getItem('kader_rw') || "";
-        document.getElementById('kelurahan').value = localStorage.getItem('kader_kelurahan') || "";
-        document.getElementById('kecamatan').value = localStorage.getItem('kader_kecamatan') || "";
-        document.getElementById('kabkota').value = localStorage.getItem('kader_kabupaten') || "";
+    function toggleLainnya() {
+        const jSMA = document.getElementById('jurusan_sma').value;
+        document.getElementById('wrap_lainnya').style.display = (jSMA === 'Lainnya') ? 'block' : 'none';
     }
-    </script>
+
+    window.addEventListener('load', renderPendidikan);
+</script>
 </body>
 </html>
