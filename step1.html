@@ -2,48 +2,33 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 1 - Identitas</title>
+    <title>Sensus 2026 - Step 1</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-white p-6">
+<body class="bg-[#0f172a] text-white p-6">
     <div class="max-w-md mx-auto">
-        <h2 class="text-2xl font-black text-red-600 italic uppercase">Langkah 01</h2>
-        <p class="text-xs text-slate-400 mb-6">IDENTITAS PERSONAL</p>
-        
+        <div class="mb-8"><h2 class="text-2xl font-black text-red-600 italic">LANGKAH 01</h2><p class="text-[10px] text-slate-500 tracking-widest uppercase">Identitas Personal</p></div>
         <div class="space-y-4">
-            <input id="nama" placeholder="NAMA LENGKAP" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700">
-            <input id="nik" placeholder="NIK (16 DIGIT)" type="number" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700">
-            <input id="kta" placeholder="NOMOR KTA" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700">
-            <div class="grid grid-cols-2 gap-2">
-                <input id="tempat_lahir" placeholder="TEMPAT LAHIR" class="p-4 rounded-xl bg-slate-800 border border-slate-700">
-                <input id="tgl_lahir" type="date" class="p-4 rounded-xl bg-slate-800 border border-slate-700 text-slate-400">
+            <div><label class="text-[10px] text-slate-500 font-bold uppercase">Nama Lengkap (Sesuai KTP)</label><input id="nama" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1 uppercase"></div>
+            <div><label class="text-[10px] text-slate-500 font-bold uppercase">NIK</label><input id="nik" type="number" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1"></div>
+            <div><label class="text-[10px] text-slate-500 font-bold uppercase">Nomor KTA</label><input id="kta" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1"></div>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label class="text-[10px] text-slate-500 font-bold uppercase">Tempat Lahir</label><input id="tempat_lahir" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1 uppercase"></div>
+                <div><label class="text-[10px] text-slate-500 font-bold uppercase">Tgl Lahir</label><input id="tgl_lahir" type="date" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 mt-1"></div>
             </div>
-            <select id="gender" class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700">
-                <option value="LAKI-LAKI">LAKI-LAKI</option>
-                <option value="PEREMPUAN">PEREMPUAN</option>
-            </select>
         </div>
-
-        <button onclick="saveStep1()" class="w-full mt-8 bg-red-700 p-4 rounded-2xl font-bold">LANJUT KE KONTAK</button>
+        <button onclick="save()" class="w-full mt-10 bg-red-700 p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-red-900/20">Lanjut ke Kontak</button>
     </div>
-
     <script>
-        function saveStep1() {
-            localStorage.setItem('kader_nama', document.getElementById('nama').value);
-            localStorage.setItem('kader_nik', document.getElementById('nik').value);
-            localStorage.setItem('kader_kta', document.getElementById('kta').value);
-            localStorage.setItem('kader_tempat_lahir', document.getElementById('tempat_lahir').value);
-            localStorage.setItem('kader_tgl_lahir', document.getElementById('tgl_lahir').value);
-            localStorage.setItem('kader_gender', document.getElementById('gender').value);
+        function save() {
+            const fields = ['nama','nik','kta','tempat_lahir','tgl_lahir'];
+            fields.forEach(f => localStorage.setItem('kader_'+f, document.getElementById(f).value));
             window.location.href = 'step2.html';
         }
-        // Load data jika user kembali dari step 2
         window.onload = () => {
-            if(localStorage.getItem('kader_nama')) {
-                document.getElementById('nama').value = localStorage.getItem('kader_nama');
-                document.getElementById('nik').value = localStorage.getItem('kader_nik');
-                document.getElementById('kta').value = localStorage.getItem('kader_kta');
-            }
+            ['nama','nik','kta','tempat_lahir','tgl_lahir'].forEach(f => {
+                if(localStorage.getItem('kader_'+f)) document.getElementById(f).value = localStorage.getItem('kader_'+f);
+            });
         }
     </script>
 </body>
