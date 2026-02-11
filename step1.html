@@ -7,63 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; overflow-x: hidden; } /* Tambah overflow-x agar watermark aman */
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #0f172a; overflow-x: hidden; }
         .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
         
-        /* Custom Input Styling */
         .input-group { position: relative; margin-bottom: 1.5rem; }
         input { 
-            width: 100%; 
-            padding: 12px 0; 
-            border: none; 
-            border-bottom: 2px solid #e2e8f0; 
-            background: transparent; 
-            outline: none; 
-            font-weight: 700; 
-            font-size: 15px; 
-            transition: all 0.3s ease;
+            width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
+            background: transparent; outline: none; font-weight: 700; font-size: 15px; transition: all 0.3s ease;
         }
         input:focus { border-bottom: 2px solid #b91c1c; }
         input::placeholder { color: #cbd5e1; font-weight: 500; }
         
-        .label-style { 
-            font-size: 10px; 
-            font-weight: 800; 
-            color: #b91c1c; 
-            text-transform: uppercase; 
-            letter-spacing: 0.15em; 
-            display: block;
-        }
+        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; }
+        .photo-frame { width: 140px; height: 180px; border: 3px solid #fff; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border-radius: 20px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: all 0.3s ease; }
 
-        /* Foto Frame */
-        .photo-frame {
-            width: 140px;
-            height: 180px;
-            border: 3px solid #fff;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border-radius: 20px;
-            background: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
+        /* Gender Toggle Style */
+        .gender-option { cursor: pointer; transition: all 0.3s; border: 2px solid #f1f5f9; }
+        input[name="gender"]:checked + .gender-label { border-color: #b91c1c; background-color: #fef2f2; color: #b91c1c; }
     </style>
 </head>
 <body class="pb-12">
 
     <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
         <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.pngg" 
-                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
+            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
             <div class="border-l-2 border-slate-200 pl-3">
                 <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
                     SENSUS KADER <span class="text-red-700">2026</span>
                 </h1>
-                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
-                    DPD PDI Perjuangan DIY
-                </p>
+                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">DPD PDI Perjuangan DIY</p>
             </div>
         </div>
     </div>
@@ -111,6 +83,24 @@
                     <input type="text" id="nama" placeholder="CONTOH: BUDI SANTOSO, S.H." oninput="this.value = this.value.toUpperCase()">
                 </div>
 
+                <div>
+                    <label class="label-style mb-4">Jenis Kelamin *</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="gender" value="LAKI-LAKI" class="hidden">
+                            <div class="gender-label p-4 rounded-2xl border-2 border-slate-100 bg-white text-center font-bold text-[10px] uppercase tracking-wider transition-all">
+                                Laki-Laki
+                            </div>
+                        </label>
+                        <label class="relative cursor-pointer">
+                            <input type="radio" name="gender" value="PEREMPUAN" class="hidden">
+                            <div class="gender-label p-4 rounded-2xl border-2 border-slate-100 bg-white text-center font-bold text-[10px] uppercase tracking-wider transition-all">
+                                Perempuan
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="grid md:grid-cols-2 gap-10">
                     <div>
                         <label class="label-style">NIK (16 Digit) *</label>
@@ -129,7 +119,7 @@
                     </div>
                     <div>
                         <label class="label-style">Tanggal Lahir</label>
-                        <input type="date" id="tgl_lahir" class="font-bold text-slate-700">
+                        <input type="date" id="tgl_lahir" class="font-bold text-slate-700 bg-transparent">
                     </div>
                 </div>
             </div>
@@ -146,67 +136,67 @@
     </div>
 
     <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
-        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.pngg" 
-             alt="Watermark Logo" class="w-80 md:w-96">
+        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" alt="Watermark Logo" class="w-80 md:w-96">
     </div>
 
-          <script>
-    let fotoData = "";
+    <script>
+        let fotoData = "";
 
-    // 1. Fungsi Preview Foto
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('photo-preview').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                fotoData = e.target.result;
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photo-preview').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                    fotoData = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
             }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // 2. Fungsi Load Data (Agar data tidak hilang saat refresh/kembali)
-    window.onload = () => {
-        // Kita cek satu-persatu key yang kita simpan
-        if(localStorage.getItem('kader_nama')) document.getElementById('nama').value = localStorage.getItem('kader_nama');
-        if(localStorage.getItem('kader_nik')) document.getElementById('nik').value = localStorage.getItem('kader_nik');
-        if(localStorage.getItem('kader_kta')) document.getElementById('kta').value = localStorage.getItem('kader_kta');
-        if(localStorage.getItem('kader_tempat_lahir')) document.getElementById('tmp_lahir').value = localStorage.getItem('kader_tempat_lahir');
-        if(localStorage.getItem('kader_tgl_lahir')) document.getElementById('tgl_lahir').value = localStorage.getItem('kader_tgl_lahir');
-        
-        // Load Foto jika ada
-        const savedFoto = localStorage.getItem('kader_foto');
-        if(savedFoto) {
-            document.getElementById('photo-preview').innerHTML = `<img src="${savedFoto}" class="w-full h-full object-cover">`;
-            fotoData = savedFoto;
-        }
-    }
-
-    // 3. Fungsi Simpan & Lanjut
-    function saveAndNext() {
-        const nama = document.getElementById('nama').value;
-        const nik = document.getElementById('nik').value;
-        const kta = document.getElementById('kta').value;
-        const tmp_lahir = document.getElementById('tmp_lahir').value;
-        const tgl_lahir = document.getElementById('tgl_lahir').value;
-
-        // Validasi Minimal
-        if(!nama || !nik || nik.length < 16) {
-            alert("Nama dan NIK (16 digit) wajib diisi!");
-            return;
         }
 
-        // Simpan ke LocalStorage agar bisa dipanggil di Step manapun & Review
-        localStorage.setItem('kader_nama', nama);
-        localStorage.setItem('kader_nik', nik);
-        localStorage.setItem('kader_kta', kta);
-        localStorage.setItem('kader_tempat_lahir', tmp_lahir);
-        localStorage.setItem('kader_tgl_lahir', tgl_lahir);
-        localStorage.setItem('kader_foto', fotoData); 
+        window.onload = () => {
+            if(localStorage.getItem('kader_nama')) document.getElementById('nama').value = localStorage.getItem('kader_nama');
+            if(localStorage.getItem('kader_nik')) document.getElementById('nik').value = localStorage.getItem('kader_nik');
+            if(localStorage.getItem('kader_kta')) document.getElementById('kta').value = localStorage.getItem('kader_kta');
+            if(localStorage.getItem('kader_tempat_lahir')) document.getElementById('tmp_lahir').value = localStorage.getItem('kader_tempat_lahir');
+            if(localStorage.getItem('kader_tgl_lahir')) document.getElementById('tgl_lahir').value = localStorage.getItem('kader_tgl_lahir');
+            
+            // Load Gender
+            const savedGender = localStorage.getItem('kader_gender');
+            if(savedGender) {
+                const radio = document.querySelector(`input[name="gender"][value="${savedGender}"]`);
+                if(radio) radio.checked = true;
+            }
 
-        // Pindah Halaman
-        window.location.href = "step2.html";
-    }
+            const savedFoto = localStorage.getItem('kader_foto');
+            if(savedFoto) {
+                document.getElementById('photo-preview').innerHTML = `<img src="${savedFoto}" class="w-full h-full object-cover">`;
+                fotoData = savedFoto;
+            }
+        }
+
+        function saveAndNext() {
+            const nama = document.getElementById('nama').value;
+            const nik = document.getElementById('nik').value;
+            const kta = document.getElementById('kta').value;
+            const tmp_lahir = document.getElementById('tmp_lahir').value;
+            const tgl_lahir = document.getElementById('tgl_lahir').value;
+            const genderRadio = document.querySelector('input[name="gender"]:checked');
+
+            if(!nama || !nik || nik.length < 16 || !genderRadio) {
+                alert("Nama, Jenis Kelamin, dan NIK (16 digit) wajib diisi!");
+                return;
+            }
+
+            localStorage.setItem('kader_nama', nama);
+            localStorage.setItem('kader_nik', nik);
+            localStorage.setItem('kader_kta', kta);
+            localStorage.setItem('kader_gender', genderRadio.value);
+            localStorage.setItem('kader_tempat_lahir', tmp_lahir);
+            localStorage.setItem('kader_tgl_lahir', tgl_lahir);
+            localStorage.setItem('kader_foto', fotoData); 
+
+            window.location.href = "step2.html";
+        }
     </script>
 </body>
 </html>
