@@ -246,23 +246,34 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        // 1. Inisialisasi Swiper (Efek Kartu)
-// 1. Inisialisasi Swiper (Tetap)
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+// 1. Inisialisasi Swiper (Efek Kartu)
 var swiper = new Swiper(".mySwiper", {
     effect: "cards",
     grabCursor: true,
     pagination: { el: ".swiper-pagination", clickable: true },
 });
 
-// 2. Fungsi Helper (Tetap)
-const get = (key) => localStorage.getItem(key) || '-';
+// 2. Fungsi Helper
+const get = (key) => {
+    const val = localStorage.getItem(key);
+    return (val && val !== 'undefined' && val !== 'null' && val !== '') ? val : '-';
+};
 
-// 3. Load Data saat halaman dimuat
+const parseJSON = (key) => {
+    try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
+// 3. Load Data Detail
 document.addEventListener('DOMContentLoaded', () => {
     
-    // --- STEP 1: IDENTITAS ---
+    // --- STEP 1: IDENTITAS DASAR ---
     const namaKader = get('kader_nama');
     document.getElementById('v-nama').innerText = namaKader;
     document.getElementById('v-confirm-nama').innerText = namaKader.toUpperCase();
@@ -272,68 +283,85 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('v-tgl-lahir').innerText = get('kader_tgl_lahir');
     document.getElementById('v-gender').innerText = get('kader_gender');
 
-    // --- STEP 2: KONTAK & DOMISILI ---
+    // --- STEP 2: KONTAK & WILAYAH ---
     document.getElementById('v-wa').innerText = get('kader_wa');
+    document.getElementById('v-email').innerText = get('kader_email');
     document.getElementById('v-alamat').innerText = get('kader_alamat');
+    // Gabungkan wilayah agar lebih detil
+    const wilayahDetil = `${get('kader_kecamatan')} / ${get('kader_kabupaten')}`;
     document.getElementById('v-kecamatan').innerText = get('kader_kecamatan');
     document.getElementById('v-kabupaten').innerText = get('kader_kabupaten');
-    document.getElementById('v-email').innerText = get('kader_email');
 
-    // --- STEP 3: KUALIFIKASI ---
+    // --- STEP 3: KUALIFIKASI AKADEMIK & KADERISASI ---
     document.getElementById('v-pendidikan').innerText = get('kader_pendidikan');
     document.getElementById('v-kader-tingkat').innerText = get('kader_tingkat');
-    document.getElementById('v-kader-tahun').innerText = get('kader_tahun_kaderisasi');
+    document.getElementById('v-kader-tahun').innerText = `Angkatan/Tahun: ${get('kader_tahun_kaderisasi')}`;
 
-    // --- STEP 4: PENUGASAN (STRUKTURAL) - Menampilkan SEMUA riwayat ---
-    const strukDataRaw = localStorage.getItem('kader_riwayat_struktural_json');
+    // --- STEP 4: PENUGASAN STRUKTURAL (DETIL) ---
+    const strukList = parseJSON('kader_riwayat_struktural_json');
     const strukContainer = document.getElementById('v-struk-list');
     
-    if (strukDataRaw && strukDataRaw !== '[]') {
-        const strukList = JSON.parse(strukDataRaw);
-        strukContainer.innerHTML = ''; 
-        strukList.forEach(item => {
-            const div = document.createElement('div');
-            div.className = "pb-2 border-b border-slate-100 last:border-0 mb-2";
-            div.innerHTML = `
-                <p class="text-[10px] text-red-600 font-black">${item.tingkat}</p>
-                <p class="text-slate-900 uppercase">${item.jabatan} ${item.bidang && item.bidang !== '-' ? item.bidang : ''}</p>
-                <p class="text-[9px] text-slate-400 font-bold">${item.mulai} s/d ${item.selesai || 'Sekarang'}</p>
-            `;
-            strukContainer.appendChild(div);
-        });
+    if (strukList.length > 0) {
+        strukContainer.innerHTML = strukList.map(item => `
+            <div class="p-3 bg-slate-50 rounded-xl mb-2 border-l-4 border-red-600">
+                <p class="text-[9px] font-black text-red-700 leading-none mb-1">${item.tingkat}</p>
+                <p class="text-sm font-bold text-slate-800 leading-tight">${item.jabatan} ${item.bidang && item.bidang !== '-' ? '<br><span class="text-[11px] text-slate-500">Bidang: '+item.bidang+'</span>' : ''}</p>
+                <p class="text-[10px] text-slate-400 mt-1 font-medium">${item.mulai} s/d ${item.selesai || 'Sekarang'}</p>
+            </div>
+        `).join('');
     } else {
-        strukContainer.innerText = "TIDAK ADA JABATAN STRUKTURAL";
+        strukContainer.innerHTML = '<p class="text-slate-400 italic text-xs">Tidak ada riwayat struktural</p>';
     }
 
-    // --- STEP 4: PENUGASAN (PUBLIK) - Menampilkan SEMUA riwayat ---
-    const tugasDataRaw = localStorage.getItem('kader_riwayat_penugasan_json');
+    // --- STEP 4: PENUGASAN PUBLIK (DETIL) ---
+    const tugasList = parseJSON('kader_riwayat_penugasan_json');
     const penugasanView = document.getElementById('v-penugasan');
     
-    if (tugasDataRaw && tugasDataRaw !== '[]') {
-        const tugasList = JSON.parse(tugasDataRaw);
+    if (tugasList.length > 0) {
         penugasanView.innerHTML = tugasList.map(t => {
-            return t.jenis === 'EKSEKUTIF' 
-                ? `<div class="mb-2 text-slate-800">EKSEKUTIF: ${t.jabatan} (${t.awal}-${t.akhir})</div>`
-                : `<div class="mb-2 text-slate-800">LEGISLATIF: ${t.lembaga} ${t.dapil} (${t.awal}-${t.akhir})</div>`;
+            const label = t.jenis === 'EKSEKUTIF' ? '💼 EKSEKUTIF' : '🏛️ LEGISLATIF';
+            const detail = t.jenis === 'EKSEKUTIF' 
+                ? `${t.jabatan} (${t.wilayah})` 
+                : `${t.lembaga} - Dapil: ${t.dapil}`;
+            return `
+                <div class="mb-3 pb-2 border-b border-slate-100 last:border-0">
+                    <p class="text-[9px] font-extrabold text-blue-600 mb-1">${label}</p>
+                    <p class="text-[12px] font-bold text-slate-800 leading-tight">${detail}</p>
+                    <p class="text-[10px] text-slate-500 font-bold">${t.awal} - ${t.akhir}</p>
+                </div>
+            `;
         }).join('');
     } else {
-        penugasanView.innerText = "TIDAK ADA PENUGASAN";
+        penugasanView.innerHTML = '<p class="text-slate-400 italic text-xs">Tidak ada penugasan publik</p>';
     }
 
-    // --- STEP 5: SOSIAL (PROFESI & ORMAS) ---
-    // Mengambil semua riwayat pekerjaan (bukan cuma yang pertama)
-    const jobData = JSON.parse(localStorage.getItem('kader_riwayat_pekerjaan_json') || '[]');
-    document.getElementById('v-profesi').innerHTML = jobData.length > 0 
-        ? jobData.map(j => `<div class="mb-1">${j.jenis} (${j.jabatan})</div>`).join('') 
-        : get('kader_profesi');
+    // --- STEP 5: SOSIAL & PROFESI (DETIL) ---
+    const jobList = parseJSON('kader_riwayat_pekerjaan_json');
+    const profesiView = document.getElementById('v-profesi');
+    if (jobList.length > 0) {
+        profesiView.innerHTML = jobList.map(j => `
+            <div class="mb-2">
+                <span class="text-slate-900 font-bold">${j.jenis}</span>
+                <p class="text-[11px] text-slate-500 font-medium">Jabatan: ${j.jabatan}</p>
+            </div>
+        `).join('');
+    } else {
+        profesiView.innerText = get('kader_profesi');
+    }
 
-    // Mengambil semua ormas
-    const orgData = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
-    document.getElementById('v-ormas').innerText = orgData.length > 0 
-        ? orgData.map(o => o.nama).join(', ') 
-        : '-';
+    const orgList = parseJSON('kader_riwayat_organisasi_json');
+    const ormasView = document.getElementById('v-ormas');
+    if (orgList.length > 0) {
+        ormasView.innerHTML = orgList.map(o => `
+            <div class="inline-block bg-slate-100 px-2 py-1 rounded text-[10px] font-bold mr-1 mb-1">
+                ${o.nama} (${o.jabatan})
+            </div>
+        `).join('');
+    } else {
+        ormasView.innerText = '-';
+    }
 
-    // --- STEP 6: KOMPETENSI ---
+    // --- STEP 6: KOMPETENSI (DETIL) ---
     document.getElementById('v-bahasa').innerText = get('kader_bahasa');
     document.getElementById('v-komputer').innerText = get('kader_komputer');
     if(get('kader_is_it_expert') === 'YA') {
@@ -341,12 +369,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 4. Navigasi Edit (Tetap)
+// 4. Navigasi Edit
 function goTo(step) {
     window.location.href = `step${step}.html`;
 }
 
-// 5. Submit Akhir (Tetap)
+// 5. Submit Akhir dengan Data Utuh
 async function finalSubmit() {
     const isChecked = document.getElementById('confirm').checked;
     if(!isChecked) {
@@ -354,30 +382,43 @@ async function finalSubmit() {
         return;
     }
 
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.innerText = "PROSES MENGIRIM...";
     document.getElementById('loading-screen').style.display = 'flex';
     
+    // Ambil SEMUA data tanpa terkecuali dari localStorage
     const allData = {};
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         allData[key] = localStorage.getItem(key);
     }
 
+    // Tambahkan timestamp pengiriman
+    allData['submit_timestamp'] = new Date().toLocaleString('id-ID');
+
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwUtdW-bWOfCaa6XCvHmk-6j966oR04SEQd1QV-mgsExlQNLJxkFbxN_TuJNYYRl7Dq/exec';
 
     try {
         await fetch(scriptURL, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors', // Penting agar tidak kena CORS di Apps Script
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(allData)
         });
+        
+        // Bersihkan Storage & Pindah ke Sukses
         localStorage.clear();
         window.location.href = "success.html";
     } catch (error) {
         document.getElementById('loading-screen').style.display = 'none';
-        alert("Terjadi kesalahan jaringan. Data gagal terkirim.");
+        btn.disabled = false;
+        btn.innerText = "KIRIM DATA SENSUS";
+        alert("Koneksi bermasalah. Pastikan internet aktif dan coba lagi.");
         console.error('Error!', error.message);
     }
 }
-    </script>
+</script>
 </body>
 </html>
