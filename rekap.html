@@ -227,24 +227,25 @@ const jPartai = data.riwayat_jabatan_partai || [];
 const jTugas = data.riwayat_penugasan_partai || []; // Data Baru
 const jKerja = data.riwayat_pekerjaan || [];
 
-// Render Struktur Partai (Perbaikan Undefined & Tambah Lokasi)
+// Render Struktur Partai (Review Rekap)
+const jPartai = data.riwayat_jabatan_partai || [];
+
 document.getElementById('rekapJabatanPartai').innerHTML = jPartai.length 
     ? jPartai.map(j => `
         <div class="data-box" style="border-left-color: var(--primary-color); background: #fff5f5;">
             <div style="display: flex; justify-content: space-between; align-items: start;">
                 <div style="font-size: 11px; font-weight: 800; color: #ef4444; text-transform: uppercase;">
-                    ${j.tingkatan || 'Struktur'} 
-                </div>
-                <div style="font-size: 10px; color: #64748b; font-weight: 600;">${j.periode}</div>
+                    ${j.tingkatan} </div>
+                <div style="font-size: 10px; color: #64748b;">${j.periode}</div>
             </div>
             <div style="font-size: 14px; font-weight: 800; color: #1e293b; margin-top: 2px;">
-                ${j.jabatan} ${j.bidang ? '<span style="font-weight:400;"> - ' + j.bidang + '</span>' : ''}
+                ${j.jabatan} ${j.bidang ? '<span style="font-weight:400;">- ' + j.bidang + '</span>' : ''}
             </div>
-            <div style="font-size: 11px; color: #475569; margin-top: 2px; font-style: italic;">
-                📍 ${j.lokasi || '-'}
+            <div style="font-size: 11px; color: #475569; margin-top: 3px; display: flex; align-items: center; gap: 4px;">
+                <span>📍</span> <span>${j.lokasi || '-'}</span>
             </div>
         </div>`).join('') 
-    : '<p style="color:gray; font-size:12px;">Tidak ada riwayat struktur partai.</p>';
+    : '<p style="color:gray; font-size:12px;">Data tidak ditemukan.</p>';
 
 // Tambahkan Render Penugasan Partai di bawah Jabatan Partai
 const htmlPenugasan = jTugas.length 
