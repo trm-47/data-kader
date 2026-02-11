@@ -395,7 +395,11 @@ function addPekerjaan() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let listPekerjaan = data.riwayat_pekerjaan || [];
 
-    listPekerjaan.push({ perusahaan, jabatan, masa });
+    listPekerjaan.push({ 
+    perusahaan: perusahaan, 
+    jabatan: jabatan, 
+    masa_kerja: masa // Gunakan nama 'masa_kerja' agar sinkron dengan GAS
+});
     data.riwayat_pekerjaan = listPekerjaan;
     localStorage.setItem('kaderData', JSON.stringify(data));
 
@@ -573,7 +577,7 @@ async function submitSeluruhData() {
     btn.innerHTML = "⏳ Sedang Mengirim...";
     
     // GANTI DENGAN URL APPS SCRIPT BOS
-    const URL_API = 'URL_PUNYA_BOS_DI_SINI'; 
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzPN3jKmXZbPnMMdDK4cfuS_e6DpRqDBQooj22cUKdNAoenO8adIjjHd7n2KpK2WgVeCg/exec'; 
 
     try {
         // Gunakan fetch dengan mode no-cors untuk Google Apps Script
