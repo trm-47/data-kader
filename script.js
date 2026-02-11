@@ -597,13 +597,7 @@ function loadRekap() {
     }
 }
 
-// PASTIKAN INI ADA DI PALING BAWAH FILE JS BOS
-window.onload = function() {
-    // Jalankan loadRekap hanya jika kita ada di halaman rekap
-    if (document.getElementById('rekapPribadi') || document.getElementById('rekapJabatanPartai')) {
-        loadRekap();
-    }
-};
+
 // 2. Fungsi Kirim Data ke Google Sheets
 async function submitSeluruhData() {
     const data = JSON.parse(localStorage.getItem('kaderData'));
