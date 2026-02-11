@@ -205,43 +205,15 @@ body {
 }
 
 /* Gender Selection Luxury Style */
-.gender-selection {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.gender-option {
-    flex: 1;
-    cursor: pointer;
-    position: relative;
-}
-
-.gender-option input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
+.gender-selection { display: flex; gap: 10px; }
+.gender-option { flex: 1; cursor: pointer; }
+.gender-option input { display: none; }
 .gender-card {
-    display: block;
-    text-align: center;
-    padding: 14px;
-    background: #F8FAFC;
-    border: 2px solid #F1F5F9;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--soft-slate);
-    transition: all 0.3s ease;
+    display: block; padding: 15px; background: #f8fafc; border: 2px solid #e2e8f0;
+    border-radius: 12px; text-align: center; font-weight: 700; color: #64748b; transition: 0.3s;
 }
-
-.gender-option input:checked ~ .gender-card {
-    background: #FFF1F2;
-    border-color: var(--primary-red);
-    color: var(--primary-red);
-    box-shadow: 0 8px 15px -5px rgba(215, 25, 32, 0.2);
-    transform: translateY(-2px);
+.gender-option input:checked + .gender-card {
+    background: #fff1f2; border-color: #D71920; color: #D71920;
 }
 
 /* Hover effect untuk Gender */
