@@ -1,249 +1,64 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 5 - Organisasi & Pekerjaan</title>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 5 - Sosial</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
-        select, input { 
-            width: 100%; padding: 12px 0; border: none; border-bottom: 2px solid #e2e8f0; 
-            background: transparent; outline: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
-        }
-        select:focus, input:focus { border-bottom: 2px solid #b91c1c; background: #fffcfc; }
-        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-top: 1.2rem; }
-        .entry-card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
-        .btn-add { font-size: 10px; font-weight: 800; color: #b91c1c; border: 2px dashed #fca5a5; width: 100%; padding: 12px; border-radius: 16px; margin-bottom: 20px; transition: all 0.3s; }
-        .btn-add:hover { background: #fef2f2; border-color: #b91c1c; }
-        .btn-remove { position: absolute; top: 15px; right: 15px; color: #cbd5e1; font-weight: bold; font-size: 12px; z-index: 20; }
-        .btn-remove:hover { color: #ef4444; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: white; }
+        .input-p { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 18px; width: 100%; color: white; }
+        .tag-org { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3b82f6; padding: 8px 16px; border-radius: 12px; font-size: 11px; }
     </style>
 </head>
-<body class="pb-12 bg-slate-50">
-
-    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" alt="Logo PDI-P" class="h-12 md:h-14 w-auto">
-            <div class="border-l-2 border-slate-200 pl-3">
-                <h1 class="text-sm md:text-base font-black text-slate-900 italic tracking-tighter">SENSUS KADER <span class="text-red-700">2026</span></h1>
-            </div>
-        </div>
-    </div>
-
-    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
-        <a href="step4.html" class="text-slate-400 hover:text-red-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-        </a>
-        <div class="flex gap-2">
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
-        </div>
-        <span class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Step 05</span>
-    </div>
-
-    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
-        <div class="glass-effect p-8 md:p-12 shadow-2xl">
-            <div class="mb-10 border-b pb-6 text-center md:text-left">
-                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Afiliasi & Profesi</h2>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Rekam Jejak Sosial & Kemandirian Ekonomi</p>
+<body class="p-6">
+    <div class="max-w-md mx-auto pt-6">
+        <h1 class="text-2xl font-black italic text-red-600 mb-8 uppercase tracking-tighter">Langkah 05</h1>
+        
+        <div class="space-y-6">
+            <div>
+                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Pekerjaan / Profesi</label>
+                <input id="profesi" placeholder="Contoh: Advokat / Petani" class="input-p mt-2 uppercase font-bold text-sm">
             </div>
 
-            <section class="mb-12">
-                <div class="flex items-center gap-2 mb-6">
-                    <div class="h-6 w-1 bg-red-700 rounded-full"></div>
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Organisasi (Masyarakat/Profesi/Hobi)</h3>
+            <div class="bg-slate-800/30 p-6 rounded-[32px] border border-blue-900/30">
+                <p class="text-[10px] font-black text-blue-500 uppercase mb-4 tracking-widest">Organisasi Sayap / Ormas</p>
+                <div class="flex gap-2">
+                    <input id="o" placeholder="Nama Org" class="flex-1 bg-slate-900 border border-slate-700 p-3 rounded-xl text-sm uppercase">
+                    <button onclick="addO()" class="bg-blue-600 px-4 rounded-xl font-bold">+</button>
                 </div>
-                <div id="org-container">
-                    <div class="entry-card shadow-sm">
-                        <label class="label-style">Nama Organisasi</label>
-                        <input type="text" class="org-name" placeholder="CONTOH: KARANG TARUNA / NU / MUHAMMADIYAH" oninput="this.value = this.value.toUpperCase()">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label-style">Jabatan</label>
-                                <input type="text" class="org-rank" placeholder="KETUA / ANGGOTA" oninput="this.value = this.value.toUpperCase()">
-                            </div>
-                            <div>
-                                <label class="label-style">Tahun (Mulai - Selesai)</label>
-                                <input type="text" class="org-period" placeholder="2019 - 2022">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="addEntry('org-container')" class="btn-add">+ TAMBAH ORGANISASI LAIN</button>
-            </section>
-
-            <section class="mb-12">
-                <div class="flex items-center gap-2 mb-6">
-                    <div class="h-6 w-1 bg-slate-900 rounded-full"></div>
-                    <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pekerjaan & Profesional</h3>
-                </div>
-                <div id="job-container">
-                    <div class="entry-card shadow-sm border-l-4 border-l-slate-900">
-                        <label class="label-style">Jenis Pekerjaan / Profesi</label>
-                        <select class="job-type">
-                            <option value="">-- PILIH JENIS --</option>
-                            <option>ASN / PNS / PPPK</option>
-                            <option>TNI / POLRI</option>
-                            <option>KARYAWAN SWASTA</option>
-                            <option>WIRASWASTA / PENGUSAHA</option>
-                            <option>PETANI / NELAYAN</option>
-                            <option>BURUH</option>
-                            <option>PROFESIONAL (DOKTER, PENGACARA, DLL)</option>
-                            <option>MAHASISWA / PELAJAR</option>
-                            <option>LAINNYA / TIDAK BEKERJA</option>
-                        </select>
-                        <label class="label-style">Nama Perusahaan / Instansi / Usaha</label>
-                        <input type="text" class="job-name" placeholder="CONTOH: PT. MAJU JAYA" oninput="this.value = this.value.toUpperCase()">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="label-style">Posisi / Jabatan</label>
-                                <input type="text" class="job-rank" placeholder="MANAGER / PEMILIK" oninput="this.value = this.value.toUpperCase()">
-                            </div>
-                            <div>
-                                <label class="label-style">Tahun Masuk</label>
-                                <input type="number" class="job-year" placeholder="YYYY">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="addEntry('job-container')" class="btn-add hover:bg-slate-100">+ TAMBAH RIWAYAT PEKERJAAN</button>
-            </section>
-
-            <button onclick="saveStep5()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
-                Lanjut Kompetensi & Keahlian
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-            </button>
+                <div id="list-o" class="flex flex-wrap gap-2 mt-4"></div>
+            </div>
         </div>
+
+        <button onclick="save()" class="w-full mt-12 bg-red-700 p-5 rounded-3xl font-black uppercase tracking-[0.3em] shadow-xl">Terakhir: Skill</button>
     </div>
 
-<script>
-    let orgTemplate;
-    let jobTemplate;
-
-    window.onload = function() {
-        // Ambil "blueprint" kartu sebelum container dimanipulasi
-        orgTemplate = document.querySelector('#org-container .entry-card').cloneNode(true);
-        jobTemplate = document.querySelector('#job-container .entry-card').cloneNode(true);
-
-        // Load data jika user menekan tombol 'Back'
-        loadStep5Data();
-    };
-
-    function addEntry(containerId) {
-        const container = document.getElementById(containerId);
-        const isOrg = containerId === 'org-container';
-        const template = isOrg ? orgTemplate : jobTemplate;
-        
-        const clone = template.cloneNode(true);
-        // Reset semua inputan di dalam kloningan
-        clone.querySelectorAll('input, select').forEach(i => i.value = "");
-        
-        // Pasang tombol hapus (X) dengan posisi absolut yang sudah Bos definisikan di CSS
-        const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '✕';
-        removeBtn.className = 'btn-remove';
-        removeBtn.title = "Hapus Baris Ini";
-        removeBtn.onclick = function() { clone.remove(); };
-        clone.appendChild(removeBtn);
-        
-        container.appendChild(clone);
-        return clone;
-    }
-
-    function loadStep5Data() {
-        const savedOrg = localStorage.getItem('kader_riwayat_organisasi_json');
-        const savedJob = localStorage.getItem('kader_riwayat_pekerjaan_json');
-
-        if(savedOrg) {
-            const data = JSON.parse(savedOrg);
-            if(data.length > 0) {
-                const container = document.getElementById('org-container');
-                container.innerHTML = ''; // Bersihkan default
-                data.forEach(item => {
-                    const card = addEntry('org-container');
-                    card.querySelector('.org-name').value = item.nama;
-                    card.querySelector('.org-rank').value = item.jabatan;
-                    card.querySelector('.org-period').value = item.periode;
-                });
-            }
+    <script>
+        let orgs = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
+        function render() {
+            document.getElementById('list-o').innerHTML = orgs.map((o, i) => `
+                <div class="tag-org flex items-center gap-2">
+                    <span>${o}</span>
+                    <button onclick="del(${i})" class="text-red-500">×</button>
+                </div>`).join('');
         }
-
-        if(savedJob) {
-            const data = JSON.parse(savedJob);
-            if(data.length > 0) {
-                const container = document.getElementById('job-container');
-                container.innerHTML = ''; 
-                data.forEach(item => {
-                    const card = addEntry('job-container');
-                    card.querySelector('.job-type').value = item.jenis;
-                    card.querySelector('.job-name').value = item.instansi;
-                    card.querySelector('.job-rank').value = item.jabatan;
-                    card.querySelector('.job-year').value = item.tahun;
-                });
-            }
+        function addO() {
+            const v = document.getElementById('o').value;
+            if(!v) return;
+            orgs.push(v);
+            localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(orgs));
+            document.getElementById('o').value = ''; render();
         }
-    }
-
-    function saveStep5() {
-        const riwayatOrganisasi = [];
-        document.querySelectorAll('#org-container .entry-card').forEach(card => {
-            const nama = card.querySelector('.org-name').value.trim();
-            if(nama) {
-                riwayatOrganisasi.push({
-                    nama: nama.toUpperCase(),
-                    jabatan: card.querySelector('.org-rank').value.toUpperCase() || "ANGGOTA",
-                    periode: card.querySelector('.org-period').value || "-"
-                });
-            }
-        });
-
-        const riwayatPekerjaan = [];
-        document.querySelectorAll('#job-container .entry-card').forEach(card => {
-            const jenis = card.querySelector('.job-type').value;
-            if(jenis) {
-                riwayatPekerjaan.push({
-                    jenis: jenis,
-                    instansi: card.querySelector('.job-name').value.toUpperCase() || "-",
-                    jabatan: card.querySelector('.job-rank').value.toUpperCase() || "-",
-                    tahun: card.querySelector('.job-year').value || "-"
-                });
-            }
-        });
-
-        // Simpan ke LocalStorage
-        localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(riwayatOrganisasi));
-        localStorage.setItem('kader_riwayat_pekerjaan_json', JSON.stringify(riwayatPekerjaan));
-
-        // LOGIKA STRATEGIS: Deteksi Otomatis untuk Dashboard
-        const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
-        
-        // Deteksi NU (Nahdlatul Ulama)
-        const isNU = (textOrg.includes('NU ') || textOrg.includes('NAHDLATUL') || textOrg.includes('ANSHOR') || textOrg.includes('FATAYAT'));
-        localStorage.setItem('kader_is_nu', isNU ? 'YA' : '-');
-
-        // Deteksi Muhammadiyah
-        const isMuhammadiyah = (textOrg.includes('MUHAMMADIYAH') || textOrg.includes('AISYIYAH') || textOrg.includes('PEMUDA MUHAMMADIYAH'));
-        localStorage.setItem('kader_is_muhammadiyah', isMuhammadiyah ? 'YA' : '-');
-        
-        // Ambil Profesi Utama (Baris Pertama)
-        if(riwayatPekerjaan.length > 0) {
-            const prof = riwayatPekerjaan[0].jenis;
-            localStorage.setItem('kader_pekerjaan', prof);
-            localStorage.setItem('kader_is_pengusaha', (prof.includes('WIRASWASTA') || prof.includes('PENGUSAHA')) ? 'YA' : '-');
-        } else {
-            localStorage.setItem('kader_pekerjaan', "TIDAK BEKERJA");
-            localStorage.setItem('kader_is_pengusaha', '-');
+        function del(i) { orgs.splice(i, 1); localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(orgs)); render(); }
+        function save() {
+            localStorage.setItem('kader_profesi', document.getElementById('profesi').value);
+            window.location.href = 'step6.html';
         }
-
-        // Lanjut ke Step 6
-        window.location.href = "step6.html"; 
-    }
-</script>
+        window.onload = () => {
+            render();
+            if(localStorage.getItem('kader_profesi')) document.getElementById('profesi').value = localStorage.getItem('kader_profesi');
+        }
+    </script>
 </body>
 </html>
