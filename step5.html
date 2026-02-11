@@ -1,64 +1,62 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 5 - Sosial</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: white; }
-        .input-p { background: #1e293b; border: 1px solid #334155; border-radius: 20px; padding: 18px; width: 100%; color: white; }
-        .tag-org { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #3b82f6; padding: 8px 16px; border-radius: 12px; font-size: 11px; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Riwayat Pekerjaan - Step 5</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="p-6">
-    <div class="max-w-md mx-auto pt-6">
-        <h1 class="text-2xl font-black italic text-red-600 mb-8 uppercase tracking-tighter">Langkah 05</h1>
-        
-        <div class="space-y-6">
-            <div>
-                <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-2">Pekerjaan / Profesi</label>
-                <input id="profesi" placeholder="Contoh: Advokat / Petani" class="input-p mt-2 uppercase font-bold text-sm">
-            </div>
+<body>
 
-            <div class="bg-slate-800/30 p-6 rounded-[32px] border border-blue-900/30">
-                <p class="text-[10px] font-black text-blue-500 uppercase mb-4 tracking-widest">Organisasi Sayap / Ormas</p>
-                <div class="flex gap-2">
-                    <input id="o" placeholder="Nama Org" class="flex-1 bg-slate-900 border border-slate-700 p-3 rounded-xl text-sm uppercase">
-                    <button onclick="addO()" class="bg-blue-600 px-4 rounded-xl font-bold">+</button>
-                </div>
-                <div id="list-o" class="flex flex-wrap gap-2 mt-4"></div>
+<div class="container">
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 85%"></div>
+    </div>
+
+    <div class="form-card">
+        <div class="header-form">
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
+            <div>
+                <h2>Riwayat Pekerjaan</h2>
             </div>
         </div>
 
-        <button onclick="save()" class="w-full mt-12 bg-red-700 p-5 rounded-3xl font-black uppercase tracking-[0.3em] shadow-xl">Terakhir: Skill</button>
-    </div>
+        <div class="input-group">
+            <label>Nama Perusahaan / Instansi <span class="required">*</span></label>
+            <input type="text" id="nama_perusahaan" placeholder="Contoh: PT. Maju Jaya / Wiraswasta" class="input-field">
+        </div>
 
-    <script>
-        let orgs = JSON.parse(localStorage.getItem('kader_riwayat_organisasi_json') || '[]');
-        function render() {
-            document.getElementById('list-o').innerHTML = orgs.map((o, i) => `
-                <div class="tag-org flex items-center gap-2">
-                    <span>${o}</span>
-                    <button onclick="del(${i})" class="text-red-500">×</button>
-                </div>`).join('');
-        }
-        function addO() {
-            const v = document.getElementById('o').value;
-            if(!v) return;
-            orgs.push(v);
-            localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(orgs));
-            document.getElementById('o').value = ''; render();
-        }
-        function del(i) { orgs.splice(i, 1); localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(orgs)); render(); }
-        function save() {
-            localStorage.setItem('kader_profesi', document.getElementById('profesi').value);
-            window.location.href = 'step6.html';
-        }
-        window.onload = () => {
-            render();
-            if(localStorage.getItem('kader_profesi')) document.getElementById('profesi').value = localStorage.getItem('kader_profesi');
-        }
-    </script>
+        <div class="input-group">
+            <label>Jabatan / Posisi <span class="required">*</span></label>
+            <input type="text" id="jabatan_kerja" placeholder="Contoh: Manager / Staf" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Masa Kerja (Tahun) <span class="required">*</span></label>
+            <input type="text" id="masa_kerja" placeholder="Contoh: 2015 - 2020" class="input-field">
+        </div>
+
+        <button type="button" onclick="addPekerjaan()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px; border-color: var(--primary-color); color: var(--primary-color);">
+            ➕ Tambah Riwayat Pekerjaan
+        </button>
+
+        <div id="pekerjaanList" style="margin-bottom: 20px;"></div>
+
+        <div class="nav-buttons" style="display: flex; gap: 10px;">
+            <button onclick="window.location.href='step4.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
+            <button onclick="nextStepKerja()" class="btn-primary" style="flex: 1;">Lanjut</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    window.addEventListener('load', renderPekerjaan);
+    
+    function nextStepKerja() {
+        window.location.href = 'step6.html';
+    }
+</script>
 </body>
 </html>
