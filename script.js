@@ -494,27 +494,41 @@ function deleteOrg(index) {
    ========================================== */
 
 function goToReview() {
-    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    try {
+        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
-    // 1. Ambil Kompetensi Bahasa
-    const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
-    let bahasaList = Array.from(checkboxes).map(cb => cb.value);
-    const lainnya = document.getElementById('bahasa_lainnya').value.trim();
-    if(lainnya) bahasaList.push(lainnya);
+        // 1. Ambil Kompetensi Bahasa
+        const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
+        let bahasaList = Array.from(checkboxes).map(cb => cb.value);
+        
+        // Simpan input "Lainnya" ke variabel khusus agar dibaca Sheet 8
+        const inputLainnya = document.getElementById('bahasa_lainnya');
+        data.bahasa_lainnya_input = inputLainnya ? inputLainnya.value.trim() : '';
 
-    // 2. Simpan Kompetensi
-    data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
-    data.kemampuan_komputer = document.getElementById('komputer').value;
+        // Simpan gabungan ke kompetensi_bahasa
+        data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
 
-    // 3. Ambil Semua Akun Medsos
-    data.media_sosial = {
-        facebook: document.getElementById('medsos_fb').value.trim() || '-',
-        instagram: document.getElementById('medsos_ig').value.trim() || '-',
-        tiktok: document.getElementById('medsos_tiktok').value.trim() || '-',
-        twitter_x: document.getElementById('medsos_twitter').value.trim() || '-',
-        youtube: document.getElementById('medsos_youtube').value.trim() || '-',
-        linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
-    };
+        // 2. Simpan Kompetensi (Pakai Optional Chaining agar tidak crash)
+        const komputerEl = document.getElementById('komputer');
+        data.kemampuan_komputer = komputerEl ? komputerEl.value : '-';
+
+        // 3. Ambil Semua Akun Medsos
+        data.media_sosial = {
+            facebook: document.getElementById('medsos_fb')?.value.trim() || '-',
+            instagram: document.getElementById('medsos_ig')?.value.trim() || '-',
+            tiktok: document.getElementById('medsos_tiktok')?.value.trim() || '-',
+            twitter_x: document.getElementById('medsos_twitter')?.value.trim() || '-',
+            youtube: document.getElementById('medsos_youtube')?.value.trim() || '-',
+            linkedin: document.getElementById('medsos_linkedin')?.value.trim() || '-'
+        };
+
+        localStorage.setItem('kaderData', JSON.stringify(data));
+        window.location.href = 'rekap.html';
+    } catch (e) {
+        console.error("Gagal pindah ke rekap:", e);
+        alert("Ada kesalahan teknis, cek konsol!");
+    }
+}
 
     // 4. Update LocalStorage
     localStorage.setItem('kaderData', JSON.stringify(data));
