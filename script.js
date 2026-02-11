@@ -298,16 +298,21 @@ function deleteKader(index) {
    LOGIKA STEP 4: JABATAN PARTAI
    ========================================== */
 
+/* ==========================================
+    LOGIKA STEP 4: JABATAN PARTAI (FIXED)
+   ========================================== */
+
 function addJabatanPartai() {
-    // Ambil value dari select tingkatan_partai
+    // 1. Ambil value dari form
     const tingkatanTerpilih = document.getElementById('tingkatan_partai').value; 
     const jabatan = document.getElementById('jabatan_partai').value;
     const periode = document.getElementById('periode_partai').value.trim();
     let bidang = "";
 
-    // Tambah Lokasi via Prompt
+    // 2. Tambah Lokasi via Prompt (Agar 📍 di rekap tidak kosong)
     const lokasi = prompt("Sebutkan Wilayah (Contoh: DPC Kota Surabaya / PAC Tegalsari):") || "-";
 
+    // 3. Logika Bidang untuk Wakil Ketua/Sekretaris
     if (jabatan === 'Wakil Ketua' || jabatan === 'Wakil Sekretaris') {
         bidang = document.getElementById('bidang_jabatan').value.trim();
         if (!bidang) {
@@ -324,7 +329,7 @@ function addJabatanPartai() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     if (!data.riwayat_jabatan_partai) data.riwayat_jabatan_partai = [];
 
-    // SIMPAN DENGAN KEY 'tingkatan'
+    // 4. SIMPAN DENGAN KEY 'tingkatan' & 'lokasi'
     data.riwayat_jabatan_partai.push({ 
         tingkatan: tingkatanTerpilih, 
         jabatan: jabatan,
@@ -335,12 +340,12 @@ function addJabatanPartai() {
 
     localStorage.setItem('kaderData', JSON.stringify(data));
 
-    // Reset Form
+    // 5. Reset Form
     document.getElementById('tingkatan_partai').value = '';
     document.getElementById('jabatan_partai').value = '';
     document.getElementById('periode_partai').value = '';
-    document.getElementById('bidang_jabatan').value = '';
-    document.getElementById('wrap_bidang').style.display = 'none';
+    if(document.getElementById('bidang_jabatan')) document.getElementById('bidang_jabatan').value = '';
+    if(document.getElementById('wrap_bidang')) document.getElementById('wrap_bidang').style.display = 'none';
 
     renderJabatan();
 }
