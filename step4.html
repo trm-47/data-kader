@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jabatan Partai - Step 4</title>
+    <title>Jabatan & Penugasan - Step 4</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -18,12 +18,14 @@
         <div class="header-form">
             <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
             <div>
-                <h2>Riwayat Jabatan Partai</h2>
+                <h2>Jabatan & Penugasan</h2>
             </div>
         </div>
 
+        <h3 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;">🚩 Struktur Partai</h3>
+        
         <div class="input-group">
-            <label>Tingkatan Struktur <span class="required">*</span></label>
+            <label>Tingkatan Struktur</label>
             <select id="tingkatan_partai" class="input-field">
                 <option value="">-- Pilih Tingkatan --</option>
                 <option value="DPP">DPP (Nasional)</option>
@@ -37,7 +39,7 @@
         </div>
 
         <div class="input-group">
-            <label>Jabatan <span class="required">*</span></label>
+            <label>Jabatan</label>
             <select id="jabatan_partai" class="input-field" onchange="toggleBidang()">
                 <option value="">-- Pilih Jabatan --</option>
                 <option value="Ketua">Ketua</option>
@@ -51,24 +53,64 @@
         </div>
 
         <div id="wrap_bidang" class="input-group" style="display: none;">
-            <label>Sebutkan Bidang <span class="required">*</span></label>
+            <label>Sebutkan Bidang</label>
             <input type="text" id="bidang_jabatan" placeholder="Contoh: Bidang Organisasi" class="input-field">
         </div>
 
         <div class="input-group">
-            <label>Periode Tahun <span class="required">*</span></label>
+            <label>Periode Tahun</label>
             <input type="text" id="periode_partai" placeholder="Contoh: 2019 - 2024" class="input-field">
         </div>
 
-        <button type="button" onclick="addJabatanPartai()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px; border-color: var(--primary-color); color: var(--primary-color);">
-            ➕ Tambah Jabatan
+        <button type="button" onclick="addJabatanPartai()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px;">
+            ➕ Tambah Struktur
         </button>
+        <div id="jabatanList" style="margin-bottom: 25px;"></div>
 
-        <div id="jabatanList" style="margin-bottom: 20px;"></div>
+        <h3 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;">🏛️ Penugasan Partai</h3>
+        
+        <div class="input-group">
+            <label>Jenis Penugasan</label>
+            <select id="tugas_jenis" class="input-field" onchange="toggleTugas()">
+                <option value="">-- Pilih Jenis --</option>
+                <option value="Eksekutif">Eksekutif (Kepala/Wakil Kepala Daerah)</option>
+                <option value="Legislatif">Legislatif (DPR/DPD/DPRD)</option>
+            </select>
+        </div>
+
+        <div id="wrap_legislatif" class="input-group" style="display: none;">
+            <label>Lembaga Legislatif</label>
+            <select id="tugas_lembaga" class="input-field">
+                <option value="DPR RI">DPR RI</option>
+                <option value="DPD RI">DPD RI</option>
+                <option value="DPRD Provinsi">DPRD Provinsi</option>
+                <option value="DPRD Kabupaten/Kota">DPRD Kabupaten/Kota</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Jabatan Penugasan</label>
+            <input type="text" id="tugas_jabatan" placeholder="Contoh: Anggota Komisi III / Bupati" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Lokasi / Wilayah Penugasan</label>
+            <input type="text" id="tugas_lokasi" placeholder="Contoh: Dapil Jabar VIII / Kab. Kuningan" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Periode Penugasan</label>
+            <input type="text" id="tugas_periode" placeholder="Contoh: 2019 - 2024" class="input-field">
+        </div>
+
+        <button type="button" onclick="addPenugasanPartai()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px;">
+            ➕ Tambah Penugasan
+        </button>
+        <div id="tugasList" style="margin-bottom: 20px;"></div>
 
         <div class="nav-buttons" style="display: flex; gap: 10px;">
             <button onclick="window.location.href='step3.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
-            <button onclick="nextStepJabatan()" class="btn-primary" style="flex: 1;">Lanjut</button>
+            <button onclick="window.location.href='step5.html'" class="btn-primary" style="flex: 1;">Lanjut</button>
         </div>
     </div>
 </div>
@@ -78,19 +120,19 @@
     function toggleBidang() {
         const jab = document.getElementById('jabatan_partai').value;
         const wrap = document.getElementById('wrap_bidang');
-        // Muncul jika pilih Wakil Ketua atau Wakil Sekretaris
-        if (jab === 'Wakil Ketua' || jab === 'Wakil Sekretaris') {
-            wrap.style.display = 'block';
-        } else {
-            wrap.style.display = 'none';
-        }
+        wrap.style.display = (jab === 'Wakil Ketua' || jab === 'Wakil Sekretaris') ? 'block' : 'none';
     }
 
-    function nextStepJabatan() {
-        window.location.href = 'step5.html';
+    function toggleTugas() {
+        const jenis = document.getElementById('tugas_jenis').value;
+        const wrap = document.getElementById('wrap_legislatif');
+        wrap.style.display = (jenis === 'Legislatif') ? 'block' : 'none';
     }
 
-    window.addEventListener('load', renderJabatan);
+    window.addEventListener('load', () => {
+        if(typeof renderJabatan === 'function') renderJabatan();
+        if(typeof renderPenugasan === 'function') renderPenugasan();
+    });
 </script>
 </body>
 </html>
