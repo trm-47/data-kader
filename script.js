@@ -233,3 +233,80 @@ function deleteKader(index) {
     localStorage.setItem('kaderData', JSON.stringify(data));
     renderKader();
 }
+
+/* ==========================================
+   LOGIKA STEP 4: JABATAN PARTAI
+   ========================================== */
+
+function addJabatanPartai() {
+    const tingkat = document.getElementById('tingkatan_partai').value;
+    const jabatan = document.getElementById('jabatan_partai').value;
+    const periode = document.getElementById('periode_partai').value.trim();
+    let bidang = "";
+
+    // Cek jika butuh bidang
+    if (jabatan === 'Wakil Ketua' || jabatan === 'Wakil Sekretaris') {
+        bidang = document.getElementById('bidang_jabatan').value.trim();
+        if (!bidang) {
+            alert("Harap isi bidang jabatan!");
+            return;
+        }
+    }
+
+    if (!tingkat || !jabatan || !periode) {
+        alert("Lengkapi data jabatan partai!");
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let listJabatan = data.riwayat_jabatan_partai || [];
+
+    listJabatan.push({ 
+        tingkat, 
+        jabatan: bidang ? `${jabatan} ${bidang}` : jabatan, 
+        periode 
+    });
+
+    data.riwayat_jabatan_partai = listJabatan;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+
+    // Reset Form
+    document.getElementById('tingkatan_partai').value = '';
+    document.getElementById('jabatan_partai').value = '';
+    document.getElementById('periode_partai').value = '';
+    document.getElementById('bidang_jabatan').value = '';
+    document.getElementById('wrap_bidang').style.display = 'none';
+
+    renderJabatan();
+}
+
+function renderJabatan() {
+    const container = document.getElementById('jabatanList');
+    if(!container) return;
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_jabatan_partai || [];
+
+    if (list.length === 0) {
+        container.innerHTML = '<p style="font-size: 12px; color: #94a3b8; text-align: center;">Belum ada riwayat jabatan partai.</p>';
+        return;
+    }
+
+    container.innerHTML = list.map((item, index) => `
+        <div style="background: #fff; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid #b91c1c; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 700; color: #1e293b;">${item.jabatan}</div>
+                <div style="font-size: 11px; color: #b91c1c; font-weight:600;">${item.tingkat}</div>
+                <div style="font-size: 11px; color: #64748b;">Periode: ${item.periode}</div>
+            </div>
+            <button onclick="deleteJabatanPartai(${index})" style="background: none; border: none; color: #ef4444; font-size: 20px; cursor:pointer;">&times;</button>
+        </div>
+    `).join('');
+}
+
+function deleteJabatanPartai(index) {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    data.riwayat_jabatan_partai.splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderJabatan();
+}
