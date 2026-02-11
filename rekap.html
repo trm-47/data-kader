@@ -238,30 +238,67 @@ document.getElementById('rekapPekerjaan').innerHTML = jKerja.length
         </div>`).join('') 
     : '<p style="color:gray; font-size:12px;">Tidak ada riwayat pekerjaan.</p>';
 
-        // 7. Render Lainnya & Medsos
-        const ms = data.media_sosial || {};
-        document.getElementById('rekapLainnya').innerHTML = `
-            <div class="rekap-grid">
-                <div class="rekap-item-premium">
-                    <div class="rekap-label">Bahasa</div>
-                    <div class="rekap-value">${data.kompetensi_bahasa || '-'}</div>
+        // 7. Render Lainnya & Medsos (Logo Media Sosial Asli)
+const ms = data.media_sosial || {};
+
+// Link Logo Asli (High Quality PNG)
+const icons = {
+    fb: "https://cdn-icons-png.flaticon.com/512/124/124010.png",
+    ig: "https://cdn-icons-png.flaticon.com/512/174/174855.png",
+    tt: "https://cdn-icons-png.flaticon.com/512/3046/3046121.png",
+    tw: "https://cdn-icons-png.flaticon.com/512/5968/5968830.png", // X Logo
+    yt: "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+    li: "https://cdn-icons-png.flaticon.com/512/174/174857.png"
+};
+
+document.getElementById('rekapLainnya').innerHTML = `
+    <div class="rekap-grid">
+        <div class="rekap-item-premium">
+            <div class="rekap-label">Bahasa</div>
+            <div class="rekap-value">${data.kompetensi_bahasa || '-'}</div>
+        </div>
+        <div class="rekap-item-premium">
+            <div class="rekap-label">Komputer</div>
+            <div class="rekap-value">${data.kemampuan_komputer || '-'}</div>
+        </div>
+        
+        <div class="rekap-item-premium" style="grid-column: span 2;">
+            <div class="rekap-label" style="margin-bottom:10px;">Media Sosial</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${icons.ig}" style="width:18px; height:18px;">
+                    <span style="font-size:12px; color:#475569;">${ms.instagram || '-'}</span>
                 </div>
-                <div class="rekap-item-premium">
-                    <div class="rekap-label">Komputer</div>
-                    <div class="rekap-value">${data.kemampuan_komputer || '-'}</div>
+                
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${icons.tt}" style="width:18px; height:18px;">
+                    <span style="font-size:12px; color:#475569;">${ms.tiktok || '-'}</span>
                 </div>
-                <div class="rekap-item-premium" style="grid-column: span 2;">
-                    <div class="rekap-label">Media Sosial</div>
-                    <div class="rekap-value" style="font-size:12px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top:5px;">
-                        <span>📸 IG: ${ms.instagram || '-'}</span>
-                        <span>📱 TT: ${ms.tiktok || '-'}</span>
-                        <span>🔵 FB: ${ms.facebook || '-'}</span>
-                        <span>🐦 TW: ${ms.twitter_x || '-'}</span>
-                        <span>📺 YT: ${ms.youtube || '-'}</span>
-                        <span>💼 LI: ${ms.linkedin || '-'}</span>
-                    </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${icons.fb}" style="width:18px; height:18px;">
+                    <span style="font-size:12px; color:#475569;">${ms.facebook || '-'}</span>
                 </div>
-            </div>`;
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${icons.tw}" style="width:18px; height:18px;">
+                    <span style="font-size:12px; color:#475569;">${ms.twitter_x || '-'}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${icons.yt}" style="width:18px; height:18px;">
+                    <span style="font-size:12px; color:#475569;">${ms.youtube || '-'}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <img src="${icons.li}" style="width:18px; height:18px;">
+                    <span style="font-size:12px; color:#475569;">${ms.linkedin || '-'}</span>
+                </div>
+
+            </div>
+        </div>
+    </div>`;
     }
 
     async function submitSeluruhData() {
