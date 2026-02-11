@@ -213,15 +213,24 @@ function saveAndNext() {
 }
 
         window.onload = () => {
-            const saved = localStorage.getItem('step2_data');
-            if(saved) {
-                const d = JSON.parse(saved);
-                Object.keys(d).forEach(key => {
-                    const el = document.getElementById(key);
-                    if(el) el.value = d[key];
-                });
-            }
-        }
+    // Load satu persatu dari localStorage
+    if(localStorage.getItem('kader_wa')) {
+        document.getElementById('kontak').value = localStorage.getItem('kader_wa');
+        document.getElementById('email').value = localStorage.getItem('kader_email');
+        document.getElementById('ig').value = localStorage.getItem('kader_ig');
+        document.getElementById('fb').value = localStorage.getItem('kader_fb');
+        document.getElementById('twitter').value = localStorage.getItem('kader_twitter');
+        document.getElementById('linkedin').value = localStorage.getItem('kader_linkedin');
+        document.getElementById('tiktok').value = localStorage.getItem('kader_tiktok');
+        document.getElementById('youtube').value = localStorage.getItem('kader_youtube');
+        document.getElementById('alamat').value = localStorage.getItem('kader_alamat');
+        document.getElementById('rt').value = localStorage.getItem('kader_rt');
+        document.getElementById('rw').value = localStorage.getItem('kader_rw');
+        document.getElementById('kelurahan').value = localStorage.getItem('kader_kelurahan');
+        document.getElementById('kecamatan').value = localStorage.getItem('kader_kecamatan');
+        document.getElementById('kabkota').value = localStorage.getItem('kader_kabupaten');
+    }
+}
     </script>
 </body>
 </html>
