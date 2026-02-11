@@ -2,196 +2,74 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step 6 - Kompetensi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
-        .glass-effect { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 32px; box-shadow: 0 20px 50px -12px rgba(0,0,0,0.05); position: relative; z-index: 10; backdrop-filter: blur(10px); }
-        .label-style { font-size: 10px; font-weight: 800; color: #b91c1c; text-transform: uppercase; letter-spacing: 0.15em; display: block; margin-bottom: 12px; }
-        .check-content { transition: all 0.3s ease; cursor: pointer; }
-        input[type="checkbox"]:checked + .check-content { border-color: #b91c1c; background-color: #fef2f2; color: #b91c1c; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Final Step - Form Kader</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="pb-12 bg-slate-50">
+<body>
 
-    <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
-        <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
-            <div class="border-l-2 border-slate-200 pl-3">
-                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
-                    SENSUS KADER <span class="text-red-700">2026</span>
-                </h1>
-                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
-                    DPD PDI Perjuangan DIY
-                </p>
+<div class="container">
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 100%"></div>
+    </div>
+
+    <div class="form-card">
+        <div class="header-form">
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
+            <div>
+                <h2>Tahap Terakhir</h2>
             </div>
         </div>
-    </div>
 
-    <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
-        <a href="step5.html" class="text-slate-400 hover:text-red-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-        </a>
-        <div class="flex gap-2">
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
-            <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Riwayat Organisasi Kemasyarakatan</h3>
+        <div class="input-group">
+            <input type="text" id="org_nama" placeholder="Nama Organisasi (Contoh: NU, Muhammadiyah, Karang Taruna)" class="input-field">
+            <input type="text" id="org_jabatan" placeholder="Jabatan" class="input-field" style="margin-top:8px;">
+            <input type="text" id="org_periode" placeholder="Periode (Contoh: 2020-2023)" class="input-field" style="margin-top:8px;">
+            <button type="button" onclick="addOrganisasi()" class="btn-outline-sm" style="width:100%; margin-top:8px;">➕ Tambah Organisasi</button>
         </div>
-        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 06</span>
-    </div>
+        <div id="orgList" style="margin-bottom: 20px;"></div>
 
-    <div class="max-w-2xl mx-auto mt-8 px-4 relative">
-        <div class="glass-effect p-8 md:p-12 shadow-2xl">
-            
-            <div class="mb-10 border-b pb-6 text-center md:text-left">
-                <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Kompetensi & Keahlian</h2>
-                <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Pemetaan Sumber Daya Manusia Partai</p>
-            </div>
+        <hr style="border: 0.5px solid #eee; margin: 20px 0;">
 
-            <section class="mb-12">
-                <label class="label-style">Kompetensi Bahasa (Bisa Pilih > 1)</label>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    
-                    <label class="relative">
-                        <input type="checkbox" class="hidden" checked disabled>
-                        <div class="p-4 rounded-2xl border-2 border-red-700 bg-red-50 text-red-700 font-bold text-[10px] text-center uppercase">Indonesia</div>
-                    </label>
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Kompetensi Bahasa</h3>
+        <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <label><input type="checkbox" name="bahasa" value="Indonesia"> Indonesia</label>
+            <label><input type="checkbox" name="bahasa" value="Inggris"> Inggris</label>
+            <label><input type="checkbox" name="bahasa" value="Mandarin"> Mandarin</label>
+            <label><input type="checkbox" name="bahasa" value="Jawa"> Jawa</label>
+        </div>
+        <div class="input-group">
+            <label>Bahasa Lainnya:</label>
+            <input type="text" id="bahasa_lainnya" placeholder="Sebutkan bahasa lain..." class="input-field">
+        </div>
 
-                    <label class="relative">
-                        <input type="checkbox" name="lang" value="INGGRIS" class="hidden peer">
-                        <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Inggris</div>
-                    </label>
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Kemampuan Komputer</h3>
+        <div class="input-group">
+            <select id="komputer" class="input-field">
+                <option value="Bisa">Bisa (Office, Internet, dll)</option>
+                <option value="Tidak Bisa">Tidak Bisa</option>
+            </select>
+        </div>
 
-                    <label class="relative">
-                        <input type="checkbox" name="lang" value="MANDARIN" class="hidden peer">
-                        <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Mandarin</div>
-                    </label>
+        <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--primary-color);">Akun Media Sosial</h3>
+        <div class="input-group">
+            <input type="text" id="medsos_fb" placeholder="Link/Nama Facebook" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_ig" placeholder="Username Instagram" class="input-field" style="margin-bottom:8px;">
+            <input type="text" id="medsos_tiktok" placeholder="Username TikTok" class="input-field">
+        </div>
 
-                    <label class="relative">
-                        <input type="checkbox" id="lang-other-check" class="hidden peer" onchange="toggleOtherLang(this)">
-                        <div class="check-content p-4 rounded-2xl border-2 border-slate-100 bg-white peer-checked:border-red-700 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold text-[10px] text-center uppercase transition-all">Lainnya</div>
-                    </label>
-                </div>
-
-                <div id="other-lang-field" class="hidden mt-4">
-                    <label class="label-style text-[9px]">Sebutkan Bahasa Lainnya</label>
-                    <input type="text" id="lang-other-input" class="w-full border-b-2 border-slate-200 py-2 outline-none focus:border-red-700 font-bold text-sm uppercase" placeholder="MISAL: ARAB, JEPANG, JAWA KRIMO" oninput="this.value = this.value.toUpperCase()">
-                </div>
-            </section>
-
-            <section class="mb-12">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="h-4 w-1 bg-slate-900 rounded-full"></div>
-                    <label class="label-style !mb-0">Kemampuan Mengoperasikan Komputer</label>
-                </div>
-                <select id="komputer-skill" class="w-full border-b-2 border-slate-200 py-3 font-bold text-sm outline-none focus:border-red-700 bg-transparent">
-                    <option value="TIDAK BISA">TIDAK BISA</option>
-                    <option value="BISA" selected>BISA (MS OFFICE, INTERNET, EMAIL)</option>
-                    <option value="ADVANCE">ADVANCE (DESAIN, IT, PROGRAMMING, DATA)</option>
-                </select>
-            </section>
-
-            <button onclick="saveStep6()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
-                Review Profil Final
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </button>
+        <div class="nav-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="window.location.href='step5.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
+            <button onclick="finalSubmit()" class="btn-primary" style="flex: 1; background: #16a34a; border-color: #16a34a;">Kirim Data</button>
         </div>
     </div>
+</div>
 
-    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
-        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-             alt="Watermark Logo" class="w-80 md:w-96">
-    </div>
-
-    <script>
-        function toggleOtherLang(checkbox) {
-            const field = document.getElementById('other-lang-field');
-            if(checkbox.checked) {
-                field.classList.remove('hidden');
-            } else {
-                field.classList.add('hidden');
-                document.getElementById('lang-other-input').value = "";
-            }
-        }
-
-        function saveStep6() {
-            let daftarBahasa = ['INDONESIA'];
-            const checkboxes = document.querySelectorAll('input[name="lang"]:checked');
-            
-            checkboxes.forEach(cb => {
-                const val = cb.value.toUpperCase();
-                if(!daftarBahasa.includes(val)) {
-                    daftarBahasa.push(val);
-                }
-            });
-
-            const otherCheck = document.getElementById('lang-other-check');
-            const otherInput = document.getElementById('lang-other-input');
-            if(otherCheck.checked && otherInput.value.trim() !== "") {
-                const otherVal = otherInput.value.trim().toUpperCase();
-                if(!daftarBahasa.includes(otherVal)) {
-                    daftarBahasa.push(otherVal);
-                }
-            }
-
-            const skill = document.getElementById('komputer-skill').value;
-
-            // Simpan data utama
-            localStorage.setItem('kader_bahasa', daftarBahasa.join(', '));
-            localStorage.setItem('kader_komputer', skill);
-
-            // Mapping Logika untuk Database
-            localStorage.setItem('kader_is_it_expert', (skill === 'ADVANCE') ? 'YA' : '-');
-            localStorage.setItem('kader_is_multilingual', (daftarBahasa.length > 2) ? 'YA' : '-');
-
-            window.location.href = "review.html";
-        }
-
-        // --- FUNGSI LOAD DATA SAAT HALAMAN DIBUKA ---
-        window.onload = function() {
-            const savedBahasa = localStorage.getItem('kader_bahasa');
-            const savedKomputer = localStorage.getItem('kader_komputer');
-
-            // 1. Restore Dropdown Komputer
-            if(savedKomputer) {
-                document.getElementById('komputer-skill').value = savedKomputer;
-            }
-
-            // 2. Restore Checkbox Bahasa
-            if(savedBahasa) {
-                const listBahasa = savedBahasa.split(', ').map(s => s.trim().toUpperCase());
-                
-                // Cek Bahasa Standar (Inggris/Mandarin)
-                const langCheckboxes = document.querySelectorAll('input[name="lang"]');
-                langCheckboxes.forEach(cb => {
-                    if(listBahasa.includes(cb.value.toUpperCase())) {
-                        cb.checked = true;
-                    }
-                });
-
-                // Cek Bahasa "Lainnya"
-                // Kita cari bahasa di list yang bukan Indonesia, Inggris, atau Mandarin
-                const standar = ['INDONESIA', 'INGGRIS', 'MANDARIN'];
-                const lainLain = listBahasa.filter(b => !standar.includes(b));
-
-                if(lainLain.length > 0) {
-                    const otherCheck = document.getElementById('lang-other-check');
-                    otherCheck.checked = true;
-                    toggleOtherLang(otherCheck);
-                    document.getElementById('lang-other-input').value = lainLain.join(', ');
-                }
-            }
-        };
-    </script>
+<script src="script.js"></script>
+<script>
+    window.addEventListener('load', renderOrganisasi);
+</script>
 </body>
 </html>
