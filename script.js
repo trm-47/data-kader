@@ -527,3 +527,19 @@ async function submitSeluruhData() {
         btn.innerHTML = "KIRIM DATA SEKARANG";
     }
 }
+
+// Contoh Fungsi Ganti Skin
+function applySkin(themeData) {
+    const root = document.documentElement;
+    root.style.setProperty('--primary-red', themeData.mainColor); // Misal jadi Merah Muda atau Merah Tua
+    root.style.setProperty('--radius-premium', themeData.borderRadius + 'px');
+    
+    // Simpan ke localStorage agar awet di semua halaman
+    localStorage.setItem('preferredSkin', JSON.stringify(themeData));
+}
+
+// Cek skin saat halaman dibuka
+window.addEventListener('DOMContentLoaded', () => {
+    const savedSkin = JSON.parse(localStorage.getItem('preferredSkin'));
+    if(savedSkin) applySkin(savedSkin);
+});
