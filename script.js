@@ -418,7 +418,11 @@ function deleteOrg(index) {
     renderOrganisasi();
 }
 
-function finalSubmit() {
+/* ==========================================
+   LOGIKA STEP 6: SIMPAN & LANJUT KE REKAP
+   ========================================== */
+
+function goToReview() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
     // 1. Ambil Kompetensi Bahasa
@@ -427,11 +431,11 @@ function finalSubmit() {
     const lainnya = document.getElementById('bahasa_lainnya').value.trim();
     if(lainnya) bahasaList.push(lainnya);
 
-    // 2. Simpan Kompetensi ke Object Utama
-    data.kompetensi_bahasa = bahasaList.join(', ');
+    // 2. Simpan Kompetensi
+    data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
     data.kemampuan_komputer = document.getElementById('komputer').value;
 
-    // 3. Ambil Semua Akun Medsos (Jika kosong diisi "-")
+    // 3. Ambil Semua Akun Medsos
     data.media_sosial = {
         facebook: document.getElementById('medsos_fb').value.trim() || '-',
         instagram: document.getElementById('medsos_ig').value.trim() || '-',
@@ -441,14 +445,9 @@ function finalSubmit() {
         linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
     };
 
-    // 4. Update LocalStorage Terakhir
+    // 4. Update LocalStorage
     localStorage.setItem('kaderData', JSON.stringify(data));
 
-    // 5. Eksekusi Kirim (Contoh Alert)
-    console.log("DATA SIAP DIKIRIM KE DATABASE:", data);
-    
-    alert("SELAMAT! Data kader atas nama " + data.nama_lengkap + " telah lengkap dan berhasil disimpan secara lokal.");
-    
-    // Opsi: Arahkan ke halaman ringkasan atau kirim ke Google Sheets
-    // kirimKeGoogleSheets(data); 
+    // 5. Lempar ke Halaman Rekap (Slider)
+    window.location.href = 'rekap.html';
 }
