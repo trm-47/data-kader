@@ -1,55 +1,38 @@
-// Fungsi untuk menyimpan data dan lanjut ke halaman berikutnya
-function saveAndNext() {
-    // Ambil nilai dari input
-    const data = {
-        nama_lengkap: document.getElementById('nama_lengkap').value,
-        nik: document.getElementById('nik').value,
-        tempat_lahir: document.getElementById('tempat_lahir').value,
-        // Foto akan diproses berbeda nanti, untuk sementara simpan datanya dulu
-    };
+function saveStep1() {
+    const fields = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    let dataStep1 = {};
 
-    // Validasi sederhana: Jika kosong, jangan lanjut
-    if (!data.nama_lengkap || !data.nik) {
-        alert("Mohon lengkapi field yang bertanda bintang (*)");
+    // Ambil semua nilai input
+    fields.forEach(field => {
+        dataStep1[field] = document.getElementById(field).value;
+    });
+
+    // Validasi sederhana untuk field mandatory
+    if (!dataStep1.nama_lengkap || !dataStep1.nik || !dataStep1.alamat || !dataStep1.kelurahan || !dataStep1.kontak) {
+        alert("Mohon lengkapi data yang bertanda bintang (*)");
         return;
     }
 
-    // Simpan ke LocalStorage (Memori HP)
-    // Kita tumpuk datanya agar tidak hilang
+    // Gabungkan dengan data lama (jika ada)
     let existingData = JSON.parse(localStorage.getItem('kaderData')) || {};
-    let newData = { ...existingData, ...data };
-    
-    localStorage.setItem('kaderData', JSON.stringify(newData));
+    let updatedData = { ...existingData, ...dataStep1 };
 
-    // Pindah ke step berikutnya
+    localStorage.setItem('kaderData', JSON.stringify(updatedData));
+    
+    // Pindah ke Step 2
     window.location.href = 'step2.html';
 }
 
-// Logika Preview Foto
-document.getElementById('photoInput')?.addEventListener('change', function(e) {
-    const reader = new FileReader();
-    reader.onload = function() {
-        const preview = document.getElementById('photoPreview');
-        preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-        
-        // Simpan Base64 foto ke LocalStorage (sementara)
-        let existingData = JSON.parse(localStorage.getItem('kaderData')) || {};
-        existingData.foto = reader.result;
-        localStorage.setItem('kaderData', JSON.stringify(existingData));
-    }
-    reader.readAsDataURL(e.target.files[0]);
-});
-
-// Auto-Load data saat halaman dibuka kembali
-window.onload = function() {
+// Tambahkan fungsi untuk load data otomatis saat user kembali ke halaman ini
+window.addEventListener('load', () => {
     let savedData = JSON.parse(localStorage.getItem('kaderData'));
     if (savedData) {
-        if(document.getElementById('nama_lengkap')) document.getElementById('nama_lengkap').value = savedData.nama_lengkap || '';
-        if(document.getElementById('nik')) document.getElementById('nik').value = savedData.nik || '';
-        if(document.getElementById('tempat_lahir')) document.getElementById('tempat_lahir').value = savedData.tempat_lahir || '';
-        // Jika ada foto, tampilkan
-        if(savedData.foto && document.getElementById('photoPreview')) {
+        const fields = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+        fields.forEach(field => {
+            if (savedData[field]) document.getElementById(field).value = savedData[field];
+        });
+        if (savedData.foto) {
             document.getElementById('photoPreview').innerHTML = `<img src="${savedData.foto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
         }
     }
-}
+});
