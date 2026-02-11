@@ -182,66 +182,66 @@
     </div>
 
     <script>
-        function toggleBidang(select) {
-            const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
-            if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
-                wrapper.classList.remove('hidden');
-            } else {
-                wrapper.classList.add('hidden');
-            }
-        }
+        // --- Fungsi Pendukung (Tetap) ---
+function toggleBidang(select) {
+    const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
+    if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
+        wrapper.classList.remove('hidden');
+    } else {
+        wrapper.classList.add('hidden');
+    }
+}
 
-        function handleTugasLogic(select) {
-            const card = select.closest('.entry-card');
-            const eks = card.querySelector('.eksekutif-fields');
-            const leg = card.querySelector('.legislatif-fields');
-            
-            eks.classList.add('hidden');
-            leg.classList.add('hidden');
+function handleTugasLogic(select) {
+    const card = select.closest('.entry-card');
+    const eks = card.querySelector('.eksekutif-fields');
+    const leg = card.querySelector('.legislatif-fields');
+    
+    eks.classList.add('hidden');
+    leg.classList.add('hidden');
 
-            if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
-            if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
-        }
+    if(select.value === 'EKSEKUTIF') eks.classList.remove('hidden');
+    if(select.value === 'LEGISLATIF') leg.classList.remove('hidden');
+}
 
-        function addStruktural() {
-            const container = document.getElementById('struktural-container');
-            const clone = container.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.bidang-wrapper').classList.add('hidden');
-            container.appendChild(clone);
-        }
+function addStruktural() {
+    const container = document.getElementById('struktural-container');
+    const clone = container.firstElementChild.cloneNode(true);
+    clone.querySelectorAll('input, select').forEach(i => i.value = "");
+    clone.querySelector('.bidang-wrapper').classList.add('hidden');
+    container.appendChild(clone);
+}
 
-        function addPenugasan() {
-            const container = document.getElementById('penugasan-container');
-            const clone = container.firstElementChild.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            clone.querySelector('.eksekutif-fields').classList.add('hidden');
-            clone.querySelector('.legislatif-fields').classList.add('hidden');
-            container.appendChild(clone);
-        }
+function addPenugasan() {
+    const container = document.getElementById('penugasan-container');
+    const clone = container.firstElementChild.cloneNode(true);
+    clone.querySelectorAll('input, select').forEach(i => i.value = "");
+    clone.querySelector('.eksekutif-fields').classList.add('hidden');
+    clone.querySelector('.legislatif-fields').classList.add('hidden');
+    container.appendChild(clone);
+}
 
+// --- PERBAIKAN FUNGSI SIMPAN ---
 function saveStep4() {
     // 1. Ambil Data Struktural
     const strukCards = document.querySelectorAll('#struktural-container .entry-card');
     const riwayatStruktural = [];
-    let jabatanSekarang = "-";
-
+    
     strukCards.forEach(card => {
         const tingkat = card.querySelector('.tingkat-pengurus').value;
         const jabatan = card.querySelector('.jabatan-nama').value;
         const thnMulai = card.querySelector('.thn-mulai').value;
         const thnSelesai = card.querySelector('.thn-selesai').value;
+        const bidang = card.querySelector('.bidang-nama').value;
 
         if(tingkat && jabatan) {
             riwayatStruktural.push({
                 tingkat: tingkat,
                 jabatan: jabatan,
-                bidang: card.querySelector('.bidang-nama')?.value || "-",
-                mulai: thnMulai,
-                selesai: thnSelesai
+                bidang: (jabatan.includes('WAKIL') && bidang) ? bidang : "-",
+                mulai: thnMulai || "?",
+                selesai: thnSelesai || "Sekarang"
             });
-            // Ambil salah satu untuk ringkasan di Review
-            jabatanSekarang = `${jabatan} ${tingkat}`;
         }
     });
 
@@ -259,9 +259,11 @@ function saveStep4() {
             };
             
             if(jenis === 'EKSEKUTIF') {
+                // Mengambil value dari select dan input di dalam .eksekutif-fields
                 dataTugas.wilayah = card.querySelector('.eksekutif-fields select').value;
                 dataTugas.jabatan = card.querySelector('.eksekutif-fields input').value;
-            } else {
+            } else if(jenis === 'LEGISLATIF') {
+                // Mengambil value dari select dan input di dalam .legislatif-fields
                 dataTugas.lembaga = card.querySelector('.legislatif-fields select').value;
                 dataTugas.dapil = card.querySelector('.legislatif-fields input').value;
             }
@@ -269,15 +271,11 @@ function saveStep4() {
         }
     });
 
-    // 3. Simpan Ke LocalStorage (Versi JSON & Versi Flat untuk Review)
+    // 3. Simpan Ke LocalStorage (JSON Utama untuk Review Detail)
     localStorage.setItem('kader_riwayat_struktural_json', JSON.stringify(riwayatStruktural));
     localStorage.setItem('kader_riwayat_penugasan_json', JSON.stringify(riwayatPenugasan));
     
-    // String simpel untuk Review.html
-    localStorage.setItem('kader_jabatan_ringkas', jabatanSekarang);
-    localStorage.setItem('kader_total_penugasan', riwayatPenugasan.length > 0 ? riwayatPenugasan[0].jenis : "-");
-
-    // 4. MAPPING UNTUK GOOGLE SHEETS (Checklist)
+    // 4. MAPPING FLAG (Untuk mempermudah filtering di Google Sheets nanti)
     localStorage.setItem('kader_is_dpp', riwayatStruktural.some(s => s.tingkat.includes('DPP')) ? 'Ya' : '-');
     localStorage.setItem('kader_is_dpd', riwayatStruktural.some(s => s.tingkat.includes('DPD')) ? 'Ya' : '-');
     localStorage.setItem('kader_is_dpc', riwayatStruktural.some(s => s.tingkat.includes('DPC')) ? 'Ya' : '-');
@@ -286,7 +284,7 @@ function saveStep4() {
     localStorage.setItem('kader_is_legislatif', riwayatPenugasan.some(t => t.jenis === 'LEGISLATIF') ? 'Ya' : '-');
     localStorage.setItem('kader_is_eksekutif', riwayatPenugasan.some(t => t.jenis === 'EKSEKUTIF') ? 'Ya' : '-');
 
-    // 5. GAS KE STEP 5 (Atau langsung ke Review jika ini step terakhir)
+    // 5. Lanjut ke Step Berikutnya
     window.location.href = "step5.html"; 
 }
     </script>
