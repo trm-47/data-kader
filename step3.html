@@ -307,21 +307,6 @@
             }
         });
 
-        // --- 2. PROSES KADERISASI ---
-        const kaderCards = document.querySelectorAll('#kader-container .entry-card');
-        const riwayatKaderisasi = [];
-        
-        kaderCards.forEach(card => {
-            const type = card.querySelector('.kader-type').value;
-            if (type && type !== "BELUM") {
-                riwayatKaderisasi.push({
-                    tingkat: type,
-                    tahun: card.querySelector('.kader-year').value || "-",
-                    penyelenggara: card.querySelector('.kader-host').value || "-"
-                });
-            }
-        });
-
         // --- 3. SIMPAN KE LOCALSTORAGE ---
         // Simpan versi Detil (Array JSON)
         localStorage.setItem('kader_riwayat_pendidikan_json', JSON.stringify(riwayatPendidikan));
