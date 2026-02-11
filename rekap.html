@@ -205,11 +205,22 @@
             ? data.riwayat_kader.map(k => `<div class="data-box" style="border-left-color: #D71920;"><b>Kader ${k.jenis}</b><br><span style="font-size:11px;">${k.penyelenggara} (${k.tahun})</span></div>`).join('') 
             : '<p style="color:gray; font-size:12px;">Tidak ada data.</p>';
 
-        // 5. Render Organisasi (Sesuai Permintaan)
-        const orgData = data.riwayat_organisasi || [];
-        document.getElementById('rekapOrganisasi').innerHTML = orgData.length 
-            ? orgData.map(o => `<div class="data-box" style="border-left-color: #2563eb;"><b>${o.nama}</b><br><span style="font-size:11px;">${o.jabatan} | ${o.periode}</span></div>`).join('')
-            : '<p style="color:gray; font-size:12px;">Tidak ada riwayat organisasi.</p>';
+// 5. Render Organisasi (Menampilkan Nama & Tingkatan)
+const orgData = data.riwayat_organisasi || [];
+document.getElementById('rekapOrganisasi').innerHTML = orgData.length 
+    ? orgData.map(o => `
+        <div class="data-box" style="border-left-color: #2563eb; background: #f0f9ff;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <b style="color: #1e40af; font-size: 13px;">${o.nama}</b>
+                <span style="font-size: 9px; background: #dbeafe; color: #1e40af; padding: 2px 6px; border-radius: 4px; font-weight: 800; text-transform: uppercase;">
+                    ${o.tingkat || 'Lokal'}
+                </span>
+            </div>
+            <div style="font-size: 11px; color: #475569; margin-top: 4px;">
+                ${o.jabatan} <span style="color: #cbd5e1; margin: 0 5px;">|</span> ${o.periode}
+            </div>
+        </div>`).join('')
+    : '<p style="color:gray; font-size:12px; text-align:center;">Tidak ada riwayat organisasi.</p>';
 
 // 6. Render Jabatan & Kerja
 const jPartai = data.riwayat_jabatan_partai || [];
