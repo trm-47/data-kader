@@ -122,111 +122,128 @@
         </div>
     </div>
 
-    <script>
-        // Global templates
-        let orgTemplate;
-        let jobTemplate;
+<script>
+    let orgTemplate;
+    let jobTemplate;
 
-        // Fungsi tambah entry dengan tombol hapus otomatis
-        function addEntry(containerId) {
-            const container = document.getElementById(containerId);
-            const isOrg = containerId === 'org-container';
-            const template = isOrg ? orgTemplate : jobTemplate;
-            
-            const clone = template.cloneNode(true);
-            clone.querySelectorAll('input, select').forEach(i => i.value = "");
-            
-            // Tambahkan tombol hapus
-            const removeBtn = document.createElement('button');
-            removeBtn.innerHTML = '✕';
-            removeBtn.className = 'btn-remove';
-            removeBtn.onclick = function() { clone.remove(); };
-            clone.appendChild(removeBtn);
-            
-            container.appendChild(clone);
-            return clone;
+    window.onload = function() {
+        // Ambil "blueprint" kartu sebelum container dimanipulasi
+        orgTemplate = document.querySelector('#org-container .entry-card').cloneNode(true);
+        jobTemplate = document.querySelector('#job-container .entry-card').cloneNode(true);
+
+        // Load data jika user menekan tombol 'Back'
+        loadStep5Data();
+    };
+
+    function addEntry(containerId) {
+        const container = document.getElementById(containerId);
+        const isOrg = containerId === 'org-container';
+        const template = isOrg ? orgTemplate : jobTemplate;
+        
+        const clone = template.cloneNode(true);
+        // Reset semua inputan di dalam kloningan
+        clone.querySelectorAll('input, select').forEach(i => i.value = "");
+        
+        // Pasang tombol hapus (X) dengan posisi absolut yang sudah Bos definisikan di CSS
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '✕';
+        removeBtn.className = 'btn-remove';
+        removeBtn.title = "Hapus Baris Ini";
+        removeBtn.onclick = function() { clone.remove(); };
+        clone.appendChild(removeBtn);
+        
+        container.appendChild(clone);
+        return clone;
+    }
+
+    function loadStep5Data() {
+        const savedOrg = localStorage.getItem('kader_riwayat_organisasi_json');
+        const savedJob = localStorage.getItem('kader_riwayat_pekerjaan_json');
+
+        if(savedOrg) {
+            const data = JSON.parse(savedOrg);
+            if(data.length > 0) {
+                const container = document.getElementById('org-container');
+                container.innerHTML = ''; // Bersihkan default
+                data.forEach(item => {
+                    const card = addEntry('org-container');
+                    card.querySelector('.org-name').value = item.nama;
+                    card.querySelector('.org-rank').value = item.jabatan;
+                    card.querySelector('.org-period').value = item.periode;
+                });
+            }
         }
 
-        function saveStep5() {
-            const riwayatOrganisasi = [];
-            document.querySelectorAll('#org-container .entry-card').forEach(card => {
-                const nama = card.querySelector('.org-name').value;
-                if(nama) {
-                    riwayatOrganisasi.push({
-                        nama: nama,
-                        jabatan: card.querySelector('.org-rank').value || "-",
-                        periode: card.querySelector('.org-period').value || "-"
-                    });
-                }
-            });
+        if(savedJob) {
+            const data = JSON.parse(savedJob);
+            if(data.length > 0) {
+                const container = document.getElementById('job-container');
+                container.innerHTML = ''; 
+                data.forEach(item => {
+                    const card = addEntry('job-container');
+                    card.querySelector('.job-type').value = item.jenis;
+                    card.querySelector('.job-name').value = item.instansi;
+                    card.querySelector('.job-rank').value = item.jabatan;
+                    card.querySelector('.job-year').value = item.tahun;
+                });
+            }
+        }
+    }
 
-            const riwayatPekerjaan = [];
-            document.querySelectorAll('#job-container .entry-card').forEach(card => {
-                const jenis = card.querySelector('.job-type').value;
-                if(jenis) {
-                    riwayatPekerjaan.push({
-                        jenis: jenis,
-                        instansi: card.querySelector('.job-name').value || "-",
-                        jabatan: card.querySelector('.job-rank').value || "-",
-                        tahun: card.querySelector('.job-year').value || "-"
-                    });
-                }
-            });
+    function saveStep5() {
+        const riwayatOrganisasi = [];
+        document.querySelectorAll('#org-container .entry-card').forEach(card => {
+            const nama = card.querySelector('.org-name').value.trim();
+            if(nama) {
+                riwayatOrganisasi.push({
+                    nama: nama.toUpperCase(),
+                    jabatan: card.querySelector('.org-rank').value.toUpperCase() || "ANGGOTA",
+                    periode: card.querySelector('.org-period').value || "-"
+                });
+            }
+        });
 
-            // Simpan JSON Utama
-            localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(riwayatOrganisasi));
-            localStorage.setItem('kader_riwayat_pekerjaan_json', JSON.stringify(riwayatPekerjaan));
+        const riwayatPekerjaan = [];
+        document.querySelectorAll('#job-container .entry-card').forEach(card => {
+            const jenis = card.querySelector('.job-type').value;
+            if(jenis) {
+                riwayatPekerjaan.push({
+                    jenis: jenis,
+                    instansi: card.querySelector('.job-name').value.toUpperCase() || "-",
+                    jabatan: card.querySelector('.job-rank').value.toUpperCase() || "-",
+                    tahun: card.querySelector('.job-year').value || "-"
+                });
+            }
+        });
 
-            // Mapping Flat untuk filter dashboard
-            const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
-            localStorage.setItem('kader_is_nu', (textOrg.includes('NU ') || textOrg.includes('NAHDLATUL')) ? 'YA' : '-');
-            localStorage.setItem('kader_is_muhammadiyah', textOrg.includes('MUHAMMADIYAH') ? 'YA' : '-');
-            
-            const profesiUtama = riwayatPekerjaan.length > 0 ? riwayatPekerjaan[0].jenis : "TIDAK BEKERJA";
-            localStorage.setItem('kader_pekerjaan', profesiUtama);
-            localStorage.setItem('kader_is_pengusaha', profesiUtama.includes('WIRASWASTA') ? 'YA' : '-');
+        // Simpan ke LocalStorage
+        localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(riwayatOrganisasi));
+        localStorage.setItem('kader_riwayat_pekerjaan_json', JSON.stringify(riwayatPekerjaan));
 
-            window.location.href = "step6.html"; 
+        // LOGIKA STRATEGIS: Deteksi Otomatis untuk Dashboard
+        const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
+        
+        // Deteksi NU (Nahdlatul Ulama)
+        const isNU = (textOrg.includes('NU ') || textOrg.includes('NAHDLATUL') || textOrg.includes('ANSHOR') || textOrg.includes('FATAYAT'));
+        localStorage.setItem('kader_is_nu', isNU ? 'YA' : '-');
+
+        // Deteksi Muhammadiyah
+        const isMuhammadiyah = (textOrg.includes('MUHAMMADIYAH') || textOrg.includes('AISYIYAH') || textOrg.includes('PEMUDA MUHAMMADIYAH'));
+        localStorage.setItem('kader_is_muhammadiyah', isMuhammadiyah ? 'YA' : '-');
+        
+        // Ambil Profesi Utama (Baris Pertama)
+        if(riwayatPekerjaan.length > 0) {
+            const prof = riwayatPekerjaan[0].jenis;
+            localStorage.setItem('kader_pekerjaan', prof);
+            localStorage.setItem('kader_is_pengusaha', (prof.includes('WIRASWASTA') || prof.includes('PENGUSAHA')) ? 'YA' : '-');
+        } else {
+            localStorage.setItem('kader_pekerjaan', "TIDAK BEKERJA");
+            localStorage.setItem('kader_is_pengusaha', '-');
         }
 
-        window.onload = function() {
-            // 1. Ambil template sebelum container dibersihkan
-            orgTemplate = document.querySelector('#org-container .entry-card').cloneNode(true);
-            jobTemplate = document.querySelector('#job-container .entry-card').cloneNode(true);
-
-            // 2. Load Data Organisasi
-            const savedOrg = localStorage.getItem('kader_riwayat_organisasi_json');
-            if(savedOrg) {
-                const data = JSON.parse(savedOrg);
-                if(data.length > 0) {
-                    const container = document.getElementById('org-container');
-                    container.innerHTML = '';
-                    data.forEach((item, index) => {
-                        const card = addEntry('org-container');
-                        card.querySelector('.org-name').value = item.nama;
-                        card.querySelector('.org-rank').value = item.jabatan;
-                        card.querySelector('.org-period').value = item.periode;
-                    });
-                }
-            }
-
-            // 3. Load Data Pekerjaan
-            const savedJob = localStorage.getItem('kader_riwayat_pekerjaan_json');
-            if(savedJob) {
-                const data = JSON.parse(savedJob);
-                if(data.length > 0) {
-                    const container = document.getElementById('job-container');
-                    container.innerHTML = '';
-                    data.forEach(item => {
-                        const card = addEntry('job-container');
-                        card.querySelector('.job-type').value = item.jenis;
-                        card.querySelector('.job-name').value = item.instansi;
-                        card.querySelector('.job-rank').value = item.jabatan;
-                        card.querySelector('.job-year').value = item.tahun;
-                    });
-                }
-            }
-        };
-    </script>
+        // Lanjut ke Step 6
+        window.location.href = "step6.html"; 
+    }
+</script>
 </body>
 </html>
