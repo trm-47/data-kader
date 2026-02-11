@@ -167,29 +167,66 @@ div[style*="display: flex"] {
 }
 
 /* Style Khusus Halaman Rekap (Slider) */
-.slider-wrapper {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory; /* Biar kartu "nempel" pas digeser */
-    -webkit-overflow-scrolling: touch; /* Biar licin di iPhone/Android */
-    gap: 15px;
-    padding: 20px 10px;
-    scrollbar-width: none; /* Sembunyikan scrollbar di Firefox */
-}
+/* Slider Utama */
+    .slider-wrapper {
+        display: flex;
+        overflow-x: auto;
+        /* Snapping agar kartu berhenti tepat di tengah */
+        scroll-snap-type: x mandatory; 
+        scroll-behavior: smooth;
+        gap: 12px;
+        padding: 10px 20px 20px 20px; /* Padding samping agar kartu tidak nempel layar */
+        -webkit-overflow-scrolling: touch; /* Licin di iOS */
+    }
+    
+    /* Sembunyikan Scrollbar */
+    .slider-wrapper::-webkit-scrollbar { display: none; }
 
-.slider-wrapper::-webkit-scrollbar {
-    display: none; /* Sembunyikan scrollbar di Chrome/Safari */
-}
+    .rekap-card {
+        min-width: 85%; /* 85% supaya kartu berikutnya terlihat sedikit (ngajak di-swipe) */
+        scroll-snap-align: center;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        max-height: 65vh;
+        overflow-y: auto;
+        border: 1px solid #f1f5f9;
+        position: relative;
+    }
 
-.rekap-card {
-    min-width: 85%; /* Kartu berikutnya kelihatan sedikit di pinggir */
-    scroll-snap-align: center;
-    flex-shrink: 0;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    max-height: 75vh;
-    overflow-y: auto; /* Jika isi kartu panjang, bisa scroll atas-bawah di dalam kartu */
-    border: 1px solid #f1f5f9;
-}
+    .rekap-item { 
+        margin-bottom: 12px; 
+        border-bottom: 1px dashed #eee; 
+        padding-bottom: 5px; 
+    }
+    
+    .rekap-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .rekap-value { font-size: 14px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+    
+    .edit-link { 
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #fef2f2;
+        color: #b91c1c;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px; 
+        text-decoration: none; 
+        font-weight: 700; 
+        border: 1px solid #fee2e2;
+    }
+
+    .btn-final { 
+        background: #16a34a; 
+        color: white; 
+        width: 100%; 
+        padding: 16px; 
+        border: none; 
+        border-radius: 12px; 
+        font-weight: 700; 
+        font-size: 16px;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        cursor: pointer; 
+    }
