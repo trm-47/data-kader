@@ -197,3 +197,61 @@ body {
     gap: 12px;
 }
 .flex-row > div { flex: 1; }
+
+/* Label Wajib Isi */
+.required {
+    color: var(--primary-red);
+    margin-left: 2px;
+}
+
+/* Gender Selection Luxury Style */
+.gender-selection {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.gender-option {
+    flex: 1;
+    cursor: pointer;
+    position: relative;
+}
+
+.gender-option input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.gender-card {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    background: #F8FAFC;
+    border: 2px solid #F1F5F9;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--soft-slate);
+    transition: all 0.3s ease;
+}
+
+.gender-option input:checked ~ .gender-card {
+    background: #FFF1F2;
+    border-color: var(--primary-red);
+    color: var(--primary-red);
+    box-shadow: 0 8px 15px -5px rgba(215, 25, 32, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Hover effect untuk Gender */
+.gender-option:hover .gender-card {
+    border-color: #CBD5E1;
+}
+
+/* Animasi untuk Progress Bar agar Smooth */
+.progress-bar {
+    transition: width 1s cubic-bezier(0.65, 0, 0.35, 1);
+    background: linear-gradient(90deg, var(--primary-red), #FF4D4D);
+    box-shadow: 0 2px 10px rgba(215, 25, 32, 0.3);
+}
