@@ -165,6 +165,11 @@
     </div>
 
     <script>
+        // --- AUTO LOAD DATA SAAT HALAMAN DIBUKA ---
+        window.onload = function() {
+            loadData();
+        };
+
         function handleEduLogic(select) {
             const card = select.closest('.entry-card');
             const common = card.querySelector('.common-fields');
@@ -205,6 +210,7 @@
             clone.querySelectorAll('input, select').forEach(i => i.value = "");
             clone.querySelector('.common-fields').classList.add('hidden');
             container.appendChild(clone);
+            return clone; // Return clone for loadData logic
         }
 
         function addKader() {
@@ -213,14 +219,56 @@
             clone.querySelectorAll('input, select').forEach(i => i.value = "");
             clone.querySelector('.kader-detail').classList.add('hidden');
             container.appendChild(clone);
+            return clone; // Return clone for loadData logic
+        }
+
+        function loadData() {
+            const savedEdu = localStorage.getItem('kader_riwayat_pendidikan_json');
+            const savedKader = localStorage.getItem('kader_riwayat_kaderisasi_json');
+
+            if (savedEdu) {
+                const eduData = JSON.parse(savedEdu);
+                const container = document.getElementById('edu-container');
+                eduData.forEach((data, index) => {
+                    if (index > 0) addEdu();
+                    const cards = container.querySelectorAll('.entry-card');
+                    const currentCard = cards[index];
+                    const levelSelect = currentCard.querySelector('.edu-level');
+                    levelSelect.value = data.jenjang;
+                    handleEduLogic(levelSelect);
+                    currentCard.querySelector('.edu-name').value = data.nama;
+                    currentCard.querySelector('.edu-year').value = data.tahun;
+                    if (data.jenjang === 'SMA') {
+                        currentCard.querySelector('.sma-jurusan').value = data.jurusan;
+                    } else if (data.fakultas !== "-") {
+                        currentCard.querySelector('.pt-fakultas').value = data.fakultas;
+                        currentCard.querySelector('.pt-jurusan').value = data.jurusan;
+                        currentCard.querySelector('.pt-status').value = data.status;
+                    }
+                });
+            }
+
+            if (savedKader) {
+                const kaderData = JSON.parse(savedKader);
+                const container = document.getElementById('kader-container');
+                kaderData.forEach((data, index) => {
+                    if (index > 0) addKader();
+                    const cards = container.querySelectorAll('.entry-card');
+                    const currentCard = cards[index];
+                    const typeSelect = currentCard.querySelector('.kader-type');
+                    typeSelect.value = data.tingkat;
+                    toggleKaderDetail(typeSelect);
+                    if (data.tingkat !== "BELUM") {
+                        currentCard.querySelector('.kader-year').value = data.tahun;
+                        currentCard.querySelector('.kader-host').value = data.penyelenggara;
+                    }
+                });
+            }
         }
 
         function saveStep3() {
-            // 1. Ambil Semua Data Pendidikan
             const eduCards = document.querySelectorAll('#edu-container .entry-card');
             const riwayatPendidikan = [];
-            
-            // Variabel bantu untuk ringkasan di Review
             let pendidikanTerakhir = "-";
             let tahunLulusTerakhir = "-";
 
@@ -229,27 +277,19 @@
                 if (level) {
                     const nama = card.querySelector('.edu-name').value;
                     const tahun = card.querySelector('.edu-year').value;
-                    const smaJur = card.querySelector('.sma-jurusan')?.value;
-                    const ptFak = card.querySelector('.pt-fakultas')?.value;
-                    const ptJur = card.querySelector('.pt-jurusan')?.value;
-                    const ptStat = card.querySelector('.pt-status')?.value;
-
                     riwayatPendidikan.push({
                         jenjang: level,
                         nama: nama,
                         tahun: tahun || "-",
-                        jurusan: level === 'SMA' ? smaJur : (ptJur || "-"),
-                        fakultas: ptFak || "-",
-                        status: ptStat || "LULUS"
+                        jurusan: level === 'SMA' ? card.querySelector('.sma-jurusan').value : (card.querySelector('.pt-jurusan')?.value || "-"),
+                        fakultas: card.querySelector('.pt-fakultas')?.value || "-",
+                        status: card.querySelector('.pt-status')?.value || "LULUS"
                     });
-                    
-                    // Ringkasan untuk review (mengambil inputan terakhir)
                     pendidikanTerakhir = level + " " + nama;
                     tahunLulusTerakhir = tahun || "-";
                 }
             });
 
-            // 2. Ambil Semua Data Kaderisasi
             const kaderCards = document.querySelectorAll('#kader-container .entry-card');
             const riwayatKaderisasi = [];
             let sertifikatTertinggi = "BELUM KADERISASI";
@@ -258,38 +298,24 @@
             kaderCards.forEach(card => {
                 const type = card.querySelector('.kader-type').value;
                 if (type && type !== "BELUM") {
-                    const thnKader = card.querySelector('.kader-year').value;
-                    const hostKader = card.querySelector('.kader-host').value;
-
+                    const thn = card.querySelector('.kader-year').value;
                     riwayatKaderisasi.push({
                         tingkat: type,
-                        tahun: thnKader || "-",
-                        penyelenggara: hostKader || "-"
+                        tahun: thn || "-",
+                        penyelenggara: card.querySelector('.kader-host').value || "-"
                     });
-                    
-                    // Untuk ditampilkan di halaman Review
                     sertifikatTertinggi = type;
-                    tahunKaderTertinggi = thnKader || "-";
+                    tahunKaderTertinggi = thn || "-";
                 }
             });
 
-            // 3. SIMPAN KE LOCALSTORAGE
-            // Data Lengkap (JSON)
             localStorage.setItem('kader_riwayat_pendidikan_json', JSON.stringify(riwayatPendidikan));
             localStorage.setItem('kader_riwayat_kaderisasi_json', JSON.stringify(riwayatKaderisasi));
-
-            // Data Ringkas (Untuk Review.html agar tidak perlu parse JSON)
             localStorage.setItem('kader_pendidikan', pendidikanTerakhir);
             localStorage.setItem('kader_tahun_lulus', tahunLulusTerakhir);
             localStorage.setItem('kader_tingkat', sertifikatTertinggi);
             localStorage.setItem('kader_tahun_kaderisasi', tahunKaderTertinggi);
 
-            // 4. Flag Khusus (Untuk Google Sheets Checklist)
-            localStorage.setItem('kader_is_pratama', riwayatKaderisasi.some(k => k.tingkat === 'PRATAMA') ? 'Ya' : '-');
-            localStorage.setItem('kader_is_madya', riwayatKaderisasi.some(k => k.tingkat === 'MADYA') ? 'Ya' : '-');
-            localStorage.setItem('kader_is_utama', riwayatKaderisasi.some(k => k.tingkat === 'UTAMA') ? 'Ya' : '-');
-
-            // Lanjut ke Step 4
             window.location.href = "step4.html";
         }
     </script>
