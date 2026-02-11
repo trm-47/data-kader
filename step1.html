@@ -151,60 +151,64 @@
     </div>
 
     <script>
-        let fotoData = "";
+        <script>
+    let fotoData = "";
 
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('photo-preview').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                    fotoData = e.target.result;
-                }
-                reader.readAsDataURL(input.files[0]);
+    // 1. Fungsi Preview Foto
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('photo-preview').innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+                fotoData = e.target.result;
             }
+            reader.readAsDataURL(input.files[0]);
         }
-
-function saveAndNext() {
-    // 1. Ambil nilai input
-    const nama = document.getElementById('nama').value;
-    const nik = document.getElementById('nik').value;
-    const kta = document.getElementById('kta').value;
-    const tmp_lahir = document.getElementById('tmp_lahir').value;
-    const tgl_lahir = document.getElementById('tgl_lahir').value;
-
-    // 2. Validasi
-    if(!nama || !nik || nik.length < 16) {
-        alert("Nama dan NIK (16 digit) wajib diisi!");
-        return;
     }
 
-    // 3. SIMPAN SATU-PERSATU (Agar terbaca di review.html)
-    localStorage.setItem('kader_nama', nama);
-    localStorage.setItem('kader_nik', nik);
-    localStorage.setItem('kader_kta', kta);
-    localStorage.setItem('kader_tempat_lahir', tmp_lahir);
-    localStorage.setItem('kader_tgl_lahir', tgl_lahir);
-    localStorage.setItem('kader_foto', fotoData); // Simpan foto base64
-
-    // 4. Gas ke halaman berikutnya
-    window.location.href = "step2.html";
-}
-
-        window.onload = () => {
-            const saved = localStorage.getItem('step1_data');
-            if(saved) {
-                const d = JSON.parse(saved);
-                document.getElementById('nama').value = d.nama;
-                document.getElementById('nik').value = d.nik;
-                document.getElementById('kta').value = d.kta;
-                document.getElementById('tmp_lahir').value = d.tmp_lahir;
-                document.getElementById('tgl_lahir').value = d.tgl_lahir;
-                if(d.foto) {
-                    document.getElementById('photo-preview').innerHTML = `<img src="${d.foto}" class="w-full h-full object-cover">`;
-                    fotoData = d.foto;
-                }
-            }
+    // 2. Fungsi Load Data (Agar data tidak hilang saat refresh/kembali)
+    window.onload = () => {
+        // Kita cek satu-persatu key yang kita simpan
+        if(localStorage.getItem('kader_nama')) document.getElementById('nama').value = localStorage.getItem('kader_nama');
+        if(localStorage.getItem('kader_nik')) document.getElementById('nik').value = localStorage.getItem('kader_nik');
+        if(localStorage.getItem('kader_kta')) document.getElementById('kta').value = localStorage.getItem('kader_kta');
+        if(localStorage.getItem('kader_tempat_lahir')) document.getElementById('tmp_lahir').value = localStorage.getItem('kader_tempat_lahir');
+        if(localStorage.getItem('kader_tgl_lahir')) document.getElementById('tgl_lahir').value = localStorage.getItem('kader_tgl_lahir');
+        
+        // Load Foto jika ada
+        const savedFoto = localStorage.getItem('kader_foto');
+        if(savedFoto) {
+            document.getElementById('photo-preview').innerHTML = `<img src="${savedFoto}" class="w-full h-full object-cover">`;
+            fotoData = savedFoto;
         }
+    }
+
+    // 3. Fungsi Simpan & Lanjut
+    function saveAndNext() {
+        const nama = document.getElementById('nama').value;
+        const nik = document.getElementById('nik').value;
+        const kta = document.getElementById('kta').value;
+        const tmp_lahir = document.getElementById('tmp_lahir').value;
+        const tgl_lahir = document.getElementById('tgl_lahir').value;
+
+        // Validasi Minimal
+        if(!nama || !nik || nik.length < 16) {
+            alert("Nama dan NIK (16 digit) wajib diisi!");
+            return;
+        }
+
+        // Simpan ke LocalStorage agar bisa dipanggil di Step manapun & Review
+        localStorage.setItem('kader_nama', nama);
+        localStorage.setItem('kader_nik', nik);
+        localStorage.setItem('kader_kta', kta);
+        localStorage.setItem('kader_tempat_lahir', tmp_lahir);
+        localStorage.setItem('kader_tgl_lahir', tgl_lahir);
+        localStorage.setItem('kader_foto', fotoData); 
+
+        // Pindah Halaman
+        window.location.href = "step2.html";
+    }
+</script>
     </script>
 </body>
 </html>
