@@ -241,17 +241,17 @@
     }
 
     function loadData() {
-        const savedEdu = localStorage.getItem('kader_riwayat_pendidikan_json');
-        const savedKader = localStorage.getItem('kader_riwayat_kaderisasi_json');
+    const savedEdu = localStorage.getItem('kader_riwayat_pendidikan_json');
+    const savedKader = localStorage.getItem('kader_riwayat_kaderisasi_json');
 
-        if (savedEdu) {
-            const eduData = JSON.parse(savedEdu);
+    // LOAD DATA PENDIDIKAN
+    if (savedEdu) {
+        const eduData = JSON.parse(savedEdu);
+        if (eduData.length > 0) {
             const container = document.getElementById('edu-container');
-            // Bersihkan container dulu jika ada data tersimpan
-            container.innerHTML = ""; 
-            
+            container.innerHTML = ""; // Hanya hapus jika ada data yang mau digantikan
             eduData.forEach((data) => {
-                const card = addEdu(); // Buat card baru
+                const card = addEdu(); 
                 const levelSelect = card.querySelector('.edu-level');
                 levelSelect.value = data.jenjang;
                 handleEduLogic(levelSelect);
@@ -266,12 +266,14 @@
                 }
             });
         }
+    }
 
-        if (savedKader) {
-            const kaderData = JSON.parse(savedKader);
+    // LOAD DATA KADERISASI
+    if (savedKader) {
+        const kaderData = JSON.parse(savedKader);
+        if (kaderData.length > 0) {
             const container = document.getElementById('kader-container');
-            container.innerHTML = "";
-
+            container.innerHTML = ""; // Hanya hapus jika ada data yang mau digantikan
             kaderData.forEach((data) => {
                 const card = addKader();
                 const typeSelect = card.querySelector('.kader-type');
@@ -284,6 +286,7 @@
             });
         }
     }
+}
 
     function saveStep3() {
         // --- 1. PROSES PENDIDIKAN ---
