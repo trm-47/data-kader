@@ -299,15 +299,15 @@ function deleteKader(index) {
    ========================================== */
 
 function addJabatanPartai() {
-    const tingkatan = document.getElementById('tingkatan_partai').value; // Ubah nama variabel agar sinkron
+    // Ambil value dari select tingkatan_partai
+    const tingkatanTerpilih = document.getElementById('tingkatan_partai').value; 
     const jabatan = document.getElementById('jabatan_partai').value;
     const periode = document.getElementById('periode_partai').value.trim();
     let bidang = "";
 
-    // Tambahan: Ambil lokasi (Kita gunakan prompt agar tidak ubah HTML, atau Bos bisa tambah input field di HTML)
-    const lokasi = prompt("Sebutkan Wilayah/Lokasi (Contoh: DPC Kota Surabaya / PAC Tegalsari):") || "-";
+    // Tambah Lokasi via Prompt
+    const lokasi = prompt("Sebutkan Wilayah (Contoh: DPC Kota Surabaya / PAC Tegalsari):") || "-";
 
-    // Cek jika butuh bidang
     if (jabatan === 'Wakil Ketua' || jabatan === 'Wakil Sekretaris') {
         bidang = document.getElementById('bidang_jabatan').value.trim();
         if (!bidang) {
@@ -316,24 +316,23 @@ function addJabatanPartai() {
         }
     }
 
-    if (!tingkatan || !jabatan || !periode) {
+    if (!tingkatanTerpilih || !jabatan || !periode) {
         alert("Lengkapi data jabatan partai!");
         return;
     }
 
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-    let listJabatan = data.riwayat_jabatan_partai || [];
+    if (!data.riwayat_jabatan_partai) data.riwayat_jabatan_partai = [];
 
-    // Simpan ke array dengan struktur yang lengkap untuk rekap.html
-    listJabatan.push({ 
-        tingkatan: tingkatan, // Pastikan kuncinya 'tingkatan' bukan 'tingkat'
+    // SIMPAN DENGAN KEY 'tingkatan'
+    data.riwayat_jabatan_partai.push({ 
+        tingkatan: tingkatanTerpilih, 
         jabatan: jabatan,
         bidang: bidang,
-        lokasi: lokasi, // Tambahan lokasi
+        lokasi: lokasi,
         periode: periode 
     });
 
-    data.riwayat_jabatan_partai = listJabatan;
     localStorage.setItem('kaderData', JSON.stringify(data));
 
     // Reset Form
@@ -343,8 +342,7 @@ function addJabatanPartai() {
     document.getElementById('bidang_jabatan').value = '';
     document.getElementById('wrap_bidang').style.display = 'none';
 
-    // Jika Bos punya fungsi renderJabatan di script.js, panggil ini
-    if (typeof renderJabatan === 'function') renderJabatan();
+    renderJabatan();
 }
 
 function renderJabatan() {
