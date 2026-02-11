@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Identitas Kader - Step 1</title>
+    <title>Data Pribadi - Step 1</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
@@ -18,52 +18,75 @@
         <div class="header-form">
             <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
             <div>
-                <h2>Identitas Kader</h2>
-                <p class="subtitle">Lengkapi identitas sesuai KTP.</p>
+                <h2>Data Pribadi</h2>
+                <p class="subtitle">Sesuai Form Database Pendidikan Kader</p>
             </div>
         </div>
 
         <div class="photo-upload-container">
-            <div id="photoPreview" class="photo-preview">
-                <span>Foto Selfie</span>
-            </div>
+            <div id="photoPreview" class="photo-preview"><span>Foto Kader</span></div>
             <input type="file" id="photoInput" accept="image/*" capture="user" hidden>
-            <button type="button" onclick="document.getElementById('photoInput').click()" class="btn-outline-sm">
-                📸 Ambil Foto / Selfie
-            </button>
+            <button type="button" onclick="document.getElementById('photoInput').click()" class="btn-outline-sm">📸 Ambil Foto / Selfie</button>
         </div>
 
         <div class="input-group">
             <label>Nama Lengkap <span class="required">*</span></label>
-            <input type="text" id="nama_lengkap" placeholder="Masukkan nama tanpa gelar" class="input-field">
-        </div>
-
-        <div class="input-group">
-            <label>Jenis Kelamin <span class="required">*</span></label>
-            <div class="gender-selection">
-                <label class="gender-option">
-                    <input type="radio" name="jenis_kelamin" value="Laki-laki">
-                    <span class="gender-card">Laki-laki</span>
-                </label>
-                <label class="gender-option">
-                    <input type="radio" name="jenis_kelamin" value="Perempuan">
-                    <span class="gender-card">Perempuan</span>
-                </label>
-            </div>
+            <input type="text" id="nama_lengkap" placeholder="Input Nama Lengkap" class="input-field">
         </div>
 
         <div class="input-group">
             <label>NIK <span class="required">*</span></label>
-            <input type="number" id="nik" placeholder="16 digit nomor NIK" class="input-field">
+            <input type="number" id="nik" placeholder="16 Digit NIK" class="input-field">
         </div>
 
         <div class="input-group">
-            <label>Tempat Lahir <span class="required">*</span></label>
-            <input type="text" id="tempat_lahir" placeholder="Contoh: Jakarta" class="input-field">
+            <label>No. KTA</label>
+            <input type="text" id="no_kta" placeholder="Input Nomor KTA" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Alamat Lengkap (Jl / Dusun) <span class="required">*</span></label>
+            <input type="text" id="alamat" placeholder="Nama Jalan / No Rumah" class="input-field">
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+            <div class="input-group" style="flex: 1;">
+                <label>RT</label>
+                <input type="number" id="rt" placeholder="000" class="input-field">
+            </div>
+            <div class="input-group" style="flex: 1;">
+                <label>RW</label>
+                <input type="number" id="rw" placeholder="000" class="input-field">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Kelurahan <span class="required">*</span></label>
+            <input type="text" id="kelurahan" placeholder="Nama Kelurahan" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Kecamatan <span class="required">*</span></label>
+            <input type="text" id="kecamatan" placeholder="Nama Kecamatan" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Kabupaten / Kota <span class="required">*</span></label>
+            <input type="text" id="kab_kota" placeholder="Contoh: Yogyakarta" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Pekerjaan <span class="required">*</span></label>
+            <input type="text" id="pekerjaan" placeholder="Contoh: Wiraswasta" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Kontak / No. HP (WhatsApp) <span class="required">*</span></label>
+            <input type="tel" id="kontak" placeholder="0812xxxx" class="input-field">
         </div>
 
         <div class="nav-buttons">
-            <button onclick="saveAndNext()" class="btn-primary">Lanjut ke Pendidikan</button>
+            <button onclick="saveStep1()" class="btn-primary">Lanjut ke Pendidikan Formal</button>
         </div>
     </div>
 </div>
