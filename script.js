@@ -173,3 +173,63 @@ window.addEventListener('load', () => {
     // Load data Step 2 (Jika ada di halaman Step 2)
     renderPendidikan();
 });
+
+/* ==========================================
+   LOGIKA STEP 3: PENDIDIKAN KADER
+   ========================================== */
+
+function addPendidikanKader() {
+    const jenis = document.getElementById('jenis_kader').value;
+    const penyelenggara = document.getElementById('penyelenggara').value.trim();
+    const tahun = document.getElementById('tahun_kader').value.trim();
+
+    if (!jenis || !penyelenggara || !tahun) {
+        alert("Mohon isi semua data pendidikan kader! Jika belum pernah, bisa dilewati atau isi tanda (-)");
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let listKader = data.riwayat_kader || [];
+
+    listKader.push({ jenis, penyelenggara, tahun });
+    data.riwayat_kader = listKader;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+
+    // Reset Form
+    document.getElementById('jenis_kader').value = '';
+    document.getElementById('penyelenggara').value = '';
+    document.getElementById('tahun_kader').value = '';
+
+    renderKader();
+}
+
+function renderKader() {
+    const container = document.getElementById('kaderList');
+    if(!container) return;
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_kader || [];
+
+    if (list.length === 0) {
+        container.innerHTML = '<p style="font-size: 12px; color: #94a3b8; text-align: center;">Belum ada riwayat pendidikan kader.</p>';
+        return;
+    }
+
+    container.innerHTML = list.map((item, index) => `
+        <div style="background: #fff5f5; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--primary-color); display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <div style="font-size: 13px; font-weight: 700; color: var(--primary-color);">Kader ${item.jenis}</div>
+                <div style="font-size: 11px; color: #4b5563;">Penyelenggara: ${item.penyelenggara}</div>
+                <div style="font-size: 11px; color: #64748b;">Tahun: ${item.tahun}</div>
+            </div>
+            <button onclick="deleteKader(${index})" style="background: none; border: none; color: #ef4444; font-size: 20px; cursor:pointer;">&times;</button>
+        </div>
+    `).join('');
+}
+
+function deleteKader(index) {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    data.riwayat_kader.splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderKader();
+}
