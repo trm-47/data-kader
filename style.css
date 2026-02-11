@@ -1,32 +1,48 @@
+/* 1. IMPORT FONT - Selalu di paling atas */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
+/* 2. VARIABLE CONTROL - Pusatkan semua warna di sini untuk Skin Admin */
 :root {
-    --primary-color: #D71920; /* Merah PDI Perjuangan */
+    /* Main Colors */
+    --primary-red: #D71920;
     --primary-dark: #A50E13;
-    --dark-slate: #0F172A;
+    --luxury-gold: #C5A059;
+    
+    /* Text & Neutral */
+    --dark-void: #0F172A;
     --soft-slate: #64748B;
-    --glass: rgba(255, 255, 255, 0.9);
-    --border-radius-lg: 24px;
-    --border-radius-md: 16px;
-    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    
+    /* Glass & Effects */
+    --glass-white: rgba(255, 255, 255, 0.85);
+    --surface-blur: 16px;
+    --radius-premium: 24px;
+    --radius-md: 16px;
+    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
 }
 
+/* 3. RESET & BASE */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
-    color: var(--dark-slate);
+    background: 
+        radial-gradient(at 0% 0%, rgba(215, 25, 32, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(30, 41, 59, 0.05) 0px, transparent 50%),
+        #F1F5F9;
+    color: var(--dark-void);
     display: flex;
     justify-content: center;
     min-height: 100vh;
     padding: 20px 15px;
+    letter-spacing: -0.01em;
 }
 
+/* 4. LAYOUT & ANIMATION */
 .container {
     width: 100%;
     max-width: 450px;
@@ -38,27 +54,29 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Card Utama --- */
-.form-card {
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+/* 5. COMPONENTS - CARDS */
+.form-card, .rekap-card {
+    background: var(--glass-white);
+    backdrop-filter: blur(var(--surface-blur));
+    -webkit-backdrop-filter: blur(var(--surface-blur));
     padding: 32px 28px;
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--radius-premium);
     box-shadow: var(--shadow-premium);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     position: relative;
     overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Red Line Accent */
 .form-card::after {
     content: "";
     position: absolute;
     top: 0; left: 0; width: 100%; height: 5px;
-    background: linear-gradient(90deg, var(--primary-color), #FF4D4D);
+    background: linear-gradient(90deg, var(--primary-red), #FF4D4D);
 }
 
-/* --- Header --- */
+/* 6. HEADER & TYPOGRAPHY */
 .header-form {
     text-align: center;
     margin-bottom: 30px;
@@ -66,16 +84,16 @@ body {
 
 .logo-small {
     width: 65px;
-    height: auto;
     filter: drop-shadow(0 8px 12px rgba(215, 25, 32, 0.2));
     margin-bottom: 16px;
 }
 
-h2 {
+.header-form h2 {
+    background: linear-gradient(180deg, var(--dark-void) 0%, #475569 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-size: 22px;
     font-weight: 800;
-    letter-spacing: -0.025em;
-    color: var(--dark-slate);
     margin-bottom: 4px;
 }
 
@@ -85,24 +103,7 @@ h2 {
     font-weight: 500;
 }
 
-/* --- Progress Bar Premium --- */
-.progress-container {
-    width: 100%;
-    height: 8px;
-    background: #E2E8F0;
-    border-radius: 100px;
-    margin: 25px 0;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
-    border-radius: 100px;
-    transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* --- Input Group --- */
+/* 7. FORM ELEMENTS */
 .input-group {
     margin-bottom: 20px;
 }
@@ -112,68 +113,40 @@ h2 {
     font-size: 13px;
     font-weight: 700;
     margin-bottom: 8px;
-    color: var(--dark-slate);
+    color: var(--dark-void);
     padding-left: 4px;
 }
 
 .input-field {
     width: 100%;
     padding: 14px 18px;
-    border: 2px solid #F1F5F9;
-    border-radius: var(--border-radius-md);
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
     font-size: 15px;
     font-weight: 500;
-    background: #F8FAFC;
+    background: rgba(241, 245, 249, 0.8) !important;
     transition: all 0.3s ease;
     outline: none;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .input-field:focus {
-    background: #FFF;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(215, 25, 32, 0.1);
+    background: #FFF !important;
+    border-color: var(--primary-red);
+    box-shadow: 0 10px 15px -3px rgba(215, 25, 32, 0.1);
     transform: translateY(-2px);
 }
 
-/* --- Photo Upload --- */
-.photo-upload-container {
-    background: #F8FAFC;
-    border: 2px dashed #CBD5E1;
-    border-radius: var(--border-radius-md);
-    padding: 24px;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.photo-upload-container:hover {
-    border-color: var(--primary-color);
-    background: #FFF1F2;
-}
-
-.photo-preview {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 12px;
-    border-radius: 50%;
-    background: white;
-    border: 3px solid white;
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-    object-fit: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-}
-
-/* --- Buttons Luxury --- */
-.btn-primary {
+/* 8. BUTTONS */
+.btn-primary, .btn-final {
     width: 100%;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-dark) 100%);
     color: white;
     border: none;
     padding: 18px;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--radius-md);
     font-size: 16px;
     font-weight: 800;
     letter-spacing: 0.5px;
@@ -182,104 +155,7 @@ h2 {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.btn-primary:active {
-    transform: scale(0.97);
-    box-shadow: 0 4px 10px rgba(215, 25, 32, 0.2);
-}
-
-.btn-outline-sm {
-    background: transparent;
-    border: 2px solid #E2E8F0;
-    padding: 12px 20px;
-    border-radius: var(--border-radius-md);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--soft-slate);
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.btn-outline-sm:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background: #FFF1F2;
-}
-
-/* Grid Layout for RT/RW */
-.flex-row {
-    display: flex;
-    gap: 12px;
-}
-
-.flex-row > div {
-    flex: 1;
-}
-
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ROOT VARIABLES - Ini yang nanti bisa dikontrol Admin Skin */
-:root {
-    --primary-red: #D71920;
-    --luxury-gold: #C5A059; /* Untuk aksen premium */
-    --dark-void: #0F172A;
-    --glass-white: rgba(255, 255, 255, 0.85);
-    --surface-blur: 16px;
-    --radius-premium: 30px;
-}
-
-body {
-    background: 
-        radial-gradient(at 0% 0%, rgba(215, 25, 32, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(30, 41, 59, 0.05) 0px, transparent 50%),
-        #F1F5F9;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    letter-spacing: -0.01em;
-}
-
-/* Card dengan efek Floating */
-.form-card, .rekap-card {
-    background: var(--glass-white);
-    backdrop-filter: blur(var(--surface-blur));
-    -webkit-backdrop-filter: blur(var(--surface-blur));
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.08),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Header Luxury */
-.header-form h2 {
-    background: linear-gradient(180deg, var(--dark-void) 0%, #475569 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 800;
-}
-
-/* Input Field Modern */
-.input-field {
-    border: 2px solid transparent;
-    background: rgba(241, 245, 249, 0.8) !important;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-}
-
-.input-field:focus {
-    background: #FFF !important;
-    border-color: var(--primary-red);
-    box-shadow: 0 10px 15px -3px rgba(215, 25, 32, 0.1);
-}
-
-/* Button Level Sultan */
-.btn-primary, .btn-final {
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--primary-red) 0%, #8E1014 100%);
-    transition: all 0.3s ease;
-}
-
+/* Shine Effect on Hover */
 .btn-primary::after {
     content: '';
     position: absolute;
@@ -294,3 +170,30 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 15px 30px rgba(215, 25, 32, 0.3);
 }
+
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-outline-sm {
+    background: transparent;
+    border: 2px solid #E2E8F0;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--soft-slate);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-outline-sm:hover {
+    border-color: var(--primary-red);
+    color: var(--primary-red);
+    background: #FFF1F2;
+}
+
+/* 9. UTILS */
+.flex-row {
+    display: flex;
+    gap: 12px;
+}
+.flex-row > div { flex: 1; }
