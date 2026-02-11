@@ -1,57 +1,74 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sensus 2026 - Step 3</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0f172a; color: white; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
-        .input-premium { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 16px; width: 100%; color: white; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pendidikan Kader - Step 3</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="p-6">
-    <div class="max-w-md mx-auto">
-        <div class="flex items-center gap-3 mb-8">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" class="h-12">
-            <div><h1 class="text-xl font-black italic text-red-600">LANGKAH 03</h1><p class="text-[10px] text-slate-500 tracking-widest uppercase">Kualifikasi Kader</p></div>
-        </div>
+<body>
 
-        <div class="glass p-8 rounded-[32px] space-y-6">
-            <div>
-                <label class="text-[10px] font-black text-red-500 uppercase tracking-widest ml-1">Pendidikan Terakhir</label>
-                <select id="pendidikan" class="input-premium mt-2">
-                    <option value="SMA/SEDERAJAT">SMA/SEDERAJAT</option>
-                    <option value="DIPLOMA (D3)">DIPLOMA (D3)</option>
-                    <option value="SARJANA (S1)">SARJANA (S1)</option>
-                    <option value="MAGISTER (S2)">MAGISTER (S2)</option>
-                </select>
-            </div>
-            <div>
-                <label class="text-[10px] font-black text-red-500 uppercase tracking-widest ml-1">Kaderisasi Terakhir</label>
-                <select id="tingkat" class="input-premium mt-2">
-                    <option value="KADER PRATAMA">KADER PRATAMA</option>
-                    <option value="KADER MADYA">KADER MADYA</option>
-                    <option value="KADER UTAMA">KADER UTAMA</option>
-                    <option value="BELUM KADERISASI">BELUM KADERISASI</option>
-                </select>
-            </div>
-            <div>
-                <label class="text-[10px] font-black text-red-500 uppercase tracking-widest ml-1">Tahun Lulus</label>
-                <input id="tahun" type="number" placeholder="Contoh: 2021" class="input-premium mt-2">
-            </div>
-        </div>
-
-        <button onclick="save()" class="w-full mt-10 bg-red-700 p-5 rounded-3xl font-black uppercase tracking-[0.2em] shadow-xl shadow-red-900/30 transition-all active:scale-95">Lanjut ke Jabatan</button>
+<div class="container">
+    <div class="progress-container">
+        <div class="progress-bar" style="width: 60%"></div>
     </div>
-    <script>
-        function save() {
-            localStorage.setItem('kader_pendidikan', document.getElementById('pendidikan').value);
-            localStorage.setItem('kader_tingkat', document.getElementById('tingkat').value);
-            localStorage.setItem('kader_tahun_kaderisasi', document.getElementById('tahun').value);
-            window.location.href = 'step4.html';
-        }
-    </script>
+
+    <div class="form-card">
+        <div class="header-form">
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
+            <div>
+                <h2>Pendidikan Kader</h2>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Jenis Pendidikan Kader <span class="required">*</span></label>
+            <select id="jenis_kader" class="input-field">
+                <option value="">-- Pilih Pendidikan --</option>
+                <option value="Pratama">Kader Pratama</option>
+                <option value="Madya">Kader Madya</option>
+                <option value="Utama">Kader Utama</option>
+                <option value="Guru">Guru Kader</option>
+                <option value="Perempuan">Kader Perempuan</option>
+                <option value="Khusus">Tema Khusus / Lainnya</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Penyelenggara <span class="required">*</span></label>
+            <input type="text" id="penyelenggara" placeholder="Contoh: DPD PDI Perjuangan DIY" class="input-field">
+        </div>
+
+        <div class="input-group">
+            <label>Tahun <span class="required">*</span></label>
+            <input type="text" id="tahun_kader" placeholder="Contoh: 2022" class="input-field">
+        </div>
+
+        <button type="button" onclick="addPendidikanKader()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px; border-color: var(--primary-color); color: var(--primary-color);">
+            ➕ Tambah Pendidikan Kader
+        </button>
+
+        <div id="kaderList" style="margin-bottom: 20px;"></div>
+
+        <div class="nav-buttons" style="display: flex; gap: 10px;">
+            <button onclick="window.location.href='step2.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
+            <button onclick="nextStepKader()" class="btn-primary" style="flex: 1;">Lanjut</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    // Memastikan daftar ter-render saat halaman dibuka
+    window.addEventListener('load', renderKader);
+    
+    function nextStepKader() {
+        // Berbeda dengan formal, pendidikan kader bisa saja kosong jika belum ikut
+        // Tapi jika Bos ingin minimal isi "-", kita bisa tambahkan validasi.
+        // Untuk sekarang, kita izinkan lanjut ke Step 4.
+        window.location.href = 'step4.html';
+    }
+</script>
 </body>
 </html>
