@@ -216,27 +216,37 @@
         }
 
         function saveStep3() {
-    // 1. Ambil Semua Data Pendidikan (Array)
+    // 1. Ambil Semua Data Pendidikan
     const eduCards = document.querySelectorAll('#edu-container .entry-card');
     const riwayatPendidikan = [];
+    
+    // Simpan pendidikan terakhir untuk tampilan cepat di Review
+    let pendidikanTerakhir = "-";
+    let tahunLulusTerakhir = "-";
 
     eduCards.forEach(card => {
         const level = card.querySelector('.edu-level').value;
         if (level) {
+            const nama = card.querySelector('.edu-name').value;
+            const tahun = card.querySelector('.edu-year').value;
             riwayatPendidikan.push({
                 jenjang: level,
-                nama: card.querySelector('.edu-name').value,
-                tahun: card.querySelector('.edu-year').value,
+                nama: nama,
+                tahun: tahun,
                 jurusan: card.querySelector('.sma-jurusan')?.value || card.querySelector('.pt-jurusan')?.value || "-",
                 fakultas: card.querySelector('.pt-fakultas')?.value || "-",
                 status: card.querySelector('.pt-status')?.value || "LULUS"
             });
+            // Update pendidikan terakhir (asumsi urutan input bener)
+            pendidikanTerakhir = level + " " + nama;
+            tahunLulusTerakhir = tahun;
         }
     });
 
-    // 2. Ambil Semua Data Kaderisasi (Array)
+    // 2. Ambil Semua Data Kaderisasi
     const kaderCards = document.querySelectorAll('#kader-container .entry-card');
     const riwayatKaderisasi = [];
+    let sertifikatTertinggi = "BELUM MENGIKUTI";
 
     kaderCards.forEach(card => {
         const type = card.querySelector('.kader-type').value;
@@ -246,34 +256,26 @@
                 tahun: card.querySelector('.kader-year').value,
                 penyelenggara: card.querySelector('.kader-host').value
             });
+            sertifikatTertinggi = type; // Akan menyimpan yang terakhir diinput
         }
     });
 
-    // 3. Simpan ke LocalStorage dalam bentuk JSON string
-    // Kita simpan mentahnya agar mudah diolah di halaman Review
-    localStorage.setItem('kader_riwayat_pendidikan', JSON.stringify(riwayatPendidikan));
-    localStorage.setItem('kader_riwayat_kaderisasi', JSON.stringify(riwayatKaderisasi));
+    // 3. SIMPAN KE LOCALSTORAGE
+    // Simpan mentah (JSON) untuk sistem database
+    localStorage.setItem('kader_riwayat_pendidikan_json', JSON.stringify(riwayatPendidikan));
+    localStorage.setItem('kader_riwayat_kaderisasi_json', JSON.stringify(riwayatKaderisasi));
 
-    // 4. Mapping Spesifik untuk Kolom "Super Lebar" (Agar mempermudah Script Google Sheets)
-    // Kita inisialisasi semua sebagai "-" agar tidak error
-    const mapping = ['SD', 'SMP', 'SMA', 'D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
-    mapping.forEach(m => {
-        localStorage.setItem(`kader_nama_${m}`, "-");
-        localStorage.setItem(`kader_tahun_${m}`, "-");
-    });
+    // Simpan STRING SIMPLE untuk ditampilkan di Review.html
+    localStorage.setItem('kader_pendidikan_terakhir', pendidikanTerakhir);
+    localStorage.setItem('kader_tahun_lulus', tahunLulusTerakhir);
+    localStorage.setItem('kader_sertifikasi_partai', sertifikatTertinggi);
 
-    // Isi data yang ada ke mapping spesifik
-    riwayatPendidikan.forEach(item => {
-        localStorage.setItem(`kader_nama_${item.jenjang}`, item.nama);
-        localStorage.setItem(`kader_tahun_${item.jenjang}`, item.tahun);
-    });
+    // 4. Mapping khusus untuk kolom spreadsheet (Opsional tapi membantu)
+    localStorage.setItem('kader_is_pratama', riwayatKaderisasi.some(k => k.tingkat === 'PRATAMA') ? 'SUDAH' : '-');
+    localStorage.setItem('kader_is_madya', riwayatKaderisasi.some(k => k.tingkat === 'MADYA') ? 'SUDAH' : '-');
+    localStorage.setItem('kader_is_utama', riwayatKaderisasi.some(k => k.tingkat === 'UTAMA') ? 'SUDAH' : '-');
 
-    // Mapping khusus Kaderisasi
-    localStorage.setItem('kader_is_pratama', riwayatKaderisasi.some(k => k.tingkat === 'PRATAMA') ? 'Ya' : '-');
-    localStorage.setItem('kader_is_madya', riwayatKaderisasi.some(k => k.tingkat === 'MADYA') ? 'Ya' : '-');
-    localStorage.setItem('kader_is_utama', riwayatKaderisasi.some(k => k.tingkat === 'UTAMA') ? 'Ya' : '-');
-
-    // Lanjut ke halaman review
+    // Pindah ke step berikutnya
     window.location.href = "step4.html";
 }
     </script>
