@@ -18,7 +18,7 @@
         .entry-card { background: #ffffff; border-radius: 24px; padding: 24px; margin-bottom: 20px; border: 1px solid #f1f5f9; position: relative; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .btn-add { font-size: 10px; font-weight: 800; color: #b91c1c; border: 2px dashed #fca5a5; width: 100%; padding: 12px; border-radius: 16px; margin-bottom: 20px; transition: all 0.3s; }
         .btn-add:hover { background: #fef2f2; border-color: #b91c1c; }
-        .btn-remove { position: absolute; top: 15px; right: 15px; color: #cbd5e1; font-weight: bold; font-size: 12px; }
+        .btn-remove { position: absolute; top: 15px; right: 15px; color: #cbd5e1; font-weight: bold; font-size: 12px; z-index: 20; }
         .btn-remove:hover { color: #ef4444; }
     </style>
 </head>
@@ -26,24 +26,16 @@
 
     <div class="max-w-2xl mx-auto pt-6 px-6 flex items-center justify-between relative z-10">
         <div class="flex items-center gap-3">
-            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-                 alt="Logo PDI-P" class="h-12 md:h-14 w-auto drop-shadow-sm">
+            <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" alt="Logo PDI-P" class="h-12 md:h-14 w-auto">
             <div class="border-l-2 border-slate-200 pl-3">
-                <h1 class="text-sm md:text-base font-black leading-none text-slate-900 italic tracking-tighter">
-                    SENSUS KADER <span class="text-red-700">2026</span>
-                </h1>
-                <p class="text-[8px] md:text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase mt-1">
-                    DPD PDI Perjuangan DIY
-                </p>
+                <h1 class="text-sm md:text-base font-black text-slate-900 italic tracking-tighter">SENSUS KADER <span class="text-red-700">2026</span></h1>
             </div>
         </div>
     </div>
 
     <div class="max-w-2xl mx-auto pt-8 px-6 flex items-center justify-between relative z-10">
-        <a href="step4.html" class="text-slate-400 hover:text-red-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
+        <a href="step4.html" class="text-slate-400 hover:text-red-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
         </a>
         <div class="flex gap-2">
             <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
@@ -52,12 +44,11 @@
             <div class="h-1.5 w-6 rounded-full bg-red-200"></div>
             <div class="h-1.5 w-6 rounded-full bg-red-700"></div>
         </div>
-        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Step 05</span>
+        <span class="text-[10px] font-black text-slate-400 tracking-widest uppercase">Step 05</span>
     </div>
 
     <div class="max-w-2xl mx-auto mt-8 px-4 relative">
         <div class="glass-effect p-8 md:p-12 shadow-2xl">
-            
             <div class="mb-10 border-b pb-6 text-center md:text-left">
                 <h2 class="text-2xl font-black text-slate-900 tracking-tighter uppercase italic">Afiliasi & Profesi</h2>
                 <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Rekam Jejak Sosial & Kemandirian Ekonomi</p>
@@ -68,12 +59,10 @@
                     <div class="h-6 w-1 bg-red-700 rounded-full"></div>
                     <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Organisasi (Masyarakat/Profesi/Hobi)</h3>
                 </div>
-                
                 <div id="org-container">
                     <div class="entry-card shadow-sm">
                         <label class="label-style">Nama Organisasi</label>
-                        <input type="text" class="org-name" placeholder="CONTOH: KARANG TARUNA / NU / MUHAMMADIYAH / KNPI" oninput="this.value = this.value.toUpperCase()">
-                        
+                        <input type="text" class="org-name" placeholder="CONTOH: KARANG TARUNA / NU / MUHAMMADIYAH" oninput="this.value = this.value.toUpperCase()">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="label-style">Jabatan</label>
@@ -94,7 +83,6 @@
                     <div class="h-6 w-1 bg-slate-900 rounded-full"></div>
                     <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest">Pekerjaan & Profesional</h3>
                 </div>
-
                 <div id="job-container">
                     <div class="entry-card shadow-sm border-l-4 border-l-slate-900">
                         <label class="label-style">Jenis Pekerjaan / Profesi</label>
@@ -110,10 +98,8 @@
                             <option>MAHASISWA / PELAJAR</option>
                             <option>LAINNYA / TIDAK BEKERJA</option>
                         </select>
-
                         <label class="label-style">Nama Perusahaan / Instansi / Usaha</label>
-                        <input type="text" class="job-name" placeholder="CONTOH: PT. MAJU JAYA / TOKO BERKAH" oninput="this.value = this.value.toUpperCase()">
-
+                        <input type="text" class="job-name" placeholder="CONTOH: PT. MAJU JAYA" oninput="this.value = this.value.toUpperCase()">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="label-style">Posisi / Jabatan</label>
@@ -130,89 +116,117 @@
             </section>
 
             <button onclick="saveStep5()" class="w-full bg-slate-900 text-white font-black py-6 rounded-3xl shadow-2xl uppercase text-[11px] tracking-[0.3em] hover:bg-red-700 transition-all flex justify-center items-center gap-4">
-                Lanjut Komptensi & Keahlian
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+                Lanjut Kompetensi & Keahlian
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
             </button>
         </div>
     </div>
 
-    <div class="fixed bottom-[-50px] right-[-50px] opacity-[0.03] pointer-events-none z-0">
-        <img src="https://i.ibb.co.com/5WyjxSkV/PDI-Perjuangan-3.png" 
-             alt="Watermark Logo" class="w-80 md:w-96">
-    </div>
-
     <script>
+        // Global templates
+        let orgTemplate;
+        let jobTemplate;
+
+        // Fungsi tambah entry dengan tombol hapus otomatis
         function addEntry(containerId) {
             const container = document.getElementById(containerId);
-            const clone = container.firstElementChild.cloneNode(true);
+            const isOrg = containerId === 'org-container';
+            const template = isOrg ? orgTemplate : jobTemplate;
             
-            // Bersihkan input di kloningan
+            const clone = template.cloneNode(true);
             clone.querySelectorAll('input, select').forEach(i => i.value = "");
             
-            // Tambahkan tombol hapus jika belum ada di kloningan
-            if (!clone.querySelector('.btn-remove')) {
-                const removeBtn = document.createElement('button');
-                removeBtn.innerHTML = '✕';
-                removeBtn.className = 'btn-remove';
-                removeBtn.onclick = function() { clone.remove(); };
-                clone.appendChild(removeBtn);
-            }
+            // Tambahkan tombol hapus
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '✕';
+            removeBtn.className = 'btn-remove';
+            removeBtn.onclick = function() { clone.remove(); };
+            clone.appendChild(removeBtn);
             
             container.appendChild(clone);
+            return clone;
         }
 
         function saveStep5() {
-    // 1. Koleksi Data Organisasi
-    const orgCards = document.querySelectorAll('#org-container .entry-card');
-    const riwayatOrganisasi = [];
-    
-    orgCards.forEach(card => {
-        const nama = card.querySelector('.org-name').value;
-        if(nama) {
-            riwayatOrganisasi.push({
-                nama: nama,
-                jabatan: card.querySelector('.org-rank').value || "-",
-                periode: card.querySelector('.org-period').value || "-"
+            const riwayatOrganisasi = [];
+            document.querySelectorAll('#org-container .entry-card').forEach(card => {
+                const nama = card.querySelector('.org-name').value;
+                if(nama) {
+                    riwayatOrganisasi.push({
+                        nama: nama,
+                        jabatan: card.querySelector('.org-rank').value || "-",
+                        periode: card.querySelector('.org-period').value || "-"
+                    });
+                }
             });
-        }
-    });
 
-    // 2. Koleksi Data Pekerjaan
-    const jobCards = document.querySelectorAll('#job-container .entry-card');
-    const riwayatPekerjaan = [];
-    
-    jobCards.forEach(card => {
-        const jenis = card.querySelector('.job-type').value;
-        if(jenis) {
-            riwayatPekerjaan.push({
-                jenis: jenis,
-                instansi: card.querySelector('.job-name').value || "-",
-                jabatan: card.querySelector('.job-rank').value || "-",
-                tahun: card.querySelector('.job-year').value || "-"
+            const riwayatPekerjaan = [];
+            document.querySelectorAll('#job-container .entry-card').forEach(card => {
+                const jenis = card.querySelector('.job-type').value;
+                if(jenis) {
+                    riwayatPekerjaan.push({
+                        jenis: jenis,
+                        instansi: card.querySelector('.job-name').value || "-",
+                        jabatan: card.querySelector('.job-rank').value || "-",
+                        tahun: card.querySelector('.job-year').value || "-"
+                    });
+                }
             });
+
+            // Simpan JSON Utama
+            localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(riwayatOrganisasi));
+            localStorage.setItem('kader_riwayat_pekerjaan_json', JSON.stringify(riwayatPekerjaan));
+
+            // Mapping Flat untuk filter dashboard
+            const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
+            localStorage.setItem('kader_is_nu', (textOrg.includes('NU ') || textOrg.includes('NAHDLATUL')) ? 'YA' : '-');
+            localStorage.setItem('kader_is_muhammadiyah', textOrg.includes('MUHAMMADIYAH') ? 'YA' : '-');
+            
+            const profesiUtama = riwayatPekerjaan.length > 0 ? riwayatPekerjaan[0].jenis : "TIDAK BEKERJA";
+            localStorage.setItem('kader_pekerjaan', profesiUtama);
+            localStorage.setItem('kader_is_pengusaha', profesiUtama.includes('WIRASWASTA') ? 'YA' : '-');
+
+            window.location.href = "step6.html"; 
         }
-    });
 
-    // 3. Simpan Ke LocalStorage (JSON untuk Database)
-    localStorage.setItem('kader_riwayat_organisasi_json', JSON.stringify(riwayatOrganisasi));
-    localStorage.setItem('kader_riwayat_pekerjaan_json', JSON.stringify(riwayatPekerjaan));
+        window.onload = function() {
+            // 1. Ambil template sebelum container dibersihkan
+            orgTemplate = document.querySelector('#org-container .entry-card').cloneNode(true);
+            jobTemplate = document.querySelector('#job-container .entry-card').cloneNode(true);
 
-    // 4. MAPPING FLAT (Penting untuk Filter Dashboard)
-    const textOrg = JSON.stringify(riwayatOrganisasi).toUpperCase();
-    localStorage.setItem('kader_is_nu', (textOrg.includes('NU ') || textOrg.includes('NAHDLATUL')) ? 'YA' : '-');
-    localStorage.setItem('kader_is_muhammadiyah', textOrg.includes('MUHAMMADIYAH') ? 'YA' : '-');
-    
-    // Profesi Utama (Ambil input pertama sebagai yang terbaru)
-    const profesiUtama = riwayatPekerjaan.length > 0 ? riwayatPekerjaan[0].jenis : "TIDAK BEKERJA";
-    localStorage.setItem('kader_pekerjaan', profesiUtama);
-    localStorage.setItem('kader_is_pengusaha', profesiUtama.includes('WIRASWASTA') ? 'YA' : '-');
+            // 2. Load Data Organisasi
+            const savedOrg = localStorage.getItem('kader_riwayat_organisasi_json');
+            if(savedOrg) {
+                const data = JSON.parse(savedOrg);
+                if(data.length > 0) {
+                    const container = document.getElementById('org-container');
+                    container.innerHTML = '';
+                    data.forEach((item, index) => {
+                        const card = addEntry('org-container');
+                        card.querySelector('.org-name').value = item.nama;
+                        card.querySelector('.org-rank').value = item.jabatan;
+                        card.querySelector('.org-period').value = item.periode;
+                    });
+                }
+            }
 
-    // 5. REDIRECT KE FINAL REVIEW (Halaman Pratinjau Semua Data)
-    // Jika Bos belum buat step6, arahkan ke review.html
-    window.location.href = "step6.html"; 
-}
+            // 3. Load Data Pekerjaan
+            const savedJob = localStorage.getItem('kader_riwayat_pekerjaan_json');
+            if(savedJob) {
+                const data = JSON.parse(savedJob);
+                if(data.length > 0) {
+                    const container = document.getElementById('job-container');
+                    container.innerHTML = '';
+                    data.forEach(item => {
+                        const card = addEntry('job-container');
+                        card.querySelector('.job-type').value = item.jenis;
+                        card.querySelector('.job-name').value = item.instansi;
+                        card.querySelector('.job-rank').value = item.jabatan;
+                        card.querySelector('.job-year').value = item.tahun;
+                    });
+                }
+            }
+        };
     </script>
 </body>
 </html>
