@@ -29,8 +29,37 @@
                 <option value="SD">SD</option>
                 <option value="SMP">SMP</option>
                 <option value="SMA/SMK">SMA / SMK</option>
-                <option value="PT">Perguruan Tinggi (D3-S3)</option>
+                <option value="D1">D1</option>
+                <option value="D2">D2</option>
+                <option value="D3">D3</option>
+                <option value="D4">D4</option>
+                <option value="S1">S1</option>
+                <option value="S2">S2</option>
+                <option value="S3">S3</option>
             </select>
+        </div>
+
+        <div id="wrap_pt" style="display: none;">
+            <div class="input-group">
+                <label>Nama Perguruan Tinggi <span class="required">*</span></label>
+                <input type="text" id="nama_pt" placeholder="Contoh: Universitas Gadjah Mada" class="input-field">
+            </div>
+            <div class="input-group">
+                <label>Fakultas <span class="required">*</span></label>
+                <input type="text" id="fakultas" placeholder="Fakultas" class="input-field">
+            </div>
+            <div class="input-group">
+                <label>Jurusan / Program Studi</label>
+                <input type="text" id="jurusan_pt" placeholder="Jurusan" class="input-field">
+            </div>
+            <div class="input-group">
+                <label>Status Kelulusan <span class="required">*</span></label>
+                <select id="status_kelulusan" class="input-field">
+                    <option value="Lulus">Lulus</option>
+                    <option value="Tidak Lulus">Tidak Lulus</option>
+                    <option value="Sedang Menempuh">Sedang Menempuh</option>
+                </select>
+            </div>
         </div>
 
         <div id="wrap_sma" style="display: none;">
@@ -49,49 +78,19 @@
             </div>
         </div>
 
-        <div class="input-group">
-    <label>Jenjang / Tingkat <span class="required">*</span></label>
-    <select id="jenjang" class="input-field" onchange="toggleExtraFields()">
-        <option value="">-- Pilih Jenjang --</option>
-        <option value="SD">SD</option>
-        <option value="SMP">SMP</option>
-        <option value="SMA/SMK">SMA / SMK</option>
-        <option value="D1">D1</option>
-        <option value="D2">D2</option>
-        <option value="D3">D3</option>
-        <option value="D4">D4</option>
-        <option value="S1">S1</option>
-        <option value="S2">S2</option>
-        <option value="S3">S3</option>
-    </select>
-</div>
+        <div id="wrap_nama_sekolah" class="input-group">
+            <label>Nama Sekolah <span class="required">*</span></label>
+            <input type="text" id="nama_sekolah" placeholder="Nama Sekolah" class="input-field">
+        </div>
 
-<div id="wrap_pt" style="display: none;">
-    <div class="input-group">
-        <label>Nama Perguruan Tinggi <span class="required">*</span></label>
-        <input type="text" id="nama_pt" placeholder="Contoh: Universitas Gadjah Mada" class="input-field">
-    </div>
-    <div class="input-group">
-        <label>Fakultas <span class="required">*</span></label>
-        <input type="text" id="fakultas" placeholder="Contoh: Ilmu Sosial dan Ilmu Politik" class="input-field">
-    </div>
-    <div class="input-group">
-        <label>Jurusan / Program Studi</label>
-        <input type="text" id="jurusan_pt" placeholder="Contoh: Sosiologi" class="input-field">
-    </div>
-    <div class="input-group">
-        <label>Status Kelulusan <span class="required">*</span></label>
-        <select id="status_kelulusan" class="input-field">
-            <option value="Lulus">Lulus</option>
-            <option value="Tidak Lulus">Tidak Lulus</option>
-            <option value="Sedang Menempuh">Sedang Menempuh</option>
-        </select>
-    </div>
-</div>
+        <div class="input-group">
+            <label>Kota <span class="required">*</span></label>
+            <input type="text" id="kota_sekolah" placeholder="Kota" class="input-field">
+        </div>
 
         <div class="input-group">
             <label>Tahun Lulus <span class="required">*</span></label>
-            <input type="text" id="tahun_lulus" placeholder="Contoh: 2010" class="input-field">
+            <input type="text" id="tahun_lulus" placeholder="Tahun" class="input-field">
         </div>
 
         <button type="button" onclick="addPendidikan()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px; border-color: var(--primary-color); color: var(--primary-color);">
@@ -111,13 +110,31 @@
 <script>
     function toggleExtraFields() {
         const jenjang = document.getElementById('jenjang').value;
+        const ptJenjangs = ['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
+        
+        // Toggle Perguruan Tinggi
+        const isPT = ptJenjangs.includes(jenjang);
+        document.getElementById('wrap_pt').style.display = isPT ? 'block' : 'none';
+        
+        // Toggle SMA
         document.getElementById('wrap_sma').style.display = (jenjang === 'SMA/SMK') ? 'block' : 'none';
-        document.getElementById('wrap_pt').style.display = (jenjang === 'PT') ? 'block' : 'none';
+        
+        // Sembunyikan Nama Sekolah biasa jika PT dipilih
+        document.getElementById('wrap_nama_sekolah').style.display = isPT ? 'none' : 'block';
     }
 
     function toggleLainnya() {
         const jSMA = document.getElementById('jurusan_sma').value;
         document.getElementById('wrap_lainnya').style.display = (jSMA === 'Lainnya') ? 'block' : 'none';
+    }
+
+    function nextStep() {
+        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+        if (!data.riwayat_pendidikan || data.riwayat_pendidikan.length === 0) {
+            alert("Minimal masukkan 1 riwayat pendidikan!");
+            return;
+        }
+        window.location.href = 'step3.html';
     }
 
     window.addEventListener('load', renderPendidikan);
