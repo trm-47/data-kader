@@ -73,30 +73,40 @@
 <script src="script.js"></script>
 <script>
     window.addEventListener('load', () => {
-        // Render List Organisasi
+        // 1. Render List Organisasi (panggil fungsi dari script.js)
         if (typeof renderOrganisasi === 'function') renderOrganisasi();
 
-        // Auto-Fill data yang sudah tersimpan sebelumnya
+        // 2. Auto-Fill data yang sudah tersimpan sebelumnya
         const savedData = JSON.parse(localStorage.getItem('kaderData'));
         if (savedData) {
             // Load Medsos
             if (savedData.media_sosial) {
-                document.getElementById('medsos_fb').value = savedData.media_sosial.facebook || '';
-                document.getElementById('medsos_ig').value = savedData.media_sosial.instagram || '';
-                document.getElementById('medsos_tiktok').value = savedData.media_sosial.tiktok || '';
-                document.getElementById('medsos_twitter').value = savedData.media_sosial.twitter_x || '';
-                document.getElementById('medsos_youtube').value = savedData.media_sosial.youtube || '';
-                document.getElementById('medsos_linkedin').value = savedData.media_sosial.linkedin || '';
+                document.getElementById('medsos_fb').value = savedData.media_sosial.facebook !== '-' ? savedData.media_sosial.facebook : '';
+                document.getElementById('medsos_ig').value = savedData.media_sosial.instagram !== '-' ? savedData.media_sosial.instagram : '';
+                document.getElementById('medsos_tiktok').value = savedData.media_sosial.tiktok !== '-' ? savedData.media_sosial.tiktok : '';
+                document.getElementById('medsos_twitter').value = savedData.media_sosial.twitter_x !== '-' ? savedData.media_sosial.twitter_x : '';
+                document.getElementById('medsos_youtube').value = savedData.media_sosial.youtube !== '-' ? savedData.media_sosial.youtube : '';
+                document.getElementById('medsos_linkedin').value = savedData.media_sosial.linkedin !== '-' ? savedData.media_sosial.linkedin : '';
             }
-            // Load Komputer
-            if (savedData.kemampuan_komputer) document.getElementById('komputer').value = savedData.kemampuan_komputer;
-            // Load Bahasa Lainnya
+
+            // Load Checkbox Bahasa
+            if (savedData.kompetensi_bahasa) {
+                const bahasaArray = savedData.kompetensi_bahasa.split(', ');
+                const checkboxes = document.querySelectorAll('input[name="bahasa"]');
+                checkboxes.forEach(cb => {
+                    if (bahasaArray.includes(cb.value)) cb.checked = true;
+                });
+            }
+
+            // Load Inputan Lainnya
             if (savedData.bahasa_lainnya_input) document.getElementById('bahasa_lainnya').value = savedData.bahasa_lainnya_input;
+            if (savedData.kemampuan_komputer) document.getElementById('komputer').value = savedData.kemampuan_komputer;
         }
     });
 
     function goToReview() {
         try {
+            // Ambil data lama biar gak nimpa data dari Step 1-5
             let data = JSON.parse(localStorage.getItem('kaderData')) || {};
 
             // 1. Ambil Bahasa
@@ -104,14 +114,14 @@
             let bahasaList = Array.from(checkboxes).map(cb => cb.value);
             const lainnya = document.getElementById('bahasa_lainnya').value.trim();
             
-            // Simpan input "lainnya" secara terpisah untuk auto-fill nanti
+            // Simpan input mentah "lainnya" buat kebutuhan auto-fill nanti
             data.bahasa_lainnya_input = lainnya; 
             if(lainnya) bahasaList.push(lainnya);
 
             data.kompetensi_bahasa = bahasaList.length > 0 ? bahasaList.join(', ') : '-';
             data.kemampuan_komputer = document.getElementById('komputer').value;
 
-            // 2. Ambil Medsos
+            // 2. Ambil Medsos (Simpan "-" kalau kosong)
             data.media_sosial = {
                 facebook: document.getElementById('medsos_fb').value.trim() || '-',
                 instagram: document.getElementById('medsos_ig').value.trim() || '-',
@@ -121,11 +131,17 @@
                 linkedin: document.getElementById('medsos_linkedin').value.trim() || '-'
             };
 
+            // 3. Simpan & Pindah Halaman
             localStorage.setItem('kaderData', JSON.stringify(data));
+            
+            // Debugging (bisa dihapus kalau sudah oke)
+            console.log("Data tersimpan, pindah ke rekap...");
+            
             window.location.href = 'rekap.html';
             
         } catch (error) {
-            alert("Terjadi kesalahan saat menyimpan. Coba lagi.");
+            console.error("Error Detail:", error);
+            alert("Terjadi kesalahan saat menyimpan. Pastikan fitur LocalStorage browser aktif.");
         }
     }
 </script>
