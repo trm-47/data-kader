@@ -603,3 +603,48 @@ window.addEventListener('DOMContentLoaded', () => {
     const savedSkin = JSON.parse(localStorage.getItem('preferredSkin'));
     if(savedSkin) applySkin(savedSkin);
 });
+
+function addPenugasanPartai() {
+    const jenis = document.getElementById('tugas_jenis').value;
+    const lembaga = document.getElementById('tugas_lembaga').value;
+    const jabatan = document.getElementById('tugas_jabatan').value;
+    const lokasi = document.getElementById('tugas_lokasi').value;
+    const periode = document.getElementById('tugas_periode').value;
+
+    if (!jenis || !jabatan) return alert("Minimal jenis dan jabatan diisi!");
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    if (!data.riwayat_penugasan_partai) data.riwayat_penugasan_partai = [];
+
+    data.riwayat_penugasan_partai.push({
+        jenis, lembaga: jenis === 'Legislatif' ? lembaga : '', jabatan, lokasi, periode
+    });
+
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPenugasan();
+    
+    // Reset Form
+    document.getElementById('tugas_jabatan').value = '';
+    document.getElementById('tugas_lokasi').value = '';
+}
+
+function renderPenugasan() {
+    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    const list = document.getElementById('tugasList');
+    if (!list) return;
+    
+    const items = data.riwayat_penugasan_partai || [];
+    list.innerHTML = items.map((t, index) => `
+        <div class="list-item-rekap">
+            <span><b>${t.jenis}</b>: ${t.jabatan} (${t.periode})</span>
+            <button onclick="deletePenugasan(${index})">❌</button>
+        </div>
+    `).join('');
+}
+
+function deletePenugasan(index) {
+    let data = JSON.parse(localStorage.getItem('kaderData'));
+    data.riwayat_penugasan_partai.splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPenugasan();
+}
