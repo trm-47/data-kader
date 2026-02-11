@@ -182,7 +182,10 @@
     </div>
 
     <script>
-        // Logika Tampilan (Tetap Sama)
+        // Simpan template kartu agar tidak hilang saat container dikosongkan
+        let strukturalTemplate;
+        let penugasanTemplate;
+
         function toggleBidang(select) {
             const wrapper = select.closest('.entry-card').querySelector('.bidang-wrapper');
             if(select.value === 'WAKIL KETUA' || select.value === 'WAKIL SEKRETARIS') {
@@ -204,7 +207,7 @@
 
         function addStruktural() {
             const container = document.getElementById('struktural-container');
-            const clone = container.querySelector('.entry-card').cloneNode(true);
+            const clone = strukturalTemplate.cloneNode(true);
             clone.querySelectorAll('input, select').forEach(i => i.value = "");
             clone.querySelector('.bidang-wrapper').classList.add('hidden');
             container.appendChild(clone);
@@ -212,7 +215,7 @@
 
         function addPenugasan() {
             const container = document.getElementById('penugasan-container');
-            const clone = container.querySelector('.entry-card').cloneNode(true);
+            const clone = penugasanTemplate.cloneNode(true);
             clone.querySelectorAll('input, select').forEach(i => i.value = "");
             clone.querySelector('.eksekutif-fields').classList.add('hidden');
             clone.querySelector('.legislatif-fields').classList.add('hidden');
@@ -262,61 +265,59 @@
             window.location.href = "step5.html"; 
         }
 
-        // --- PERBAIKAN LOGIKA ONLOAD ---
         window.onload = function() {
+            // Ambil "cetakan" sebelum container dimanipulasi
+            strukturalTemplate = document.querySelector('#struktural-container .entry-card').cloneNode(true);
+            penugasanTemplate = document.querySelector('#penugasan-container .entry-card').cloneNode(true);
+
             const savedStruk = localStorage.getItem('kader_riwayat_struktural_json');
             const savedTugas = localStorage.getItem('kader_riwayat_penugasan_json');
 
-            // Load Struktural
-            if(savedStruk && JSON.parse(savedStruk).length > 0) {
+            // Handle Load Data Struktural
+            if(savedStruk) {
                 const data = JSON.parse(savedStruk);
-                const container = document.getElementById('struktural-container');
-                container.innerHTML = ''; // Bersihkan hanya jika ada data yang mau di-load
-                data.forEach(item => {
-                    addStrukturalOnLoad('struktural', item);
-                });
+                if(data.length > 0) {
+                    const container = document.getElementById('struktural-container');
+                    container.innerHTML = ''; 
+                    data.forEach(item => {
+                        addStruktural();
+                        const lastCard = container.lastElementChild;
+                        lastCard.querySelector('.tingkat-pengurus').value = item.tingkat;
+                        lastCard.querySelector('.jabatan-nama').value = item.jabatan;
+                        lastCard.querySelector('.thn-mulai').value = item.mulai === "?" ? "" : item.mulai;
+                        lastCard.querySelector('.thn-selesai').value = item.selesai === "Sekarang" ? "" : item.selesai;
+                        if(item.bidang !== "-") {
+                            lastCard.querySelector('.bidang-nama').value = item.bidang;
+                            lastCard.querySelector('.bidang-wrapper').classList.remove('hidden');
+                        }
+                    });
+                }
             }
 
-            // Load Penugasan
-            if(savedTugas && JSON.parse(savedTugas).length > 0) {
+            // Handle Load Data Penugasan
+            if(savedTugas) {
                 const data = JSON.parse(savedTugas);
-                const container = document.getElementById('penugasan-container');
-                container.innerHTML = ''; 
-                data.forEach(item => {
-                    addStrukturalOnLoad('penugasan', item);
-                });
+                if(data.length > 0) {
+                    const container = document.getElementById('penugasan-container');
+                    container.innerHTML = '';
+                    data.forEach(item => {
+                        addPenugasan();
+                        const lastCard = container.lastElementChild;
+                        lastCard.querySelector('.jenis-tugas').value = item.jenis;
+                        lastCard.querySelector('.tahun-awal').value = item.awal;
+                        lastCard.querySelector('.tahun-akhir').value = item.akhir;
+                        handleTugasLogic(lastCard.querySelector('.jenis-tugas'));
+                        if(item.jenis === 'EKSEKUTIF') {
+                            lastCard.querySelector('.eksekutif-fields select').value = item.wilayah;
+                            lastCard.querySelector('.eksekutif-fields input').value = item.jabatan;
+                        } else {
+                            lastCard.querySelector('.legislatif-fields select').value = item.lembaga;
+                            lastCard.querySelector('.legislatif-fields input').value = item.dapil;
+                        }
+                    });
+                }
             }
         };
-
-        // Fungsi pembantu biar kode onload lebih bersih
-        function addStrukturalOnLoad(type, item) {
-            if(type === 'struktural') {
-                addStruktural();
-                const lastCard = document.querySelector('#struktural-container').lastElementChild;
-                lastCard.querySelector('.tingkat-pengurus').value = item.tingkat;
-                lastCard.querySelector('.jabatan-nama').value = item.jabatan;
-                lastCard.querySelector('.thn-mulai').value = item.mulai === "?" ? "" : item.mulai;
-                lastCard.querySelector('.thn-selesai').value = item.selesai === "Sekarang" ? "" : item.selesai;
-                if(item.bidang !== "-") {
-                    lastCard.querySelector('.bidang-nama').value = item.bidang;
-                    lastCard.querySelector('.bidang-wrapper').classList.remove('hidden');
-                }
-            } else {
-                addPenugasan();
-                const lastCard = document.querySelector('#penugasan-container').lastElementChild;
-                lastCard.querySelector('.jenis-tugas').value = item.jenis;
-                lastCard.querySelector('.tahun-awal').value = item.awal;
-                lastCard.querySelector('.tahun-akhir').value = item.akhir;
-                handleTugasLogic(lastCard.querySelector('.jenis-tugas'));
-                if(item.jenis === 'EKSEKUTIF') {
-                    lastCard.querySelector('.eksekutif-fields select').value = item.wilayah;
-                    lastCard.querySelector('.eksekutif-fields input').value = item.jabatan;
-                } else {
-                    lastCard.querySelector('.legislatif-fields select').value = item.lembaga;
-                    lastCard.querySelector('.legislatif-fields input').value = item.dapil;
-                }
-            }
-        }
     </script>
 </body>
 </html>
