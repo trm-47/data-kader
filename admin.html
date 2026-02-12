@@ -131,18 +131,15 @@ try {
 }
 
 function calculateAge(birthDateString) {
-    // Proteksi level 1: Jika data benar-benar kosong atau undefined
-    if (!birthDateString || birthDateString === "-" || birthDateString === "") {
+    if (!birthDateString || birthDateString === "-") {
         return { age: "-", gen: "-", rawAge: 0 };
     }
 
     try {
+        // Konversi ke objek Date (menangani jika input sudah berupa objek Date atau string)
         let birthDate = new Date(birthDateString);
         
-        // Proteksi level 2: Jika format tanggal ngaco (Invalid Date)
-        if (isNaN(birthDate.getTime())) {
-            return { age: "-", gen: "-", rawAge: 0 };
-        }
+        if (isNaN(birthDate.getTime())) return { age: "-", gen: "-", rawAge: 0 };
 
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
