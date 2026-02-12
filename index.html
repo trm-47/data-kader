@@ -3,51 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Database Pendidikan Kader - DPD PDI Perjuangan DIY</title>
+    <title>Database Kader - DPD PDI Perjuangan DIY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --gold-gradient: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --dark-red: #8b0000;
+        }
+        
+        body {
+            background: radial-gradient(circle at top, #2d0000 0%, #000000 100%);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: white;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .premium-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 40px 25px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efek cahaya di belakang logo */
+        .logo-glow {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background: var(--primary-color);
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        .logo-main {
+            width: 100px;
+            filter: drop-shadow(0 0 15px rgba(215, 25, 32, 0.5));
+            position: relative;
+            z-index: 1;
+            margin-bottom: 20px;
+        }
+
+        .title-gold {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: 1px;
+            font-size: 14px;
+        }
+
+        .region-text {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 24px;
+            margin: 10px 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .instruction-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .step-icon {
+            background: var(--primary-color);
+            color: white;
+            min-width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .btn-premium {
+            background: linear-gradient(90deg, #D71920 0%, #990000 100%);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 16px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(215, 25, 32, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(215, 25, 32, 0.5);
+        }
+
+        .footer-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 10px;
+            margin-top: 30px;
+            letter-spacing: 2px;
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="form-card" style="text-align: center;">
-            <div class="header-form">
-                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
-                
-                <p class="subtitle" style="letter-spacing: 2px; font-weight: 800; color: var(--primary-color);">
-                    DATABASE PENDIDIKAN KADER
-                </p>
-                <h2 style="font-size: 26px; margin-top: 10px;">DPD PDI PERJUANGAN</h2>
-                <h2 class="region-name" style="color: var(--soft-slate); font-size: 16px; font-weight: 600;">
-                    DAERAH ISTIMEWA YOGYAKARTA
-                </h2>
-            </div>
+        <div class="premium-card">
+            <div class="logo-glow"></div>
             
-<div class="features-brief" style="margin: 25px 0; padding: 20px; background: #fff5f5; border-radius: 16px; border: 1px solid #feb2b2; text-align: left;">
-                <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 10px;">
-                    Selamat datang, Kamerad. Silakan lengkapi data Anda untuk memperkuat basis data digital partai.
-                </p>
-                <div style="background: white; padding: 12px; border-radius: 10px; border-left: 4px solid #D71920;">
-                    <p style="font-size: 13px; color: #D71920; font-weight: 700; margin-bottom: 5px;">⚠️ PERHATIAN PENTING:</p>
-                    <p style="font-size: 12px; line-height: 1.4; color: #4a5568;">
-                        Saat mengisi <b>Riwayat Pendidikan, Jabatan, & Penugasan</b>, pastikan Anda menekan tombol <b style="color: #D71920;">TAMBAH (+)</b> hingga data muncul di daftar bawah sebelum menekan tombol Lanjut.
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-main">
+            
+            <div class="title-gold">DATABASE DIGITAL KADER</div>
+            <h1 class="region-text">DPD PDI PERJUANGAN<br><span style="font-size: 18px; color: #ccc;">D.I. YOGYAKARTA</span></h1>
+
+            <div class="instruction-box">
+                <div class="step-item">
+                    <div class="step-icon">1</div>
+                    <p style="margin:0; font-size:13px; color:#e2e8f0;">Lengkapi biodata diri secara akurat.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon">2</div>
+                    <p style="margin:0; font-size:13px; color:#e2e8f0;">
+                        <b>Wajib:</b> Klik tombol <span style="color: #ff4d4d; font-weight: 800;">(+) TAMBAH</span> pada setiap riwayat agar data terkunci.
                     </p>
+                </div>
+                <div class="step-item">
+                    <div class="step-icon">3</div>
+                    <p style="margin:0; font-size:13px; color:#e2e8f0;">Review kembali di halaman akhir sebelum mengirim.</p>
                 </div>
             </div>
 
-            <button onclick="startForm()" class="btn-primary">MULAI PENGISIAN FORM</button>
+            <button onclick="startForm()" class="btn-premium">Mulai Pengisian Amanah</button>
             
-            <p style="margin-top: 25px; font-size: 11px; color: var(--soft-slate); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-                Sistem Informasi Kader Digital © 2026
-            </p>
+            <p class="footer-text">SISTEM INFORMASI KADER DIGITAL © 2026</p>
         </div>
     </div>
 
     <script>
         function startForm() {
-            // Bersihkan data lama agar fresh
             localStorage.clear();
-            // Langsung meluncur ke step 1
-            window.location.href = 'step1.html';
+            // Efek transisi sederhana
+            document.body.style.opacity = '0';
+            document.body.style.transition = '0.5s';
+            setTimeout(() => {
+                window.location.href = 'step1.html';
+            }, 500);
         }
     </script>
 </body>
