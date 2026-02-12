@@ -249,13 +249,13 @@
             </div>
             <div class="filter-group">
                 <label>Pendidikan Kader</label>
-                <select id="fKader" onchange="applyFilters()">
-                    <option value="Semua">Semua Tingkat</option>
-                    <option value="Pratama">Pratama</option>
-                    <option value="Madya">Madya</option>
-                    <option value="Utama">Utama</option>
-                    <option value="Guru">Guru</option>
-                </select>
+<select id="fKader" onchange="applyFilters()">
+    <option value="Semua">Semua Tingkat</option>
+    <option value="Pratama">Kader Pratama</option>
+    <option value="Madya">Kader Madya</option>
+    <option value="Utama">Kader Utama</option>
+    <option value="Guru">Guru Kader</option>
+</select>
             </div>
             <div class="filter-group">
                 <label>Tingkatan Struktur</label>
@@ -604,9 +604,9 @@ function resetFilters() {
         const jabatan = item.jabatan || [];  
 
         // 1. Presisi Pendidikan Kader (Pencarian Kata)
-       const textKader = kader.join("|").toLowerCase(); 
-        const matchesKader = fKader === "Semua" || textKader.includes(fKader.toLowerCase());
-        // 2. Presisi Penugasan & Tingkat (Melalui Array Jabatan)
+       const textKader = kader.join(" ").toLowerCase();
+        // Cek: Apakah kata "madya" (dari filter) ada di dalam "madya_tahun2005" (dari sheet)?
+        const matchesKader = fKader === "Semua" || textKader.includes(fKader.toLowerCase()); // 2. Presisi Penugasan & Tingkat (Melalui Array Jabatan)
         // Kita gabung semua baris jabatan jadi satu teks untuk pencarian fleksibel
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
