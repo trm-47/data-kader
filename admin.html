@@ -261,6 +261,7 @@ function calculateAge(birthDateString) {
 }
 
     // 5. TAMPILKAN KE TABEL
+// 5. TAMPILKAN KE TABEL (VERSI PERBAIKAN NAMA VARIABEL)
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
     body.innerHTML = "";
@@ -270,15 +271,17 @@ function renderTable(data) {
         return;
     }
 
+    // Data dibalik agar yang terbaru di atas
     const sortedData = [...data].reverse();
 
-    sortedData.forEach((kader, index) => {
-        // --- DEBUG: CEK DATA TANGGAL ---
-        console.log(`Baris ${index} Nama: ${kader.nama_lengkap} | Tgl Lahir:`, kader.tanggal_lahir);
+    sortedData.forEach((item, index) => {
+        // Ambil data dari objek 'pribadi' sesuai struktur doGet di GAS
+        const kader = item.pribadi; 
         
-        const ageInfo = calculateAge(kader.tanggal_lahir);
+        // Gunakan 'tgl_lahir' karena itu nama di GAS Bos
+        const ageInfo = calculateAge(kader.tgl_lahir); 
         const fotoUrl = formatDriveUrl(kader.foto);
-        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama_lengkap)}&background=random&color=fff`;
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama || 'Kader')}&background=random&color=fff`;
 
         const row = `
             <tr onclick="openDetail(${index})">
@@ -288,7 +291,7 @@ function renderTable(data) {
                          style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;">
                 </td>
                 <td data-label="Identitas">
-                    <strong>${kader.nama_lengkap || '-'}</strong><br>
+                    <strong>${kader.nama || '-'}</strong><br>
                     <small>${kader.nik || '-'}</small>
                 </td>
                 <td data-label="Usia">
@@ -296,11 +299,11 @@ function renderTable(data) {
                     <span class="badge badge-gray">${ageInfo.gen}</span>
                 </td>
                 <td data-label="Domisili">
-                    ${kader.kecamatan || '-'}<br>
-                    <small>YOGYAKARTA</small>
+                    ${kader.kec || '-'}<br>
+                    <small>${kader.kota || 'YOGYAKARTA'}</small>
                 </td>
                 <td data-label="Kaderisasi">
-                    <span class="badge badge-red">${kader.tingkat_kaderisasi || 'Non-Kader'}</span>
+                    <span class="badge badge-red">${item.formal.status || 'Non-Kader'}</span>
                 </td>
             </tr>
         `;
