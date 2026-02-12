@@ -180,14 +180,29 @@ function addPekerjaan() {
 }
 
 function addOrganisasi() {
-    const nama = document.getElementById('nama_org')?.value;
-    const jabatan = document.getElementById('jabatan_org')?.value;
-    const periode = document.getElementById('periode_org')?.value;
+    const nama = document.getElementById('org_nama')?.value;
+    const tingkat = document.getElementById('org_tingkat')?.value;
+    const jabatan = document.getElementById('org_jabatan')?.value;
+    const periode = document.getElementById('org_periode')?.value;
+
     if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
-    saveToLocal('riwayat_organisasi', { nama, jabatan, periode });
+
+    // Gabungkan nama dan tingkatan agar rapi di list
+    const namaLengkap = tingkat ? `${nama} (${tingkat})` : nama;
+
+    saveToLocal('riwayat_organisasi', { 
+        nama: namaLengkap, 
+        jabatan: jabatan, 
+        periode: periode || '-' 
+    });
+    
+    // Reset field sesuai ID di HTML Step 6
+    if(document.getElementById('org_nama')) document.getElementById('org_nama').value = '';
+    if(document.getElementById('org_jabatan')) document.getElementById('org_jabatan').value = '';
+    if(document.getElementById('org_periode')) document.getElementById('org_periode').value = '';
+
     renderOrganisasi();
 }
-
 function saveStep6() {
     const facebook = document.getElementById('fb_kader')?.value || '-';
     const instagram = document.getElementById('ig_kader')?.value || '-';
