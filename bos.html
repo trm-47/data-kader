@@ -747,14 +747,48 @@ function openDetail(originalIndex) {
             </div>
         </div>
 
-        <div class="profile-section">
-            <div class="section-title">Pendidikan Kaderisasi</div>
-            <div class="data-grid">
-                <div class="data-item"><label>Pratama</label><span>${k[2] ? 'Lulus Tahun ' + k[2] : '-'}</span></div>
-                <div class="data-item"><label>Madya</label><span>${k[4] ? 'Lulus Tahun ' + k[4] : '-'}</span></div>
-                <div class="data-item"><label>Utama</label><span>${k[6] ? 'Lulus Tahun ' + k[6] : '-'}</span></div>
-                <div class="data-item"><label>Guru Kader</label><span>${k[8] ? 'Lulus Tahun ' + k[8] : '-'}</span></div>
-                <div class="data-item"><label>Kader Perempuan</label><span>${k[10] ? 'Lulus Tahun ' + k[10] : '-'}</span></div>
+<div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span style="background: #D71920; width: 4px; height: 18px; border-radius: 2px; display: inline-block;"></span>
+                    Analisa Jenjang Kaderisasi
+                </h3>
+                <span style="background: #D71920; color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; letter-spacing: 1px;">HASIL SCAN</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
+                ${[
+                    { label: 'PRATAMA', year: k[2], color: '#ef4444' },
+                    { label: 'MADYA', year: k[4], color: '#dc2626' },
+                    { label: 'UTAMA', year: k[6], color: '#b91c1c' },
+                    { label: 'GURU', year: k[8], color: '#991b1b' },
+                    { label: 'WANITA', year: k[10], color: '#db2777' }
+                ].map(lvl => `
+                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${lvl.year ? lvl.color : '#f1f5f9'}; background: ${lvl.year ? '#fff' : '#f8fafc'}; position: relative; transition: 0.3s;">
+                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
+                        <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'}; letter-spacing: 0.5px;">${lvl.label}</div>
+                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? lvl.color : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div style="background: #1e293b; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; position: relative; overflow: hidden;">
+                <div style="position: absolute; right: -10px; bottom: -10px; font-size: 60px; opacity: 0.1; transform: rotate(-15deg);">✊</div>
+                
+                <div style="background: rgba(255,255,255,0.1); width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px;">
+                    ${k[6] || k[8] ? '🏆' : k[2] ? '🛡️' : '📝'}
+                </div>
+                
+                <div style="flex: 1;">
+                    <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Rekomendasi Penugasan:</div>
+                    <div style="font-size: 14px; font-weight: 600; color: #ffffff; margin-top: 4px; line-height: 1.4;">
+                        ${k[8] ? 'Ideolog Partai: Layak menjadi Mentor/Pengajar Kaderisasi.' :
+                          k[6] ? 'Kader Utama: Siap untuk Penugasan Strategis Nasional/Provinsi.' :
+                          k[4] ? 'Kader Madya: Potensi Pimpinan Struktur & Anggota Legislatif.' :
+                          k[2] ? 'Kader Pratama: Penguatan Militansi di Basis Massa & Ranting.' :
+                          'Kader Baru: Prioritaskan mengikuti Pelatihan Pratama secepatnya.'}
+                    </div>
+                </div>
             </div>
         </div>
 
