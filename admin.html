@@ -433,13 +433,20 @@ function formatDriveUrl(url) {
     return url;
 }
 
-    function doSearch() {
-        const val = document.getElementById('quickSearch').value.toLowerCase();
-        const rows = document.querySelectorAll('#bodyKader tr');
-        rows.forEach(row => {
-            row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
-        });
-    }
+function doSearch() {
+    const val = document.getElementById('quickSearch').value.toLowerCase();
+    
+    // Kita cari baris di dalam tabel yang saat ini tampil (hasil filter)
+    const rows = document.querySelectorAll('#bodyKader tr');
+    
+    rows.forEach(row => {
+        // Jika baris berisi teks "Data tidak ditemukan", abaikan
+        if (row.cells.length < 2) return; 
+
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(val) ? "" : "none";
+    });
+}
 
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
