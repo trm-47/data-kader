@@ -265,6 +265,32 @@
     color: white; 
     transform: scale(0.98);
 }
+
+        /* Update tombol silang agar melayang & mewah */
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--dark-slate);
+    cursor: pointer;
+    z-index: 10001; /* Di atas modal content */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: 0.3s;
+}
+
+.close-modal:hover {
+    background: var(--primary-red);
+    color: white;
+    transform: rotate(90deg);
+}
     </style>
 </head>
 <body>
