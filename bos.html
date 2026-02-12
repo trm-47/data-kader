@@ -307,7 +307,7 @@
                     <th style="width:80px">Foto</th>
                     <th>Identitas</th>
                     <th>Usia & Gen</th>
-                    <th>Domisili</th>
+                    <th>Pendidikan</th>
                     <th>Kaderisasi</th>
                 </tr>
             </thead>
@@ -429,16 +429,37 @@ function calculateAge(birthDateString) {
         const p = item.pribadi;
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- LOGIKA BADGE KADERISASI MULTIPLE ---
+        // --- 1. LOGIKA PENDIDIKAN FORMAL TERTINGGI ---
+        let eduTertinggi = "-";
+        let infoDetail = p.kec || "-"; // Default jika pendidikan kosong, tampilkan kecamatan
+        const f = item.formal || [];
+        
+        // Daftar cek (Urutan dari tertinggi ke terendah)
+        // Index asumsi: S3=14, S2=12, S1=10, D3=8, SMA=2
+        const listEdu = [
+            { label: "S3", idx: 14, jur: 15 },
+            { label: "S2", idx: 12, jur: 13 },
+            { label: "S1", idx: 10, jur: 11 },
+            { label: "D3", idx: 8,  jur: 9 },
+            { label: "SMA/SMK", idx: 2, jur: 3 }
+        ];
+
+        for (let edu of listEdu) {
+            if (f[edu.idx] && f[edu.idx] !== "" && f[edu.idx] !== "-") {
+                eduTertinggi = edu.label;
+                // Ambil jurusan jika ada datanya
+                const jurusan = (f[edu.jur] && f[edu.jur] !== "-") ? f[edu.jur] : "";
+                infoDetail = `<strong>${eduTertinggi}</strong>${jurusan ? '<br><small>' + jurusan + '</small>' : ''}`;
+                break; 
+            }
+        }
+
+        // --- 2. LOGIKA BADGE KADERISASI MULTIPLE ---
         let htmlBadgeKader = "";
         const k = item.kaderisasi || [];
         const listJenjang = [
-    ["Guru", 8], 
-    ["Utama", 6], 
-    ["Madya", 4], 
-    ["Pratama", 2], 
-    ["Kader Perempuan", 10]
-];
+            ["Guru", 8], ["Utama", 6], ["Madya", 4], ["Pratama", 2], ["Kader Perempuan", 10]
+        ];
 
         listJenjang.forEach(jenjang => {
             const label = jenjang[0];
@@ -450,20 +471,25 @@ function calculateAge(birthDateString) {
 
         if (htmlBadgeKader === "") htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
 
+        // --- 3. RENDER BARIS TABEL ---
         const originalIdx = databaseKader.indexOf(item);
         body.innerHTML += `
             <tr onclick="openDetail(${originalIdx})">
                 <td data-label="Foto">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                    <img src="${formatDriveUrl(p.foto)}" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" 
+                         style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
                 </td>
                 <td data-label="Identitas">
-                    <strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small>
+                    <strong>${p.nama || 'Tanpa Nama'}</strong><br>
+                    <small>${p.nik || '-'}</small>
                 </td>
                 <td data-label="Usia">
-                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
+                    ${ageInfo.age}<br>
+                    <span class="badge badge-gray">${ageInfo.gen}</span>
                 </td>
-                <td data-label="Domisili">
-                    ${p.kec || '-'}<br><small>${p.kota || '-'}</small>
+                <td data-label="Pendidikan">
+                    ${infoDetail}
                 </td>
                 <td data-label="Kaderisasi">
                     ${htmlBadgeKader}
