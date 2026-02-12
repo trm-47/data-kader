@@ -4,6 +4,13 @@ let databaseKader = [];
 // --- INITIALIZATION ---
 /*window.onload = fetchData;*/ HIDUPKAN LAGI SETELAH PUAS COBA
 
+window.onload = () => {
+    console.log("Menjalankan Mode Dummy 100 Data...");
+    // Perintah untuk menampilkan data dummy ke tabel & statistik
+    renderTable(databaseKader);
+    updateStats(databaseKader);
+};
+    
 // --- DATA FETCHING ---
 /*async function fetchData() {
     try {
