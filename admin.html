@@ -3,113 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Database Kader Sultan</title>
+    <title>Admin Dashboard - Database Kader</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-red: #D71920;
-            --dark-slate: #1e293b;
-            --bg-gray: #f8fafc;
-        }
-
+        :root { --primary-red: #D71920; --dark-slate: #1e293b; --bg-gray: #f1f5f9; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-gray); color: var(--dark-slate); padding: 15px; }
 
         /* HEADER STATS */
-        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .stat-card { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-top: 4px solid var(--primary-red); }
         .stat-card small { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 800; }
         .stat-card h2 { font-size: 20px; font-weight: 800; margin-top: 5px; }
 
-        /* FILTER DROPDOWN SECTION */
-        .filter-section { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        /* FILTER & SEARCH SECTION */
+        .control-panel { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
+        
+        /* Input Pencarian Cepat */
+        .search-box { position: relative; margin-bottom: 20px; }
+        .search-box input { width: 100%; padding: 15px 20px 15px 45px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none; transition: 0.3s; font-size: 15px; font-family: inherit; }
+        .search-box input:focus { border-color: var(--primary-red); background: #fff; }
+        .search-box::before { content: '🔍'; position: absolute; left: 18px; top: 16px; opacity: 0.5; }
+
+        /* Grid Dropdown Filter */
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
-        .filter-group label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
-        select, input { padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; font-family: inherit; outline: none; }
+        .filter-group label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        select { padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-family: inherit; outline: none; background: #f8fafc; cursor: pointer; }
 
         /* TABLE SECTION */
         .table-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f1f5f9; padding: 15px; text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; cursor: pointer; }
+        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; cursor: pointer; font-size: 14px; }
         tr:hover td { background: #fff1f2; }
 
         /* BADGES */
-        .badge-kader { background: #fee2e2; color: var(--primary-red); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
-        .badge-gen { background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+        .badge-kader { background: #fee2e2; color: var(--primary-red); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; }
+        .badge-gen { background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; margin-top: 4px; }
 
-        /* MOBILE OPTIMIZATION */
+        /* MOBILE MODE (CARD VIEW) */
         @media (max-width: 768px) {
             thead { display: none; }
-            tr { display: block; border-bottom: 2px solid #f1f5f9; padding: 15px; }
-            td { display: flex; justify-content: space-between; padding: 8px 0; border: none; font-size: 14px; }
+            tr { display: block; border-bottom: 2px solid #f1f5f9; padding: 15px; position: relative; }
+            td { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border: none; }
             td::before { content: attr(data-label); font-weight: 800; font-size: 10px; color: #94a3b8; text-transform: uppercase; }
-            .img-td { order: -1; justify-content: center !important; margin-bottom: 10px; }
+            .td-img { justify-content: center !important; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9 !important; margin-bottom: 10px; }
+            .td-img img { width: 60px; height: 60px; }
         }
 
-        /* FAB ANALYTICS */
-        .fab-stats { position: fixed; bottom: 30px; right: 30px; background: var(--primary-red); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 15px rgba(215, 25, 32, 0.3); border: none; cursor: pointer; z-index: 100; }
+        /* FAB STATS (FLOATING BUTTON) */
+        .fab-stats { position: fixed; bottom: 25px; right: 25px; background: var(--primary-red); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 20px rgba(215, 25, 32, 0.4); border: none; cursor: pointer; z-index: 999; }
     </style>
 </head>
 <body>
 
     <div class="stats-container">
-        <div class="stat-card"><small>Total Kader</small><h2 id="stTotal">1.240</h2></div>
-        <div class="stat-card"><small>Rata-rata Usia</small><h2 id="stAvg">34 Thn</h2></div>
-        <div class="stat-card"><small>Darah Muda (Z+M)</small><h2 id="stYoung">65%</h2></div>
+        <div class="stat-card"><small>Total Kader</small><h2 id="stTotal">2,540</h2></div>
+        <div class="stat-card"><small>Usia Rata-rata</small><h2 id="stAvg">32.5</h2></div>
+        <div class="stat-card"><small>Gen Z & Milenial</small><h2 id="stYoung">72%</h2></div>
+        <div class="stat-card"><small>Total Wilayah</small><h2 id="stWil">31 Kec</h2></div>
     </div>
 
-    <div class="filter-section">
-        <div style="margin-bottom: 15px;">
-            <input type="text" id="searchName" placeholder="Cari Nama atau NIK..." style="width: 100%; border-color: #f1f5f9; background: #f8fafc;">
+    <div class="control-panel">
+        <div class="search-box">
+            <input type="text" id="quickSearch" placeholder="Pencarian Cepat: Ketik Nama, NIK, atau Kecamatan...">
         </div>
+        
         <div class="filter-grid">
             <div class="filter-group">
-                <label>Wilayah (Kecamatan)</label>
-                <select id="fKec"><option value="">Semua Kecamatan</option></select>
-            </div>
-            <div class="filter-group">
-                <label>Generasi / Umur</label>
-                <select id="fGen">
-                    <option value="">Semua Generasi</option>
-                    <option value="Z">Gen Z (< 26 Thn)</option>
-                    <option value="M">Millennials (26-41 Thn)</option>
-                    <option value="X">Gen X (42-57 Thn)</option>
-                    <option value="B">Boomers (> 57 Thn)</option>
+                <label>Pilih Kecamatan</label>
+                <select id="filterKec">
+                    <option value="">Semua Wilayah</option>
+                    <option value="Tegalsari">Tegalsari</option>
+                    <option value="Gubeng">Gubeng</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Kaderisasi (Step 3)</label>
-                <select id="fKader"><option value="">Semua Tingkat</option></select>
+                <label>Filter Generasi</label>
+                <select id="filterGen">
+                    <option value="">Semua Generasi</option>
+                    <option value="Gen Z">Gen Z (< 26 Thn)</option>
+                    <option value="Millennial">Millennial (26-41 Thn)</option>
+                    <option value="Gen X">Gen X (42-57 Thn)</option>
+                    <option value="Boomer">Boomer (> 57 Thn)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Tingkat Kaderisasi</label>
+                <select id="filterKader">
+                    <option value="">Semua Tingkat</option>
+                    <option value="Pratama">Kader Pratama</option>
+                    <option value="Madya">Kader Madya</option>
+                    <option value="Utama">Kader Utama</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Status Pekerjaan</label>
+                <select id="filterKerja">
+                    <option value="">Semua Pekerjaan</option>
+                    <option value="ASN">ASN / PNS</option>
+                    <option value="Swasta">Karyawan Swasta</option>
+                    <option value="Wiraswasta">Wiraswasta</option>
+                </select>
             </div>
         </div>
     </div>
 
     <div class="table-card">
-        <table>
+        <table id="kaderTable">
             <thead>
                 <tr>
-                    <th>Foto</th>
-                    <th>Nama & Identitas</th>
-                    <th>Usia & Generasi</th>
-                    <th>Domisili</th>
+                    <th style="width: 80px;">Foto</th>
+                    <th>Identitas Kader</th>
+                    <th>Usia & Gen</th>
+                    <th>Wilayah</th>
                     <th>Kaderisasi</th>
                 </tr>
             </thead>
-            <tbody id="adminTableBody">
-                <tr>
-                    <td class="img-td" data-label="Foto"><img src="https://via.placeholder.com/50" style="width:45px; height:45px; border-radius:50%; object-fit:cover;"></td>
-                    <td data-label="Identitas"><b>Budi Santoso</b><br><small>3578012345670001</small></td>
-                    <td data-label="Usia">24 Thn<br><span class="badge-gen">Gen Z</span></td>
-                    <td data-label="Wilayah">Tegalsari<br><small>Surabaya</small></td>
-                    <td data-label="Status"><span class="badge-kader">Pratama</span></td>
+            <tbody id="kaderBody">
+                <tr onclick="showFullDetail(1)">
+                    <td class="td-img" data-label="Profil"><img src="https://via.placeholder.com/50" style="width:45px; height:45px; border-radius:12px; object-fit:cover;"></td>
+                    <td data-label="Identitas"><strong>Andika Wijaya</strong><br><small>3578012304950002</small></td>
+                    <td data-label="Usia">29 Thn<br><span class="badge-gen">Millennial</span></td>
+                    <td data-label="Wilayah">Gubeng<br><small>Surabaya</small></td>
+                    <td data-label="Kaderisasi"><span class="badge-kader">Madya</span></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <button class="fab-stats" title="Analisa Statistik">📊</button>
+    <button class="fab-stats" title="Buka Grafik Analisa">📊</button>
 
 </body>
 </html>
