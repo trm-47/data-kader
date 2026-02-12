@@ -131,15 +131,37 @@ try {
 }
 
 function calculateAge(birthDateString) {
-    if (!birthDateString || birthDateString === "-" || birthDateString === "") {
+    // 1. Jika kosong, langsung balikkan strip
+    if (!birthDateString || birthDateString === "-") {
         return { age: "-", gen: "-", rawAge: 0 };
     }
 
     try {
-        // Memastikan input menjadi objek Date
-        let birthDate = new Date(birthDateString);
-        
-        // Jika format di Sheet aneh, coba paksa konversi
+        let birthDate;
+
+        // 2. Cek apakah ini sudah objek Date (bawaan Google Apps Script)
+        if (birthDateString instanceof Date) {
+            birthDate = birthDateString;
+        } else {
+            // 3. Jika string, coba bersihkan dan konversi
+            // Menangani format Indonesia dd/mm/yyyy jika ada
+            if (typeof birthDateString === 'string' && birthDateString.includes('/')) {
+                const parts = birthDateString.split('/');
+                if (parts.length === 3) {
+                    // Cek jika formatnya dd/mm/yyyy
+                    if (parts[2].length === 4) {
+                        birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    }
+                }
+            }
+            
+            // Jika cara di atas gagal, gunakan cara standar browser
+            if (!birthDate || isNaN(birthDate.getTime())) {
+                birthDate = new Date(birthDateString);
+            }
+        }
+
+        // 4. Validasi akhir: Jika tetap tidak bisa dibaca sebagai tanggal
         if (isNaN(birthDate.getTime())) {
             return { age: "-", gen: "-", rawAge: 0 };
         }
@@ -147,7 +169,11 @@ function calculateAge(birthDateString) {
         const today = new Date();
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+        
+        // Koreksi jika belum ulang tahun di tahun ini
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
 
         const year = birthDate.getFullYear();
         let gen = "Lainnya";
@@ -158,6 +184,7 @@ function calculateAge(birthDateString) {
 
         return { age: age + " Thn", gen: gen, rawAge: age };
     } catch (e) {
+        console.error("Gagal hitung umur:", e);
         return { age: "-", gen: "-", rawAge: 0 };
     }
 }
