@@ -264,47 +264,24 @@ function calculateAge(birthDateString) {
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
     body.innerHTML = "";
-    
-    if (data.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
-        return;
-    }
-
     const sortedData = [...data].reverse();
 
-    sortedData.forEach((kader, index) => {
-        // --- DEBUG: CEK DATA TANGGAL ---
-        console.log(`Baris ${index} Nama: ${kader.nama_lengkap} | Tgl Lahir:`, kader.tanggal_lahir);
+    sortedData.forEach((item, index) => {
+        const p = item.pribadi;
+        const ageInfo = calculateAge(p.tgl_lahir);
         
-        const ageInfo = calculateAge(kader.tanggal_lahir);
-        const fotoUrl = formatDriveUrl(kader.foto);
-        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama_lengkap)}&background=random&color=fff`;
+        // Cek tingkat kaderisasi terakhir
+        let tk = "Non-Kader";
+        if(item.kaderisasi[6]) tk = "Utama"; else if(item.kaderisasi[4]) tk = "Madya"; else if(item.kaderisasi[2]) tk = "Pratama";
 
-        const row = `
+        body.innerHTML += `
             <tr onclick="openDetail(${index})">
-                <td class="td-img" data-label="Foto">
-                    <img src="${fotoUrl}" 
-                         onerror="this.onerror=null;this.src='${fallbackAvatar}';" 
-                         style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;">
-                </td>
-                <td data-label="Identitas">
-                    <strong>${kader.nama_lengkap || '-'}</strong><br>
-                    <small>${kader.nik || '-'}</small>
-                </td>
-                <td data-label="Usia">
-                    ${ageInfo.age}<br>
-                    <span class="badge badge-gray">${ageInfo.gen}</span>
-                </td>
-                <td data-label="Domisili">
-                    ${kader.kecamatan || '-'}<br>
-                    <small>YOGYAKARTA</small>
-                </td>
-                <td data-label="Kaderisasi">
-                    <span class="badge badge-red">${kader.tingkat_kaderisasi || 'Non-Kader'}</span>
-                </td>
-            </tr>
-        `;
-        body.innerHTML += row;
+                <td class="td-img"><img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${p.nama}'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
+                <td><strong>${p.nama}</strong><br><small>${p.nik}</small></td>
+                <td>${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
+                <td>${p.kec}<br><small>${p.kota}</small></td>
+                <td><span class="badge badge-red">${tk}</span></td>
+            </tr>`;
     });
 }
 
@@ -346,33 +323,53 @@ function renderTable(data) {
         }
     }
 
-    function openDetail(index) {
-        const kader = databaseKader[databaseKader.length - 1 - index]; // Karena di-reverse
-        // Logic modal detail menyusul agar tidak crash dulu
-        document.getElementById('modalDetail').style.display = "block";
-    }
+function openDetail(index) {
+    const sortedData = [...databaseKader].reverse();
+    const item = sortedData[index];
+    const p = item.pribadi;
+    const f = item.formal;
+    const k = item.kaderisasi;
+    const m = item.medsos;
 
-    function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
+    document.getElementById('detFoto').src = formatDriveUrl(p.foto);
+    document.getElementById('detNama').innerText = p.nama;
 
-    // Fungsi sakti untuk ubah link Drive biasa jadi Direct Link Gambar
-function formatDriveUrl(url) {
-    if (!url || url === "-" || url === "") return "";
-    
-    // Jika link mengandung ID file Drive
-    if (url.includes("drive.google.com")) {
-        let fileId = "";
-        if (url.includes("id=")) {
-            fileId = url.split("id=")[1].split("&")[0];
-        } else if (url.includes("/file/d/")) {
-            fileId = url.split("/d/")[1].split("/")[0];
-        }
-        
-        if (fileId) {
-            // Format Direct Link Thumbnail Drive
-            return "https://lh3.googleusercontent.com/u/0/d/" + fileId;
-        }
-    }
-    return url;
+    // --- Template Detail Lengkap ---
+    let html = `
+        <div class="detail-grid">
+            <div class="detail-section">
+                <h3>📌 IDENTITAS LENGKAP</h3>
+                <div><strong>NIK:</strong> ${p.nik}</div>
+                <div><strong>TTL:</strong> ${p.tmpt_lahir}, ${p.tgl_lahir}</div>
+                <div><strong>ALAMAT:</strong> ${p.alamat} RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}</div>
+                <div><strong>KONTAK:</strong> ${p.wa}</div>
+            </div>
+            <div class="detail-section">
+                <h3>🎓 PENDIDIKAN FORMAL</h3>
+                <div><strong>Terakhir:</strong> ${f[19] || '-'}</div>
+                <div><strong>Kampus/Sekolah:</strong> ${f[11] || f[6] || '-'}</div>
+            </div>
+            <div class="detail-section">
+                <h3>🚩 KADERISASI & ORGANISASI</h3>
+                <div><strong>Kaderisasi:</strong> ${k[2]?'Pratama':''} ${k[4]?'Madya':''} ${k[6]?'Utama':''}</div>
+                <div><strong>Org. Lain:</strong> ${item.organisasi.map(o => o[2]).join(', ') || '-'}</div>
+            </div>
+            <div class="detail-section">
+                <h3>📱 MEDIA SOSIAL</h3>
+                <div><strong>FB:</strong> ${m[9] || '-'} | <strong>IG:</strong> ${m[10] || '-'}</div>
+                <div><strong>TikTok:</strong> ${m[11] || '-'} | <strong>YT:</strong> ${m[13] || '-'}</div>
+            </div>
+        </div>
+        <div class="detail-section" style="margin-top:15px;">
+            <h3>💼 RIWAYAT JABATAN PARTAI</h3>
+            <table style="font-size:11px; width:100%; background:#f8fafc; border-radius:10px;">
+                ${item.jabatan.map(j => `<tr><td>${j[8]}</td><td>${j[5]}</td><td>${j[4]}</td></tr>`).join('')}
+            </table>
+        </div>
+    `;
+
+    document.getElementById('fullInfo').innerHTML = html; // Pastikan ada <div id="fullInfo"> di modal
+    document.getElementById('modalDetail').style.display = "block";
 }
     window.onload = fetchData;
 </script>
