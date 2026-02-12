@@ -54,6 +54,23 @@
             // Langsung meluncur ke step 1
             window.location.href = 'step1.html';
         }
+
+        function setTheme(theme) {
+    localStorage.setItem('theme', theme);
+    applyTheme();
+    
+    // Beri tanda tombol yang aktif
+    document.getElementById('btnClassic').style.background = (theme === 'classic') ? '#D71920' : '#eee';
+    document.getElementById('btnClassic').style.color = (theme === 'classic') ? '#fff' : '#333';
+    document.getElementById('btnPremium').style.background = (theme === 'premium') ? '#bf953f' : '#eee';
+    document.getElementById('btnPremium').style.color = (theme === 'premium') ? '#fff' : '#333';
+}
+
+// Jalankan saat halaman dibuka
+window.onload = () => {
+    const savedTheme = localStorage.getItem('theme') || 'classic';
+    setTheme(savedTheme);
+};
     </script>
 </body>
 </html>
