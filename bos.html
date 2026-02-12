@@ -291,6 +291,27 @@
     color: white;
     transform: rotate(90deg);
 }
+
+/* Warna baris untuk Early Warning */
+.warning-row {
+    background-color: #fffbeb !important; /* Kuning soft agar tetap nyaman di mata */
+}
+
+.warning-row:hover {
+    background-color: #fef3c7 !important; /* Sedikit lebih gelap saat di-hover */
+}
+
+/* Badge peringatan di samping nama */
+.warning-badge {
+    background: #f59e0b;
+    color: white;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 800;
+    vertical-align: middle;
+}
     </style>
 </head>
 <body>
@@ -431,6 +452,13 @@
                     <th>Pendidikan</th>
                     <th>Kaderisasi</th>
                 </tr>
+
+                <tr>
+        <th>Nama Kader</th>
+        <th>Kecamatan</th>
+        <th>L/P</th>
+        <th>Jabatan</th>
+        <th>Aksi</th> </tr>
             </thead>
             <tbody id="bodyKader">
                 <tr><td colspan="5" style="text-align:center; padding:50px;">Memuat data...</td></tr>
