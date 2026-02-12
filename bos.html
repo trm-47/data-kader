@@ -220,7 +220,7 @@
        <div class="filter-body" id="filterBody">
             <div class="filter-group">
                 <label>Kabupaten / Kota</label>
-                <select id="fKota" onchange="updateKecamatan(); applyFilters()">
+                <select id="fKota" onchange="applyFilters()">
                     <option value="Semua">Semua Wilayah</option>
                     <option value="Yogyakarta">Kota Yogyakarta</option>
                     <option value="Sleman">Sleman</option>
@@ -230,17 +230,15 @@
                 </select>
             </div>
             <div class="filter-group">
-    <label>Kecamatan</label>
-    <select id="fKec" onchange="updateDropdownDesa(); applyFilters()">
-        <option value="Semua">Semua Kecamatan</option>
-    </select>
-</div>
-<div class="filter-group">
-    <label>Kelurahan</label>
-    <select id="fDesa" onchange="applyFilters()">
-        <option value="Semua">Semua Kelurahan</option>
-    </select>
-</div>
+                <label>Kecamatan</label>
+                <input type="text" id="fKec" onkeyup="applyFilters()" placeholder="Cari Kecamatan..." 
+                       style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
+            </div>
+            <div class="filter-group">
+                <label>Kelurahan / Desa</label>
+                <input type="text" id="fDesa" onkeyup="applyFilters()" placeholder="Cari Desa..." 
+                       style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
+            </div>
            
             <div class="filter-group">
                 <label>Jenis Kelamin</label>
@@ -638,36 +636,7 @@ function resetFilters() {
     document.getElementById('searchInput').value = '';
     applyFilters();
 }
-function updateKecamatan() {
-    const kota = document.getElementById('fKota').value;
-    const kecSelect = document.getElementById('fKec');
-    const desaSelect = document.getElementById('fDesa');
-    
-    // Reset dropdown kecamatan & desa
-    kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
-    desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
 
-    if (DATA_WILAYAH[kota]) {
-        Object.keys(DATA_WILAYAH[kota]).forEach(kec => {
-            kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
-        });
-    }
-}
-
-function updateDesa() {
-    const kota = document.getElementById('fKota').value;
-    const kec = document.getElementById('fKec').value;
-    const desaSelect = document.getElementById('fDesa');
-    
-    desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
-
-    if (DATA_WILAYAH[kota] && DATA_WILAYAH[kota][kec]) {
-        DATA_WILAYAH[kota][kec].forEach(desa => {
-            desaSelect.innerHTML += `<option value="${desa}">${desa}</option>`;
-        });
-    }
-}
-    
 function applyFilters() {
     // Ambil value dari input filter wilayah
     const fKota = document.getElementById('fKota').value;
@@ -692,14 +661,14 @@ function applyFilters() {
         const jabatan = item.jabatan || [];  
 
         // --- KOREKSI FILTER WILAYAH ---
-        // 1. Filter Kota
-const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
-
-// 2. Filter Kecamatan
-const matchKec = fKec === "Semua" || fKec === "" || (p.kec === fKec);
-
-// 3. Filter Desa/Kelurahan
-const matchDesa = fDesa === "Semua" || fDesa === "" || (p.desa === fDesa);
+        // 1. Filter Kota (Exact Match)
+        const matchKota = fKota === "Semua" || (p.kab_kota && p.kab_kota === fKota) || (p.kota && p.kota === fKota);
+        
+        // 2. Filter Kecamatan (Partial Match agar lebih user-friendly)
+        const matchKec = fKec === "" || (p.kec && p.kec.toLowerCase().includes(fKec));
+        
+        // 3. Filter Desa/Kelurahan (Partial Match)
+        const matchDesa = fDesa === "" || (p.desa && p.desa.toLowerCase().includes(fDesa));
 
         // --- FILTER LAINNYA (Tetap sesuai kode awal Anda) ---
         let matchesKader = false;
@@ -733,55 +702,6 @@ const matchDesa = fDesa === "Semua" || fDesa === "" || (p.desa === fDesa);
 
     renderTable(filtered);
     updateStats(filtered);
-
-    function updateDropdownKecamatan() {
-    const kotaDipilih = document.getElementById('fKota').value;
-    const kecSelect = document.getElementById('fKec');
-    const desaSelect = document.getElementById('fDesa');
-    
-    // Reset Dropdown
-    kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
-    desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
-
-    if (kotaDipilih === "Semua") return;
-
-    // Ambil daftar kecamatan unik berdasarkan Kota yang dipilih
-    const daftarKecamatan = [...new Set(databaseKader
-        .filter(item => (item.pribadi.kab_kota === kotaDipilih || item.pribadi.kota === kotaDipilih))
-        .map(item => item.pribadi.kec)
-        .filter(kec => kec && kec !== "-")
-    )].sort();
-
-    daftarKecamatan.forEach(kec => {
-        kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
-    });
-}
-
-function updateDropdownDesa() {
-    const kotaDipilih = document.getElementById('fKota').value;
-    const kecDipilih = document.getElementById('fKec').value;
-    const desaSelect = document.getElementById('fDesa');
-    
-    desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
-
-    if (kecDipilih === "Semua") return;
-
-    // Ambil daftar desa unik berdasarkan Kecamatan yang dipilih
-    const daftarDesa = [...new Set(databaseKader
-        .filter(item => {
-            const p = item.pribadi;
-            const matchKota = (p.kab_kota === kotaDipilih || p.kota === kotaDipilih);
-            const matchKec = (p.kec === kecDipilih);
-            return matchKota && matchKec;
-        })
-        .map(item => item.pribadi.desa)
-        .filter(desa => desa && desa !== "-")
-    )].sort();
-
-    daftarDesa.forEach(desa => {
-        desaSelect.innerHTML += `<option value="${desa}">${desa}</option>`;
-    });
-}
 }
 </script>
 </body>
