@@ -2,10 +2,10 @@ const URL_GAS = "https://script.google.com/macros/s/AKfycbzQA3fNn9ZcnXqfGL0yBA2S
 let databaseKader = [];
 
 // --- INITIALIZATION ---
-window.onload = fetchData;
+/*window.onload = fetchData;*/ HIDUPKAN LAGI SETELAH PUAS COBA
 
 // --- DATA FETCHING ---
-async function fetchData() {
+/*async function fetchData() {
     try {
         console.log("Memulai penarikan data...");
         const response = await fetch(URL_GAS + "?action=read");
@@ -30,7 +30,7 @@ async function fetchData() {
                 </td>
             </tr>`;
     }
-}
+} */
 
 // --- UTILITY FUNCTIONS ---
 function calculateAge(birthDateString) {
