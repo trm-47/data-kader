@@ -12,7 +12,7 @@
 })();
 
 /* ==========================================
-    2. DATA WILAYAH DIY (Didefinisikan di awal)
+    2. DATA WILAYAH DIY
    ========================================== */
 const dataDIY = {
     "Bantul": {
@@ -131,7 +131,7 @@ function updateKelurahan() {
 }
 
 /* ==========================================
-    4. HANDLER FOTO
+    4. HANDLER FOTO & OTOMATIS KAPITAL
    ========================================== */
 const handlePhoto = (e) => {
     const file = e.target.files[0];
@@ -147,6 +147,21 @@ const handlePhoto = (e) => {
     reader.readAsDataURL(file);
 };
 
+// Gabungan event listener untuk foto dan transformasi teks
+document.addEventListener('input', (e) => {
+    // List ID yang harus KAPITAL SEMUA
+    const toUpper = ['nama_lengkap', 'tempat_lahir', 'alamat', 'pekerjaan', 'no_kta', 'rt', 'rw', 'nama_pt', 'nama_sekolah', 'kota_sekolah', 'penyelenggara', 'jabatan_partai', 'tugas_lembaga', 'tugas_jabatan', 'tugas_lokasi', 'nama_perusahaan', 'jabatan_kerja', 'org_nama', 'org_jabatan'];
+    
+    if (toUpper.includes(e.target.id)) {
+        e.target.value = e.target.value.toUpperCase();
+    }
+    
+    // Khusus Email harus KECIL SEMUA
+    if (e.target.id === 'email') {
+        e.target.value = e.target.value.toLowerCase();
+    }
+});
+
 document.addEventListener('change', (e) => {
     if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') handlePhoto(e);
 });
@@ -156,7 +171,7 @@ document.addEventListener('change', (e) => {
    ========================================== */
 function saveStep1() {
     const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'agama', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'agama', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak', 'email'];
     
     let dataStep1 = { 
         jenis_kelamin: genderEl ? genderEl.value : '' 
@@ -169,7 +184,7 @@ function saveStep1() {
 
     const requiredFields = fields.filter(f => f !== 'no_kta');
     if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
-        alert("⚠️ Mohon lengkapi semua data wajib termasuk Agama."); 
+        alert("⚠️ Mohon lengkapi semua data wajib."); 
         return;
     }
 
@@ -179,7 +194,7 @@ function saveStep1() {
 }
 
 /* ==========================================
-    6. RENDER ENGINE & ADD DATA FUNCTIONS (Diringkas)
+    6. RENDER ENGINE & ADD DATA FUNCTIONS
    ========================================== */
 function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
@@ -203,8 +218,7 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
             <small style="color:#64748b;">${subtitle}</small>
         </div>
         <button onclick="deleteItem('${key}', ${index}, '${callbackName}')" style="color:#ef4444; border:none; background:none; font-size:20px; cursor:pointer; padding:0 10px;">&times;</button>
-    </div>
-`;
+    </div>`;
 
 const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
 const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
@@ -272,9 +286,7 @@ function addPekerjaan() {
     const masa = document.getElementById('masa_kerja')?.value;
     if(!perusahaan || !jabatan) return alert("Lengkapi data kerja!");
     saveToLocal('riwayat_pekerjaan', { perusahaan: perusahaan, jabatan: jabatan, masa_kerja: masa });
-    document.getElementById('nama_perusahaan').value = '';
-    document.getElementById('jabatan_kerja').value = '';
-    document.getElementById('masa_kerja').value = '';
+    if(document.getElementById('nama_perusahaan')) document.getElementById('nama_perusahaan').value = '';
     renderPekerjaan();
 }
 
@@ -287,13 +299,11 @@ function addOrganisasi() {
     const namaLengkap = tingkat ? `${nama} (${tingkat})` : nama;
     saveToLocal('riwayat_organisasi', { nama: namaLengkap, jabatan: jabatan, periode: periode || '-' });
     if(document.getElementById('org_nama')) document.getElementById('org_nama').value = '';
-    if(document.getElementById('org_jabatan')) document.getElementById('org_jabatan').value = '';
-    if(document.getElementById('org_periode')) document.getElementById('org_periode').value = '';
     renderOrganisasi();
 }
 
 /* ==========================================
-    7. PERBAIKAN NAVIGASI STEP 6
+    7. NAVIGASI STEP 6 & REVIEW
    ========================================== */
 function goToReview() {
     try {
@@ -321,13 +331,11 @@ function saveStep6() { goToReview(); }
    ========================================== */
 window.addEventListener('load', () => {
     const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
-    ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'pekerjaan', 'kontak', 'agama'].forEach(f => {
+    ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'pekerjaan', 'kontak', 'agama', 'email'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = saved[f] || '';
     });
-    if (saved.jenis_kelamin) {
-        const genderEl = document.querySelector(`input[name="jenis_kelamin"][value="${saved.jenis_kelamin}"]`);
-        if (genderEl) genderEl.checked = true;
-    }
+    
+    // Auto Load Wilayah jika ada
     if(saved.kab_kota) {
         const kabEl = document.getElementById('kab_kota');
         if(kabEl) {
@@ -340,11 +348,8 @@ window.addEventListener('load', () => {
             }
         }
     }
-    if(saved.media_sosial) {
-        if(document.getElementById('medsos_fb')) document.getElementById('medsos_fb').value = saved.media_sosial.facebook || '';
-        if(document.getElementById('medsos_ig')) document.getElementById('medsos_ig').value = saved.media_sosial.instagram || '';
-        if(document.getElementById('medsos_tiktok')) document.getElementById('medsos_tiktok').value = saved.media_sosial.tiktok || '';
-    }
+
+    // Render semua list riwayat
     renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
 });
 
@@ -353,6 +358,7 @@ async function submitSeluruhData() {
     if(!data) return alert("Data kosong!");
     const btn = document.querySelector('.btn-final');
     btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
+    
     const URL_API = 'https://script.google.com/macros/s/AKfycbysCjLQBPyogM4c7_ohGuggfm7JwjOBQo1BS4fG4axFbldk8W5JNAFF9VVLyZx-Jo-i2A/exec';
     try {
         await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
