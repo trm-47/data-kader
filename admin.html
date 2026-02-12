@@ -25,6 +25,7 @@
         /* CONTROL PANEL */
         /* Update Kotak Pencarian agar senada dengan Filter */
 .control-panel { 
+    margin-top: 40px !important;
     background: white; 
     padding: 20px 25px; 
     border-radius: 30px; /* Samakan bulatnya dengan filter */
@@ -71,7 +72,7 @@
         .badge-gray { background: #f1f5f9; color: #475569; margin-top: 4px; }
 
         /* MODAL */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
         .modal-content { background: white; width: 95%; max-width: 800px; margin: 30px auto; border-radius: 24px; padding: 25px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; }
 
@@ -104,6 +105,7 @@
     color: white;
     border-radius: 30px; /* Header juga dibuat bulat */
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-top: 20px;
 }
 
 /* Efek melayang saat di-hover */
@@ -127,6 +129,7 @@
     display: none; 
     background: #ffffff;
     border-radius: 0 0 30px 30px;
+    margin-bottom: 30px;
 }
 
 .filter-body.active { display: grid; animation: fadeIn 0.5s ease; }
@@ -208,95 +211,112 @@
         <div class="stat-card"><small>Wilayah Aktif</small><h2 id="statArea">-</h2></div>
     </div>
 
-    <div class="filter-header" onclick="toggleFilter()">
-        <span>FILTER DATA</span>
-        <span id="filterIcon">▼</span>
-    </div>
-    <div class="filter-body" id="filterBody">
-        <div class="filter-group">
-            <label>Jenis Kelamin</label>
-            <select id="fJK" onchange="applyFilters()">
-                <option value="Semua">Semua Jenis Kelamin</option>
-                <option value="Laki-laki">Laki-laki</option>
-                <option value="Perempuan">Perempuan</option>
-            </select>
+   <div class="filter-container">
+        <div class="filter-header" onclick="toggleFilter()">
+            <span>FILTER DATA</span>
+            <span id="filterIcon">▼</span>
         </div>
-        <div class="filter-group">
-            <label>Agama</label>
-            <select id="fAgama" onchange="applyFilters()">
-                <option value="Semua">Semua Agama</option>
-                <option value="Islam">Islam</option>
-                <option value="Kristen">Kristen</option>
-                <option value="Katolik">Katolik</option>
-                <option value="Hindu">Hindu</option>
-                <option value="Budha">Budha</option>
-                <option value="Khonghucu">Khonghucu</option>
-            </select>
+        
+        <div class="filter-body" id="filterBody">
+            <div class="filter-group">
+                <label>Jenis Kelamin</label>
+                <select id="fJK" onchange="applyFilters()">
+                    <option value="Semua">Semua Jenis Kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Agama</label>
+                <select id="fAgama" onchange="applyFilters()">
+                    <option value="Semua">Semua Agama</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Katolik">Katolik</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Budha">Budha</option>
+                    <option value="Khonghucu">Khonghucu</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Jenjang Pendidikan</label>
+                <select id="fPendidikan" onchange="applyFilters()">
+                    <option value="Semua">Semua Jenjang</option>
+                    <option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA/SMK">SMA/SMK</option>
+                    <option value="D1">D1</option><option value="D2">D2</option><option value="D3">D3</option>
+                    <option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Pendidikan Kader</label>
+                <select id="fKader" onchange="applyFilters()">
+                    <option value="Semua">Semua Tingkat</option>
+                    <option value="Pratama">Pratama</option>
+                    <option value="Madya">Madya</option>
+                    <option value="Utama">Utama</option>
+                    <option value="Guru">Guru</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Tingkatan Struktur</label>
+                <select id="fTingkat" onchange="applyFilters()">
+                    <option value="Semua">Semua Tingkatan</option>
+                    <option value="DPP">DPP</option><option value="DPD">DPD</option><option value="DPC">DPC</option>
+                    <option value="PAC">PAC</option><option value="Ranting">Ranting</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Jenis Penugasan</label>
+                <select id="fJenisTugas" onchange="applyFilters()">
+                    <option value="Semua">Semua Penugasan</option>
+                    <option value="Legislatif">Legislatif</option>
+                    <option value="Eksekutif">Eksekutif</option>
+                    <option value="Struktural">Struktural</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Bahasa Inggris/Asing</label>
+                <select id="fBahasa" onchange="applyFilters()">
+                    <option value="Semua">Semua Kemampuan</option>
+                    <option value="Ya">Bisa Bahasa Asing</option>
+                    <option value="-">Tidak</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Kompetensi IT</label>
+                <select id="fIT" onchange="applyFilters()">
+                    <option value="Semua">Semua</option>
+                    <option value="Ya">Bisa</option>
+                    <option value="-">Tidak Bisa</option>
+                </select>
+            </div>
+            <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
         </div>
-        <div class="filter-group">
-            <label>Jenjang Pendidikan</label>
-            <select id="fPendidikan" onchange="applyFilters()">
-                <option value="Semua">Semua Jenjang</option>
-                <option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA/SMK">SMA/SMK</option>
-                <option value="D1">D1</option><option value="D2">D2</option><option value="D3">D3</option>
-                <option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Pendidikan Kader</label>
-            <select id="fKader" onchange="applyFilters()">
-                <option value="Semua">Semua Tingkat</option>
-                <option value="Pratama">Pratama</option>
-                <option value="Madya">Madya</option>
-                <option value="Utama">Utama</option>
-                <option value="Guru">Guru</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Tingkatan Struktur</label>
-            <select id="fTingkat" onchange="applyFilters()">
-                <option value="Semua">Semua Tingkatan</option>
-                <option value="DPP">DPP</option><option value="DPD">DPD</option><option value="DPC">DPC</option>
-                <option value="PAC">PAC</option><option value="Ranting">Ranting</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Jenis Penugasan</label>
-            <select id="fJenisTugas" onchange="applyFilters()">
-                <option value="Semua">Semua Penugasan</option>
-                <option value="Legislatif">Legislatif</option>
-                <option value="Eksekutif">Eksekutif</option>
-                <option value="Struktural">Struktural</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Bahasa Inggris/Asing</label>
-            <select id="fBahasa" onchange="applyFilters()">
-                <option value="Semua">Semua Kemampuan</option>
-                <option value="Ya">Bisa Bahasa Asing</option>
-                <option value="-">Tidak</option>
-            </select>
-        </div>
-        <div class="filter-group">
-<div class="filter-group">
-    <label>Kompetensi IT</label>
-    <select id="fIT" onchange="applyFilters()">
-        <option value="Semua">Semua</option>
-        <option value="Ya">Bisa</option>
-        <option value="-">Tidak Bisa</option>
-    </select>
-</div>
-        <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
-    </div>
-</div>
-    <div class="control-panel">
+    </div> <div class="control-panel">
         <div class="search-box">
             <input type="text" id="quickSearch" onkeyup="doSearch()" placeholder="Cari Nama, NIK, atau Kecamatan...">
         </div>
     </div>
-<div class="
+
     <div class="table-card">
         <table>
+            ```
+
+---
+
+### 2. Apa yang harus dilakukan (Analisis Masalah)?
+
+1.  **Dosa Struktur:** Tadinya ada tag `<div class="filter-group">` yang terbuka dua kali tapi cuma ditutup sekali. Ini yang bikin tombol Reset "loncat" ke dalam kotak kecil.
+2.  **Search Box:** Tadinya `quickSearch` ada di dalam `filter-body`. Akibatnya, kalau user tidak mengklik "Filter Data", kotak pencariannya tidak akan kelihatan. Saya sudah pindahkan ke bawah (di dalam `control-panel`) supaya selalu tampil.
+3.  **CSS Class:** Saya pastikan `.control-panel` membungkus `.search-box` supaya sesuai dengan CSS yang ente tulis di atas (yang ada `!important` marginnya).
+
+### 3. Tips Tambahan (JavaScript)
+Pada fungsi `formatDriveUrl`, ada typo kecil di bagian return:
+`return https://lh3.googleusercontent.com/d/${fileId};`
+
+**Seharusnya pakai backticks (template literals):**
+```javascript
+return `https://lh3.googleusercontent.com/u/0/d/${fileId}=w200-h200-p-k-nu-iv1`;
             <thead>
                 <tr>
                     <th style="width:80px">Foto</th>
@@ -523,7 +543,9 @@ function updateStats(data) {
             const kader = item.kaderisasi || [];
             const medsos = item.medsos || [];
             const jabatan = item.jabatan || [];
-
+            const checkIT = fIT === "Semua" || 
+                    (fIT === "Ya" ? (medsos[8] && medsos[8] !== "-") : (medsos[8] === "-" || !medsos[8]));
+            
             // Logika pencarian dalam array jabatan
             const hasTingkat = fTingkat === "Semua" || jabatan.some(j => j[4] === fTingkat);
             const hasJenis = fJenis === "Semua" || jabatan.some(j => j[2] === fJenis);
@@ -629,8 +651,7 @@ function applyFilters() {
         const kader = item.kaderisasi || [];
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || []; // Ini array, perlu pengecekan khusus
-const checkIT = fIT === "Semua" || 
-            (fIT === "Ya" ? (medsos[8] && medsos[8] !== "-") : (medsos[8] === "-" || !medsos[8]));
+
         // Cek Jabatan (Struktur atau Penugasan)
         const hasTingkat = jabatan.some(j => j[4] === fTingkat);
         const hasJenis = jabatan.some(j => j[2] === fJenis || j[10] === 'V');
