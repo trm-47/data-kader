@@ -352,129 +352,77 @@
     const URL_GAS = "https://script.google.com/macros/s/AKfycbysCjLQBPyogM4c7_ohGuggfm7JwjOBQo1BS4fG4axFbldk8W5JNAFF9VVLyZx-Jo-i2A/exec";
 let databaseKader = [];
 
+// 1. Inisialisasi Data
 async function fetchData() {
     try {
         const body = document.getElementById('bodyKader');
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Sedang mengambil data dari server...</td></tr>';
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Sedang mengambil data...</td></tr>';
         
         const response = await fetch(URL_GAS + "?action=read");
         const data = await response.json();
-
         if (data.error) throw new Error(data.error);
 
         databaseKader = data;
-        renderTable(data);
-        updateStats(data);
+        renderTable(databaseKader);
+        updateStats(databaseKader);
     } catch (error) {
-        console.error("Error Detail:", error);
-        document.getElementById('bodyKader').innerHTML = `
-            <tr><td colspan="5" style="text-align:center; color:red; padding:20px;">
-                Gagal memuat data: ${error.message}
-            </td></tr>`;
+        document.getElementById('bodyKader').innerHTML = `<tr><td colspan="5" style="color:red; text-align:center;">Gagal: ${error.message}</td></tr>`;
     }
+}
+
+// 2. Helper Functions
+function formatDriveUrl(url) {
+    if (!url || !url.includes("id=")) return url;
+    const fileId = url.split("id=")[1].split("&")[0];
+    return `https://lh3.googleusercontent.com/d/${fileId}`;
 }
 
 function calculateAge(birthDateString) {
     if (!birthDateString || birthDateString === "-") return { age: "-", gen: "-", rawAge: 0 };
-    try {
-        let birthDate = birthDateString instanceof Date ? birthDateString : new Date(birthDateString);
-        if (isNaN(birthDate.getTime())) return { age: "-", gen: "-", rawAge: 0 };
-
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-
-        const year = birthDate.getFullYear();
-        let gen = "Lainnya";
-        if (year >= 1997 && year <= 2012) gen = "Gen Z";
-        else if (year >= 1981 && year <= 1996) gen = "Millennial";
-        else if (year >= 1965 && year <= 1980) gen = "Gen X";
-        else if (year <= 1964) gen = "Boomer";
-
-        return { age: age + " Thn", gen: gen, rawAge: age };
-    } catch (e) { return { age: "-", gen: "-", rawAge: 0 }; }
+    const birthDate = new Date(birthDateString);
+    if (isNaN(birthDate)) return { age: "-", gen: "-", rawAge: 0 };
+    
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const year = birthDate.getFullYear();
+    
+    let gen = "Boomer";
+    if (year >= 1997) gen = "Gen Z";
+    else if (year >= 1981) gen = "Milenial";
+    else if (year >= 1965) gen = "Gen X";
+    
+    return { age: age + " Thn", gen: gen, rawAge: age };
 }
 
-function formatDriveUrl(url) {
-    if (!url || !url.includes("drive.google.com")) return url;
-    const fileId = url.split("id=")[1] || url.split("/d/")[1]?.split("/")[0];
-    return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : url;
-}
-
+// 3. UI Renders
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
-    if (!body) return;
     body.innerHTML = "";
     
-    if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
-        return;
-    }
-
-    [...data].reverse().forEach((item) => {
+    data.slice().reverse().forEach((item, index) => {
         const p = item.pribadi || {};
-        const f = item.formal || [];
-        const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
+        
+        // Logika Pendidikan (Ambil yang tertinggi)
+        let eduText = "-";
+        const f = item.formal || [];
+        if (f[17] && f[17] !== "-") eduText = "S3";
+        else if (f[15] && f[15] !== "-") eduText = "S2";
+        else if (f[11] && f[11] !== "-") eduText = "S1";
+        else if (f[6] && f[6] !== "-") eduText = "SMA";
 
-        // Logika Pendidikan
-        let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`; 
-        const listEdu = [
-            { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
-            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
-        ];
-
-        for (let edu of listEdu) {
-            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                let detail = (edu.label === "S1") ? (f[12] || f[11]) : f[edu.idx];
-                infoPendidikan = `<strong>${edu.label}</strong><br><small>${detail}</small>`;
-                break; 
-            }
-        }
-
-        // Logika Badge Kaderisasi
-        let htmlBadgeKader = "";
-        const listJenjang = [["Guru", 8], ["Utama", 6], ["Madya", 4], ["Pratama", 2], ["Perempuan", 10]];
-        listJenjang.forEach(j => {
-            if (k[j[1]] && k[j[1]] !== "" && k[j[1]] !== "-") {
-                htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block;">${j[0]}</span>`;
-            }
-        });
-        if (!htmlBadgeKader) htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
-
-        const originalIdx = databaseKader.indexOf(item);
         body.innerHTML += `
-            <tr onclick="openDetail(${originalIdx})">
-                <td><img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
-                <td><strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small></td>
+            <tr onclick="openDetail(${databaseKader.indexOf(item)})">
+                <td><img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${p.nama}'" style="width:45px;height:45px;border-radius:10px;object-fit:cover;"></td>
+                <td><strong>${p.nama || 'N/A'}</strong><br><small>${p.nik || '-'}</small></td>
                 <td>${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
-                <td>${infoPendidikan}</td>
-                <td>${htmlBadgeKader}</td>
+                <td><strong>${eduText}</strong><br><small>${p.kec || '-'}</small></td>
+                <td><span class="badge badge-red">Kader</span></td>
             </tr>`;
     });
 }
 
-function updateStats(data) {
-    const total = data.length;
-    let totalAge = 0, youth = 0, itExpert = 0, countAge = 0;
-
-    data.forEach(item => {
-        const ageInfo = calculateAge(item.pribadi?.tgl_lahir);
-        if (ageInfo.rawAge > 0) {
-            totalAge += ageInfo.rawAge;
-            countAge++;
-            if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") youth++;
-        }
-        if (item.medsos && item.medsos[8] && item.medsos[8] !== "-" && item.medsos[8] !== "") itExpert++;
-    });
-
-    document.getElementById('statTotal').innerText = total;
-    document.getElementById('statAge').innerText = countAge > 0 ? Math.round(totalAge / countAge) + " Thn" : "-";
-    document.getElementById('statYoung').innerText = total > 0 ? Math.round((youth / total) * 100) + "%" : "0%";
-    document.getElementById('statArea').innerText = total > 0 ? Math.round((itExpert / total) * 100) + "%" : "0%";
-}
-
+// 4. Filtering Logic (The Brain)
 function applyFilters() {
     const fKota = document.getElementById('fKota').value;
     const fKec = document.getElementById('fKec').value;
@@ -506,6 +454,7 @@ function applyFilters() {
     updateStats(filtered);
 }
 
+// 5. Dropdown Cascading
 function updateDropdownKecamatan() {
     const kota = document.getElementById('fKota').value;
     const kecSelect = document.getElementById('fKec');
@@ -525,7 +474,7 @@ function updateDropdownDesa() {
     const kota = document.getElementById('fKota').value;
     const kec = document.getElementById('fKec').value;
     const desaSelect = document.getElementById('fDesa');
-    desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan</option>';
+    desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
 
     if (kec === "Semua") return;
 
@@ -537,50 +486,14 @@ function updateDropdownDesa() {
     list.forEach(v => desaSelect.innerHTML += `<option value="${v}">${v}</option>`);
 }
 
+// Sisanya (Search, Modal, Toggle) tetap sama namun pastikan tidak duplikat
 function doSearch() {
     const val = document.getElementById('quickSearch').value.toLowerCase();
     const rows = document.querySelectorAll('#bodyKader tr');
     rows.forEach(row => {
-        if (row.cells.length < 2) return;
         row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
     });
 }
-
-function toggleFilter() {
-    const body = document.getElementById('filterBody');
-    body.classList.toggle('active');
-    document.getElementById('filterIcon').innerText = body.classList.contains('active') ? '▲' : '▼';
-}
-
-function resetFilters() {
-    document.querySelectorAll('.filter-group select').forEach(s => s.value = 'Semua');
-    document.getElementById('quickSearch').value = '';
-    applyFilters();
-}
-
-function openDetail(idx) {
-    const item = databaseKader[idx];
-    const p = item.pribadi;
-    const ageInfo = calculateAge(p.tgl_lahir);
-    const status = (item.formal && item.formal[19]) ? item.formal[19] : "Anggota";
-
-    document.getElementById('modalInnerContent').innerHTML = `
-        <div style="text-align:center; margin-bottom:20px;">
-            <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}'" style="border-radius:20px; width:120px; height:120px; object-fit:cover; border: 4px solid #f1f5f9;">
-            <h2 style="margin-top:10px; color:var(--primary-red);">${p.nama || 'Tanpa Nama'}</h2>
-            <span class="badge badge-red">${status}</span>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:14px; background:#f8fafc; padding:20px; border-radius:15px;">
-            <div><small>NIK</small><br><strong>${p.nik || '-'}</strong></div>
-            <div><small>Kecamatan</small><br><strong>${p.kec || '-'}</strong></div>
-            <div><small>Usia</small><br><strong>${ageInfo.age} (${ageInfo.gen})</strong></div>
-            <div><small>Kontak</small><br><strong>${p.wa || '-'}</strong></div>
-            <div style="grid-column: span 2;"><small>Alamat</small><br><strong>${p.alamat || '-'}, ${p.desa || '-'}</strong></div>
-        </div>`;
-    document.getElementById('modalDetail').style.display = "block";
-}
-
-function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
 
 window.onload = fetchData;
 
