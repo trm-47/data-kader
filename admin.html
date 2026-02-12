@@ -54,103 +54,110 @@
         }
         
         /* Filter Panel */
-/* Filter Panel Premium Version */
+/* Filter Panel - Rounded & Modern Version */
 .filter-container { 
     background: white; 
-    border-radius: 20px; 
-    margin-bottom: 20px; 
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+    border-radius: 30px; /* Super rounded agar tidak kotak kaku */
+    margin-bottom: 25px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
     overflow: hidden; 
-    border: 1px solid rgba(0,0,0,0.03);
+    border: none; /* Hilangkan border agar terlihat clean */
 }
 
 .filter-header { 
-    padding: 18px 25px; 
-    background: linear-gradient(90deg, var(--primary-red) 0%, #b9151b 100%); 
+    padding: 20px 30px; 
+    background: linear-gradient(135deg, var(--primary-red) 0%, #a50e13 100%); 
     cursor: pointer; 
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
     color: white;
-    transition: 0.3s;
+    border-radius: 30px; /* Header juga dibuat bulat */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.filter-header:hover { opacity: 0.95; }
+/* Efek melayang saat di-hover */
+.filter-header:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(215, 25, 32, 0.3);
+}
 
 .filter-header span:first-child {
     font-size: 13px;
     font-weight: 800;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
 }
 
 .filter-body { 
-    padding: 25px; 
+    padding: 30px; 
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
     gap: 20px; 
     display: none; 
     background: #ffffff;
+    border-radius: 0 0 30px 30px;
 }
 
-.filter-body.active { display: grid; }
+.filter-body.active { display: grid; animation: fadeIn 0.5s ease; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 .filter-group { display: flex; flex-direction: column; gap: 8px; }
 
 .filter-group label { 
     font-size: 11px; 
     font-weight: 800; 
-    color: #64748b; 
+    color: #94a3b8; 
+    margin-left: 10px; /* Biar sejajar dengan kelengkungan input */
     text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.filter-group label::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    background: var(--primary-red);
-    border-radius: 50%;
 }
 
 .filter-group select { 
-    padding: 12px 15px; 
-    border-radius: 12px; 
+    padding: 14px 20px; 
+    border-radius: 20px; /* Select dibuat sangat bulat */
     border: 2px solid #f1f5f9; 
     font-size: 13px; 
     font-family: inherit;
+    font-weight: 600;
     color: var(--dark-slate);
     background-color: #f8fafc;
     outline: none;
     transition: 0.3s;
+    appearance: none; /* Hilangkan arrow bawaan browser */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 20px) center;
 }
 
 .filter-group select:focus { 
     border-color: var(--primary-red); 
     background-color: white;
-    box-shadow: 0 0 0 4px rgba(215, 25, 32, 0.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
 }
 
 .btn-reset { 
     grid-column: 1 / -1; 
-    margin-top: 10px;
-    padding: 14px; 
-    background: #f1f5f9; 
+    margin-top: 15px;
+    padding: 15px; 
+    background: #fdf2f2; 
     border: none; 
-    border-radius: 12px; 
+    border-radius: 20px; /* Tombol reset juga bulat */
     cursor: pointer; 
     font-weight: 800; 
     font-size: 12px;
-    color: #64748b; 
+    color: var(--primary-red); 
     text-transform: uppercase;
     transition: 0.3s;
 }
 
 .btn-reset:hover { 
-    background: #fee2e2; 
-    color: var(--primary-red); 
+    background: var(--primary-red); 
+    color: white; 
+    transform: scale(0.98);
 }
     </style>
 </head>
