@@ -3,137 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Database Kader</title>
+    <title>Admin Dashboard - Database Kader Digital</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --primary-red: #D71920; --dark-slate: #1e293b; --bg-gray: #f1f5f9; }
+        :root { --primary-red: #D71920; --dark-slate: #1e293b; --bg-gray: #f8fafc; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-gray); color: var(--dark-slate); padding: 15px; }
 
-        /* HEADER STATS */
-        .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 15px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-top: 4px solid var(--primary-red); }
-        .stat-card small { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 800; }
-        .stat-card h2 { font-size: 20px; font-weight: 800; margin-top: 5px; }
+        /* HEADER & LOGO */
+        .admin-header { display: flex; align-items: center; gap: 20px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .admin-header img { height: 60px; width: auto; }
+        .header-text h1 { font-size: 22px; font-weight: 800; color: var(--primary-red); }
+        .header-text p { font-size: 12px; color: #64748b; }
 
-        /* FILTER & SEARCH SECTION */
-        .control-panel { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        
-        /* Input Pencarian Cepat */
+        /* STATS BOX */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 16px; border-top: 4px solid var(--primary-red); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stat-card small { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+        .stat-card h2 { font-size: 20px; margin-top: 5px; }
+
+        /* CONTROL PANEL (FILTER & SEARCH) */
+        .control-panel { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.05); transition: all 0.4s ease; }
         .search-box { position: relative; margin-bottom: 20px; }
-        .search-box input { width: 100%; padding: 15px 20px 15px 45px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none; transition: 0.3s; font-size: 15px; font-family: inherit; }
-        .search-box input:focus { border-color: var(--primary-red); background: #fff; }
-        .search-box::before { content: '🔍'; position: absolute; left: 18px; top: 16px; opacity: 0.5; }
+        .search-box input { width: 100%; padding: 12px 20px 12px 45px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none; font-size: 14px; }
+        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; opacity: 0.5; }
 
-        /* Grid Dropdown Filter */
         .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .filter-group { display: flex; flex-direction: column; gap: 5px; }
-        .filter-group label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
-        select { padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-family: inherit; outline: none; background: #f8fafc; cursor: pointer; }
+        .filter-group label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+        select { padding: 10px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f8fafc; font-family: inherit; }
 
         /* TABLE SECTION */
-        .table-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; }
+        .table-card { background: white; border-radius: 20px; overflow-x: auto; box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th { background: #f8fafc; padding: 15px; text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; cursor: pointer; font-size: 14px; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; cursor: pointer; }
         tr:hover td { background: #fff1f2; }
 
         /* BADGES */
-        .badge-kader { background: #fee2e2; color: var(--primary-red); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; }
-        .badge-gen { background: #f1f5f9; color: #475569; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; margin-top: 4px; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; }
+        .badge-red { background: #fee2e2; color: var(--primary-red); }
+        .badge-gray { background: #f1f5f9; color: #475569; margin-top: 4px; }
 
-        /* MOBILE MODE (CARD VIEW) */
+        /* MODAL DETAIL */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        .modal-content { background: white; width: 95%; max-width: 800px; margin: 30px auto; border-radius: 24px; padding: 25px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .close-modal { position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; }
+
+        /* MOBILE ADAPTATION */
         @media (max-width: 768px) {
-            thead { display: none; }
-            tr { display: block; border-bottom: 2px solid #f1f5f9; padding: 15px; position: relative; }
-            td { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border: none; }
-            td::before { content: attr(data-label); font-weight: 800; font-size: 10px; color: #94a3b8; text-transform: uppercase; }
-            .td-img { justify-content: center !important; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9 !important; margin-bottom: 10px; }
-            .td-img img { width: 60px; height: 60px; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { border-bottom: 2px solid #f1f5f9; margin-bottom: 10px; padding: 10px; }
+            td { border: none; position: relative; padding-left: 50%; text-align: right; }
+            td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; padding-right: 10px; white-space: nowrap; font-weight: 800; font-size: 10px; color: #94a3b8; text-align: left; text-transform: uppercase; }
+            .td-img { text-align: center; padding-left: 0; }
+            .td-img:before { display: none; }
         }
 
-        /* FAB STATS (FLOATING BUTTON) */
-        .fab-stats { position: fixed; bottom: 25px; right: 25px; background: var(--primary-red); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 20px rgba(215, 25, 32, 0.4); border: none; cursor: pointer; z-index: 999; }
+        /* FAB ANALYTICS */
+        .fab-stats { position: fixed; bottom: 25px; right: 25px; background: var(--primary-red); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 10px 20px rgba(215, 25, 32, 0.4); border: none; cursor: pointer; z-index: 1000; transition: 0.3s; }
+        .fab-stats:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <div class="stats-container">
-        <div class="stat-card"><small>Total Kader</small><h2 id="stTotal">2,540</h2></div>
-        <div class="stat-card"><small>Usia Rata-rata</small><h2 id="stAvg">32.5</h2></div>
-        <div class="stat-card"><small>Gen Z & Milenial</small><h2 id="stYoung">72%</h2></div>
-        <div class="stat-card"><small>Total Wilayah</small><h2 id="stWil">31 Kec</h2></div>
+    <div class="admin-header">
+        <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI">
+        <div class="header-text">
+            <h1>DATA KADER DIGITAL</h1>
+            <p>Sistem Manajemen Internal Real-time</p>
+        </div>
+        <button onclick="toggleFilter()" id="btnToggle" style="margin-left: auto; padding: 10px 15px; border-radius: 10px; border: none; background: #f1f5f9; font-weight: 700; cursor: pointer;">
+            📂 Filter
+        </button>
     </div>
 
-    <div class="control-panel">
+    <div class="stats-grid">
+        <div class="stat-card"><small>Total Kader</small><h2>2,540</h2></div>
+        <div class="stat-card"><small>Rata Usia</small><h2>32.5 Thn</h2></div>
+        <div class="stat-card"><small>Gen Z & Milenial</small><h2>72%</h2></div>
+        <div class="stat-card"><small>Wilayah Aktif</small><h2>31 Kec</h2></div>
+    </div>
+
+    <div id="panelFilter" class="control-panel">
         <div class="search-box">
-            <input type="text" id="quickSearch" placeholder="Pencarian Cepat: Ketik Nama, NIK, atau Kecamatan...">
+            <input type="text" id="quickSearch" onkeyup="doSearch()" placeholder="Ketik Nama, NIK, atau Kecamatan untuk cari cepat...">
         </div>
-        
         <div class="filter-grid">
             <div class="filter-group">
-                <label>Pilih Kecamatan</label>
-                <select id="filterKec">
-                    <option value="">Semua Wilayah</option>
-                    <option value="Tegalsari">Tegalsari</option>
-                    <option value="Gubeng">Gubeng</option>
+                <label>Wilayah</label>
+                <select><option>Semua Kecamatan</option></select>
+            </div>
+            <div class="filter-group">
+                <label>Generasi</label>
+                <select>
+                    <option>Semua Generasi</option>
+                    <option>Gen Z (< 26 Thn)</option>
+                    <option>Millennial (26-41 Thn)</option>
+                    <option>Gen X (42-57 Thn)</option>
+                    <option>Boomer (> 57 Thn)</option>
                 </select>
             </div>
             <div class="filter-group">
-                <label>Filter Generasi</label>
-                <select id="filterGen">
-                    <option value="">Semua Generasi</option>
-                    <option value="Gen Z">Gen Z (< 26 Thn)</option>
-                    <option value="Millennial">Millennial (26-41 Thn)</option>
-                    <option value="Gen X">Gen X (42-57 Thn)</option>
-                    <option value="Boomer">Boomer (> 57 Thn)</option>
-                </select>
+                <label>Kaderisasi</label>
+                <select><option>Semua Tingkat</option></select>
             </div>
             <div class="filter-group">
-                <label>Tingkat Kaderisasi</label>
-                <select id="filterKader">
-                    <option value="">Semua Tingkat</option>
-                    <option value="Pratama">Kader Pratama</option>
-                    <option value="Madya">Kader Madya</option>
-                    <option value="Utama">Kader Utama</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Status Pekerjaan</label>
-                <select id="filterKerja">
-                    <option value="">Semua Pekerjaan</option>
-                    <option value="ASN">ASN / PNS</option>
-                    <option value="Swasta">Karyawan Swasta</option>
-                    <option value="Wiraswasta">Wiraswasta</option>
-                </select>
+                <label>Pekerjaan</label>
+                <select><option>Semua Bidang</option></select>
             </div>
         </div>
     </div>
 
     <div class="table-card">
-        <table id="kaderTable">
+        <table id="tableKader">
             <thead>
                 <tr>
-                    <th style="width: 80px;">Foto</th>
-                    <th>Identitas Kader</th>
+                    <th style="width:80px">Foto</th>
+                    <th>Identitas</th>
                     <th>Usia & Gen</th>
-                    <th>Wilayah</th>
+                    <th>Domisili</th>
                     <th>Kaderisasi</th>
                 </tr>
             </thead>
-            <tbody id="kaderBody">
-                <tr onclick="showFullDetail(1)">
-                    <td class="td-img" data-label="Profil"><img src="https://via.placeholder.com/50" style="width:45px; height:45px; border-radius:12px; object-fit:cover;"></td>
+            <tbody id="bodyKader">
+                <tr onclick="openDetail()">
+                    <td class="td-img" data-label="Foto"><img src="https://via.placeholder.com/50" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
                     <td data-label="Identitas"><strong>Andika Wijaya</strong><br><small>3578012304950002</small></td>
-                    <td data-label="Usia">29 Thn<br><span class="badge-gen">Millennial</span></td>
-                    <td data-label="Wilayah">Gubeng<br><small>Surabaya</small></td>
-                    <td data-label="Kaderisasi"><span class="badge-kader">Madya</span></td>
+                    <td data-label="Usia">29 Thn<br><span class="badge badge-gray">Millennial</span></td>
+                    <td data-label="Domisili">Gubeng<br><small>Surabaya</small></td>
+                    <td data-label="Kaderisasi"><span class="badge badge-red">Madya</span></td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <button class="fab-stats" title="Buka Grafik Analisa">📊</button>
+    <button class="fab-stats" onclick="alert('Membuka Analisa Grafik Statistik...')">📊</button>
 
+    <div id="modalDetail" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeDetail()">&times;</span>
+            <div style="text-align:center; margin-bottom:20px;">
+                <img src="https://via.placeholder.com/100" style="border-radius:20px; width:100px; height:100px; object-fit:cover;">
+                <h2 style="margin-top:10px;">Andika Wijaya</h2>
+                <span class="badge badge-red">Kader Madya</span>
+            </div>
+            <hr style="opacity:0.1; margin-bottom:20px;">
+            <div id="fullInfo" style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:14px;">
+                <div><strong>NIK:</strong> 3578012304950002</div>
+                <div><strong>Kecamatan:</strong> Gubeng</div>
+                <div><strong>WA:</strong> 08123456789</div>
+                <div><strong>Pekerjaan:</strong> Wiraswasta</div>
+                <div style="grid-column: span 2;"><strong>Alamat:</strong> Jl. Raya Gubeng No. 123, Surabaya</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FUNGSI TOGGLE FILTER (NAIK TURUN)
+        function toggleFilter() {
+            const panel = document.getElementById('panelFilter');
+            const btn = document.getElementById('btnToggle');
+            if (panel.style.maxHeight === "0px") {
+                panel.style.maxHeight = "1000px";
+                panel.style.opacity = "1";
+                panel.style.padding = "20px";
+                btn.innerText = "📂 Tutup Filter";
+            } else {
+                panel.style.maxHeight = "0px";
+                panel.style.opacity = "0";
+                panel.style.padding = "0px";
+                btn.innerText = "📁 Buka Filter";
+            }
+        }
+
+        // FUNGSI PENCARIAN INSTANT
+        function doSearch() {
+            let input = document.getElementById('quickSearch').value.toUpperCase();
+            let tr = document.getElementById("tableKader").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                let txt = tr[i].textContent || tr[i].innerText;
+                tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+
+        // FUNGSI MODAL DETAIL
+        function openDetail() { document.getElementById('modalDetail').style.display = "block"; }
+        function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
+    </script>
 </body>
 </html>
