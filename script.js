@@ -6,8 +6,7 @@
     if (savedTheme === 'premium') {
         const link = document.createElement('link');
         link.id = 'premium-theme-link';
-        link.rel = 'stylesheet';
-        link.href = 'premium.css'; 
+        link.rel = 'stylesheet'; link.href = 'premium.css'; 
         document.head.appendChild(link);
     }
 })();
@@ -34,13 +33,39 @@ document.addEventListener('change', (e) => {
 });
 
 /* ==========================================
-    3. RENDER ENGINE (PREMIUM STYLE)
+    3. LOGIKA SAVE STEP 1 (Tadi Hilang, Sekarang Kembali!)
    ========================================== */
-function deleteItem(key, index, callback) {
+function saveStep1() {
+    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
+    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    
+    let dataStep1 = { jenis_kelamin: genderEl ? genderEl.value : '' };
+    fields.forEach(f => {
+        const el = document.getElementById(f);
+        dataStep1[f] = el ? el.value.trim() : '';
+    });
+
+    const requiredFields = fields.filter(f => f !== 'no_kta');
+    if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
+        alert("⚠️ Mohon lengkapi semua data wajib."); return;
+    }
+
+    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
+    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
+    window.location.href = 'step2.html';
+}
+
+/* ==========================================
+    4. RENDER ENGINE (PREMIUM STYLE)
+   ========================================== */
+function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
     data[key].splice(index, 1);
     localStorage.setItem('kaderData', JSON.stringify(data));
-    if (typeof window[callback] === 'function') window[callback]();
+    // Memanggil fungsi callback berdasarkan namanya
+    if (callbackName && typeof window[callbackName] === 'function') {
+        window[callbackName]();
+    }
 }
 
 function renderList(id, key, template) {
@@ -61,7 +86,7 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
     </div>
 `;
 
-// Fungsi Render untuk masing-masing List
+// Fungsi Render Global
 const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
 const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
@@ -69,60 +94,8 @@ const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (
 const renderOrganisasi = () => renderList('organisasiList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} (${item.periode})`, 'riwayat_organisasi', index, 'renderOrganisasi'));
 
 /* ==========================================
-    4. FUNGSI ADD DATA (STEP 2 - 5)
+    5. FUNGSI ADD DATA (Sesuai ID HTML Bos)
    ========================================== */
-
-function addPendidikan() {
-    const jenjang = document.getElementById('jenjang').value;
-    const nama = (['D1','D2','D3','D4','S1','S2','S3'].includes(jenjang)) ? document.getElementById('nama_pt')?.value : document.getElementById('nama_sekolah')?.value;
-    const tahun = document.getElementById('tahun_lulus').value;
-    if(!jenjang || !nama || !tahun) return alert("Lengkapi data pendidikan!");
-    
-    saveToLocal('riwayat_pendidikan', { jenjang, nama, tahun, kota: document.getElementById('kota_sekolah')?.value || '-' });
-    renderPendidikan();
-}
-
-function addPendidikanKader() {
-    const jenis = document.getElementById('jenis_kader').value;
-    const penyelenggara = document.getElementById('penyelenggara').value;
-    const tahun = document.getElementById('tahun_kader').value;
-    if(!jenis || !penyelenggara || !tahun) return alert("Lengkapi data kaderisasi!");
-
-    saveToLocal('riwayat_kader', { jenis, penyelenggara, tahun });
-    renderKader();
-}
-
-function addJabatanPartai() {
-    const tingkatan = document.getElementById('tingkatan_partai').value;
-    const jabatan = document.getElementById('jabatan_partai').value;
-    const periode = document.getElementById('periode_partai').value;
-    if(!tingkatan || !jabatan) return alert("Lengkapi data jabatan!");
-
-    saveToLocal('riwayat_jabatan_partai', { tingkatan, jabatan, periode });
-    renderJabatan();
-}
-
-function addPekerjaan() {
-    const perusahaan = document.getElementById('nama_perusahaan').value;
-    const jabatan = document.getElementById('jabatan_kerja').value;
-    const masa = document.getElementById('masa_kerja').value;
-    if(!perusahaan || !jabatan) return alert("Lengkapi data pekerjaan!");
-
-    saveToLocal('riwayat_pekerjaan', { perusahaan, jabatan, masa_kerja: masa });
-    renderPekerjaan();
-}
-
-function addOrganisasi() {
-    const nama = document.getElementById('nama_org').value;
-    const jabatan = document.getElementById('jabatan_org').value;
-    const periode = document.getElementById('periode_org').value;
-    if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
-
-    saveToLocal('riwayat_organisasi', { nama, jabatan, periode });
-    renderOrganisasi();
-}
-
-// Helper save supaya ringkas
 function saveToLocal(key, obj) {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data[key] || [];
@@ -131,25 +104,74 @@ function saveToLocal(key, obj) {
     localStorage.setItem('kaderData', JSON.stringify(data));
 }
 
+function addPendidikan() {
+    const jenjang = document.getElementById('jenjang')?.value;
+    const ptJenjangs = ['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
+    const nama = ptJenjangs.includes(jenjang) ? document.getElementById('nama_pt')?.value : document.getElementById('nama_sekolah')?.value;
+    const tahun = document.getElementById('tahun_lulus')?.value;
+    if(!jenjang || !nama || !tahun) return alert("Lengkapi data!");
+    saveToLocal('riwayat_pendidikan', { jenjang, nama, tahun, kota: document.getElementById('kota_sekolah')?.value || '-' });
+    renderPendidikan();
+}
+
+function addPendidikanKader() {
+    const jenis = document.getElementById('jenis_kader')?.value;
+    const penyelenggara = document.getElementById('penyelenggara')?.value;
+    const tahun = document.getElementById('tahun_kader')?.value;
+    if(!jenis || !penyelenggara) return alert("Lengkapi data kader!");
+    saveToLocal('riwayat_kader', { jenis, penyelenggara, tahun });
+    renderKader();
+}
+
+function addJabatanPartai() {
+    const tingkatan = document.getElementById('tingkatan_partai')?.value;
+    const jabatan = document.getElementById('jabatan_partai')?.value;
+    const periode = document.getElementById('periode_partai')?.value;
+    if(!tingkatan || !jabatan) return alert("Lengkapi data jabatan!");
+    saveToLocal('riwayat_jabatan_partai', { tingkatan, jabatan, periode });
+    renderJabatan();
+}
+
+function addPekerjaan() {
+    const perusahaan = document.getElementById('nama_perusahaan')?.value;
+    const jabatan = document.getElementById('jabatan_kerja')?.value;
+    const masa = document.getElementById('masa_kerja')?.value;
+    if(!perusahaan || !jabatan) return alert("Lengkapi data kerja!");
+    saveToLocal('riwayat_pekerjaan', { perusahaan, jabatan, masa_kerja: masa });
+    renderPekerjaan();
+}
+
+function addOrganisasi() {
+    const nama = document.getElementById('nama_org')?.value;
+    const jabatan = document.getElementById('jabatan_org')?.value;
+    const periode = document.getElementById('periode_org')?.value;
+    if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
+    saveToLocal('riwayat_organisasi', { nama, jabatan, periode });
+    renderOrganisasi();
+}
+
 /* ==========================================
-    5. LOGIKA SUBMIT & LOAD
+    6. SUBMIT & INITIAL LOAD
    ========================================== */
 async function submitSeluruhData() {
     const data = JSON.parse(localStorage.getItem('kaderData'));
     if(!data) return alert("Data kosong!");
+    if(!confirm("Kirim ke Pusat?")) return;
     const btn = document.querySelector('.btn-final');
     btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
-
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec';
     try {
-        await fetch('URL_API_ANDA', { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-        alert("MERDEKA! Data Terkirim.");
-        localStorage.clear();
-        window.location.href = 'finish.html';
-    } catch (e) { alert("Gagal!"); btn.disabled = false; }
+        await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        alert("MERDEKA! Data Terkirim."); localStorage.clear(); window.location.href = 'finish.html';
+    } catch (e) { alert("Gagal!"); btn.disabled = false; btn.innerHTML = "KIRIM SEKARANG"; }
 }
 
 window.addEventListener('load', () => {
     const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
-    // Load lists
+    // Load Step 1 fields if exists
+    ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'].forEach(f => {
+        const el = document.getElementById(f); if(el) el.value = saved[f] || '';
+    });
+    // Auto Render
     renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi();
 });
