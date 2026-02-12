@@ -511,45 +511,60 @@ function updateStats(data) {
     }
 
     // FUNGSI APPLY FILTER (DISEMPURNAKAN)
-    function applyFilters() {
-        const fJK = document.getElementById('fJK').value;
-        const fAgama = document.getElementById('fAgama').value;
-        const fEdu = document.getElementById('fPendidikan').value;
-        const fKader = document.getElementById('fKader').value;
-        const fTingkat = document.getElementById('fTingkat').value;
-        const fJenis = document.getElementById('fJenisTugas').value;
-        const fBahasa = document.getElementById('fBahasa').value;
-        const fIT = document.getElementById('fIT').value;
+function applyFilters() {
+    const fJK = document.getElementById('fJK').value;
+    const fAgama = document.getElementById('fAgama').value;
+    const fEdu = document.getElementById('fPendidikan').value;
+    const fKader = document.getElementById('fKader').value;
+    const fTingkat = document.getElementById('fTingkat').value;
+    const fJenis = document.getElementById('fJenisTugas').value;
+    const fBahasa = document.getElementById('fBahasa').value;
+    const fIT = document.getElementById('fIT').value;
 
-        const filtered = databaseKader.filter(item => {
-            const p = item.pribadi || {};
-            const formal = item.formal || [];
-            const kader = item.kaderisasi || [];
-            const medsos = item.medsos || [];
-            const jabatan = item.jabatan || [];
-            const checkIT = fIT === "Semua" || 
-                    (fIT === "Ya" ? (medsos[8] && medsos[8] !== "-") : (medsos[8] === "-" || !medsos[8]));
-            
-            // Logika pencarian dalam array jabatan
-            const hasTingkat = fTingkat === "Semua" || jabatan.some(j => j[4] === fTingkat);
-            const hasJenis = fJenis === "Semua" || jabatan.some(j => j[2] === fJenis);
-            
-            // Logika Bahasa Asing (Index 3 di sheet Medsos biasanya Inggris)
-            const hasLanguage = fBahasa === "Semua" || (fBahasa === "Ya" ? medsos[3] !== "-" : medsos[3] === "-");
+    const filtered = databaseKader.filter(item => {
+        const p = item.pribadi || {};
+        const formal = item.formal || [];
+        const kader = item.kaderisasi || []; // Array: [Timestamp, NIK, PT, PP, MT, MP, UT, UP, GT, GP]
+        const medsos = item.medsos || [];    // Array: [Timestamp, NIK, FB, IG, WA, ..., IT_Expert]
+        const jabatan = item.jabatan || [];  // Array of Arrays: [[...], [...]]
 
-            return (fJK === "Semua" || p.jk === fJK) &&
-                   (fAgama === "Semua" || p.agama === fAgama) &&
-                   (fEdu === "Semua" || formal[19] === fEdu) &&
-                   (fKader === "Semua" || (kader.some(k => k && k.toString().includes(fKader)))) &&
-                   hasTingkat &&
-                   hasJenis &&
-                   hasLanguage &&
-                   (fIT === "Semua" || (medsos[8] && medsos[8].includes(fIT)));
-        });
+        // 1. Presisi Pendidikan Kader (Cek kolom spesifik di array kaderisasi)
+        // Indeks: 2=Pratama, 4=Madya, 6=Utama, 8=Guru
+        let matchesKader = false;
+        if (fKader === "Semua") {
+            matchesKader = true;
+        } else {
+            if (fKader === "Pratama" && kader[2] && kader[2] !== "-") matchesKader = true;
+            if (fKader === "Madya" && kader[4] && kader[4] !== "-") matchesKader = true;
+            if (fKader === "Utama" && kader[6] && kader[6] !== "-") matchesKader = true;
+            if (fKader === "Guru" && kader[8] && kader[8] !== "-") matchesKader = true;
+        }
 
-        renderTable(filtered);
-        updateStats(filtered);
-    }
+        // 2. Presisi Jenis Penugasan & Tingkat (Cek di semua baris jabatan)
+        const matchesTingkat = fTingkat === "Semua" || jabatan.some(j => j[4] === fTingkat);
+        const matchesJenis = fJenis === "Semua" || jabatan.some(j => j[2] === fJenis);
+
+        // 3. Presisi Bahasa Asing (Index 3 di sheet Medsos/Lainnya)
+        const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
+        const matchesBahasa = fBahasa === "Semua" || 
+                             (fBahasa === "Ya" ? (valBahasa !== "-" && valBahasa !== "") : (valBahasa === "-" || valBahasa === ""));
+
+        // 4. Presisi Kompetensi IT (Index 8 di sheet Medsos/Lainnya)
+        const valIT = medsos[8] ? medsos[8].toString().trim() : "-";
+        const matchesIT = fIT === "Semua" || 
+                         (fIT === "Ya" ? (valIT !== "-" && valIT !== "") : (valIT === "-" || valIT === ""));
+
+        // Filter Standar (Gender, Agama, Pendidikan Formal)
+        const matchesJK = fJK === "Semua" || p.jk === fJK;
+        const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
+        const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19] === fEdu);
+
+        return matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
+    });
+
+    renderTable(filtered);
+    updateStats(filtered);
+}
 
 function formatDriveUrl(url) {
     if (!url || !url.includes("drive.google.com")) return url;
