@@ -1,0 +1,54 @@
+/* PREMIUM SKIN OVERRIDE */
+body {
+    background: radial-gradient(circle at top, #2d0000 0%, #010409 100%) !important;
+    color: #ffffff !important;
+}
+
+/* Mengubah Card Putih jadi Glassmorphism Gelap */
+.form-card, .rekap-card, .rekap-item-premium {
+    background: rgba(255, 255, 255, 0.03) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5) !important;
+}
+
+/* Mengubah semua teks di dalam card jadi putih/silver */
+.form-card h2, .form-card h3, .form-card p, .input-group label, .rekap-value {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important; /* Untuk override gradient teks */
+}
+
+.subtitle, .rekap-label {
+    color: #94A3B8 !important;
+}
+
+/* Mengubah Input Field jadi Transparan Modern */
+.input-field {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+.input-field:focus {
+    border-color: var(--primary-red) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Mengubah Tampilan Item yang sudah di (+) Tambah */
+#tugasList div, #jabatanList div, #pendidikanList div, #kaderList div {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+/* Tombol tetap merah tapi lebih glowing */
+.btn-primary {
+    background: linear-gradient(90deg, #D71920 0%, #990000 100%) !important;
+    box-shadow: 0 10px 20px rgba(215, 25, 32, 0.3) !important;
+}
+
+/* Progress Bar Glowing */
+.progress-bar {
+    box-shadow: 0 0 15px rgba(215, 25, 32, 0.5) !important;
+}
