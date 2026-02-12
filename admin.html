@@ -160,37 +160,128 @@
         </div>
     </div>
 
-    <script>
-        // FUNGSI TOGGLE FILTER (NAIK TURUN)
-        function toggleFilter() {
-            const panel = document.getElementById('panelFilter');
-            const btn = document.getElementById('btnToggle');
-            if (panel.style.maxHeight === "0px") {
-                panel.style.maxHeight = "1000px";
-                panel.style.opacity = "1";
-                panel.style.padding = "20px";
-                btn.innerText = "📂 Tutup Filter";
-            } else {
-                panel.style.maxHeight = "0px";
-                panel.style.opacity = "0";
-                panel.style.padding = "0px";
-                btn.innerText = "📁 Buka Filter";
-            }
-        }
+<script>
+    // 1. KONFIGURASI - Paste URL Web App dari GAS Bos di sini
+    const URL_GAS = "https://script.google.com/macros/s/AKfycbzjnsTa5Wi75hP9HNPq19F8abi3x0QJlHNncBF9c9atS6PrrF0gg40ZaRzgkZRzbUncoQ/exec";
+    let databaseKader = [];
 
-        // FUNGSI PENCARIAN INSTANT
-        function doSearch() {
-            let input = document.getElementById('quickSearch').value.toUpperCase();
-            let tr = document.getElementById("tableKader").getElementsByTagName("tr");
-            for (let i = 1; i < tr.length; i++) {
-                let txt = tr[i].textContent || tr[i].innerText;
-                tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
-            }
+    // 2. FUNGSI AMBIL DATA (FETCH)
+    async function fetchData() {
+        const body = document.getElementById('bodyKader');
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Sedang memuat data kader... Mohon tunggu...</td></tr>';
+        
+        try {
+            const response = await fetch(URL_GAS + "?action=read");
+            const data = await response.json();
+            databaseKader = data;
+            
+            renderTable(databaseKader);
+            updateStats(databaseKader);
+            populateFilters(databaseKader);
+            
+        } catch (error) {
+            console.error("Error:", error);
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data. Pastikan URL Deployment benar dan akses diset ke "Anyone".</td></tr>';
         }
+    }
 
-        // FUNGSI MODAL DETAIL
-        function openDetail() { document.getElementById('modalDetail').style.display = "block"; }
-        function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
-    </script>
+    // 3. FUNGSI HITUNG USIA & GEN (DINAMIS)
+    function calculateAge(birthDateString) {
+        if (!birthDateString) return { age: "-", gen: "-" };
+        const birthDate = new Date(birthDateString);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+
+        const year = birthDate.getFullYear();
+        let gen = "Unknown";
+        if (year >= 1997 && year <= 2012) gen = "Gen Z";
+        else if (year >= 1981 && year <= 1996) gen = "Millennial";
+        else if (year >= 1965 && year <= 1980) gen = "Gen X";
+        else if (year <= 1964) gen = "Boomer";
+
+        return { age: age + " Thn", gen: gen };
+    }
+
+    // 4. TAMPILKAN KE TABEL
+    function renderTable(data) {
+        const body = document.getElementById('bodyKader');
+        body.innerHTML = "";
+        
+        // Data terbaru muncul paling atas
+        const sortedData = [...data].reverse();
+
+        sortedData.forEach((kader, index) => {
+            const ageInfo = calculateAge(kader.tanggal_lahir);
+            const row = `
+                <tr onclick="openDetail(${index})">
+                    <td class="td-img" data-label="Foto">
+                        <img src="${kader.foto || 'https://via.placeholder.com/50'}" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                    </td>
+                    <td data-label="Identitas">
+                        <strong>${kader.nama_lengkap || '-'}</strong><br>
+                        <small>${kader.nik || '-'}</small>
+                    </td>
+                    <td data-label="Usia">
+                        ${ageInfo.age}<br>
+                        <span class="badge badge-gray">${ageInfo.gen}</span>
+                    </td>
+                    <td data-label="Domisili">
+                        ${kader.kecamatan || '-'}<br>
+                        <small>YOGYAKARTA</small>
+                    </td>
+                    <td data-label="Kaderisasi">
+                        <span class="badge badge-red">${kader.tingkat_kaderisasi || 'Non-Kader'}</span>
+                    </td>
+                </tr>
+            `;
+            body.innerHTML += row;
+        });
+    }
+
+    // 5. UPDATE ANGKA STATISTIK ATAS
+    function updateStats(data) {
+        const total = data.length;
+        document.querySelector('.stats-grid .stat-card:nth-child(1) h2').innerText = total;
+        
+        // Hitung % Gen Z & Millennial
+        const youngKader = data.filter(k => {
+            const gen = calculateAge(k.tanggal_lahir).gen;
+            return gen === "Gen Z" || gen === "Millennial";
+        }).length;
+        
+        const percentYoung = total > 0 ? Math.round((youngKader / total) * 100) : 0;
+        document.querySelector('.stats-grid .stat-card:nth-child(3) h2').innerText = percentYoung + "%";
+    }
+
+    // Fungsi Search (Tetap sama)
+    function doSearch() {
+        let input = document.getElementById('quickSearch').value.toUpperCase();
+        let tr = document.getElementById("tableKader").getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            let txt = tr[i].textContent || tr[i].innerText;
+            tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
+        }
+    }
+
+    // Fungsi Modal & Toggle Filter (Tetap sama)
+    function toggleFilter() {
+        const panel = document.getElementById('panelFilter');
+        const btn = document.getElementById('btnToggle');
+        if (panel.style.maxHeight === "0px" || !panel.style.maxHeight) {
+            panel.style.maxHeight = "1000px"; panel.style.opacity = "1"; panel.style.padding = "20px";
+            btn.innerText = "📂 Tutup Filter";
+        } else {
+            panel.style.maxHeight = "0px"; panel.style.opacity = "0"; panel.style.padding = "0px";
+            btn.innerText = "📁 Buka Filter";
+        }
+    }
+
+    function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
+
+    // Jalankan saat halaman dibuka
+    window.onload = fetchData;
+</script>
 </body>
 </html>
