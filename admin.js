@@ -1,14 +1,71 @@
 const URL_GAS = "https://script.google.com/macros/s/AKfycbzQA3fNn9ZcnXqfGL0yBA2SqFVx9MAQjLniltAkb5_0SHA2OGKTSXp3xpgVRVb6X7fq7g/exec";
 let databaseKader = [];
 
-// --- INITIALIZATION ---
-/*window.onload = fetchData;*/ HIDUPKAN LAGI SETELAH PUAS COBA
-
+// --- 1. INITIALIZATION (Urutan diperbaiki) ---
 window.onload = () => {
     console.log("Menjalankan Mode Dummy 100 Data...");
-    // Perintah untuk menampilkan data dummy ke tabel & statistik
+    
+    // ISI DULU datanya baru RENDER
+    databaseKader = generateDummyData(); 
+    
+    // Tampilkan ke UI
     renderTable(databaseKader);
     updateStats(databaseKader);
+    
+    console.log("Data Dummy Berhasil Dimuat: ", databaseKader.length);
+};
+
+// --- 2. SEMUA FUNGSI LAINNYA (Tetap seperti kode kamu) ---
+// (Copy-paste fungsi calculateAge, formatDriveUrl, renderTable, updateStats, dll di sini)
+
+// --- 3. GENERATOR DUMMY (Pastikan ada di dalam file) ---
+const generateDummyData = () => {
+    const kotaDIY = [
+        { nama: "Yogyakarta", kec: ["Jetis", "Gondokusuman", "Umbulharjo", "Mertoyudan"] },
+        { nama: "Bantul", kec: ["Jetis", "Sewon", "Banguntapan", "Piyungan"] },
+        { nama: "Sleman", kec: ["Depok", "Mlati", "Gamping", "Ngaglik"] },
+        { nama: "Gunungkidul", kec: ["Wonosari", "Playen", "Semanu"] },
+        { nama: "Kulon Progo", kec: ["Wates", "Sentolo", "Galur"] }
+    ];
+
+    const namaDepan = ["Budi", "Siti", "Eko", "Agus", "Rina", "Dewi", "Bambang", "Indah", "Arif", "Heri", "Lestari", "Anjas", "Rahmat", "Mega", "Prabowo", "Ganjar", "Puan", "Gibran", "Mahfud", "Yenny"];
+    const namaBelakang = ["Santoso", "Susanti", "Wicaksono", "Saputro", "Utami", "Kusuma", "Prasetyo", "Hidayat", "Nugroho", "Mulyani"];
+
+    let tempData = [];
+    for (let i = 0; i < 100; i++) {
+        const kotaObj = kotaDIY[Math.floor(Math.random() * kotaDIY.length)];
+        const kecAsli = kotaObj.kec[Math.floor(Math.random() * kotaObj.kec.length)];
+        const thnLahir = 1960 + Math.floor(Math.random() * 45); 
+        const gender = Math.random() > 0.5 ? "Laki-laki" : "Perempuan";
+        
+        const thnPratama = Math.random() > 0.2 ? (2000 + Math.floor(Math.random() * 24)).toString() : "-";
+        // Simulasi stagnan: Jika tahun pratama lama (misal 2010) tapi tidak ada madya
+        const thnMadya = (thnPratama !== "-" && Math.random() > 0.7) ? (parseInt(thnPratama) + 3).toString() : "-";
+
+        tempData.push({
+            pribadi: {
+                nama: `${namaDepan[Math.floor(Math.random() * namaDepan.length)]} ${namaBelakang[Math.floor(Math.random() * namaBelakang.length)]}`,
+                nik: "34" + Math.random().toString().slice(2, 16),
+                kta: "K-" + (1000 + i),
+                jk: gender,
+                tmpt_lahir: kotaObj.nama,
+                tgl_lahir: `10/05/${thnLahir}`,
+                agama: "Islam",
+                kerja_skrg: "Wiraswasta",
+                wa: "08123456789",
+                kab_kota: kotaObj.nama,
+                kota: kotaObj.nama,
+                kec: kecAsli,
+                desa: "Kelurahan " + (i + 1),
+                foto: ""
+            },
+            kaderisasi: [null, null, thnPratama, null, thnMadya, null, "-", null, "-", null, gender === "Perempuan" ? "2023" : "-"],
+            formal: [null, null, "SD N", "1990", "SMP N", "1993", "SMA N", "1996", "1996", null, null, "S1", "Hukum", "UGM", "2000", null, null, null, null, "S1"],
+            jabatan: [["2024", "2029", "Struktural", "-", "PAC", "Ketua"]],
+            medsos: ["", "", "Ya", "Ya", "", "", "", "", "Ya", "", ""]
+        });
+    }
+    return tempData;
 };
     
 // --- DATA FETCHING ---
@@ -540,55 +597,3 @@ function updateDesaOptions() {
     applyFilters();
 }
 
-// --- GENERATOR 100 DATA DUMMY ---
-const generateDummyData = () => {
-    const kotaDIY = [
-        { nama: "Yogyakarta", kec: ["Jetis", "Gondokusuman", "Umbulharjo", "Mertoyudan"] },
-        { nama: "Bantul", kec: ["Jetis", "Sewon", "Banguntapan", "Piyungan"] },
-        { nama: "Sleman", kec: ["Depok", "Mlati", "Gamping", "Ngaglik"] },
-        { nama: "Gunungkidul", kec: ["Wonosari", "Playen", "Semanu"] },
-        { nama: "Kulon Progo", kec: ["Wates", "Sentolo", "Galur"] }
-    ];
-
-    const namaDepan = ["Budi", "Siti", "Eko", "Agus", "Rina", "Dewi", "Bambang", "Indah", "Arif", "Heri", "Lestari", "Anjas", "Rahmat", "Mega", "Prabowo", "Ganjar", "Puan", "Gibran", "Mahfud", "Yenny"];
-    const namaBelakang = ["Santoso", "Susanti", "Wicaksono", "Saputro", "Utami", "Kusuma", "Prasetyo", "Hidayat", "Nugroho", "Mulyani"];
-
-    let tempData = [];
-
-    for (let i = 0; i < 100; i++) {
-        const kotaObj = kotaDIY[Math.floor(Math.random() * kotaDIY.length)];
-        const kecAsli = kotaObj.kec[Math.floor(Math.random() * kotaObj.kec.length)];
-        const thnLahir = 1960 + Math.floor(Math.random() * 45); // Variasi 1960 - 2005
-        const gender = Math.random() > 0.5 ? "Laki-laki" : "Perempuan";
-        
-        // Logika Kaderisasi Acak
-        const thnPratama = Math.random() > 0.2 ? (2000 + Math.floor(Math.random() * 24)).toString() : "-";
-        const thnMadya = (thnPratama !== "-" && Math.random() > 0.6) ? (parseInt(thnPratama) + 3).toString() : "-";
-
-        tempData.push({
-            originalIndex: i,
-            pribadi: {
-                nama: `${namaDepan[Math.floor(Math.random() * namaDepan.length)]} ${namaBelakang[Math.floor(Math.random() * namaBelakang.length)]}`,
-                nik: "34" + Math.random().toString().slice(2, 16),
-                kta: "K-" + (1000 + i),
-                jk: gender,
-                tmpt_lahir: kotaObj.nama,
-                tgl_lahir: `10/05/${thnLahir}`,
-                agama: "Islam",
-                kerja_skrg: "Wiraswasta",
-                wa: "08" + Math.random().toString().slice(2, 12),
-                kab_kota: kotaObj.nama,
-                kec: kecAsli,
-                desa: "Kelurahan " + (i + 1),
-                foto: ""
-            },
-            kaderisasi: [null, null, thnPratama, null, thnMadya, null, "-", null, "-", null, gender === "Perempuan" ? "2023" : "-"],
-            formal: [null, null, "SD N", "1990", "SMP N", "1993", "SMA N", "1996", "1996", null, null, "S1", "Hukum", "UGM", "2000", null, null, null, null, "S1"],
-            jabatan: [["2024", "2029", "Struktural", "-", "PAC", "Ketua"]]
-        });
-    }
-    return tempData;
-};
-
-// AKTIFKAN DUMMY (Hapus baris ini jika sudah connect ke GAS)
-databaseKader = generateDummyData();
