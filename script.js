@@ -38,28 +38,35 @@ function saveStep1() {
 }
 
 // Handler Foto
-const photoInput = document.getElementById('photoInput');
-if(photoInput) {
-    photoInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        if (file.size > 2 * 1024 * 1024) {
-            alert("Ukuran foto terlalu besar, maksimal 2MB ya Bos.");
-            return;
+const handlePhoto = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+        alert("Ukuran foto terlalu besar, maksimal 2MB ya Bos.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function() {
+        const preview = document.getElementById('photoPreview');
+        if(preview) {
+            preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            preview.style.border = "3px solid var(--primary-red)";
         }
-        const reader = new FileReader();
-        reader.onload = function() {
-            const preview = document.getElementById('photoPreview');
-            if(preview) {
-                preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-                preview.style.border = "3px solid var(--primary-red)";
-            }
-            let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-            existing.foto = reader.result;
-            localStorage.setItem('kaderData', JSON.stringify(existing));
-        }
-        reader.readAsDataURL(file);
-    });
+        let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
+        existing.foto = reader.result;
+        localStorage.setItem('kaderData', JSON.stringify(existing));
+    }
+    reader.readAsDataURL(file);
+};
+
+// Pasang event listener ke kedua input (Gunakan pengecekan agar tidak error di halaman lain)
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') {
+        handlePhoto(e);
+    }
+});
 }
 
 /* ==========================================
