@@ -1,5 +1,5 @@
 /* ==========================================
-    1. THEME ENGINE & INITIALIZER
+    1. THEME & INITIALIZER
    ========================================== */
 (function() {
     const savedTheme = localStorage.getItem('kader_theme'); 
@@ -12,51 +12,7 @@
 })();
 
 /* ==========================================
-    2. HANDLER FOTO
-   ========================================== */
-const handlePhoto = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function() {
-        const preview = document.getElementById('photoPreview');
-        if(preview) preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-        let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-        existing.foto = reader.result;
-        localStorage.setItem('kaderData', JSON.stringify(existing));
-    }
-    reader.readAsDataURL(file);
-};
-
-document.addEventListener('change', (e) => {
-    if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') handlePhoto(e);
-});
-
-/* ==========================================
-    3. LOGIKA SAVE STEP 1
-   ========================================== */
-function saveStep1() {
-    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
-    
-    let dataStep1 = { jenis_kelamin: genderEl ? genderEl.value : '' };
-    fields.forEach(f => {
-        const el = document.getElementById(f);
-        dataStep1[f] = el ? el.value.trim() : '';
-    });
-
-    const requiredFields = fields.filter(f => f !== 'no_kta');
-    if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
-        alert("⚠️ Mohon lengkapi semua data wajib."); return;
-    }
-
-    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
-    window.location.href = 'step2.html';
-}
-
-/* ==========================================
-    4. RENDER ENGINE (PREMIUM STYLE)
+    2. RENDER ENGINE (SULTAN STYLE)
    ========================================== */
 function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
@@ -83,7 +39,7 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
     </div>
 `;
 
-// Fungsi Render Global
+// Fungsi Render untuk masing-masing List
 const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
 const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
@@ -92,7 +48,7 @@ const renderOrganisasi = () => renderList('organisasiList', 'riwayat_organisasi'
 const renderPenugasan = () => renderList('penugasanList', 'riwayat_penugasan', (item, index) => premiumTemplate(item.tugas, `${item.wilayah} (${item.tahun})`, 'riwayat_penugasan', index, 'renderPenugasan'));
 
 /* ==========================================
-    5. FUNGSI ADD DATA (STEP 2 - 6)
+    3. FUNGSI ADD DATA (STEP 2 - 5)
    ========================================== */
 function saveToLocal(key, obj) {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
@@ -102,101 +58,77 @@ function saveToLocal(key, obj) {
     localStorage.setItem('kaderData', JSON.stringify(data));
 }
 
+// Tombol + Step 2
 function addPendidikan() {
     const jenjang = document.getElementById('jenjang')?.value;
     const ptJenjangs = ['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
     const nama = ptJenjangs.includes(jenjang) ? document.getElementById('nama_pt')?.value : document.getElementById('nama_sekolah')?.value;
     const tahun = document.getElementById('tahun_lulus')?.value;
-    if(!jenjang || !nama || !tahun) return alert("Lengkapi data!");
+    if(!jenjang || !nama) return alert("Isi data pendidikan!");
     saveToLocal('riwayat_pendidikan', { jenjang, nama, tahun, kota: document.getElementById('kota_sekolah')?.value || '-' });
     renderPendidikan();
 }
 
+// Tombol + Step 3
 function addPendidikanKader() {
     const jenis = document.getElementById('jenis_kader')?.value;
     const penyelenggara = document.getElementById('penyelenggara')?.value;
     const tahun = document.getElementById('tahun_kader')?.value;
-    if(!jenis || !penyelenggara) return alert("Lengkapi data kader!");
+    if(!jenis || !penyelenggara) return alert("Isi data kaderisasi!");
     saveToLocal('riwayat_kader', { jenis, penyelenggara, tahun });
     renderKader();
 }
 
+// Tombol + Step 4 (Jabatan)
 function addJabatanPartai() {
     const tingkatan = document.getElementById('tingkatan_partai')?.value;
     const jabatan = document.getElementById('jabatan_partai')?.value;
     const periode = document.getElementById('periode_partai')?.value;
-    if(!tingkatan || !jabatan) return alert("Lengkapi data jabatan!");
+    if(!tingkatan || !jabatan) return alert("Isi data jabatan!");
     saveToLocal('riwayat_jabatan_partai', { tingkatan, jabatan, periode });
     renderJabatan();
 }
 
+// Tombol + Step 4 (Pekerjaan)
 function addPekerjaan() {
     const perusahaan = document.getElementById('nama_perusahaan')?.value;
     const jabatan = document.getElementById('jabatan_kerja')?.value;
     const masa = document.getElementById('masa_kerja')?.value;
-    if(!perusahaan || !jabatan) return alert("Lengkapi data kerja!");
+    if(!perusahaan) return alert("Isi nama perusahaan!");
     saveToLocal('riwayat_pekerjaan', { perusahaan, jabatan, masa_kerja: masa });
     renderPekerjaan();
 }
 
+// Tombol + Step 5 (Organisasi)
 function addOrganisasi() {
     const nama = document.getElementById('nama_org')?.value;
     const jabatan = document.getElementById('jabatan_org')?.value;
     const periode = document.getElementById('periode_org')?.value;
-    if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
+    if(!nama) return alert("Isi nama organisasi!");
     saveToLocal('riwayat_organisasi', { nama, jabatan, periode });
     renderOrganisasi();
 }
 
-// FIX: Fungsi Penugasan Partai
+// Tombol + Step 5 (Penugasan)
 function addPenugasan() {
     const tugas = document.getElementById('nama_penugasan')?.value;
     const wilayah = document.getElementById('wilayah_penugasan')?.value;
     const tahun = document.getElementById('tahun_penugasan')?.value;
-    if(!tugas || !wilayah) return alert("Lengkapi data penugasan!");
-    saveToLocal('riwayat_penugasan', { tugas, wilayah, tahun: tahun || '-' });
+    if(!tugas) return alert("Isi nama penugasan!");
+    saveToLocal('riwayat_penugasan', { tugas, wilayah, tahun });
     renderPenugasan();
 }
 
-// FIX: Fungsi Medsos (Save Step 6)
-function saveStep6() {
-    const facebook = document.getElementById('fb_kader')?.value || '-';
-    const instagram = document.getElementById('ig_kader')?.value || '-';
-    const tiktok = document.getElementById('tt_kader')?.value || '-';
-    
-    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    existing.medsos = { facebook, instagram, tiktok };
-    localStorage.setItem('kaderData', JSON.stringify(existing));
-    window.location.href = 'rekap.html';
-}
-
 /* ==========================================
-    6. SUBMIT & INITIAL LOAD
+    4. SUBMIT & LOAD
    ========================================== */
-async function submitSeluruhData() {
-    const data = JSON.parse(localStorage.getItem('kaderData'));
-    if(!data) return alert("Data kosong!");
-    const btn = document.querySelector('.btn-final');
-    btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
-    const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec';
-    try {
-        await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-        alert("MERDEKA! Data Terkirim."); localStorage.clear(); window.location.href = 'finish.html';
-    } catch (e) { alert("Gagal!"); btn.disabled = false; btn.innerHTML = "KIRIM SEKARANG"; }
-}
-
 window.addEventListener('load', () => {
     const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
     // Load Step 1
-    ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'].forEach(f => {
+    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    fields.forEach(f => {
         const el = document.getElementById(f); if(el) el.value = saved[f] || '';
     });
-    // Load Medsos Step 6
-    if(saved.medsos) {
-        if(document.getElementById('fb_kader')) document.getElementById('fb_kader').value = saved.medsos.facebook || '';
-        if(document.getElementById('ig_kader')) document.getElementById('ig_kader').value = saved.medsos.instagram || '';
-        if(document.getElementById('tt_kader')) document.getElementById('tt_kader').value = saved.medsos.tiktok || '';
-    }
-    // Auto Render Semua List
+    // Render semua list
     renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
 });
