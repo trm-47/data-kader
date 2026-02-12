@@ -22,21 +22,22 @@
         .stat-card small { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
         .stat-card h2 { font-size: 20px; margin-top: 5px; }
 
-        /* CONTROL PANEL SEARCH */
-        .control-panel { background: white; padding: 20px 25px; border-radius: 30px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); }
-        .search-box input { width: 100%; padding: 15px 20px; border-radius: 20px; border: 2px solid #f1f5f9; outline: none; font-size: 14px; background-color: #f8fafc; transition: 0.3s; }
-        .search-box input:focus { border-color: var(--primary-red); background-color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-
         /* FILTER PANEL */
         .filter-container { background: white; border-radius: 30px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.06); overflow: hidden; }
-        .filter-header { padding: 20px 30px; background: linear-gradient(135deg, var(--primary-red) 0%, #a50e13 100%); cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: white; transition: 0.4s; }
+        .filter-header { padding: 20px 30px; background: linear-gradient(135deg, var(--primary-red) 0%, #a50e13 100%); cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: white; margin-top: 0; }
         .filter-body { padding: 30px; display: none; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; background: #ffffff; }
-        .filter-body.active { display: grid; animation: fadeIn 0.5s ease; }
+        .filter-body.active { display: grid; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .filter-group { display: flex; flex-direction: column; gap: 8px; }
         .filter-group label { font-size: 11px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-left: 10px; }
         .filter-group select { padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; font-size: 13px; font-weight: 600; background-color: #f8fafc; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 20px) center; }
+
         .btn-reset { grid-column: 1 / -1; padding: 15px; background: #fdf2f2; border: none; border-radius: 20px; cursor: pointer; font-weight: 800; color: var(--primary-red); text-transform: uppercase; }
+
+        /* SEARCH CONTROL */
+        .control-panel { background: white; padding: 20px 25px; border-radius: 30px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); }
+        .search-box input { width: 100%; padding: 15px 20px; border-radius: 20px; border: 2px solid #f1f5f9; outline: none; font-size: 14px; background-color: #f8fafc; }
 
         /* TABLE */
         .table-card { background: white; border-radius: 20px; overflow-x: auto; box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
@@ -48,7 +49,7 @@
         /* BADGES */
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; }
         .badge-red { background: #fee2e2; color: var(--primary-red); }
-        .badge-gray { background: #f1f5f9; color: #475569; margin-top: 4px; }
+        .badge-gray { background: #f1f5f9; color: #475569; }
 
         /* MODAL */
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
@@ -101,13 +102,13 @@
             <div class="filter-group">
                 <label>Kecamatan</label>
                 <select id="fKec" onchange="updateDesa()">
-                    <option value="Semua">Semua Kecamatan</option>
+                    <option value="Semua">Pilih Kota Dahulu</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Kelurahan / Desa</label>
                 <select id="fDesa" onchange="applyFilters()">
-                    <option value="Semua">Semua Desa</option>
+                    <option value="Semua">Pilih Kecamatan Dahulu</option>
                 </select>
             </div>
             
@@ -123,65 +124,48 @@
                 <label>Agama</label>
                 <select id="fAgama" onchange="applyFilters()">
                     <option value="Semua">Semua Agama</option>
-                    <option value="Islam">Islam</option>
-                    <option value="Kristen">Kristen</option>
-                    <option value="Katolik">Katolik</option>
-                    <option value="Hindu">Hindu</option>
-                    <option value="Budha">Budha</option>
-                    <option value="Khonghucu">Khonghucu</option>
+                    <option value="Islam">Islam</option><option value="Kristen">Kristen</option><option value="Katolik">Katolik</option><option value="Hindu">Hindu</option><option value="Budha">Budha</option><option value="Khonghucu">Khonghucu</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Jenjang Pendidikan</label>
                 <select id="fPendidikan" onchange="applyFilters()">
                     <option value="Semua">Semua Jenjang</option>
-                    <option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA/SMK">SMA/SMK</option>
-                    <option value="D1">D1</option><option value="D2">D2</option><option value="D3">D3</option>
-                    <option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option>
+                    <option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA/SMK">SMA/SMK</option><option value="D1">D1</option><option value="D2">D2</option><option value="D3">D3</option><option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Pendidikan Kader</label>
                 <select id="fKader" onchange="applyFilters()">
                     <option value="Semua">Semua Tingkat</option>
-                    <option value="Pratama">Kader Pratama</option>
-                    <option value="Madya">Kader Madya</option>
-                    <option value="Utama">Kader Utama</option>
-                    <option value="Guru">Guru Kader</option>
-                    <option value="Perempuan">Kader Perempuan</option>
+                    <option value="Pratama">Kader Pratama</option><option value="Madya">Kader Madya</option><option value="Utama">Kader Utama</option><option value="Guru">Guru Kader</option><option value="Perempuan">Kader Perempuan</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Tingkatan Struktur</label>
                 <select id="fTingkat" onchange="applyFilters()">
                     <option value="Semua">Semua Tingkatan</option>
-                    <option value="DPP">DPP</option><option value="DPD">DPD</option><option value="DPC">DPC</option>
-                    <option value="PAC">PAC</option><option value="Ranting">Ranting</option>
+                    <option value="DPP">DPP</option><option value="DPD">DPD</option><option value="DPC">DPC</option><option value="PAC">PAC</option><option value="Ranting">Ranting</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Jenis Penugasan</label>
                 <select id="fJenisTugas" onchange="applyFilters()">
                     <option value="Semua">Semua Penugasan</option>
-                    <option value="Legislatif">Legislatif</option>
-                    <option value="Eksekutif">Eksekutif</option>
-                    <option value="Struktural">Struktural</option>
+                    <option value="Legislatif">Legislatif</option><option value="Eksekutif">Eksekutif</option><option value="Struktural">Struktural</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Bahasa Asing</label>
                 <select id="fBahasa" onchange="applyFilters()">
-                    <option value="Semua">Semua</option>
-                    <option value="Ya">Bisa</option>
-                    <option value="-">Tidak</option>
+                    <option value="Semua">Semua Kemampuan</option>
+                    <option value="Ya">Bisa Bahasa Asing</option><option value="-">Tidak</option>
                 </select>
             </div>
             <div class="filter-group">
                 <label>Kompetensi IT</label>
                 <select id="fIT" onchange="applyFilters()">
-                    <option value="Semua">Semua</option>
-                    <option value="Ya">Bisa</option>
-                    <option value="-">Tidak Bisa</option>
+                    <option value="Semua">Semua</option><option value="Ya">Bisa</option><option value="-">Tidak Bisa</option>
                 </select>
             </div>
             <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
@@ -222,7 +206,6 @@
     const URL_GAS = "https://script.google.com/macros/s/AKfycbysCjLQBPyogM4c7_ohGuggfm7JwjOBQo1BS4fG4axFbldk8W5JNAFF9VVLyZx-Jo-i2A/exec";
     let databaseKader = [];
 
-    // 1. FETCH DATA
     async function fetchData() {
         try {
             const response = await fetch(URL_GAS + "?action=read");
@@ -236,110 +219,91 @@
         }
     }
 
-    // 2. LOGIKA DROPDOWN CASCADING (WILAYAH)
+    // --- CASCADING WILAYAH LOGIC ---
     function updateKecamatan() {
-        const kotaTerpilih = document.getElementById('fKota').value;
+        const kotaVal = document.getElementById('fKota').value;
         const kecSelect = document.getElementById('fKec');
         const desaSelect = document.getElementById('fDesa');
         
         kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
-        desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
+        desaSelect.innerHTML = '<option value="Semua">Pilih Kecamatan Dahulu</option>';
 
-        if (kotaTerpilih !== "Semua") {
+        if (kotaVal !== "Semua") {
             const listKec = [...new Set(databaseKader
-                .filter(item => {
-                    const p = item.pribadi || {};
-                    return (p.kota === kotaTerpilih || p.kab_kota === kotaTerpilih);
-                })
+                .filter(item => (item.pribadi.kota === kotaVal || item.pribadi.kab_kota === kotaVal))
                 .map(item => item.pribadi.kec)
-                .filter(kec => kec && kec !== "-")
+                .filter(k => k && k !== "-")
             )].sort();
-
-            listKec.forEach(kec => {
-                kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
-            });
+            listKec.forEach(k => kecSelect.innerHTML += `<option value="${k}">${k}</option>`);
         }
         applyFilters();
     }
 
     function updateDesa() {
-        const kecTerpilih = document.getElementById('fKec').value;
+        const kecVal = document.getElementById('fKec').value;
         const desaSelect = document.getElementById('fDesa');
         
         desaSelect.innerHTML = '<option value="Semua">Semua Desa</option>';
 
-        if (kecTerpilih !== "Semua") {
+        if (kecVal !== "Semua") {
             const listDesa = [...new Set(databaseKader
-                .filter(item => item.pribadi && item.pribadi.kec === kecTerpilih)
+                .filter(item => item.pribadi.kec === kecVal)
                 .map(item => item.pribadi.desa)
-                .filter(desa => desa && desa !== "-")
+                .filter(d => d && d !== "-")
             )].sort();
-
-            listDesa.forEach(desa => {
-                desaSelect.innerHTML += `<option value="${desa}">${desa}</option>`;
-            });
+            listDesa.forEach(d => desaSelect.innerHTML += `<option value="${d}">${d}</option>`);
         }
         applyFilters();
     }
 
-    // 3. APPLY FILTERS (FUNGSI UTAMA)
     function applyFilters() {
-        const fKota = document.getElementById('fKota').value;
-        const fKec = document.getElementById('fKec').value;
-        const fDesa = document.getElementById('fDesa').value;
-        const fJK = document.getElementById('fJK').value;
-        const fAgama = document.getElementById('fAgama').value;
-        const fEdu = document.getElementById('fPendidikan').value;
-        const fKader = document.getElementById('fKader').value;
-        const fTingkat = document.getElementById('fTingkat').value;
-        const fJenis = document.getElementById('fJenisTugas').value;
-        const fBahasa = document.getElementById('fBahasa').value;
-        const fIT = document.getElementById('fIT').value;
+        const filters = {
+            kota: document.getElementById('fKota').value,
+            kec: document.getElementById('fKec').value,
+            desa: document.getElementById('fDesa').value,
+            jk: document.getElementById('fJK').value,
+            agama: document.getElementById('fAgama').value,
+            edu: document.getElementById('fPendidikan').value,
+            kader: document.getElementById('fKader').value,
+            tingkat: document.getElementById('fTingkat').value,
+            it: document.getElementById('fIT').value,
+            bahasa: document.getElementById('fBahasa').value
+        };
 
         const filtered = databaseKader.filter(item => {
             const p = item.pribadi || {};
-            const formal = item.formal || [];
-            const kader = item.kaderisasi || [];
-            const medsos = item.medsos || [];
-            const jabatan = item.jabatan || [];
+            const f = item.formal || [];
+            const k = item.kaderisasi || [];
+            const m = item.medsos || [];
+            const j = item.jabatan || [];
 
-            // Match Wilayah
-            const matchKota = fKota === "Semua" || (p.kota === fKota || p.kab_kota === fKota);
-            const matchKec = fKec === "Semua" || p.kec === fKec;
-            const matchDesa = fDesa === "Semua" || p.desa === fDesa;
-
-            // Match Kaderisasi
-            let matchesKader = (fKader === "Semua");
-            if (!matchesKader) {
+            const mKota = filters.kota === "Semua" || (p.kota === filters.kota || p.kab_kota === filters.kota);
+            const mKec = filters.kec === "Semua" || p.kec === filters.kec;
+            const mDesa = filters.desa === "Semua" || p.desa === filters.desa;
+            const mJK = filters.jk === "Semua" || p.jk === filters.jk;
+            const mAgama = filters.agama === "Semua" || p.agama === filters.agama;
+            const mEdu = filters.edu === "Semua" || (f[19] && f[19].toString().includes(filters.edu));
+            
+            let mKader = filters.kader === "Semua";
+            if (!mKader) {
                 const mapKader = { "Pratama": 2, "Madya": 4, "Utama": 6, "Guru": 8, "Perempuan": 10 };
-                const idx = mapKader[fKader];
-                matchesKader = (kader[idx] && kader[idx] !== "" && kader[idx] !== "-");
+                mKader = k[mapKader[filters.kader]] && k[mapKader[filters.kader]] !== "-";
             }
 
-            // Match Struktur/Jabatan
-            const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
-            const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
-            const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
+            const txtJabat = j.map(row => row.join(" ")).join(" ").toLowerCase();
+            const mTingkat = filters.tingkat === "Semua" || txtJabat.includes(filters.tingkat.toLowerCase());
             
-            // Match Skill
-            const valBahasa = medsos[3] || "-";
-            const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? (valBahasa !== "-" && valBahasa !== "") : (valBahasa === "-" || valBahasa === ""));
-            const valIT = medsos[8] || "-";
-            const matchesIT = fIT === "Semua" || (fIT === "Ya" ? (valIT !== "-" && valIT !== "") : (valIT === "-" || valIT === ""));
-            
-            // Profil
-            const matchesJK = fJK === "Semua" || p.jk === fJK;
-            const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
-            const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
+            const mIT = filters.it === "Semua" || (filters.it === "Ya" ? (m[8] && m[8] !== "-") : (!m[8] || m[8] === "-"));
+            const mBahasa = filters.bahasa === "Semua" || (filters.bahasa === "Ya" ? (m[3] && m[3] !== "-") : (!m[3] || m[3] === "-"));
 
-            return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
+            return mKota && mKec && mDesa && mJK && mAgama && mEdu && mKader && mTingkat && mIT && mBahasa;
         });
 
         renderTable(filtered);
         updateStats(filtered);
     }
 
-    // 4. HELPER FUNCTIONS
+    // --- OTHER HELPERS ---
     function calculateAge(tgl) {
         if (!tgl || tgl === "-") return { age: "-", gen: "-", rawAge: 0 };
         const birth = new Date(tgl);
@@ -369,11 +333,11 @@
             const originalIdx = databaseKader.indexOf(item);
             body.innerHTML += `
                 <tr onclick="openDetail(${originalIdx})">
-                    <td><img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
-                    <td><strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small></td>
-                    <td>${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
-                    <td><strong>${p.kec || '-'}</strong></td>
-                    <td><span class="badge badge-red">Terverifikasi</span></td>
+                    <td data-label="Foto"><img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
+                    <td data-label="Identitas"><strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small></td>
+                    <td data-label="Usia">${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
+                    <td data-label="Pendidikan"><strong>${p.kec || '-'}</strong></td>
+                    <td data-label="Kaderisasi"><span class="badge badge-red">Terverifikasi</span></td>
                 </tr>`;
         });
     }
@@ -408,8 +372,8 @@
 
     function resetFilters() {
         document.querySelectorAll('select').forEach(s => s.value = 'Semua');
-        document.getElementById('fKec').innerHTML = '<option value="Semua">Semua Kecamatan</option>';
-        document.getElementById('fDesa').innerHTML = '<option value="Semua">Semua Desa</option>';
+        document.getElementById('fKec').innerHTML = '<option value="Semua">Pilih Kota Dahulu</option>';
+        document.getElementById('fDesa').innerHTML = '<option value="Semua">Pilih Kecamatan Dahulu</option>';
         applyFilters();
     }
 
@@ -425,11 +389,10 @@
         const age = calculateAge(p.tgl_lahir);
         document.getElementById('modalInnerContent').innerHTML = `
             <div style="text-align:center">
-                <img src="${formatDriveUrl(p.foto)}" style="width:100px; height:100px; border-radius:50%; object-fit:cover">
-                <h2>${p.nama}</h2>
-                <p>NIK: ${p.nik}</p>
-                <hr style="margin:15px 0">
-                <p><b>Wilayah:</b> ${p.desa}, ${p.kec}, ${p.kota}</p>
+                <img src="${formatDriveUrl(p.foto)}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border: 3px solid #eee;">
+                <h2 style="margin-top:10px;">${p.nama}</h2>
+                <p>NIK: ${p.nik}</p><hr style="margin:15px 0">
+                <p><b>Wilayah:</b> ${p.desa || '-'}, ${p.kec || '-'}, ${p.kota || '-'}</p>
                 <p><b>Usia:</b> ${age.age} (${age.gen})</p>
                 <p><b>WA:</b> ${p.wa || '-'}</p>
             </div>`;
@@ -437,7 +400,6 @@
     }
 
     function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
-
     window.onload = fetchData;
 </script>
 </body>
