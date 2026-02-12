@@ -1,0 +1,312 @@
+
+        :root { --primary-red: #D71920; --dark-slate: #1e293b; --bg-gray: #f8fafc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-gray); color: var(--dark-slate); padding: 15px; }
+
+        /* HEADER */
+        .admin-header { display: flex; align-items: center; gap: 20px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .admin-header img { height: 60px; width: auto; }
+        .header-text h1 { font-size: 22px; font-weight: 800; color: var(--primary-red); }
+        .header-text p { font-size: 12px; color: #64748b; }
+
+        /* STATS BOX */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 15px; border-radius: 16px; border-top: 4px solid var(--primary-red); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stat-card small { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
+        .stat-card h2 { font-size: 20px; margin-top: 5px; }
+
+        /* CONTROL PANEL */
+        /* Update Kotak Pencarian agar senada dengan Filter */
+.control-panel { 
+    margin-top: 40px !important;
+    background: white; 
+    padding: 20px 25px; 
+    border-radius: 30px; /* Samakan bulatnya dengan filter */
+    margin-bottom: 25px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04); 
+}
+
+.search-box input { 
+    width: 100%; 
+    padding: 15px 20px 15px 50px; /* Padding kiri lebih besar untuk icon */
+    border-radius: 20px; /* Buat lebih bulat/oval */
+    border: 2px solid #f1f5f9; 
+    outline: none; 
+    font-size: 14px;
+    background-color: #f8fafc;
+    transition: 0.3s;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-red);
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Pindahkan icon kaca pembesar sedikit ke kanan */
+.search-box::before { 
+    position: absolute; 
+    left: 20px; 
+    top: 15px; 
+    opacity: 0.6;
+    font-size: 16px;
+}
+        
+        /* TABLE */
+        .table-card { background: white; border-radius: 20px; overflow-x: auto; box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #f1f5f9; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+        tr:hover td { background: #fff1f2; cursor: pointer; }
+
+        /* BADGES */
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-block; }
+        .badge-red { background: #fee2e2; color: var(--primary-red); }
+        .badge-gray { background: #f1f5f9; color: #475569; margin-top: 4px; }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
+        /* MODAL PREMIUM ENHANCEMENT */
+.modal-content {
+    background: #ffffff;
+    width: 95%;
+    max-width: 900px;
+    padding: 0; /* Kita atur padding di dalam saja */
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+#modalInnerContent {
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 30px;
+    scrollbar-width: none; /* Untuk Firefox */
+    -ms-overflow-style: none;  /* Untuk IE/Edge */
+}
+
+#modalInnerContent::-webkit-scrollbar {
+    display: none; /* Untuk Chrome/Safari */
+}
+
+.profile-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--primary-red);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-title::after {
+    content: "";
+    height: 2px;
+    background: #f1f5f9;
+    flex-grow: 1;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.data-item label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.data-item span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark-slate);
+}
+
+.badge-kader-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 10px;
+}
+        .close-modal { position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { border-bottom: 2px solid #f1f5f9; margin-bottom: 10px; padding: 10px; }
+            td { border: none; position: relative; padding-left: 50%; text-align: right; }
+            td:before { content: attr(data-label); position: absolute; left: 10px; width: 45%; padding-right: 10px; white-space: nowrap; font-weight: 800; font-size: 10px; color: #94a3b8; text-align: left; text-transform: uppercase; }
+        }
+        
+        /* Filter Panel */
+/* Filter Panel - Rounded & Modern Version */
+.filter-container { 
+    background: white; 
+    border-radius: 30px; 
+    margin-bottom: 25px; /* Jarak ditambah dari 25px ke 40px */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
+    overflow: hidden; 
+    border: none;
+}
+
+.filter-header { 
+    padding: 20px 30px; 
+    background: linear-gradient(135deg, var(--primary-red) 0%, #a50e13 100%); 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    color: white;
+    border-radius: 30px; /* Header juga dibuat bulat */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-top: 20px;
+}
+
+/* Efek melayang saat di-hover */
+.filter-header:hover { 
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(215, 25, 32, 0.3);
+}
+
+.filter-header span:first-child {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.filter-body { 
+    padding: 30px; 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+    gap: 20px; 
+    display: none; 
+    background: #ffffff;
+    border-radius: 0 0 30px 30px;
+    margin-bottom: 30px;
+}
+
+.filter-body.active { display: grid; animation: fadeIn 0.5s ease; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.filter-group { display: flex; flex-direction: column; gap: 8px; }
+
+.filter-group label { 
+    font-size: 11px; 
+    font-weight: 800; 
+    color: #94a3b8; 
+    margin-left: 10px; /* Biar sejajar dengan kelengkungan input */
+    text-transform: uppercase;
+}
+
+.filter-group select { 
+    padding: 14px 20px; 
+    border-radius: 20px; /* Select dibuat sangat bulat */
+    border: 2px solid #f1f5f9; 
+    font-size: 13px; 
+    font-family: inherit;
+    font-weight: 600;
+    color: var(--dark-slate);
+    background-color: #f8fafc;
+    outline: none;
+    transition: 0.3s;
+    appearance: none; /* Hilangkan arrow bawaan browser */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 20px) center;
+}
+
+.filter-group select:focus { 
+    border-color: var(--primary-red); 
+    background-color: white;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+.btn-reset { 
+    grid-column: 1 / -1; 
+    margin-top: 15px;
+    padding: 15px; 
+    background: #fdf2f2; 
+    border: none; 
+    border-radius: 20px; /* Tombol reset juga bulat */
+    cursor: pointer; 
+    font-weight: 800; 
+    font-size: 12px;
+    color: var(--primary-red); 
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+.btn-reset:hover { 
+    background: var(--primary-red); 
+    color: white; 
+    transform: scale(0.98);
+}
+
+        /* Update tombol silang agar melayang & mewah */
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--dark-slate);
+    cursor: pointer;
+    z-index: 10001; /* Di atas modal content */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: 0.3s;
+}
+
+.close-modal:hover {
+    background: var(--primary-red);
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Warna baris untuk Early Warning */
+/* Baris Stagnan (Early Warning) */
+.warning-row {
+    background-color: #fffbeb !important; /* Kuning PDI Muda */
+    border-left: 4px solid #f59e0b !important;
+}
+
+.warning-row:hover {
+    background-color: #fef3c7 !important;
+}
+
+/* Badge Warning Nama */
+.warning-badge {
+    background: #f59e0b;
+    color: white;
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 900;
+    display: inline-block;
+    margin-top: 2px;
+}
+        th:nth-child(2) {
+    min-width: 200px; /* Agar nama dan badge tidak bertumpuk terlalu rapat */
+}
