@@ -916,8 +916,17 @@ function openDetail(originalIndex) {
 }
 
 function resetFilters() {
-    document.querySelectorAll('select').forEach(s => s.value = 'Semua');
-    document.getElementById('searchInput').value = '';
+    // 1. Reset semua dropdown (select)
+    document.querySelectorAll('.filter-body select').forEach(s => s.value = 'Semua');
+    
+    // 2. Reset semua kotak ketikan (input) di dalam filter (Kecamatan & Desa)
+    document.querySelectorAll('.filter-body input').forEach(i => i.value = '');
+    
+    // 3. Reset kotak pencarian utama (ID-nya harus quickSearch)
+    const qs = document.getElementById('quickSearch');
+    if(qs) qs.value = '';
+
+    // 4. Jalankan applyFilters agar tabel balik ke data awal
     applyFilters();
 }
 
