@@ -312,21 +312,21 @@ function renderTable(data) {
 }
 
     // 6. UPDATE STATISTIK
-    function updateStats(data) {
-        const total = data.length;
-        document.querySelector('.stats-grid .stat-card:nth-child(1) h2').innerText = total;
-        
-        const youngKader = data.filter(k => {
-            const gen = calculateAge(k.tanggal_lahir).gen;
-            return gen === "Gen Z" || gen === "Millennial";
-        }).length;
-        
-        const percentYoung = total > 0 ? Math.round((youngKader / total) * 100) : 0;
-        document.querySelector('.stats-grid .stat-card:nth-child(3) h2').innerText = percentYoung + "%";
-        
-        const wilayahUnik = [...new Set(data.map(k => k.kecamatan))].filter(Boolean).length;
-        document.querySelector('.stats-grid .stat-card:nth-child(4) h2').innerText = wilayahUnik;
-    }
+function updateStats(data) {
+    const total = data.length;
+    document.querySelector('.stats-grid .stat-card:nth-child(1) h2').innerText = total;
+    
+    const youngKader = data.filter(item => {
+        const gen = calculateAge(item.pribadi.tgl_lahir).gen;
+        return gen === "Gen Z" || gen === "Millennial";
+    }).length;
+    
+    const percentYoung = total > 0 ? Math.round((youngKader / total) * 100) : 0;
+    document.querySelector('.stats-grid .stat-card:nth-child(3) h2').innerText = percentYoung + "%";
+    
+    const wilayahUnik = [...new Set(data.map(item => item.pribadi.kec))].filter(Boolean).length;
+    document.querySelector('.stats-grid .stat-card:nth-child(4) h2').innerText = wilayahUnik;
+}
 
     function toggleFilter() {
         const panel = document.getElementById('panelFilter');
