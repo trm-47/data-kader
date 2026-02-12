@@ -353,7 +353,7 @@ async function submitSeluruhData() {
     if(!data) return alert("Data kosong!");
     const btn = document.querySelector('.btn-final');
     btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
-    const URL_API = 'https://script.google.com/macros/s/AKfycbyE4ebCnjZ3aUJQ9gR0Qe_mgBM5GK18xHr74SIzbhsxvxM_-RkKOE6CNxaXHuAZwMQ1YQ/exec';
+    const URL_API = 'https://script.google.com/macros/s/AKfycbysCjLQBPyogM4c7_ohGuggfm7JwjOBQo1BS4fG4axFbldk8W5JNAFF9VVLyZx-Jo-i2A/exec';
     try {
         await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
         alert("MERDEKA! Data Terkirim."); localStorage.clear(); window.location.href = 'finish.html';
