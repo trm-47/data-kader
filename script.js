@@ -359,7 +359,7 @@ async function submitSeluruhData() {
     const btn = document.querySelector('.btn-final');
     btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
     
-    const URL_API = 'https://script.google.com/macros/s/AKfycbxGhWXG7BMKUOtJUaHwFuXa0cpVUmY-p501EeIka8w6IbiPzHhlv1ym6qV77KXrwn3o6g/exec';
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzQA3fNn9ZcnXqfGL0yBA2SqFVx9MAQjLniltAkb5_0SHA2OGKTSXp3xpgVRVb6X7fq7g/exec';
     try {
         await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
         alert("MERDEKA! Data Terkirim."); localStorage.clear(); window.location.href = 'finish.html';
