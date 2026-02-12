@@ -351,36 +351,7 @@ document.getElementById('rekapLainnya').innerHTML = `
     </div>`;
     }
 
-    async function submitSeluruhData() {
-    const data = JSON.parse(localStorage.getItem('kaderData'));
-    const btn = document.querySelector('.btn-final'); // Sesuaikan class button
-    
-    if(!data) return alert("Data kosong!");
 
-    btn.disabled = true;
-    btn.innerHTML = "⏳ Sedang Mengirim...";
-    
-    // URL API Google Apps Script Bos
-    const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec'; 
-
-    try {
-        await fetch(URL_API, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        alert("MERDEKA! Data Kader Berhasil Terkirim ke Pusat.");
-        localStorage.clear();
-        window.location.href = 'finish.html';
-    } catch (e) {
-        console.error(e);
-        alert("Waduh, gagal kirim. Cek koneksi internet Bos.");
-        btn.disabled = false;
-        btn.innerHTML = "KIRIM DATA SEKARANG";
-    }
-}
 </script>
 </body>
 </html>
