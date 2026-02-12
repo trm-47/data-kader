@@ -350,6 +350,7 @@ window.addEventListener('load', () => {
     renderJabatan();
     renderPekerjaan();
     renderOrganisasi();
+    renderPenugasan();
 });
 
 /* --- KHUSUS PENUGASAN PARTAI (STEP 4) --- */
