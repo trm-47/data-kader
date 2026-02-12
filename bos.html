@@ -604,15 +604,13 @@ function resetFilters() {
         const jabatan = item.jabatan || [];  
 
         // 1. Presisi Pendidikan Kader (Pencarian Kata)
-        const textKader = kader.join(" ").toLowerCase();
+       const textKader = kader.join("|").toLowerCase(); 
         const matchesKader = fKader === "Semua" || textKader.includes(fKader.toLowerCase());
-
         // 2. Presisi Penugasan & Tingkat (Melalui Array Jabatan)
         // Kita gabung semua baris jabatan jadi satu teks untuk pencarian fleksibel
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
-
         // 3. Presisi Bahasa (Cek apakah kolom index 3 ada isinya dan bukan '-')
         const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
         let matchesBahasa = true;
@@ -635,7 +633,9 @@ function resetFilters() {
         
         // Pendidikan Formal (Biasanya di index 19 sesuai kode ente sebelumnya)
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19] === fEdu);
-
+if (fKader !== "Semua" && matchesKader === false) {
+             console.log("Gagal Filter Kader:", p.nama, "Data di Sheet:", textKader, "Mencari:", fKader);
+        }
         return matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
     });
 
