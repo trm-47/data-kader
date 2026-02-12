@@ -427,29 +427,38 @@ function calculateAge(birthDateString) {
     displayData.forEach((item) => {
         if (!item || !item.pribadi) return;
         const p = item.pribadi;
+        const f = item.formal || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- 1. LOGIKA PENDIDIKAN FORMAL TERTINGGI ---
-        let eduTertinggi = "-";
-        let infoDetail = p.kec || "-"; // Default jika pendidikan kosong, tampilkan kecamatan
-        const f = item.formal || [];
+        // --- 1. LOGIKA PENDIDIKAN FORMAL TERTINGGI (VERSI RINGKAS) ---
+        let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`; 
         
-        // Daftar cek (Urutan dari tertinggi ke terendah)
-        // Index asumsi: S3=14, S2=12, S1=10, D3=8, SMA=2
+        // Mapping Index: S3=17, S2=15, S1=11, FakS1=12, D3=9, SMA=6, SMP=4, SD=2
         const listEdu = [
-            { label: "S3", idx: 14, jur: 15 },
-            { label: "S2", idx: 12, jur: 13 },
-            { label: "S1", idx: 10, jur: 11 },
-            { label: "D3", idx: 8,  jur: 9 },
-            { label: "SMA/SMK", idx: 2, jur: 3 }
+            { label: "S3", idx: 17 },
+            { label: "S2", idx: 15 },
+            { label: "S1", idx: 11 },
+            { label: "D1-D3", idx: 9 },
+            { label: "SMA/SMK", idx: 6 },
+            { label: "SMP", idx: 4 },
+            { label: "SD", idx: 2 }
         ];
 
         for (let edu of listEdu) {
-            if (f[edu.idx] && f[edu.idx] !== "" && f[edu.idx] !== "-") {
-                eduTertinggi = edu.label;
-                // Ambil jurusan jika ada datanya
-                const jurusan = (f[edu.jur] && f[edu.jur] !== "-") ? f[edu.jur] : "";
-                infoDetail = `<strong>${eduTertinggi}</strong>${jurusan ? '<br><small>' + jurusan + '</small>' : ''}`;
+            // Cek apakah kolom nama sekolah/kampus (idx) ada isinya
+            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
+                let detail = "";
+                
+                if (edu.label === "S1") {
+                    // KHUSUS S1: Ambil Fakultas saja (Index 12)
+                    const fak = (f[12] && f[12] !== "-") ? f[12] : f[11]; // Jika fak kosong, pakai nama kampus
+                    detail = `<br><small>${fak}</small>`;
+                } else {
+                    // LAINNYA: Tampilkan nama sekolah/kampusnya saja
+                    detail = `<br><small>${f[edu.idx]}</small>`;
+                }
+
+                infoPendidikan = `<strong>${edu.label}</strong>${detail}`;
                 break; 
             }
         }
@@ -471,25 +480,20 @@ function calculateAge(birthDateString) {
 
         if (htmlBadgeKader === "") htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
 
-        // --- 3. RENDER BARIS TABEL ---
         const originalIdx = databaseKader.indexOf(item);
         body.innerHTML += `
             <tr onclick="openDetail(${originalIdx})">
                 <td data-label="Foto">
-                    <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" 
-                         style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
                 </td>
                 <td data-label="Identitas">
-                    <strong>${p.nama || 'Tanpa Nama'}</strong><br>
-                    <small>${p.nik || '-'}</small>
+                    <strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small>
                 </td>
                 <td data-label="Usia">
-                    ${ageInfo.age}<br>
-                    <span class="badge badge-gray">${ageInfo.gen}</span>
+                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
                 </td>
                 <td data-label="Pendidikan">
-                    ${infoDetail}
+                    ${infoPendidikan}
                 </td>
                 <td data-label="Kaderisasi">
                     ${htmlBadgeKader}
@@ -606,12 +610,12 @@ function openDetail(originalIndex) {
 }
 
 function resetFilters() {
-    document.querySelectorAll('.filter-body select').forEach(s => s.value = "Semua");
-    renderTable(databaseKader);
-    updateStats(databaseKader);
+    document.querySelectorAll('select').forEach(s => s.value = 'Semua');
+    document.getElementById('searchInput').value = '';
+    applyFilters();
 }
 
-    function applyFilters() {
+function applyFilters() {
     const fJK = document.getElementById('fJK').value;
     const fAgama = document.getElementById('fAgama').value;
     const fEdu = document.getElementById('fPendidikan').value;
@@ -633,17 +637,28 @@ function resetFilters() {
         if (fKader === "Semua") {
             matchesKader = true;
         } else {
-            // Pemetaan Index: 0=Pratama, 2=Madya, 4=Utama, 6=Guru, 8=Perempuan
+            // Mapping Index: Pratama=2, Madya=4, Utama=6, Guru=8, Perempuan=10
             const mappingKader = { 
-    "Pratama": 2, 
-    "Madya": 4, 
-    "Utama": 6, 
-    "Guru": 8, 
-    "Perempuan": 10 
-};
+                "Pratama": 2, 
+                "Madya": 4, 
+                "Utama": 6, 
+                "Guru": 8, 
+                "Perempuan": 10 
+            };
+            
             const targetIdx = mappingKader[fKader];
-            if (kader[targetIdx] && kader[targetIdx] !== "" && kader[targetIdx] !== "-") {
-                matchesKader = true;
+            const hasSertifikat = (kader[targetIdx] && kader[targetIdx] !== "" && kader[targetIdx] !== "-");
+
+            if (fKader === "Perempuan") {
+                // Khusus Kader Perempuan: Harus ada sertifikat di index 10 DAN Jenis Kelamin harus Perempuan ('P')
+                if (hasSertifikat && (p.jk === "P" || p.jk === "Perempuan")) {
+                    matchesKader = true;
+                }
+            } else {
+                // Untuk Pratama, Madya, Utama, Guru
+                if (hasSertifikat) {
+                    matchesKader = true;
+                }
             }
         }
 
@@ -652,7 +667,7 @@ function resetFilters() {
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
 
-        // 3. Logika Bahasa & IT (Cek ada isinya atau tidak)
+        // 3. Logika Bahasa & IT
         const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
         const hasBahasa = (valBahasa !== "-" && valBahasa !== "");
         const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? hasBahasa : !hasBahasa);
@@ -661,10 +676,12 @@ function resetFilters() {
         const hasIT = (valIT !== "-" && valIT !== "");
         const matchesIT = fIT === "Semua" || (fIT === "Ya" ? hasIT : !hasIT);
 
-        // 4. Filter Standar
+        // 4. Filter Standar (Gender, Agama, dan Pendidikan Terakhir di Index 19)
         const matchesJK = fJK === "Semua" || p.jk === fJK;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
-        const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19] === fEdu);
+        
+        // Menggunakan index 19 untuk Pendidikan Formal (Status Terakhir)
+        const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
         return matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
     });
