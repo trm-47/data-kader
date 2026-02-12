@@ -118,27 +118,37 @@
         }
     }
 
-    function calculateAge(birthDateString) {
-        if (!birthDateString || birthDateString === "-") return { age: "-", gen: "-" };
-        try {
-            let birthDate = new Date(birthDateString);
-            if (isNaN(birthDate.getTime())) return { age: "-", gen: "-" };
-
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-
-            const year = birthDate.getFullYear();
-            let gen = "Lainnya";
-            if (year >= 1997 && year <= 2012) gen = "Gen Z";
-            else if (year >= 1981 && year <= 1996) gen = "Millennial";
-            else if (year >= 1965 && year <= 1980) gen = "Gen X";
-            else if (year <= 1964) gen = "Boomer";
-
-            return { age: age + " Thn", gen: gen, rawAge: age };
-        } catch (e) { return { age: "-", gen: "-" }; }
+function calculateAge(birthDateString) {
+    // Proteksi level 1: Jika data benar-benar kosong atau undefined
+    if (!birthDateString || birthDateString === "-" || birthDateString === "") {
+        return { age: "-", gen: "-", rawAge: 0 };
     }
+
+    try {
+        let birthDate = new Date(birthDateString);
+        
+        // Proteksi level 2: Jika format tanggal ngaco (Invalid Date)
+        if (isNaN(birthDate.getTime())) {
+            return { age: "-", gen: "-", rawAge: 0 };
+        }
+
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+        const year = birthDate.getFullYear();
+        let gen = "Lainnya";
+        if (year >= 1997 && year <= 2012) gen = "Gen Z";
+        else if (year >= 1981 && year <= 1996) gen = "Millennial";
+        else if (year >= 1965 && year <= 1980) gen = "Gen X";
+        else if (year <= 1964) gen = "Boomer";
+
+        return { age: age + " Thn", gen: gen, rawAge: age };
+    } catch (e) {
+        return { age: "-", gen: "-", rawAge: 0 };
+    }
+}
 
     function renderTable(data) {
         const body = document.getElementById('bodyKader');
