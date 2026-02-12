@@ -188,17 +188,17 @@
     }
 
     // 3. FUNGSI POPULATE FILTERS (BIAR TIDAK ERROR)
-    function populateFilters(data) {
-        const selectKec = document.querySelector('.filter-group select'); // Select pertama (Wilayah)
-        const kecamatans = [...new Set(data.map(k => k.kecamatan))].filter(Boolean);
-        
-        // Reset dan isi filter kecamatan
-        selectKec.innerHTML = '<option value="">Semua Kecamatan</option>';
-        kecamatans.forEach(kec => {
-            selectKec.innerHTML += `<option value="${kec}">${kec}</option>`;
-        });
-    }
-
+function populateFilters(data) {
+    if (!data) return;
+    const selectKec = document.querySelector('.filter-group select');
+    // Ambil kec dari item.pribadi.kec
+    const kecamatans = [...new Set(data.map(item => item.pribadi ? item.pribadi.kec : null))].filter(Boolean);
+    
+    selectKec.innerHTML = '<option value="">Semua Kecamatan</option>';
+    kecamatans.sort().forEach(kec => {
+        selectKec.innerHTML += `<option value="${kec}">${kec}</option>`;
+    });
+}
     // 4. FUNGSI HITUNG USIA & GEN
 function calculateAge(birthDateString) {
     if (!birthDateString || birthDateString === "-" || birthDateString === "") {
@@ -317,19 +317,25 @@ function renderTable(data) {
 
     // 6. UPDATE STATISTIK
 function updateStats(data) {
+    if (!data) return;
     const total = data.length;
-    document.querySelector('.stats-grid .stat-card:nth-child(1) h2').innerText = total;
+    
+    const statCards = document.querySelectorAll('.stats-grid .stat-card h2');
+    if (statCards.length < 4) return;
+
+    statCards[0].innerText = total;
     
     const youngKader = data.filter(item => {
+        if (!item.pribadi || !item.pribadi.tgl_lahir) return false;
         const gen = calculateAge(item.pribadi.tgl_lahir).gen;
         return gen === "Gen Z" || gen === "Millennial";
     }).length;
     
     const percentYoung = total > 0 ? Math.round((youngKader / total) * 100) : 0;
-    document.querySelector('.stats-grid .stat-card:nth-child(3) h2').innerText = percentYoung + "%";
+    statCards[2].innerText = percentYoung + "%";
     
-    const wilayahUnik = [...new Set(data.map(item => item.pribadi.kec))].filter(Boolean).length;
-    document.querySelector('.stats-grid .stat-card:nth-child(4) h2').innerText = wilayahUnik;
+    const wilayahUnik = [...new Set(data.map(item => item.pribadi ? item.pribadi.kec : null))].filter(Boolean).length;
+    statCards[3].innerText = wilayahUnik;
 }
 
     function toggleFilter() {
