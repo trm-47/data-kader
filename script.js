@@ -1,9 +1,10 @@
 (function() {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'premium') {
+    // Kita samakan kuncinya dengan index yaitu 'kader_theme'
+    const savedTheme = localStorage.getItem('kader_theme'); 
+    if (savedTheme === 'premium') {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
-        link.href = 'premium.css'; // Pastikan file premium.css sudah Bos buat
+        link.href = 'premium.css'; 
         document.head.appendChild(link);
     }
 })();
@@ -371,7 +372,6 @@ function addPenugasanPartai() {
     const lokasi = document.getElementById('tugas_lokasi').value;
     const periode = document.getElementById('tugas_periode').value;
 
-    // Validasi: Minimal Jenis, Jabatan, dan Periode diisi
     if (!jenis || !jabatan || !periode) {
         alert("⚠️ Mohon isi Jenis Penugasan, Jabatan, dan Periode!");
         return;
@@ -380,7 +380,6 @@ function addPenugasanPartai() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data.riwayat_penugasan_partai || [];
 
-    // Masukkan ke daftar
     list.push({
         jenis: jenis,
         lembaga: (jenis === 'Legislatif') ? lembaga : 'Eksekutif',
@@ -392,12 +391,11 @@ function addPenugasanPartai() {
     data.riwayat_penugasan_partai = list;
     localStorage.setItem('kaderData', JSON.stringify(data));
 
-    // Bersihkan form setelah tambah agar bisa isi lagi
     document.getElementById('tugas_jabatan').value = '';
     document.getElementById('tugas_lokasi').value = '';
     document.getElementById('tugas_periode').value = '';
 
-    renderPenugasan(); // Panggil fungsi untuk memunculkan kotak di bawah
+    renderPenugasan();
 }
 
 function renderPenugasan() {
@@ -408,13 +406,13 @@ function renderPenugasan() {
     let list = data.riwayat_penugasan_partai || [];
 
     container.innerHTML = list.map((item, index) => `
-        <div style="background:#f8fafc; padding:12px; margin-bottom:10px; border-left:4px solid #D71920; border-radius:8px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div class="data-box-item" style="background:rgba(255,255,255,0.05); padding:12px; margin-bottom:10px; border-left:4px solid #D71920; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
             <div style="font-size:13px;">
-                <strong style="color:var(--primary-color);">${item.jenis} - ${item.jabatan}</strong><br>
-                <span style="color:#64748b;">${item.lembaga} | ${item.lokasi}</span><br>
+                <strong style="color:var(--primary-red);">${item.jenis} - ${item.jabatan}</strong><br>
+                <span>${item.lembaga} | ${item.lokasi}</span><br>
                 <small>Periode: ${item.periode}</small>
             </div>
-            <button onclick="deletePenugasan(${index})" style="color:#D71920; border:none; background:none; font-size:20px; cursor:pointer; padding:0 10px;">&times;</button>
+            <button onclick="deletePenugasan(${index})" style="color:#D71920; border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
         </div>
     `).join('');
 }
