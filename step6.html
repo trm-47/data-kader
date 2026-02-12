@@ -81,69 +81,12 @@
 
 <script src="script.js"></script>
 <script>
-    // FUNGSI TAMBAH ORGANISASI DENGAN TINGKATAN
-    function addOrganisasi() {
-        const nama = document.getElementById('org_nama').value.trim();
-        const tingkat = document.getElementById('org_tingkat').value;
-        const jabatan = document.getElementById('org_jabatan').value.trim();
-        const periode = document.getElementById('org_periode').value.trim();
-
-        if (!nama || !tingkat || !jabatan) {
-            alert("Nama, Tingkatan, dan Jabatan wajib diisi!");
-            return;
-        }
-
-        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-        if (!data.riwayat_organisasi) data.riwayat_organisasi = [];
-
-        // Simpan data tingkatan ke dalam array
-        data.riwayat_organisasi.push({
-            nama: nama,
-            tingkat: tingkat,
-            jabatan: jabatan,
-            periode: periode || '-'
-        });
-
-        localStorage.setItem('kaderData', JSON.stringify(data));
-        
-        // Reset field input
-        document.getElementById('org_nama').value = '';
-        document.getElementById('org_tingkat').value = '';
-        document.getElementById('org_jabatan').value = '';
-        document.getElementById('org_periode').value = '';
-
-        renderOrganisasi();
-    }
-
-    // FUNGSI RENDER LIST ORGANISASI
-    function renderOrganisasi() {
-        const data = JSON.parse(localStorage.getItem('kaderData')) || {};
-        const orgList = document.getElementById('orgList');
-        if (!orgList) return;
-
-        const items = data.riwayat_organisasi || [];
-        orgList.innerHTML = items.map((org, index) => `
-            <div style="background: #f8fafc; padding: 10px; border-radius: 8px; margin-top: 8px; border-left: 3px solid #2563eb; position: relative;">
-                <div style="font-size: 12px; font-weight: 700; color: #1e40af;">${org.nama} (${org.tingkat})</div>
-                <div style="font-size: 11px; color: #475569;">${org.jabatan} | ${org.periode}</div>
-                <button onclick="deleteOrganisasi(${index})" style="position: absolute; right: 10px; top: 10px; border: none; background: none; color: #ef4444; cursor: pointer;">❌</button>
-            </div>
-        `).join('');
-    }
-
-    function deleteOrganisasi(index) {
-        let data = JSON.parse(localStorage.getItem('kaderData'));
-        data.riwayat_organisasi.splice(index, 1);
-        localStorage.setItem('kaderData', JSON.stringify(data));
-        renderOrganisasi();
-    }
-
     window.addEventListener('load', () => {
-        renderOrganisasi();
-
+        if (typeof renderOrganisasi === 'function') renderOrganisasi();
+        
+        // Load data lama jika ada
         const savedData = JSON.parse(localStorage.getItem('kaderData'));
         if (savedData) {
-            // ... Load data Medsos, Bahasa, Komputer ... (Kode sama seperti sebelumnya)
             if (savedData.media_sosial) {
                 document.getElementById('medsos_fb').value = savedData.media_sosial.facebook !== '-' ? savedData.media_sosial.facebook : '';
                 document.getElementById('medsos_ig').value = savedData.media_sosial.instagram !== '-' ? savedData.media_sosial.instagram : '';
@@ -152,55 +95,16 @@
                 document.getElementById('medsos_youtube').value = savedData.media_sosial.youtube !== '-' ? savedData.media_sosial.youtube : '';
                 document.getElementById('medsos_linkedin').value = savedData.media_sosial.linkedin !== '-' ? savedData.media_sosial.linkedin : '';
             }
-
             if (savedData.kompetensi_bahasa) {
                 const bahasaArray = savedData.kompetensi_bahasa.split(', ');
-                const checkboxes = document.querySelectorAll('input[name="bahasa"]');
-                checkboxes.forEach(cb => {
+                document.querySelectorAll('input[name="bahasa"]').forEach(cb => {
                     if (bahasaArray.includes(cb.value)) cb.checked = true;
                 });
             }
-
             if (savedData.bahasa_lainnya_input) document.getElementById('bahasa_lainnya').value = savedData.bahasa_lainnya_input;
             if (savedData.kemampuan_komputer) document.getElementById('komputer').value = savedData.kemampuan_komputer;
         }
     });
-
-
-function goToReview() {
-    try {
-        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-
-        // 1. Ambil Kompetensi Bahasa & Komputer
-        const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
-        data.kompetensi_bahasa = Array.from(checkboxes).map(cb => cb.value).join(', ') || '-';
-        data.bahasa_lainnya_input = document.getElementById('bahasa_lainnya')?.value || '';
-        data.kemampuan_komputer = document.getElementById('komputer')?.value || '-';
-
-        // 2. Ambil Akun Media Sosial (Sesuai ID di HTML Step 6 Bos)
-        data.media_sosial = {
-            facebook: document.getElementById('medsos_fb')?.value.trim() || '-',
-            instagram: document.getElementById('medsos_ig')?.value.trim() || '-',
-            tiktok: document.getElementById('medsos_tiktok')?.value.trim() || '-',
-            twitter_x: document.getElementById('medsos_twitter')?.value.trim() || '-',
-            youtube: document.getElementById('medsos_youtube')?.value.trim() || '-',
-            linkedin: document.getElementById('medsos_linkedin')?.value.trim() || '-'
-        };
-
-        // 3. Simpan dan Lanjut
-        localStorage.setItem('kaderData', JSON.stringify(data));
-        window.location.href = 'rekap.html';
-
-    } catch (error) {
-        console.error("Error Step 6:", error);
-        alert("Gagal menyimpan data Step 6, Bos.");
-    }
-}
-
-// Tetap sediakan saveStep6 jika ada tombol yang memanggil nama lama
-function saveStep6() {
-    goToReview();
-}
 </script>
 </body>
 </html>
