@@ -1,23 +1,18 @@
-/* 1. IMPORT FONT - Selalu di paling atas */
+/* 1. IMPORT FONT */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
-/* 2. VARIABLE CONTROL - Pusatkan semua warna di sini untuk Skin Admin */
+/* 2. VARIABLE CONTROL */
 :root {
-    /* Main Colors */
     --primary-red: #D71920;
     --primary-dark: #A50E13;
     --luxury-gold: #C5A059;
-    
-    /* Text & Neutral */
     --dark-void: #0F172A;
     --soft-slate: #64748B;
-    
-    /* Glass & Effects */
-    --glass-white: rgba(255, 255, 255, 0.85);
+    --glass-white: rgba(255, 255, 255, 0.95);
     --surface-blur: 16px;
     --radius-premium: 24px;
     --radius-md: 16px;
-    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
 }
 
 /* 3. RESET & BASE */
@@ -26,57 +21,48 @@
     margin: 0;
     padding: 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    background: 
-        radial-gradient(at 0% 0%, rgba(215, 25, 32, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, rgba(30, 41, 59, 0.05) 0px, transparent 50%),
-        #F1F5F9;
+    background: #F1F5F9;
     color: var(--dark-void);
     display: flex;
     justify-content: center;
     min-height: 100vh;
     padding: 20px 15px;
-    letter-spacing: -0.01em;
 }
 
-/* 4. LAYOUT & ANIMATION */
+/* 4. LAYOUT */
 .container {
     width: 100%;
     max-width: 450px;
-    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideUp 0.6s ease-out;
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 /* 5. COMPONENTS - CARDS */
 .form-card, .rekap-card {
     background: var(--glass-white);
-    backdrop-filter: blur(var(--surface-blur));
-    -webkit-backdrop-filter: blur(var(--surface-blur));
     padding: 32px 28px;
     border-radius: var(--radius-premium);
     box-shadow: var(--shadow-premium);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Red Line Accent */
 .form-card::after {
     content: "";
     position: absolute;
     top: 0; left: 0; width: 100%; height: 5px;
-    background: linear-gradient(90deg, var(--primary-red), #FF4D4D);
+    background: var(--primary-red);
 }
 
-/* 6. HEADER & TYPOGRAPHY */
+/* 6. HEADER & TYPOGRAPHY - INI YANG TADI ERROR */
 .header-form {
     text-align: center;
     margin-bottom: 30px;
@@ -84,29 +70,23 @@ body {
 
 .logo-small {
     width: 65px;
-    filter: drop-shadow(0 8px 12px rgba(215, 25, 32, 0.2));
     margin-bottom: 16px;
 }
 
 .header-form h2 {
-.header-form h2 {
-    color: var(--dark-void); /* Warna dasar jika gradient gagal */
-    background: linear-gradient(180deg, var(--dark-void) 0%, #475569 100%);
-    -webkit-background-clip: text;
-    background-clip: text; /* Tambahkan ini agar lebih standar */
-    -webkit-text-fill-color: transparent;
+    color: var(--dark-void) !important; /* Paksa warna gelap agar muncul */
     font-size: 22px;
     font-weight: 800;
     margin-bottom: 4px;
 }
 
 .subtitle {
-font-size: 13px;
-    color: var(--primary-red) !important; /* Paksa merah di mode classic */
+    font-size: 13px;
+    color: var(--primary-red) !important; /* Paksa merah khas partai */
     font-weight: 800;
     letter-spacing: 1px;
     display: block;
-    -webkit-text-fill-color: initial !important; /* Reset efek transparan */
+    text-transform: uppercase;
 }
 
 /* 7. FORM ELEMENTS */
@@ -120,148 +100,82 @@ font-size: 13px;
     font-weight: 700;
     margin-bottom: 8px;
     color: var(--dark-void);
-    padding-left: 4px;
 }
 
 .input-field {
     width: 100%;
     padding: 14px 18px;
-    border: 2px solid #E2E8F0 !important; /* Beri warna border dasar */
+    border: 2px solid #E2E8F0 !important;
     border-radius: var(--radius-md);
-    font-size: 15px;
-    font-weight: 500;
-    background: #F8FAF9 !important; /* Warna background input yang jelas */
-    transition: all 0.3s ease;
-    outline: none;
+    background: #F8FAF9 !important;
     color: var(--dark-void) !important;
+    outline: none;
+    transition: 0.3s;
 }
 
 .input-field:focus {
-    background: #FFF !important;
     border-color: var(--primary-red) !important;
-    box-shadow: 0 10px 15px -3px rgba(215, 25, 32, 0.1);
+    background: #FFF !important;
 }
 
 /* 8. BUTTONS */
-.btn-primary, .btn-final {
+.btn-primary {
     width: 100%;
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-dark) 100%);
+    background: var(--primary-red);
     color: white;
     border: none;
     padding: 18px;
     border-radius: var(--radius-md);
     font-size: 16px;
     font-weight: 800;
-    letter-spacing: 0.5px;
     cursor: pointer;
-    box-shadow: 0 10px 20px -5px rgba(215, 25, 32, 0.4);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 12px rgba(215, 25, 32, 0.3);
 }
-
-/* Shine Effect on Hover */
-.btn-primary::after {
-    content: '';
-    position: absolute;
-    top: -50%; left: -50%; width: 200%; height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
-    opacity: 0; transition: 0.5s;
-}
-
-.btn-primary:hover::after { opacity: 1; }
-
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(215, 25, 32, 0.3);
-}
-
-.btn-primary:active { transform: scale(0.97); }
 
 .btn-outline-sm {
-    background: transparent;
+    background: #ffffff;
     border: 2px solid #E2E8F0;
     padding: 12px 20px;
     border-radius: var(--radius-md);
     font-size: 14px;
     font-weight: 700;
     color: var(--soft-slate);
-    transition: all 0.3s ease;
     cursor: pointer;
 }
 
-.btn-outline-sm:hover {
-    border-color: var(--primary-red);
-    color: var(--primary-red);
-    background: #FFF1F2;
-}
-
-/* 9. UTILS */
-.flex-row {
-    display: flex;
-    gap: 12px;
-}
-.flex-row > div { flex: 1; }
-
-/* Label Wajib Isi */
-.required {
-    color: var(--primary-red);
-    margin-left: 2px;
-}
-
-/* Gender Selection Luxury Style */
+/* 9. GENDER SELECTION */
 .gender-selection { display: flex; gap: 10px; }
 .gender-option { flex: 1; cursor: pointer; }
 .gender-option input { display: none; }
 .gender-card {
     display: block; 
     padding: 15px; 
-    background: #ffffff !important; /* Putih bersih */
-    border: 2px solid #e2e8f0 !important; /* Border abu-abu jelas */
-    border-radius: 12px; 
-    text-align: center; 
-    font-weight: 700; 
-    color: #64748b; 
-    transition: 0.3s;
+    background: #ffffff !important;
+    border: 2px solid #E2E8F0 !important;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 700;
+    color: #64748B;
 }
 
 .gender-option input:checked + .gender-card {
-    background: #fff1f2 !important; 
-    border-color: var(--primary-red) !important; 
+    background: #FFF1F2 !important;
+    border-color: var(--primary-red) !important;
     color: var(--primary-red) !important;
 }
 
-/* Hover effect untuk Gender */
-.gender-option:hover .gender-card {
-    border-color: #CBD5E1;
-}
-
-/* Animasi untuk Progress Bar agar Smooth */
-.progress-bar {
-    transition: width 1s cubic-bezier(0.65, 0, 0.35, 1);
-    background: linear-gradient(90deg, var(--primary-red), #FF4D4D);
-    box-shadow: 0 2px 10px rgba(215, 25, 32, 0.3);
-}
-/* Styling Khusus Review Data agar Rapi & Mewah */
+/* 10. REKAP / REVIEW STYLE */
 .rekap-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Membagi data jadi 2 kolom */
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 15px;
 }
 
 .rekap-item-premium {
     background: #ffffff;
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid #f1f5f9;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-
-/* Kolom Alamat & Wilayah dibuat lebar penuh agar tidak sesak */
-.rekap-item-premium:nth-child(7), 
-.rekap-item-premium:nth-child(8) {
-    grid-column: span 2;
+    border: 1px solid #F1F5F9;
 }
 
 .rekap-label {
@@ -269,36 +183,10 @@ font-size: 13px;
     font-weight: 800;
     color: var(--soft-slate);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
 }
 
 .rekap-value {
     font-size: 13px;
     font-weight: 700;
     color: var(--dark-void);
-    line-height: 1.4;
-}
-
-/* Edit Link Style */
-.edit-link {
-    background: #FFF1F2;
-    color: var(--primary-red);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 800;
-    text-decoration: none;
-    border: 1px solid rgba(215, 25, 32, 0.1);
-}
-/* Di premium.css */
-.btn-outline-sm {
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
-}
-
-.btn-outline-sm:hover {
-    border-color: var(--primary-red) !important;
-    color: var(--primary-red) !important;
 }
