@@ -282,9 +282,9 @@ function resetFilters() {
 }
 
 function applyFilters() {
-const fKota = document.getElementById('fKota').value;
-    const fKec = document.getElementById('fKec').value; // Sekarang ambil .value dari select
-    const fDesa = document.getElementById('fDesa').value; // Sekarang ambil .value dari select
+    const fKota = document.getElementById('fKota').value;
+    const fKec = document.getElementById('fKec').value;
+    const fDesa = document.getElementById('fDesa').value;
     const fJK = document.getElementById('fJK').value;
     const fAgama = document.getElementById('fAgama').value;
     const fEdu = document.getElementById('fPendidikan').value;
@@ -293,7 +293,7 @@ const fKota = document.getElementById('fKota').value;
     const fJenis = document.getElementById('fJenisTugas').value;
     const fBahasa = document.getElementById('fBahasa').value;
     const fIT = document.getElementById('fIT').value;
-    const fStatusMadya = document.getElementById('fStatusMadya').value;
+    const fStatusMadya = document.getElementById('fStatusMadya').value; // Ambil nilai dropdown status madya
 
     const filtered = databaseKader.filter(item => {
         const p = item.pribadi || {};
@@ -302,10 +302,12 @@ const fKota = document.getElementById('fKota').value;
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
+        // 1. Filter Wilayah
         const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
+        // 2. Filter Kaderisasi (Jenjang Spesifik)
         let matchesKader = (fKader === "Semua");
         if (!matchesKader) {
             const mappingKader = { "Pratama": 2, "Madya": 4, "Utama": 6, "Guru": 8, "Perempuan": 10 };
@@ -314,8 +316,16 @@ const fKota = document.getElementById('fKota').value;
             matchesKader = (fKader === "Perempuan") ? (hasSertifikat && (p.jk === "P" || p.jk === "Perempuan")) : hasSertifikat;
         }
 
-        const isMadya = kader[4] && kader[4] !== "" && kader[4] !== "-";
+        // 3. Filter Status Madya (SUDAH / BELUM) -> INI YANG TADI KURANG
+        const isMadya = (kader[4] && kader[4] !== "" && kader[4] !== "-");
+        let matchStatusMadya = true;
+        if (fStatusMadya === "Belum") {
+            matchStatusMadya = !isMadya;
+        } else if (fStatusMadya === "Sudah") {
+            matchStatusMadya = isMadya;
+        }
         
+        // 4. Filter Lainnya
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
@@ -330,6 +340,7 @@ const fKota = document.getElementById('fKota').value;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
+        // Return gabungan semua kriteria
         return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && 
                matchesEdu && matchesKader && matchesTingkat && matchesJenis && 
                matchesBahasa && matchesIT && matchStatusMadya;
