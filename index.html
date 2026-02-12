@@ -9,41 +9,59 @@
 <body>
 
     <div class="container">
-        <div class="form-card" style="text-align: center;">
+        <div class="form-card" style="text-align: center; overflow: hidden;">
             <div class="header-form">
-                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
+                <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small" style="filter: drop-shadow(0 5px 15px rgba(215, 25, 32, 0.2));">
                 
-                <p class="subtitle" style="letter-spacing: 2px; font-weight: 800; color: var(--primary-red);">
+                <p class="subtitle" style="letter-spacing: 3px; font-weight: 800; color: var(--primary-red); margin-top: 15px; font-size: 12px;">
                     DATABASE PENDIDIKAN KADER
                 </p>
-                <h2 style="font-size: 26px; margin-top: 10px;">DPD PDI PERJUANGAN</h2>
-                <h2 class="region-name" style="color: var(--soft-slate); font-size: 16px; font-weight: 600;">
+                <h2 style="font-size: 28px; margin-top: 5px; font-weight: 800; letter-spacing: -1px;">DPD PDI PERJUANGAN</h2>
+                <h2 class="region-name" style="color: var(--soft-slate); font-size: 15px; font-weight: 600; letter-spacing: 1px;">
                     DAERAH ISTIMEWA YOGYAKARTA
                 </h2>
             </div>
             
-            <div class="features-brief" style="margin: 25px 0; padding: 20px; background: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0; text-align: left;">
-                <p style="font-size: 14px; line-height: 1.6; color: var(--dark-void); margin-bottom: 12px;">
-                    Selamat datang, Kamerad. Silakan lengkapi data <b>Riwayat Pendidikan</b>, <b>Jabatan Partai</b>, dan <b>Pengalaman Organisasi</b> Anda.
-                </p>
+            <div class="features-brief" style="margin: 30px 0; padding: 25px; background: rgba(248, 250, 252, 0.8); border-radius: 24px; border: 1px solid rgba(226, 232, 240, 0.8); text-align: left; position: relative;">
                 
-                <div style="background: #fff1f2; padding: 12px; border-radius: 10px; border-left: 4px solid var(--primary-red);">
-                    <p style="font-size: 12px; line-height: 1.4; color: var(--primary-red); font-weight: 700;">
-                        ⚠️ PENTING: Saat mengisi riwayat, pastikan klik tombol TAMBAH (+) sampai data muncul di daftar bawah sebelum klik "Lanjut".
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <div style="min-width: 40px; height: 40px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); color: var(--primary-red);">
+                        ⭐
+                    </div>
+                    <div>
+                        <p style="font-size: 14px; line-height: 1.5; color: var(--dark-void);">
+                            Selamat datang, <b>Kamerad</b>. Mohon siapkan data riwayat hidup Anda untuk penguatan basis data digital partai.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+                    <span style="background: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #64748b; border: 1px solid #f1f5f9; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">🎓 PENDIDIKAN</span>
+                    <span style="background: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #64748b; border: 1px solid #f1f5f9; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">🚩 JABATAN PARTAI</span>
+                    <span style="background: white; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #64748b; border: 1px solid #f1f5f9; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">🤝 ORGANISASI</span>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #fff1f2 0%, #fff 100%); padding: 15px; border-radius: 16px; border: 1px solid #fee2e2; border-left: 5px solid var(--primary-red); position: relative; overflow: hidden;">
+                    <div style="position: absolute; right: -10px; bottom: -10px; font-size: 40px; opacity: 0.05; transform: rotate(-15deg);">⚠️</div>
+                    <p style="font-size: 12px; line-height: 1.5; color: var(--primary-red); font-weight: 700; position: relative; z-index: 1;">
+                        <span style="background: var(--primary-red); color: white; padding: 2px 8px; border-radius: 4px; margin-right: 5px; font-size: 10px;">PENTING</span> 
+                        Pastikan klik tombol <b style="text-decoration: underline;">TAMBAH (+)</b> setiap mengisi riwayat agar data tersimpan sebelum melanjutkan.
                     </p>
                 </div>
             </div>
 
-            <div style="margin-bottom: 20px; display: flex; justify-content: center; gap: 10px;">
-                <button type="button" onclick="setTheme('classic')" id="btnClassic" style="padding: 10px 18px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">⚪ Classic Mode</button>
-                <button type="button" onclick="setTheme('premium')" id="btnPremium" style="padding: 10px 18px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">⭐ Night Mode</button>
+            <div style="margin-bottom: 25px; display: flex; justify-content: center; gap: 12px; background: #f1f5f9; padding: 6px; border-radius: 30px; width: fit-content; margin-left: auto; margin-right: auto;">
+                <button type="button" onclick="setTheme('classic')" id="btnClassic" style="padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; font-size: 12px; font-weight: 800; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">☀️ CLASSIC</button>
+                <button type="button" onclick="setTheme('premium')" id="btnPremium" style="padding: 10px 20px; border-radius: 25px; border: none; cursor: pointer; font-size: 12px; font-weight: 800; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">🌙 NIGHT</button>
             </div>
 
-            <button type="button" onclick="startForm()" class="btn-primary">MULAI PENGISIAN FORM</button>
+            <button type="button" onclick="startForm()" class="btn-primary" style="width: 100%; padding: 18px; border-radius: 20px; letter-spacing: 1px; box-shadow: 0 10px 20px rgba(215, 25, 32, 0.2);">
+                MULAI PENGISIAN FORM
+            </button>
             
-            <p style="margin-top: 25px; font-size: 11px; color: var(--soft-slate); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            <p style="margin-top: 30px; font-size: 11px; color: var(--soft-slate); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7;">
                 Sistem Informasi Kader Digital <br>
-                © #TRM47 2026 
+                <span style="color: var(--primary-red);">© #TRM47 2026</span>
             </p>
         </div>
     </div>
