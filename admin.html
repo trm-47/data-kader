@@ -261,51 +261,52 @@ function calculateAge(birthDateString) {
 }
 
     // 5. TAMPILKAN KE TABEL
-    function renderTable(data) {
-        const body = document.getElementById('bodyKader');
-        body.innerHTML = "";
-        
-        if (data.length === 0) {
-            body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
-            return;
-        }
-
-        const sortedData = [...data].reverse();
-
-        sortedData.forEach((kader, index) => {
-            const ageInfo = calculateAge(kader.tanggal_lahir);
-            
-            // PROSES LINK FOTO DI SINI
-            const fotoUrl = formatDriveUrl(kader.foto);
-            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama_lengkap)}&background=random&color=fff`;
-
-            const row = `
-                <tr onclick="openDetail(${index})">
-                    <td class="td-img" data-label="Foto">
-                        <img src="${fotoUrl}" 
-                             onerror="this.onerror=null;this.src='${fallbackAvatar}';" 
-                             style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;">
-                    </td>
-                    <td data-label="Identitas">
-                        <strong>${kader.nama_lengkap || '-'}</strong><br>
-                        <small>${kader.nik || '-'}</small>
-                    </td>
-                    <td data-label="Usia">
-                        ${ageInfo.age}<br>
-                        <span class="badge badge-gray">${ageInfo.gen}</span>
-                    </td>
-                    <td data-label="Domisili">
-                        ${kader.kecamatan || '-'}<br>
-                        <small>YOGYAKARTA</small>
-                    </td>
-                    <td data-label="Kaderisasi">
-                        <span class="badge badge-red">${kader.tingkat_kaderisasi || 'Non-Kader'}</span>
-                    </td>
-                </tr>
-            `;
-            body.innerHTML += row;
-        });
+function renderTable(data) {
+    const body = document.getElementById('bodyKader');
+    body.innerHTML = "";
+    
+    if (data.length === 0) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
+        return;
     }
+
+    const sortedData = [...data].reverse();
+
+    sortedData.forEach((kader, index) => {
+        // --- DEBUG: CEK DATA TANGGAL ---
+        console.log(`Baris ${index} Nama: ${kader.nama_lengkap} | Tgl Lahir:`, kader.tanggal_lahir);
+        
+        const ageInfo = calculateAge(kader.tanggal_lahir);
+        const fotoUrl = formatDriveUrl(kader.foto);
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama_lengkap)}&background=random&color=fff`;
+
+        const row = `
+            <tr onclick="openDetail(${index})">
+                <td class="td-img" data-label="Foto">
+                    <img src="${fotoUrl}" 
+                         onerror="this.onerror=null;this.src='${fallbackAvatar}';" 
+                         style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;">
+                </td>
+                <td data-label="Identitas">
+                    <strong>${kader.nama_lengkap || '-'}</strong><br>
+                    <small>${kader.nik || '-'}</small>
+                </td>
+                <td data-label="Usia">
+                    ${ageInfo.age}<br>
+                    <span class="badge badge-gray">${ageInfo.gen}</span>
+                </td>
+                <td data-label="Domisili">
+                    ${kader.kecamatan || '-'}<br>
+                    <small>YOGYAKARTA</small>
+                </td>
+                <td data-label="Kaderisasi">
+                    <span class="badge badge-red">${kader.tingkat_kaderisasi || 'Non-Kader'}</span>
+                </td>
+            </tr>
+        `;
+        body.innerHTML += row;
+    });
+}
 
     // 6. UPDATE STATISTIK
     function updateStats(data) {
