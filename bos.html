@@ -216,7 +216,30 @@
             <span>FILTER DATA</span>
             <span id="filterIcon">▼</span>
         </div>
-        
+
+       <div class="filter-body" id="filterBody">
+            <div class="filter-group">
+                <label>Kabupaten / Kota</label>
+                <select id="fKota" onchange="applyFilters()">
+                    <option value="Semua">Semua Wilayah</option>
+                    <option value="Yogyakarta">Kota Yogyakarta</option>
+                    <option value="Sleman">Sleman</option>
+                    <option value="Bantul">Bantul</option>
+                    <option value="Gunungkidul">Gunungkidul</option>
+                    <option value="Kulon Progo">Kulon Progo</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Kecamatan</label>
+                <input type="text" id="fKec" onkeyup="applyFilters()" placeholder="Cari Kecamatan..." 
+                       style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
+            </div>
+            <div class="filter-group">
+                <label>Kelurahan / Desa</label>
+                <input type="text" id="fDesa" onkeyup="applyFilters()" placeholder="Cari Desa..." 
+                       style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
+            </div>
+           
         <div class="filter-body" id="filterBody">
             <div class="filter-group">
                 <label>Jenis Kelamin</label>
@@ -616,6 +639,9 @@ function resetFilters() {
 }
 
 function applyFilters() {
+    const fKota = document.getElementById('fKota').value;
+    const fKec = document.getElementById('fKec').value.toLowerCase();
+    const fDesa = document.getElementById('fDesa').value.toLowerCase();
     const fJK = document.getElementById('fJK').value;
     const fAgama = document.getElementById('fAgama').value;
     const fEdu = document.getElementById('fPendidikan').value;
@@ -676,6 +702,10 @@ function applyFilters() {
         const hasIT = (valIT !== "-" && valIT !== "");
         const matchesIT = fIT === "Semua" || (fIT === "Ya" ? hasIT : !hasIT);
 
+        const matchKota = fKota === "Semua" || (p.kota && p.kota === fKota);
+        const matchKec = fKec === "" || (p.kec && p.kec.toLowerCase().includes(fKec));
+        const matchDesa = fDesa === "" || (p.desa && p.desa.toLowerCase().includes(fDesa));
+        
         // 4. Filter Standar (Gender, Agama, dan Pendidikan Terakhir di Index 19)
         const matchesJK = fJK === "Semua" || p.jk === fJK;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
