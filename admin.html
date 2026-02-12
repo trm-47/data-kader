@@ -278,15 +278,14 @@
             </select>
         </div>
         <div class="filter-group">
-            <label>Kompetensi IT</label>
-            <select id="fIT" onchange="applyFilters()">
-                <option value="Semua">Semua Kompetensi</option>
-                <option value="Office">Dasar (Office)</option>
-                <option value="Desain">Desain Grafis</option>
-                <option value="Editing">Editing Video</option>
-                <option value="IT">IT/Programming</option>
-            </select>
-        </div>
+<div class="filter-group">
+    <label>Kompetensi IT</label>
+    <select id="fIT" onchange="applyFilters()">
+        <option value="Semua">Semua</option>
+        <option value="Ya">Bisa</option>
+        <option value="-">Tidak Bisa</option>
+    </select>
+</div>
         <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
     </div>
 </div>
