@@ -106,17 +106,29 @@
     let databaseKader = [];
 
     async function fetchData() {
-        try {
-            const response = await fetch(URL_GAS + "?action=read");
-            const data = await response.json();
-            databaseKader = data;
-            renderTable(data);
-            updateStats(data);
-        } catch (error) {
-            console.error("Error:", error);
-            document.getElementById('bodyKader').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Gagal: ${error.message}</td></tr>`;
+try {
+        console.log("Memulai penarikan data...");
+        const response = await fetch(URL_GAS + "?action=read");
+        const data = await response.json();
+        
+        console.log("Data diterima:", data); // Cek di Inspect Element > Console
+
+        if (data.error) {
+            throw new Error(data.error);
         }
+
+        databaseKader = data;
+        renderTable(data);
+        updateStats(data);
+    } catch (error) {
+        console.error("Error Detail:", error);
+        document.getElementById('bodyKader').innerHTML = `
+            <tr><td colspan="5" style="text-align:center; color:red; padding:20px;">
+                Gagal memuat data: ${error.message}<br>
+                <small>Pastikan Deployment GAS sudah benar dan "Anyone" bisa akses.</small>
+            </td></tr>`;
     }
+}
 
 function calculateAge(birthDateString) {
     // Proteksi level 1: Jika data benar-benar kosong atau undefined
@@ -152,40 +164,41 @@ function calculateAge(birthDateString) {
 
     function renderTable(data) {
     const body = document.getElementById('bodyKader');
+    if (!body) return;
+    
     body.innerHTML = "";
     
     if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Database masih kosong atau NIK tidak ditemukan.</td></tr>';
         return;
     }
 
-    const sortedData = [...data].reverse();
+    // Gunakan data asli (atau gunakan .reverse() jika ingin yang terbaru di atas)
+    const displayData = [...data].reverse();
 
-    sortedData.forEach((item, index) => {
-        // --- PROTEKSI KERAS ---
-        // Jika item atau item.pribadi tidak ada, langsung skip ke baris berikutnya
-        if (!item || !item.pribadi) return; 
+    displayData.forEach((item, index) => {
+        // Proteksi jika data tidak lengkap
+        if (!item || !item.pribadi) return;
 
         const p = item.pribadi;
-        
-        // Pastikan tgl_lahir ada nilainya sebelum dikirim ke calculateAge
-        const tgl = p.tgl_lahir ? p.tgl_lahir : "";
-        const ageInfo = calculateAge(tgl);
-        
+        const ageInfo = calculateAge(p.tgl_lahir);
         const namaKader = p.nama || "Tanpa Nama";
-        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaKader)}&background=random&color=fff`;
         
-        // Ambil status kaderisasi (Proteksi jika array formal kosong)
-        let statusKader = "Non-Kader";
-        if (item.formal && Array.isArray(item.formal) && item.formal.length > 19) {
-            statusKader = item.formal[19] || "Non-Kader";
+        // Cari status dari sheet formal (indeks 19)
+        let statusKader = "Anggota";
+        if (item.formal && item.formal.length > 19) {
+            statusKader = item.formal[19] || "Anggota";
         }
 
+        // Gunakan index asli dari databaseKader untuk fungsi openDetail
+        // Kita cari index item ini di array databaseKader yang asli
+        const originalIdx = databaseKader.indexOf(item);
+
         const row = `
-            <tr onclick="openDetail(${data.length - 1 - index})">
+            <tr onclick="openDetail(${originalIdx})">
                 <td data-label="Foto">
                     <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='${fallbackAvatar}'" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(namaKader)}&background=random'" 
                          style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
                 </td>
                 <td data-label="Identitas">
