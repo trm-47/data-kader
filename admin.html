@@ -200,14 +200,35 @@
     }
 
     // 4. FUNGSI HITUNG USIA & GEN
-    function calculateAge(birthDateString) {
-        if (!birthDateString) return { age: "-", gen: "-" };
+function calculateAge(birthDateString) {
+        if (!birthDateString || birthDateString === "-") return { age: "-", gen: "-" };
+        
         try {
-            const birthDate = new Date(birthDateString);
+            // Konversi string ke objek tanggal
+            let birthDate = new Date(birthDateString);
+            
+            // Antisipasi jika format di Sheets adalah DD/MM/YYYY (Format Indonesia)
+            if (isNaN(birthDate.getTime()) && typeof birthDateString === 'string') {
+                let parts = birthDateString.split(/[-/]/);
+                if (parts.length === 3) {
+                    // Cek jika tahun ada di depan (YYYY-MM-DD) atau belakang (DD-MM-YYYY)
+                    if (parts[0].length === 4) {
+                        birthDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    } else {
+                        birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    }
+                }
+            }
+
+            if (isNaN(birthDate.getTime())) return { age: "-", gen: "-" };
+
             const today = new Date();
             let age = today.getFullYear() - birthDate.getFullYear();
             const monthDiff = today.getMonth() - birthDate.getMonth();
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
 
             const year = birthDate.getFullYear();
             let gen = "Lainnya";
@@ -216,8 +237,13 @@
             else if (year >= 1965 && year <= 1980) gen = "Gen X";
             else if (year <= 1964) gen = "Boomer";
 
-            return { age: age + " Thn", gen: gen };
+            // Pastikan umur tidak minus karena salah input tahun
+            return { 
+                age: age >= 0 ? age + " Thn" : "-", 
+                gen: gen 
+            };
         } catch (e) {
+            console.error("Gagal hitung umur:", e);
             return { age: "-", gen: "-" };
         }
     }
