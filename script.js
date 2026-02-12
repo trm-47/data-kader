@@ -584,29 +584,36 @@ async function submitSeluruhData() {
     const data = JSON.parse(localStorage.getItem('kaderData'));
     const btn = document.getElementById('btnSubmit');
     
-    if(!data) return alert("Data kosong!");
+    if(!data) return alert("Waduh Bos, datanya kosong di memori!");
+
+    // Konfirmasi terakhir
+    if(!confirm("Apakah data sudah benar dan siap dikirim ke Pusat?")) return;
 
     btn.disabled = true;
-    btn.innerHTML = "⏳ Sedang Mengirim...";
+    btn.innerHTML = "⏳ Sedang Mengirim... JANGAN TUTUP HALAMAN";
     
-    // GANTI DENGAN URL APPS SCRIPT BOS
     const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec'; 
 
     try {
-        // Gunakan fetch dengan mode no-cors untuk Google Apps Script
-        await fetch(URL_API, {
+        console.log("Sedang mengirim data ini:", data); // Cek di F12
+        
+        const response = await fetch(URL_API, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors', // Penting untuk Google Script
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
 
-        alert("MERDEKA! Data Kader Berhasil Terkirim ke Pusat.");
-        localStorage.clear();
-        window.location.href = 'finish.html';
+        // Karena no-cors, kita kasih delay sebentar agar browser selesai kirim
+        setTimeout(() => {
+            alert("MERDEKA! Data Kader Berhasil Terkirim.");
+            localStorage.clear();
+            window.location.href = 'finish.html';
+        }, 2000);
+
     } catch (e) {
-        console.error(e);
-        alert("Waduh, gagal kirim. Cek koneksi internet Bos.");
+        console.error("Error Detail:", e);
+        alert("Gagal kirim! Error: " + e.message);
         btn.disabled = false;
         btn.innerHTML = "KIRIM DATA SEKARANG";
     }
