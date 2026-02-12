@@ -33,7 +33,7 @@ document.addEventListener('change', (e) => {
 });
 
 /* ==========================================
-    3. LOGIKA SAVE STEP 1 (Tadi Hilang, Sekarang Kembali!)
+    3. LOGIKA SAVE STEP 1
    ========================================== */
 function saveStep1() {
     const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
@@ -62,10 +62,7 @@ function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
     data[key].splice(index, 1);
     localStorage.setItem('kaderData', JSON.stringify(data));
-    // Memanggil fungsi callback berdasarkan namanya
-    if (callbackName && typeof window[callbackName] === 'function') {
-        window[callbackName]();
-    }
+    if (callbackName && typeof window[callbackName] === 'function') window[callbackName]();
 }
 
 function renderList(id, key, template) {
@@ -92,9 +89,10 @@ const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index)
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
 const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => premiumTemplate(item.perusahaan, `${item.jabatan} (${item.masa_kerja})`, 'riwayat_pekerjaan', index, 'renderPekerjaan'));
 const renderOrganisasi = () => renderList('organisasiList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} (${item.periode})`, 'riwayat_organisasi', index, 'renderOrganisasi'));
+const renderPenugasan = () => renderList('penugasanList', 'riwayat_penugasan', (item, index) => premiumTemplate(item.tugas, `${item.wilayah} (${item.tahun})`, 'riwayat_penugasan', index, 'renderPenugasan'));
 
 /* ==========================================
-    5. FUNGSI ADD DATA (Sesuai ID HTML Bos)
+    5. FUNGSI ADD DATA (STEP 2 - 6)
    ========================================== */
 function saveToLocal(key, obj) {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
@@ -150,13 +148,34 @@ function addOrganisasi() {
     renderOrganisasi();
 }
 
+// FIX: Fungsi Penugasan Partai
+function addPenugasan() {
+    const tugas = document.getElementById('nama_penugasan')?.value;
+    const wilayah = document.getElementById('wilayah_penugasan')?.value;
+    const tahun = document.getElementById('tahun_penugasan')?.value;
+    if(!tugas || !wilayah) return alert("Lengkapi data penugasan!");
+    saveToLocal('riwayat_penugasan', { tugas, wilayah, tahun: tahun || '-' });
+    renderPenugasan();
+}
+
+// FIX: Fungsi Medsos (Save Step 6)
+function saveStep6() {
+    const facebook = document.getElementById('fb_kader')?.value || '-';
+    const instagram = document.getElementById('ig_kader')?.value || '-';
+    const tiktok = document.getElementById('tt_kader')?.value || '-';
+    
+    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
+    existing.medsos = { facebook, instagram, tiktok };
+    localStorage.setItem('kaderData', JSON.stringify(existing));
+    window.location.href = 'rekap.html';
+}
+
 /* ==========================================
     6. SUBMIT & INITIAL LOAD
    ========================================== */
 async function submitSeluruhData() {
     const data = JSON.parse(localStorage.getItem('kaderData'));
     if(!data) return alert("Data kosong!");
-    if(!confirm("Kirim ke Pusat?")) return;
     const btn = document.querySelector('.btn-final');
     btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
     const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec';
@@ -168,10 +187,16 @@ async function submitSeluruhData() {
 
 window.addEventListener('load', () => {
     const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
-    // Load Step 1 fields if exists
-    ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'].forEach(f => {
+    // Load Step 1
+    ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = saved[f] || '';
     });
-    // Auto Render
-    renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi();
+    // Load Medsos Step 6
+    if(saved.medsos) {
+        if(document.getElementById('fb_kader')) document.getElementById('fb_kader').value = saved.medsos.facebook || '';
+        if(document.getElementById('ig_kader')) document.getElementById('ig_kader').value = saved.medsos.instagram || '';
+        if(document.getElementById('tt_kader')) document.getElementById('tt_kader').value = saved.medsos.tiktok || '';
+    }
+    // Auto Render Semua List
+    renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
 });
