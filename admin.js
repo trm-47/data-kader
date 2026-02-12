@@ -81,13 +81,27 @@ function calculateAge(birthDateString) {
 
 function formatDriveUrl(url) {
     if (!url || !url.includes("drive.google.com")) return url;
-    const parts = url.split("id=");
-    let fileId = parts.length > 1 ? parts[1] : url.split("/d/")[1]?.split("/")[0];
+
+    let fileId = null;
+
+    // Format ...?id=FILE_ID
+    const idParam = url.split("id=")[1];
+    if (idParam) {
+        fileId = idParam.split("&")[0];
+    }
+
+    // Format .../d/FILE_ID/
+    if (!fileId && url.includes("/d/")) {
+        fileId = url.split("/d/")[1].split("/")[0];
+    }
+
     if (fileId) {
         return `https://lh3.googleusercontent.com/d/${fileId}`;
     }
+
     return url;
 }
+
 
 // --- CORE RENDERING ---
 function renderTable(data) {
