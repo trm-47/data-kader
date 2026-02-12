@@ -308,6 +308,26 @@
 
     function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
 
+    // Fungsi sakti untuk ubah link Drive biasa jadi Direct Link Gambar
+function formatDriveUrl(url) {
+    if (!url || url === "-" || url === "") return "";
+    
+    // Jika link mengandung ID file Drive
+    if (url.includes("drive.google.com")) {
+        let fileId = "";
+        if (url.includes("id=")) {
+            fileId = url.split("id=")[1].split("&")[0];
+        } else if (url.includes("/file/d/")) {
+            fileId = url.split("/d/")[1].split("/")[0];
+        }
+        
+        if (fileId) {
+            // Format Direct Link Thumbnail Drive
+            return "https://lh3.googleusercontent.com/u/0/d/" + fileId;
+        }
+    }
+    return url;
+}
     window.onload = fetchData;
 </script>
 </body>
