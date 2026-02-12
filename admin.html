@@ -266,22 +266,26 @@ function renderTable(data) {
     const body = document.getElementById('bodyKader');
     body.innerHTML = "";
     
-    if (data.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
+    if (!data || data.length === 0) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong atau tidak ditemukan.</td></tr>';
         return;
     }
 
-    // Data dibalik agar yang terbaru di atas
     const sortedData = [...data].reverse();
 
     sortedData.forEach((item, index) => {
-        // Ambil data dari objek 'pribadi' sesuai struktur doGet di GAS
-        const kader = item.pribadi; 
+        // Proteksi: Pastikan item dan item.pribadi itu ada
+        if (!item || !item.pribadi) return; 
+
+        const kader = item.pribadi;
         
-        // Gunakan 'tgl_lahir' karena itu nama di GAS Bos
-        const ageInfo = calculateAge(kader.tgl_lahir); 
+        // Ambil tgl_lahir dengan proteksi jika undefined
+        const tanggalLahirData = kader.tgl_lahir || "";
+        const ageInfo = calculateAge(tanggalLahirData); 
+        
         const fotoUrl = formatDriveUrl(kader.foto);
-        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama || 'Kader')}&background=random&color=fff`;
+        const namaKader = kader.nama || "Tanpa Nama";
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaKader)}&background=random&color=fff`;
 
         const row = `
             <tr onclick="openDetail(${index})">
@@ -291,7 +295,7 @@ function renderTable(data) {
                          style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;">
                 </td>
                 <td data-label="Identitas">
-                    <strong>${kader.nama || '-'}</strong><br>
+                    <strong>${namaKader}</strong><br>
                     <small>${kader.nik || '-'}</small>
                 </td>
                 <td data-label="Usia">
@@ -300,10 +304,10 @@ function renderTable(data) {
                 </td>
                 <td data-label="Domisili">
                     ${kader.kec || '-'}<br>
-                    <small>${kader.kota || 'YOGYAKARTA'}</small>
+                    <small>${kader.kota || 'D.I. YOGYAKARTA'}</small>
                 </td>
                 <td data-label="Kaderisasi">
-                    <span class="badge badge-red">${item.formal.status || 'Non-Kader'}</span>
+                    <span class="badge badge-red">${(item.formal && item.formal.status) ? item.formal.status : 'Non-Kader'}</span>
                 </td>
             </tr>
         `;
