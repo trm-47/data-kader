@@ -160,42 +160,61 @@
         return url;
     }
 
-    // 3. RENDER TABEL
-    function renderTable(data) {
-        const body = document.getElementById('bodyKader');
-        body.innerHTML = "";
-        const sortedData = [...data].reverse();
+    // 3. RENDER TABEL (DIPERKUAT)
+function renderTable(data) {
+    const body = document.getElementById('bodyKader');
+    body.innerHTML = "";
+    
+    // Filter data yang tidak memiliki objek pribadi (baris kosong di sheet)
+    const validData = data.filter(item => item && item.pribadi && item.pribadi.nama);
+    const sortedData = [...validData].reverse();
 
-        sortedData.forEach((item, index) => {
-            const p = item.pribadi;
-            const ageInfo = calculateAge(p.tgl_lahir);
-            let tk = "Non-Kader";
-            if(item.kaderisasi[6]) tk = "Utama"; else if(item.kaderisasi[4]) tk = "Madya"; else if(item.kaderisasi[2]) tk = "Pratama";
-
-            body.innerHTML += `
-                <tr onclick="openDetail(${index})">
-                    <td class="td-img" data-label="Foto"><img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${p.nama}'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
-                    <td data-label="Identitas"><strong>${p.nama}</strong><br><small>${p.nik}</small></td>
-                    <td data-label="Usia">${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
-                    <td data-label="Domisili">${p.kec}<br><small>${p.kota}</small></td>
-                    <td data-label="Kaderisasi"><span class="badge badge-red">${tk}</span></td>
-                </tr>`;
-        });
+    if (sortedData.length === 0) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Tidak ada data yang valid ditemukan.</td></tr>';
+        return;
     }
 
-    // 4. STATISTIK
-    function updateStats(data) {
-        document.getElementById('statTotal').innerText = data.length;
-        const kecs = [...new Set(data.map(k => k.pribadi.kec))].length;
-        document.getElementById('statWilayah').innerText = kecs + " Kec";
+    sortedData.forEach((item, index) => {
+        const p = item.pribadi;
+        const ageInfo = calculateAge(p.tgl_lahir);
         
-        const muda = data.filter(k => {
-            const age = calculateAge(k.pribadi.tgl_lahir).age;
-            return parseInt(age) <= 42;
-        }).length;
-        const percent = data.length > 0 ? Math.round((muda/data.length)*100) : 0;
-        document.getElementById('statMuda').innerText = percent + "%";
-    }
+        // Cek tingkat kaderisasi
+        let tk = "Non-Kader";
+        if(item.kaderisasi && item.kaderisasi[6]) tk = "Utama"; 
+        else if(item.kaderisasi && item.kaderisasi[4]) tk = "Madya"; 
+        else if(item.kaderisasi && item.kaderisasi[2]) tk = "Pratama";
+
+        body.innerHTML += `
+            <tr onclick="openDetail(${index})">
+                <td class="td-img" data-label="Foto">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                </td>
+                <td data-label="Identitas"><strong>${p.nama || '-'}</strong><br><small>${p.nik || '-'}</small></td>
+                <td data-label="Usia">${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
+                <td data-label="Domisili">${p.kec || '-'}<br><small>${p.kota || '-'}</small></td>
+                <td data-label="Kaderisasi"><span class="badge badge-red">${tk}</span></td>
+            </tr>`;
+    });
+}
+
+// 4. STATISTIK (DIPERKUAT AGAR TIDAK ERROR TGL_LAHIR)
+function updateStats(data) {
+    const validData = data.filter(item => item && item.pribadi);
+    
+    document.getElementById('statTotal').innerText = validData.length;
+    
+    const kecs = [...new Set(validData.map(k => k.pribadi.kec))].filter(Boolean).length;
+    document.getElementById('statWilayah').innerText = kecs + " Kec";
+    
+    const muda = validData.filter(k => {
+        if(!k.pribadi.tgl_lahir) return false;
+        const res = calculateAge(k.pribadi.tgl_lahir);
+        return res.gen === "Gen Z" || res.gen === "Millennial";
+    }).length;
+    
+    const percent = validData.length > 0 ? Math.round((muda/validData.length)*100) : 0;
+    document.getElementById('statMuda').innerText = percent + "%";
+}
 
     // 5. DETAIL LENGKAP (MODAL)
     function openDetail(index) {
