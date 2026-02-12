@@ -23,15 +23,23 @@
 <div class="input-group">
     <label>FOTO PROFIL KADER <span class="required">*</span></label>
     <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-        <div id="photoPreview" style="width: 120px; height: 120px; border-radius: 50%; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc;">
-            <span style="font-size: 10px; color: #94a3b8; text-align: center; padding: 10px;">Belum ada foto</span>
+        
+        <div id="photoPreview" style="width: 130px; height: 130px; border-radius: 50%; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f8fafc; position: relative;">
+            <span style="font-size: 10px; color: #94a3b8; text-align: center; padding: 10px;">Foto Profil</span>
         </div>
         
-        <input type="file" id="photoInput" accept="image/*" style="display: none;">
-        <button type="button" onclick="document.getElementById('photoInput').click()" class="btn-outline-sm" style="width: auto; padding: 10px 20px;">
-            📸 Ambil Foto / Galeri
-        </button>
-        <small style="font-size: 10px; color: var(--soft-slate);">Format: JPG, PNG (Maks 2MB)</small>
+        <input type="file" id="inputCamera" accept="image/*" capture="user" style="display: none;">
+        <input type="file" id="inputGallery" accept="image/*" style="display: none;">
+
+        <div style="display: flex; gap: 10px; width: 100%;">
+            <button type="button" onclick="document.getElementById('inputCamera').click()" class="btn-primary" style="flex: 1; padding: 12px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                🤳 SELFIE
+            </button>
+            <button type="button" onclick="document.getElementById('inputGallery').click()" class="btn-outline-sm" style="flex: 1; padding: 12px; font-size: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; background: white;">
+                🖼️ GALERI
+            </button>
+        </div>
+        <small style="font-size: 10px; color: var(--soft-slate);">Pilih salah satu metode di atas</small>
     </div>
 </div>
 
