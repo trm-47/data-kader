@@ -113,20 +113,31 @@
             </div>
         </div>
 
-        <div class="input-group">
-            <label>Kelurahan / Desa <span class="required">*</span></label>
-            <input type="text" id="kelurahan" placeholder="Nama Kelurahan" class="input-field">
-        </div>
+<div class="input-group">
+    <label>Kabupaten / Kota <span class="required">*</span></label>
+    <select id="kab_kota" class="input-field" onchange="updateKecamatan()">
+        <option value="">-- Pilih Kabupaten/Kota --</option>
+        <option value="Bantul">Kabupaten Bantul</option>
+        <option value="Gunungkidul">Kabupaten Gunungkidul</option>
+        <option value="Kulon Progo">Kabupaten Kulon Progo</option>
+        <option value="Sleman">Kabupaten Sleman</option>
+        <option value="Yogyakarta">Kota Yogyakarta</option>
+    </select>
+</div>
 
-        <div class="input-group">
-            <label>Kecamatan <span class="required">*</span></label>
-            <input type="text" id="kecamatan" placeholder="Nama Kecamatan" class="input-field">
-        </div>
+<div class="input-group">
+    <label>Kecamatan <span class="required">*</span></label>
+    <select id="kecamatan" class="input-field" onchange="updateKelurahan()">
+        <option value="">-- Pilih Kecamatan --</option>
+    </select>
+</div>
 
-        <div class="input-group">
-            <label>Kabupaten / Kota <span class="required">*</span></label>
-            <input type="text" id="kab_kota" placeholder="Contoh: Sleman / Yogyakarta" class="input-field">
-        </div>
+<div class="input-group">
+    <label>Kelurahan / Desa <span class="required">*</span></label>
+    <select id="kelurahan" class="input-field">
+        <option value="">-- Pilih Kelurahan --</option>
+    </select>
+</div>
 
         <div class="input-group">
             <label>Pekerjaan <span class="required">*</span></label>
