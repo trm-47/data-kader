@@ -1,192 +1,200 @@
-/* 1. IMPORT FONT */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+/* ==========================================
+    1. THEME ENGINE
+   ========================================== */
+(function() {
+    const savedTheme = localStorage.getItem('kader_theme'); 
+    if (savedTheme === 'premium') {
+        const link = document.createElement('link');
+        link.id = 'premium-theme-link';
+        link.rel = 'stylesheet';
+        link.href = 'premium.css'; 
+        document.head.appendChild(link);
+    }
+})();
 
-/* 2. VARIABLE CONTROL */
-:root {
-    --primary-red: #D71920;
-    --primary-dark: #A50E13;
-    --luxury-gold: #C5A059;
-    --dark-void: #0F172A;
-    --soft-slate: #64748B;
-    --glass-white: rgba(255, 255, 255, 0.95);
-    --surface-blur: 16px;
-    --radius-premium: 24px;
-    --radius-md: 16px;
-    --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+/* ==========================================
+    2. HANDLER FOTO
+   ========================================== */
+const handlePhoto = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+        alert("Maksimal 2MB ya Bos.");
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function() {
+        const preview = document.getElementById('photoPreview');
+        if(preview) {
+            preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            preview.style.border = "3px solid var(--primary-red)";
+        }
+        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+        data.foto = reader.result;
+        localStorage.setItem('kaderData', JSON.stringify(data));
+    }
+    reader.readAsDataURL(file);
+};
+
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') handlePhoto(e);
+});
+
+/* ==========================================
+    3. LOGIKA SAVE STEP 1
+   ========================================== */
+function saveStep1() {
+    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
+    const fields = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    let dataStep1 = { jenis_kelamin: genderEl ? genderEl.value : '' };
+
+    fields.forEach(f => {
+        const el = document.getElementById(f);
+        if(el) dataStep1[f] = el.value.trim();
+    });
+
+    if (fields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
+        alert("⚠️ Mohon lengkapi semua data!");
+        return;
+    }
+
+    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
+    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
+    window.location.href = 'step2.html';
 }
 
-/* 3. RESET & BASE */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+/* ==========================================
+    4. RENDERER ENGINE (SAFE MODE)
+   ========================================== */
+// Fungsi pembantu agar tidak error jika element tidak ada
+function safeRender(containerId, dataKey, templateFn) {
+    const container = document.getElementById(containerId);
+    if (!container) return; // Stop jika ID tidak ada di halaman ini
+
+    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    const list = data[dataKey] || [];
+    container.innerHTML = list.map((item, index) => templateFn(item, index)).join('');
 }
 
-body {
-    background: #F1F5F9;
-    color: var(--dark-void);
-    display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 20px 15px;
+function renderPendidikan() {
+    safeRender('pendidikanList', 'riwayat_pendidikan', (item, index) => `
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+            <div><b>${item.jenjang}: ${item.nama}</b><br><small>${item.info} | ${item.tahun}</small></div>
+            <button onclick="deleteData('riwayat_pendidikan', ${index}, renderPendidikan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+        </div>
+    `);
 }
 
-/* 4. LAYOUT */
-.container {
-    width: 100%;
-    max-width: 450px;
-    animation: slideUp 0.6s ease-out;
+function renderKader() {
+    safeRender('kaderList', 'riwayat_kader', (item, index) => `
+        <div style="background:rgba(215,25,32,0.05); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+            <div><b>${item.jenis}</b><br><small>${item.penyelenggara} (${item.tahun})</small></div>
+            <button onclick="deleteData('riwayat_kader', ${index}, renderKader)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+        </div>
+    `);
 }
 
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+function renderJabatan() {
+    safeRender('jabatanList', 'riwayat_jabatan_partai', (item, index) => `
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+            <div><b>${item.jabatan}</b><br><small>${item.tingkatan} | ${item.periode}</small></div>
+            <button onclick="deleteData('riwayat_jabatan_partai', ${index}, renderJabatan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+        </div>
+    `);
 }
 
-/* 5. COMPONENTS - CARDS */
-.form-card, .rekap-card {
-    background: var(--glass-white);
-    padding: 32px 28px;
-    border-radius: var(--radius-premium);
-    box-shadow: var(--shadow-premium);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    position: relative;
-    overflow: hidden;
+function renderPenugasan() {
+    safeRender('tugasList', 'riwayat_penugasan_partai', (item, index) => `
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+            <div><b>${item.jenis}: ${item.jabatan}</b><br><small>${item.lembaga} | ${item.periode}</small></div>
+            <button onclick="deleteData('riwayat_penugasan_partai', ${index}, renderPenugasan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+        </div>
+    `);
 }
 
-.form-card::after {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 5px;
-    background: var(--primary-red);
+function renderPekerjaan() {
+    safeRender('pekerjaanList', 'riwayat_pekerjaan', (item, index) => `
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid gray; display:flex; justify-content:space-between;">
+            <div><b>${item.perusahaan}</b><br><small>${item.jabatan} (${item.masa_kerja})</small></div>
+            <button onclick="deleteData('riwayat_pekerjaan', ${index}, renderPekerjaan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+        </div>
+    `);
 }
 
-/* 6. HEADER & TYPOGRAPHY - INI YANG TADI ERROR */
-.header-form {
-    text-align: center;
-    margin-bottom: 30px;
+function renderOrganisasi() {
+    safeRender('orgList', 'riwayat_organisasi', (item, index) => `
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid gray; display:flex; justify-content:space-between;">
+            <div><b>${item.nama}</b><br><small>${item.jabatan} (${item.periode})</small></div>
+            <button onclick="deleteData('riwayat_organisasi', ${index}, renderOrganisasi)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+        </div>
+    `);
 }
 
-.logo-small {
-    width: 65px;
-    margin-bottom: 16px;
+/* ==========================================
+    5. FUNGSI ADD & DELETE (UMUM)
+   ========================================== */
+function deleteData(key, index, callback) {
+    let data = JSON.parse(localStorage.getItem('kaderData'));
+    data[key].splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    callback();
 }
 
-.header-form h2 {
-    color: var(--dark-void) !important; /* Paksa warna gelap agar muncul */
-    font-size: 22px;
-    font-weight: 800;
-    margin-bottom: 4px;
+// Tambah Pendidikan (Step 2)
+function addPendidikan() {
+    const jenjang = document.getElementById('jenjang').value;
+    const nama = document.getElementById('nama_pt')?.value || document.getElementById('nama_sekolah')?.value;
+    const kota = document.getElementById('kota_sekolah').value;
+    const tahun = document.getElementById('tahun_lulus').value;
+    
+    if(!jenjang || !nama || !tahun) return alert("Lengkapi data!");
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_pendidikan || [];
+    list.push({ jenjang, nama, kota, tahun, info: "" });
+    data.riwayat_pendidikan = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPendidikan();
 }
 
-.subtitle {
-    font-size: 13px;
-    color: var(--primary-red) !important; /* Paksa merah khas partai */
-    font-weight: 800;
-    letter-spacing: 1px;
-    display: block;
-    text-transform: uppercase;
+// Tambah Kader (Step 3)
+function addPendidikanKader() {
+    const jenis = document.getElementById('jenis_kader').value;
+    const penyelenggara = document.getElementById('penyelenggara').value;
+    const tahun = document.getElementById('tahun_kader').value;
+    if(!jenis || !penyelenggara) return alert("Lengkapi!");
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_kader || [];
+    list.push({ jenis, penyelenggara, tahun });
+    data.riwayat_kader = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderKader();
 }
 
-/* 7. FORM ELEMENTS */
-.input-group {
-    margin-bottom: 20px;
-}
+/* ==========================================
+    6. ONLOAD HANDLER
+   ========================================== */
+window.addEventListener('load', () => {
+    const savedData = JSON.parse(localStorage.getItem('kaderData')) || {};
+    
+    // Auto-fill inputs
+    const inputs = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if(el && savedData[id]) el.value = savedData[id];
+    });
 
-.input-group label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    color: var(--dark-void);
-}
+    // Auto-fill Photo
+    if(savedData.foto && document.getElementById('photoPreview')) {
+        document.getElementById('photoPreview').innerHTML = `<img src="${savedData.foto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    }
 
-.input-field {
-    width: 100%;
-    padding: 14px 18px;
-    border: 2px solid #E2E8F0 !important;
-    border-radius: var(--radius-md);
-    background: #F8FAF9 !important;
-    color: var(--dark-void) !important;
-    outline: none;
-    transition: 0.3s;
-}
-
-.input-field:focus {
-    border-color: var(--primary-red) !important;
-    background: #FFF !important;
-}
-
-/* 8. BUTTONS */
-.btn-primary {
-    width: 100%;
-    background: var(--primary-red);
-    color: white;
-    border: none;
-    padding: 18px;
-    border-radius: var(--radius-md);
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(215, 25, 32, 0.3);
-}
-
-.btn-outline-sm {
-    background: #ffffff;
-    border: 2px solid #E2E8F0;
-    padding: 12px 20px;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--soft-slate);
-    cursor: pointer;
-}
-
-/* 9. GENDER SELECTION */
-.gender-selection { display: flex; gap: 10px; }
-.gender-option { flex: 1; cursor: pointer; }
-.gender-option input { display: none; }
-.gender-card {
-    display: block; 
-    padding: 15px; 
-    background: #ffffff !important;
-    border: 2px solid #E2E8F0 !important;
-    border-radius: 12px;
-    text-align: center;
-    font-weight: 700;
-    color: #64748B;
-}
-
-.gender-option input:checked + .gender-card {
-    background: #FFF1F2 !important;
-    border-color: var(--primary-red) !important;
-    color: var(--primary-red) !important;
-}
-
-/* 10. REKAP / REVIEW STYLE */
-.rekap-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-}
-
-.rekap-item-premium {
-    background: #ffffff;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #F1F5F9;
-}
-
-.rekap-label {
-    font-size: 10px;
-    font-weight: 800;
-    color: var(--soft-slate);
-    text-transform: uppercase;
-}
-
-.rekap-value {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--dark-void);
-}
+    // Jalankan render (Aman karena sudah pakai safeRender)
+    renderPendidikan();
+    renderKader();
+    renderJabatan();
+    renderPekerjaan();
+    renderOrganisasi();
+    renderPenugasan();
+});
