@@ -433,8 +433,12 @@ function calculateAge(birthDateString) {
         let htmlBadgeKader = "";
         const k = item.kaderisasi || [];
         const listJenjang = [
-            ["Guru", 6], ["Utama", 4], ["Madya", 2], ["Pratama", 0], ["Kader Perempuan", 8]
-        ];
+    ["Guru", 8], 
+    ["Utama", 6], 
+    ["Madya", 4], 
+    ["Pratama", 2], 
+    ["Kader Perempuan", 10]
+];
 
         listJenjang.forEach(jenjang => {
             const label = jenjang[0];
@@ -604,7 +608,13 @@ function resetFilters() {
             matchesKader = true;
         } else {
             // Pemetaan Index: 0=Pratama, 2=Madya, 4=Utama, 6=Guru, 8=Perempuan
-            const mappingKader = { "Pratama": 0, "Madya": 2, "Utama": 4, "Guru": 6, "Perempuan": 8 };
+            const mappingKader = { 
+    "Pratama": 2, 
+    "Madya": 4, 
+    "Utama": 6, 
+    "Guru": 8, 
+    "Perempuan": 10 
+};
             const targetIdx = mappingKader[fKader];
             if (kader[targetIdx] && kader[targetIdx] !== "" && kader[targetIdx] !== "-") {
                 matchesKader = true;
