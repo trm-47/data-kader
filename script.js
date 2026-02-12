@@ -88,7 +88,8 @@ const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan'
 const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
 const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => premiumTemplate(item.perusahaan, `${item.jabatan} (${item.masa_kerja})`, 'riwayat_pekerjaan', index, 'renderPekerjaan'));
-const renderOrganisasi = () => renderList('organisasiList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} (${item.periode})`, 'riwayat_organisasi', index, 'renderOrganisasi'));
+const renderOrganisasi = () => renderList('orgList', 'riwayat_organisasi', (item, index) => 
+    premiumTemplate(item.nama, `${item.jabatan} | ${item.periode}`, 'riwayat_organisasi', index, 'renderOrganisasi'));
 
 // Penyesuaian Render Penugasan untuk Step 4 (Target ID: tugasList)
 const renderPenugasan = () => renderList('tugasList', 'riwayat_penugasan', (item, index) => premiumTemplate(item.jabatan, `${item.jenis} - ${item.lokasi} (${item.periode})`, 'riwayat_penugasan', index, 'renderPenugasan'));
