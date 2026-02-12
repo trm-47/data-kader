@@ -201,52 +201,64 @@
 
     // 4. FUNGSI HITUNG USIA & GEN
 function calculateAge(birthDateString) {
-        if (!birthDateString || birthDateString === "-") return { age: "-", gen: "-" };
+    if (!birthDateString || birthDateString === "-" || birthDateString === "") {
+        return { age: "-", gen: "-" };
+    }
+
+    try {
+        let birthDate;
         
-        try {
-            // Konversi string ke objek tanggal
-            let birthDate = new Date(birthDateString);
-            
-            // Antisipasi jika format di Sheets adalah DD/MM/YYYY (Format Indonesia)
-            if (isNaN(birthDate.getTime()) && typeof birthDateString === 'string') {
-                let parts = birthDateString.split(/[-/]/);
-                if (parts.length === 3) {
-                    // Cek jika tahun ada di depan (YYYY-MM-DD) atau belakang (DD-MM-YYYY)
-                    if (parts[0].length === 4) {
-                        birthDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                    } else {
-                        birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                    }
+        // Jika data dari Google Sheets berupa format ISO (YYYY-MM-DDTHH:mm:ss.sssZ)
+        // Kita ambil 10 karakter pertama saja (YYYY-MM-DD)
+        if (typeof birthDateString === 'string' && birthDateString.includes('T')) {
+            birthDateString = birthDateString.split('T')[0];
+        }
+
+        birthDate = new Date(birthDateString);
+
+        // Jika gagal deteksi (Invalid Date), coba parsing manual format Indonesia DD/MM/YYYY
+        if (isNaN(birthDate.getTime())) {
+            let parts = birthDateString.toString().split(/[-/]/);
+            if (parts.length === 3) {
+                // Jika tahun di depan (YYYY-MM-DD)
+                if (parts[0].length === 4) {
+                    birthDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                } 
+                // Jika tahun di belakang (DD-MM-YYYY)
+                else {
+                    birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
                 }
             }
-
-            if (isNaN(birthDate.getTime())) return { age: "-", gen: "-" };
-
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-
-            const year = birthDate.getFullYear();
-            let gen = "Lainnya";
-            if (year >= 1997 && year <= 2012) gen = "Gen Z";
-            else if (year >= 1981 && year <= 1996) gen = "Millennial";
-            else if (year >= 1965 && year <= 1980) gen = "Gen X";
-            else if (year <= 1964) gen = "Boomer";
-
-            // Pastikan umur tidak minus karena salah input tahun
-            return { 
-                age: age >= 0 ? age + " Thn" : "-", 
-                gen: gen 
-            };
-        } catch (e) {
-            console.error("Gagal hitung umur:", e);
-            return { age: "-", gen: "-" };
         }
+
+        // Cek lagi, kalau tetap bukan tanggal, menyerah
+        if (isNaN(birthDate.getTime())) return { age: "-", gen: "-" };
+
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        // Penentuan Generasi berdasarkan Tahun Lahir
+        const year = birthDate.getFullYear();
+        let gen = "Lainnya";
+        if (year >= 1997 && year <= 2012) gen = "Gen Z";
+        else if (year >= 1981 && year <= 1996) gen = "Millennial";
+        else if (year >= 1965 && year <= 1980) gen = "Gen X";
+        else if (year <= 1964) gen = "Boomer";
+
+        return { 
+            age: age >= 0 ? age + " Thn" : "-", 
+            gen: gen 
+        };
+    } catch (e) {
+        console.error("Error Hitung Umur:", e);
+        return { age: "-", gen: "-" };
     }
+}
 
     // 5. TAMPILKAN KE TABEL
     function renderTable(data) {
