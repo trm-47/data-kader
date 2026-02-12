@@ -855,6 +855,25 @@ function applyFilters() {
     renderTable(filtered);
     updateStats(filtered);
 }
+    // 1. Fungsi Tutup Modal Dasar
+function closeDetail() {
+    document.getElementById('modalDetail').style.display = "none";
+}
+
+// 2. Klik di luar area (Overlay) untuk menutup
+window.onclick = function(event) {
+    const modal = document.getElementById('modalDetail');
+    if (event.target == modal) {
+        closeDetail();
+    }
+}
+
+// 3. Tekan tombol ESC untuk menutup
+document.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        closeDetail();
+    }
+});
 </script>
 </body>
 </html>
