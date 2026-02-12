@@ -195,27 +195,49 @@ function updateStats(data) {
     }
 
     const total = data.length;
-    let totalAge = 0, youth = 0, madyaCount = 0, countAge = 0;
+    const currentYear = new Date().getFullYear();
+    
+    let youth = 0;
+    let madyaCount = 0;
+    let needMadyaCount = 0; // Gabungan Butuh & Prioritas
 
     data.forEach(item => {
-        if (item.pribadi && item.pribadi.tgl_lahir) {
-            const ageInfo = calculateAge(item.pribadi.tgl_lahir);
-            if (ageInfo.rawAge > 0) {
-                totalAge += ageInfo.rawAge;
-                countAge++;
-                if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") youth++;
+        const p = item.pribadi || {};
+        const k = item.kaderisasi || [];
+
+        // 1. Hitung Gen Z & Milenial
+        if (p.tgl_lahir) {
+            const ageInfo = calculateAge(p.tgl_lahir);
+            if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") {
+                youth++;
             }
         }
-        const k = item.kaderisasi || [];
-        if (k[4] && k[4] !== "-" && k[4] !== "") madyaCount++;
+
+        // 2. Hitung Kader Madya Existing
+        const isMadya = k[4] && k[4] !== "-" && k[4] !== "";
+        if (isMadya) {
+            madyaCount++;
+        }
+
+        // 3. Hitung Butuh & Prioritas Madya
+        // Logika: Punya Pratama tapi Belum Madya
+        const hasPratama = k[2] && k[2] !== "" && k[2] !== "-";
+        if (hasPratama && !isMadya) {
+            needMadyaCount++;
+        }
     });
 
+    // Masukkan ke Tampilan
     document.getElementById('statTotal').innerText = total;
-    document.getElementById('statAge').innerText = countAge > 0 ? Math.round(totalAge / countAge) + " Thn" : "-";
-    document.getElementById('statYoung').innerText = Math.round((youth / total) * 100) + "%";
     
+    // Gen Z & Milenial
+    document.getElementById('statYoung').innerText = youth + " (" + Math.round((youth / total) * 100) + "%)";
+    
+    // Butuh & Prioritas Madya (Kuning/Orange)
+    document.getElementById('statNeedMadya').innerText = needMadyaCount;
+    
+    // Total Kader Madya Existing
     const areaCard = document.getElementById('statArea');
-    areaCard.previousElementSibling.innerText = "Kader Madya";
     areaCard.innerText = madyaCount + " (" + Math.round((madyaCount / total) * 100) + "%)";
 }
 
