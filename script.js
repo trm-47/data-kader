@@ -37,17 +37,23 @@ document.addEventListener('change', (e) => {
    ========================================== */
 function saveStep1() {
     const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    // Tambahkan 'agama' di dalam array di bawah ini
+    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'agama', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
     
-    let dataStep1 = { jenis_kelamin: genderEl ? genderEl.value : '' };
+    let dataStep1 = { 
+        jenis_kelamin: genderEl ? genderEl.value : '' 
+    };
+
     fields.forEach(f => {
         const el = document.getElementById(f);
         dataStep1[f] = el ? el.value.trim() : '';
     });
 
+    // Validasi: agama sekarang jadi data wajib
     const requiredFields = fields.filter(f => f !== 'no_kta');
     if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
-        alert("⚠️ Mohon lengkapi semua data wajib."); return;
+        alert("⚠️ Mohon lengkapi semua data wajib termasuk Agama."); 
+        return;
     }
 
     let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
