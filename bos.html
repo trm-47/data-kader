@@ -293,24 +293,29 @@
 }
 
 /* Warna baris untuk Early Warning */
+/* Baris Stagnan (Early Warning) */
 .warning-row {
-    background-color: #fffbeb !important; /* Kuning soft agar tetap nyaman di mata */
+    background-color: #fffbeb !important; /* Kuning PDI Muda */
+    border-left: 4px solid #f59e0b !important;
 }
 
 .warning-row:hover {
-    background-color: #fef3c7 !important; /* Sedikit lebih gelap saat di-hover */
+    background-color: #fef3c7 !important;
 }
 
-/* Badge peringatan di samping nama */
+/* Badge Warning Nama */
 .warning-badge {
     background: #f59e0b;
     color: white;
-    font-size: 9px;
-    padding: 2px 6px;
+    font-size: 8px;
+    padding: 1px 5px;
     border-radius: 4px;
-    margin-left: 8px;
-    font-weight: 800;
-    vertical-align: middle;
+    font-weight: 900;
+    display: inline-block;
+    margin-top: 2px;
+}
+        th:nth-child(2) {
+    min-width: 200px; /* Agar nama dan badge tidak bertumpuk terlalu rapat */
 }
     </style>
 </head>
@@ -444,22 +449,16 @@
     <div class="table-card">
         <table>
 
-            <thead>
-                <tr>
-                    <th style="width:80px">Foto</th>
-                    <th>Identitas</th>
-                    <th>Usia & Gen</th>
-                    <th>Pendidikan</th>
-                    <th>Kaderisasi</th>
-                </tr>
-
-                <tr>
-        <th>Nama Kader</th>
-        <th>Kecamatan</th>
-        <th>L/P</th>
-        <th>Jabatan</th>
-        <th>Aksi</th> </tr>
-            </thead>
+<thead>
+    <tr>
+        <th style="width: 60px;">Foto</th>
+        <th>Identitas</th>
+        <th style="text-align:center;">Usia</th>
+        <th>Pendidikan</th>
+        <th>Kaderisasi</th>
+        <th style="text-align:center; width: 100px;">Aksi</th>
+    </tr>
+</thead>
             <tbody id="bodyKader">
                 <tr><td colspan="5" style="text-align:center; padding:50px;">Memuat data...</td></tr>
             </tbody>
@@ -568,7 +567,7 @@ function calculateAge(birthDateString) {
     body.innerHTML = "";
     
     if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
         return;
     }
 
@@ -578,68 +577,59 @@ function calculateAge(birthDateString) {
         if (!item || !item.pribadi) return;
         const p = item.pribadi;
         const f = item.formal || [];
+        const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- 1. LOGIKA PENDIDIKAN FORMAL TERTINGGI (VERSI RINGKAS) ---
+        // --- 1. LOGIKA EARLY WARNING (STAGNAN) ---
+        // Cek: Sudah Pratama (k[2]) tapi belum Madya (k[4])
+        const isStagnan = (k[2] && k[2] !== "" && k[2] !== "-" && (!k[4] || k[4] === "" || k[4] === "-"));
+        const rowClass = isStagnan ? "warning-row" : "";
+        const badgeWarning = isStagnan ? '<br><span class="warning-badge">⚠️ BUTUH MADYA</span>' : '';
+
+        // --- 2. LOGIKA WHATSAPP DIRECT ---
+        const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
+        const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
+        const btnWA = waNumber ? 
+            `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">💬 Chat</a>` : 
+            `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
+
+        // --- 3. LOGIKA PENDIDIKAN FORMAL TERTINGGI ---
         let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`; 
-        
-        // Mapping Index: S3=17, S2=15, S1=11, FakS1=12, D3=9, SMA=6, SMP=4, SD=2
         const listEdu = [
-            { label: "S3", idx: 17 },
-            { label: "S2", idx: 15 },
-            { label: "S1", idx: 11 },
-            { label: "D1-D3", idx: 9 },
-            { label: "SMA/SMK", idx: 6 },
-            { label: "SMP", idx: 4 },
-            { label: "SD", idx: 2 }
+            { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
+            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
         ];
 
         for (let edu of listEdu) {
-            // Cek apakah kolom nama sekolah/kampus (idx) ada isinya
             if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                let detail = "";
-                
-                if (edu.label === "S1") {
-                    // KHUSUS S1: Ambil Fakultas saja (Index 12)
-                    const fak = (f[12] && f[12] !== "-") ? f[12] : f[11]; // Jika fak kosong, pakai nama kampus
-                    detail = `<br><small>${fak}</small>`;
-                } else {
-                    // LAINNYA: Tampilkan nama sekolah/kampusnya saja
-                    detail = `<br><small>${f[edu.idx]}</small>`;
-                }
-
+                let detail = (edu.label === "S1") ? `<br><small>${(f[12] && f[12] !== "-") ? f[12] : f[11]}</small>` : `<br><small>${f[edu.idx]}</small>`;
                 infoPendidikan = `<strong>${edu.label}</strong>${detail}`;
                 break; 
             }
         }
 
-        // --- 2. LOGIKA BADGE KADERISASI MULTIPLE ---
+        // --- 4. LOGIKA BADGE KADERISASI ---
         let htmlBadgeKader = "";
-        const k = item.kaderisasi || [];
-        const listJenjang = [
-            ["Guru", 8], ["Utama", 6], ["Madya", 4], ["Pratama", 2], ["Kader Perempuan", 10]
-        ];
-
+        const listJenjang = [ ["Guru", 8], ["Utama", 6], ["Madya", 4], ["Pratama", 2], ["Kader Perempuan", 10] ];
         listJenjang.forEach(jenjang => {
-            const label = jenjang[0];
-            const idx = jenjang[1];
-            if (k[idx] && k[idx] !== "" && k[idx] !== "-") {
-                htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${label} (${k[idx]})</span>`;
+            if (k[jenjang[1]] && k[jenjang[1]] !== "" && k[jenjang[1]] !== "-") {
+                htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjang[0]} (${k[jenjang[1]]})</span>`;
             }
         });
-
         if (htmlBadgeKader === "") htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
 
         const originalIdx = databaseKader.indexOf(item);
+        
+        // --- 5. RENDER FINAL ROW ---
         body.innerHTML += `
-            <tr onclick="openDetail(${originalIdx})">
+            <tr class="${rowClass}" onclick="openDetail(${originalIdx})" style="cursor:pointer;">
                 <td data-label="Foto">
                     <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
                 </td>
                 <td data-label="Identitas">
-                    <strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small>
+                    <strong>${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}<br><small>${p.nik || '-'}</small>
                 </td>
-                <td data-label="Usia">
+                <td data-label="Usia" style="text-align:center;">
                     ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
                 </td>
                 <td data-label="Pendidikan">
@@ -647,6 +637,9 @@ function calculateAge(birthDateString) {
                 </td>
                 <td data-label="Kaderisasi">
                     ${htmlBadgeKader}
+                </td>
+                <td data-label="Aksi" style="text-align:center;">
+                    ${btnWA}
                 </td>
             </tr>`;
     });
