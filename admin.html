@@ -629,7 +629,8 @@ function applyFilters() {
         const kader = item.kaderisasi || [];
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || []; // Ini array, perlu pengecekan khusus
-
+const checkIT = fIT === "Semua" || 
+            (fIT === "Ya" ? (medsos[8] && medsos[8] !== "-") : (medsos[8] === "-" || !medsos[8]));
         // Cek Jabatan (Struktur atau Penugasan)
         const hasTingkat = jabatan.some(j => j[4] === fTingkat);
         const hasJenis = jabatan.some(j => j[2] === fJenis || j[10] === 'V');
