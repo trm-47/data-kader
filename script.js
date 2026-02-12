@@ -13,23 +13,20 @@
 })();
 
 /* ==========================================
-    2. HANDLER FOTO (SELFIE & GALERI)
+    2. HANDLER FOTO
    ========================================== */
 const handlePhoto = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (file.size > 2 * 1024 * 1024) {
         alert("Ukuran foto terlalu besar, maksimal 2MB ya Bos.");
         return;
     }
-
     const reader = new FileReader();
     reader.onload = function() {
         const preview = document.getElementById('photoPreview');
         if(preview) {
             preview.innerHTML = `<img src="${reader.result}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
-            preview.style.border = "3px solid var(--primary-red)";
         }
         let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
         existing.foto = reader.result;
@@ -39,120 +36,127 @@ const handlePhoto = (e) => {
 };
 
 document.addEventListener('change', (e) => {
-    if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') {
-        handlePhoto(e);
-    }
+    if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') handlePhoto(e);
 });
 
 /* ==========================================
-    3. LOGIKA STEP 1: DATA PRIBADI (FIXED)
+    3. LOGIKA SAVE STEP 1
    ========================================== */
 function saveStep1() {
     const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
+    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
     
-    // Harus sinkron dengan ID di HTML Bos
-    const fields = [
-        'nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 
-        'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 
-        'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'
-    ];
-    
-    let dataStep1 = {
-        jenis_kelamin: genderEl ? genderEl.value : ''
-    };
-
+    let dataStep1 = { jenis_kelamin: genderEl ? genderEl.value : '' };
     fields.forEach(f => {
         const el = document.getElementById(f);
         dataStep1[f] = el ? el.value.trim() : '';
     });
 
-    // Validasi: No KTA boleh kosong, yang lain wajib
     const requiredFields = fields.filter(f => f !== 'no_kta');
-    const isMissing = requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin;
-
-    if (isMissing) {
-        alert("⚠️ Mohon lengkapi semua kolom yang bertanda bintang (*).");
+    if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
+        alert("⚠️ Mohon lengkapi semua kolom bertanda bintang (*).");
         return;
     }
 
     let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    const finalData = { ...existing, ...dataStep1 };
-    localStorage.setItem('kaderData', JSON.stringify(finalData));
+    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
     window.location.href = 'step2.html';
 }
 
 /* ==========================================
-    4. RENDERER ENGINE (SAFE MODE)
+    4. FUNGSI ADD DATA (STEP 2 - 6)
    ========================================== */
-function renderList(containerId, dataKey, templateFn) {
-    const container = document.getElementById(containerId);
-    if(!container) return; // Mencegah error jika elemen tidak ada di halaman tersebut
+function addPendidikan() {
+    const jenjang = document.getElementById('jenjang').value;
+    const nama = document.getElementById('nama_sekolah')?.value || document.getElementById('nama_pt')?.value;
+    const tahun = document.getElementById('tahun_lulus').value;
+    if(!jenjang || !nama || !tahun) return alert("Isi data pendidikan!");
 
-    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
-    const list = data[dataKey] || [];
-    container.innerHTML = list.map((item, index) => templateFn(item, index)).join('');
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_pendidikan || [];
+    list.push({ jenjang, nama, tahun, kota: document.getElementById('kota_sekolah')?.value || '-' });
+    data.riwayat_pendidikan = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPendidikan();
 }
 
-function renderPendidikan() {
-    renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => `
-        <div class="data-box-item" style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
-            <div><b>${item.jenjang}: ${item.nama}</b><br><small>${item.info} | ${item.tahun}</small></div>
-            <button onclick="deleteItem('riwayat_pendidikan', ${index}, renderPendidikan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
-        </div>
-    `);
+function addPendidikanKader() {
+    const jenis = document.getElementById('jenis_kader').value;
+    const penyelenggara = document.getElementById('penyelenggara').value;
+    const tahun = document.getElementById('tahun_kader').value;
+    if(!jenis || !penyelenggara || !tahun) return alert("Lengkapi data kaderisasi!");
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_kader || [];
+    list.push({ jenis, penyelenggara, tahun });
+    data.riwayat_kader = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderKader();
 }
 
-function renderKader() {
-    renderList('kaderList', 'riwayat_kader', (item, index) => `
-        <div style="background:rgba(215, 25, 32, 0.05); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
-            <div><b>${item.jenis}</b><br><small>${item.penyelenggara} (${item.tahun})</small></div>
-            <button onclick="deleteItem('riwayat_kader', ${index}, renderKader)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
-        </div>
-    `);
+function addJabatanPartai() {
+    const tingkatan = document.getElementById('tingkatan_partai').value;
+    const jabatan = document.getElementById('jabatan_partai').value;
+    const periode = document.getElementById('periode_partai').value;
+    if(!tingkatan || !jabatan) return alert("Lengkapi data jabatan!");
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_jabatan_partai || [];
+    list.push({ tingkatan, jabatan, periode });
+    data.riwayat_jabatan_partai = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderJabatan();
 }
 
-function renderJabatan() {
-    renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => `
-        <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
-            <div><b>${item.jabatan}</b><br><small>${item.tingkatan} | ${item.periode}</small></div>
-            <button onclick="deleteItem('riwayat_jabatan_partai', ${index}, renderJabatan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
-        </div>
-    `);
-}
+function addPekerjaan() {
+    const perusahaan = document.getElementById('nama_perusahaan').value;
+    const jabatan = document.getElementById('jabatan_kerja').value;
+    if(!perusahaan || !jabatan) return alert("Isi data pekerjaan!");
 
-function renderPekerjaan() {
-    renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => `
-        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid #475569; display:flex; justify-content:space-between;">
-            <div><b>${item.perusahaan}</b><br><small>${item.jabatan} (${item.masa_kerja})</small></div>
-            <button onclick="deleteItem('riwayat_pekerjaan', ${index}, renderPekerjaan)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
-        </div>
-    `);
-}
-
-function renderOrganisasi() {
-    renderList('orgList', 'riwayat_organisasi', (item, index) => `
-        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid gray; display:flex; justify-content:space-between;">
-            <div><b>${item.nama}</b><br><small>${item.jabatan} (${item.periode})</small></div>
-            <button onclick="deleteItem('riwayat_organisasi', ${index}, renderOrganisasi)" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
-        </div>
-    `);
-}
-
-function renderPenugasan() {
-    renderList('tugasList', 'riwayat_penugasan_partai', (item, index) => `
-        <div style="background:rgba(255,255,255,0.05); padding:12px; margin-bottom:10px; border-left:4px solid red; border-radius:8px; display:flex; justify-content:space-between;">
-            <div style="font-size:13px;">
-                <strong style="color:red;">${item.jenis} - ${item.jabatan}</strong><br>
-                <span>${item.lembaga} | ${item.lokasi}</span><br>
-                <small>Periode: ${item.periode}</small>
-            </div>
-            <button onclick="deleteItem('riwayat_penugasan_partai', ${index}, renderPenugasan)" style="color:red; border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
-        </div>
-    `);
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_pekerjaan || [];
+    list.push({ perusahaan, jabatan, masa_kerja: document.getElementById('masa_kerja')?.value || '-' });
+    data.riwayat_pekerjaan = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPekerjaan();
 }
 
 /* ==========================================
-    5. FUNGSI ACTION (ADD/DELETE)
+    5. LOGIKA SUBMIT FINAL (UNTUK REKAP)
+   ========================================== */
+async function submitSeluruhData() {
+    const data = JSON.parse(localStorage.getItem('kaderData'));
+    const btn = document.querySelector('.btn-final');
+    
+    if(!data) return alert("Data kosong!");
+    if(!confirm("Kirim data ke Pusat sekarang?")) return;
+
+    btn.disabled = true;
+    btn.innerHTML = "⏳ SEDANG MENGIRIM...";
+    
+    // URL Web App Google Sheets Bos
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec'; 
+
+    try {
+        await fetch(URL_API, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        alert("MERDEKA! Data Berhasil Terkirim ke Pusat.");
+        localStorage.clear();
+        window.location.href = 'finish.html';
+    } catch (e) {
+        alert("Gagal kirim! Pastikan internet aktif.");
+        btn.disabled = false;
+        btn.innerHTML = "KIRIM DATA SEKARANG";
+    }
+}
+
+/* ==========================================
+    6. RENDER ENGINE & AUTO LOAD
    ========================================== */
 function deleteItem(key, index, callback) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
@@ -161,38 +165,23 @@ function deleteItem(key, index, callback) {
     callback();
 }
 
-// Tambahkan logika addPendidikan, addPendidikanKader, dll tetap sama dengan sebelumnya
-// namun pastikan memanggil render yang sesuai.
+function renderList(id, key, template) {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    const list = data[key] || [];
+    el.innerHTML = list.map((item, index) => template(item, index)).join('');
+}
 
-/* ==========================================
-    6. AUTO LOAD
-   ========================================== */
+const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => `<div class="data-box-item"><b>${item.jenjang}: ${item.nama}</b> (${item.tahun}) <button onclick="deleteItem('riwayat_pendidikan', ${index}, renderPendidikan)">×</button></div>`);
+const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => `<div class="data-box-item"><b>${item.jenis}</b> - ${item.penyelenggara} <button onclick="deleteItem('riwayat_kader', ${index}, renderKader)">×</button></div>`);
+const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => `<div class="data-box-item"><b>${item.jabatan}</b> (${item.tingkatan}) <button onclick="deleteItem('riwayat_jabatan_partai', ${index}, renderJabatan)">×</button></div>`);
+const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => `<div class="data-box-item"><b>${item.perusahaan}</b> - ${item.jabatan} <button onclick="deleteItem('riwayat_pekerjaan', ${index}, renderPekerjaan)">×</button></div>`);
+
 window.addEventListener('load', () => {
-    const savedData = JSON.parse(localStorage.getItem('kaderData')) || {};
-    
-    // Isi input field
+    const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
     const allFields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
-    allFields.forEach(f => {
-        const el = document.getElementById(f);
-        if (el && savedData[f]) el.value = savedData[f];
-    });
-
-    if (savedData.jenis_kelamin) {
-        const radio = document.querySelector(`input[name="jenis_kelamin"][value="${savedData.jenis_kelamin}"]`);
-        if (radio) radio.checked = true;
-    }
-
-    if (savedData.foto && document.getElementById('photoPreview')) {
-        const preview = document.getElementById('photoPreview');
-        preview.innerHTML = `<img src="${savedData.foto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
-        preview.style.border = "3px solid var(--primary-red)";
-    }
-
-    // Jalankan semua render (Safe Mode akan memfilter mana yang harus jalan)
-    renderPendidikan();
-    renderKader();
-    renderJabatan();
-    renderPekerjaan();
-    renderOrganisasi();
-    renderPenugasan();
+    allFields.forEach(f => { if(document.getElementById(f)) document.getElementById(f).value = saved[f] || ''; });
+    
+    renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan();
 });
