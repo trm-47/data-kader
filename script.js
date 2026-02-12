@@ -12,7 +12,126 @@
 })();
 
 /* ==========================================
-    2. HANDLER FOTO
+    2. DATA WILAYAH DIY (Didefinisikan di awal)
+   ========================================== */
+const dataDIY = {
+    "Bantul": {
+        "Bambanglipuro": ["Mulyodadi", "Sidomulyo", "Sumbermulyo"],
+        "Banguntapan": ["Banguntapan", "Baturetno", "Jambidan", "Potrosari", "Singosaren", "Tamanan", "Wirokerten", "Jagalan"],
+        "Bantul": ["Bantul", "Ringinharjo", "Sabdodadi", "Trirenggo"],
+        "Dlingo": ["Dlingo", "Jatimulyo", "Mangunan", "Muntuk", "Terong", "Temuwuh"],
+        "Imogiri": ["Girirejo", "Imogiri", "Karangtalun", "Karangtengah", "Kebonagung", "Selopamioro", "Sriharjo", "Wukirsari"],
+        "Jetis": ["Canden", "Patalan", "Sumberagung", "Trimulyo"],
+        "Kasihan": ["Bangunjiwo", "Ngestiharjo", "Tamantirto", "Tirtonirmolo"],
+        "Kretek": ["Donotirto", "Parangtritis", "Tirtohargo", "Tirtomulyo", "Tirtosari"],
+        "Pajangan": ["Sendangsari", "Triwidadi", "Guwosari"],
+        "Pandak": ["Caturharjo", "Gilangharjo", "Triharjo", "Wijirejo"],
+        "Piyungan": ["Sitimulyo", "Srimartani", "Srimulyo"],
+        "Pleret": ["Bawuran", "Pleret", "Segoroyoso", "Wonokromo", "Wonolelo"],
+        "Pundong": ["Panjangrejo", "Seloharjo", "Srihardono"],
+        "Sanden": ["Gadingsari", "Gadingharjo", "Murtigading", "Srigading"],
+        "Sedayu": ["Argodadi", "Argomulyo", "Argorejo", "Argosari"],
+        "Sewon": ["Bangunharjo", "Panggungharjo", "Pendowoharjo", "Timbulharjo"],
+        "Srandakan": ["Poncosari", "Trimurti"]
+    },
+    "Yogyakarta": {
+        "Danurejan": ["Bausasran", "Tegal Panggung", "Suryatmajan"],
+        "Gedongtengen": ["Pringgokusuman", "Sosromenduran"],
+        "Gondokusuman": ["Baciro", "Demangan", "Klitren", "Kotabaru", "Terban"],
+        "Gondomanan": ["Ngupasan", "Prawirodirjan"],
+        "Jetis": ["Bumijo", "Cokrodiningratan", "Gowongan"],
+        "Kotagede": ["Prenggan", "Purbayan", "Rejowinangun"],
+        "Kraton": ["Panembahan", "Kadipaten", "Patehan"],
+        "Mantrijeron": ["Gedongkiwo", "Mantrijeron", "Suryodiningratan"],
+        "Mergansan": ["Brontokusuman", "Keparakan", "Wirogunan"],
+        "Ngampilan": ["Ngampilan", "Notoprajan"],
+        "Pakualaman": ["Gunungketur", "Purwokinanti"],
+        "Tegalrejo": ["Bener", "Kricak", "Karangwaru", "Tegalrejo"],
+        "Umbulharjo": ["Giwangan", "Muja Muju", "Pandeyan", "Sorosutan", "Tahunan", "Warungboto", "Semaki"],
+        "Wirobrajan": ["Pakuncen", "Patangpuluhan", "Wirobrajan"]
+    },
+    "Sleman": {
+        "Berbah": ["Jogotirto", "Kalitirto", "Sendangtirto", "Tegaltirto"],
+        "Cangkringan": ["Argomulyo", "Glagaharjo", "Kepuharjo", "Wukirsari", "Umbulharjo"],
+        "Depok": ["Caturtunggal", "Condongcatur", "Maguwoharjo"],
+        "Gamping": ["Ambarketawang", "Balecatur", "Banyuraden", "Nogotirto", "Trihanggo"],
+        "Godean": ["Sidoagung", "Sidoarum", "Sidokarto", "Sidomulyo", "Sidorejo", "Sidosari", "Sidoluhur"],
+        "Kalasan": ["Purwomartani", "Selomartani", "Tirtomartani", "Tamanmartani"],
+        "Minggir": ["Sendangagung", "Sendangmulyo", "Sendangrejo", "Sendangsari", "Sendangadi"],
+        "Mlati": ["Sendangadi", "Sinduadi", "Sumberadi", "Tlogoadi", "Tirtoadi"],
+        "Moyudan": ["Sumberagung", "Sumberarum", "Sumberrahayu", "Sumbersari"],
+        "Ngaglik": ["Donoharjo", "Minomartani", "Sardonoharjo", "Sariharjo", "Sinduharjo", "Sukoharjo"],
+        "Ngemplak": ["Bimomartani", "Sindumartani", "Umbulmartani", "Wedomartani", "Widodomartani"],
+        "Pakem": ["Candibinangun", "Hargobinangun", "Harjobinangun", "Pakembinangun", "Purwobinangun"],
+        "Prambanan": ["Bokoharjo", "Gayamharjo", "Madurejo", "Sambirejo", "Sumberharjo", "Wukirharjo"],
+        "Seyegan": ["Margoagung", "Margodadi", "Margokaton", "Margoluwih", "Margomulyo"],
+        "Sleman": ["Caturharjo", "Pandowoharjo", "Tridadi", "Triharjo", "Trimulyo"],
+        "Tempel": ["Banyurejo", "Lumbungrejo", "Margorejo", "Merodikorejo", "Pondokrejo", "Sumberejo", "Tambakrejo"],
+        "Turi": ["Bangunkerto", "Donokerto", "Girikerto", "Wonokerto"]
+    },
+    "Gunungkidul": {
+        "Wonosari": ["Baleharjo", "Kepek", "Piyaman", "Selang", "Wonosari"],
+        "Karangmojo": ["Bejiharjo", "Karangmojo", "Wiladeg"],
+        "Playen": ["Banaran", "Bleberan", "Logandeng", "Playen"],
+        "Semanu": ["Candi", "Dadapan", "Semanu"],
+        "Ngawen": ["Beji", "Jurangjero"],
+        "Ponjong": ["Bedoyo", "Ponjong"],
+        "Rongkop": ["Bohol", "Karangwuni"],
+        "Semin": ["Bulurejo", "Semin"],
+        "Tepus": ["Purwodadi", "Tepus"]
+    },
+    "Kulon Progo": {
+        "Wates": ["Bendungan", "Triharjo", "Wates"],
+        "Sentolo": ["Sentolo", "Sukoreno", "Tuksono"],
+        "Galur": ["Brosot", "Pandowan"],
+        "Lendah": ["Ngentakrejo", "Sidorejo"],
+        "Kokap": ["Hargomulyo", "Hargotirto"],
+        "Girimulyo": ["Giripurwo", "Jatimulyo"],
+        "Nanggulan": ["Donomulyo", "Tanjungharjo"],
+        "Samigaluh": ["Gerbosari", "Ngargosari"]
+    }
+};
+
+/* ==========================================
+    3. FUNGSI HELPER WILAYAH
+   ========================================== */
+function updateKecamatan() {
+    const kabSel = document.getElementById("kab_kota").value;
+    const kecDropdown = document.getElementById("kecamatan");
+    const kelDropdown = document.getElementById("kelurahan");
+    
+    kecDropdown.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+    kelDropdown.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
+    
+    if (kabSel && dataDIY[kabSel]) {
+        Object.keys(dataDIY[kabSel]).sort().forEach(kec => {
+            let opt = document.createElement("option");
+            opt.value = kec;
+            opt.text = kec;
+            kecDropdown.add(opt);
+        });
+    }
+}
+
+function updateKelurahan() {
+    const kabSel = document.getElementById("kab_kota").value;
+    const kecSel = document.getElementById("kecamatan").value;
+    const kelDropdown = document.getElementById("kelurahan");
+    
+    kelDropdown.innerHTML = '<option value="">-- Pilih Kelurahan --</option>';
+    
+    if (kabSel && kecSel && dataDIY[kabSel][kecSel]) {
+        dataDIY[kabSel][kecSel].sort().forEach(kel => {
+            let opt = document.createElement("option");
+            opt.value = kel;
+            opt.text = kel;
+            kelDropdown.add(opt);
+        });
+    }
+}
+
+/* ==========================================
+    4. HANDLER FOTO
    ========================================== */
 const handlePhoto = (e) => {
     const file = e.target.files[0];
@@ -33,11 +152,10 @@ document.addEventListener('change', (e) => {
 });
 
 /* ==========================================
-    3. LOGIKA SAVE STEP 1
+    5. LOGIKA SAVE STEP 1
    ========================================== */
 function saveStep1() {
     const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-    // Tambahkan 'agama' di dalam array di bawah ini
     const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'agama', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
     
     let dataStep1 = { 
@@ -49,7 +167,6 @@ function saveStep1() {
         dataStep1[f] = el ? el.value.trim() : '';
     });
 
-    // Validasi: agama sekarang jadi data wajib
     const requiredFields = fields.filter(f => f !== 'no_kta');
     if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
         alert("⚠️ Mohon lengkapi semua data wajib termasuk Agama."); 
@@ -62,7 +179,7 @@ function saveStep1() {
 }
 
 /* ==========================================
-    4. RENDER ENGINE (PREMIUM STYLE)
+    6. RENDER ENGINE & ADD DATA FUNCTIONS (Diringkas)
    ========================================== */
 function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
@@ -89,20 +206,13 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
     </div>
 `;
 
-// Fungsi Render Global
 const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
 const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
 const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => premiumTemplate(item.perusahaan, `${item.jabatan} (${item.masa_kerja})`, 'riwayat_pekerjaan', index, 'renderPekerjaan'));
-const renderOrganisasi = () => renderList('orgList', 'riwayat_organisasi', (item, index) => 
-    premiumTemplate(item.nama, `${item.jabatan} | ${item.periode}`, 'riwayat_organisasi', index, 'renderOrganisasi'));
-
-// Penyesuaian Render Penugasan untuk Step 4 (Target ID: tugasList)
+const renderOrganisasi = () => renderList('orgList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} | ${item.periode}`, 'riwayat_organisasi', index, 'renderOrganisasi'));
 const renderPenugasan = () => renderList('tugasList', 'riwayat_penugasan', (item, index) => premiumTemplate(item.jabatan, `${item.jenis} - ${item.lokasi} (${item.periode})`, 'riwayat_penugasan', index, 'renderPenugasan'));
 
-/* ==========================================
-    5. FUNGSI ADD DATA (STEP 2 - 6)
-   ========================================== */
 function saveToLocal(key, obj) {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data[key] || [];
@@ -135,31 +245,23 @@ function addJabatanPartai() {
     let jabatan = document.getElementById('jabatan_partai')?.value;
     const bidang = document.getElementById('bidang_jabatan')?.value;
     const periode = document.getElementById('periode_partai')?.value;
-
     if(!tingkatan || !jabatan) return alert("Lengkapi data jabatan!");
     if(bidang) jabatan = `${jabatan} ${bidang}`;
-
     saveToLocal('riwayat_jabatan_partai', { tingkatan, jabatan, periode });
     renderJabatan();
 }
 
-// Handler Penugasan Step 4 (Nama Fungsi & ID disesuaikan dengan HTML)
 function addPenugasanPartai() {
     const jenis = document.getElementById('tugas_jenis')?.value;
     const lembaga = document.getElementById('tugas_lembaga')?.value;
     const jabatan = document.getElementById('tugas_jabatan')?.value;
     const lokasi = document.getElementById('tugas_lokasi')?.value;
     const periode = document.getElementById('tugas_periode')?.value;
-
     if(!jenis || !jabatan) return alert("Lengkapi data penugasan!");
-
     const dataTugas = {
         jenis: jenis === 'Legislatif' ? `Legislatif (${lembaga})` : jenis,
-        jabatan: jabatan,
-        lokasi: lokasi,
-        periode: periode
+        jabatan: jabatan, lokasi: lokasi, periode: periode
     };
-
     saveToLocal('riwayat_penugasan', dataTugas);
     renderPenugasan();
 }
@@ -167,22 +269,12 @@ function addPenugasanPartai() {
 function addPekerjaan() {
     const perusahaan = document.getElementById('nama_perusahaan')?.value;
     const jabatan = document.getElementById('jabatan_kerja')?.value;
-    const masa = document.getElementById('masa_kerja')?.value; // ID harus sesuai HTML
-
+    const masa = document.getElementById('masa_kerja')?.value;
     if(!perusahaan || !jabatan) return alert("Lengkapi data kerja!");
-    
-    // Simpan ke local dengan key masa_kerja
-    saveToLocal('riwayat_pekerjaan', { 
-        perusahaan: perusahaan, 
-        jabatan: jabatan, 
-        masa_kerja: masa // Ambil dari variabel masa di atas
-    });
-    
-    // Reset input biar bisa nambah lagi
+    saveToLocal('riwayat_pekerjaan', { perusahaan: perusahaan, jabatan: jabatan, masa_kerja: masa });
     document.getElementById('nama_perusahaan').value = '';
     document.getElementById('jabatan_kerja').value = '';
     document.getElementById('masa_kerja').value = '';
-    
     renderPekerjaan();
 }
 
@@ -191,38 +283,25 @@ function addOrganisasi() {
     const tingkat = document.getElementById('org_tingkat')?.value;
     const jabatan = document.getElementById('org_jabatan')?.value;
     const periode = document.getElementById('org_periode')?.value;
-
     if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
-
     const namaLengkap = tingkat ? `${nama} (${tingkat})` : nama;
-
-    saveToLocal('riwayat_organisasi', { 
-        nama: namaLengkap, 
-        jabatan: jabatan, 
-        periode: periode || '-' 
-    });
-    
-    // Reset field
+    saveToLocal('riwayat_organisasi', { nama: namaLengkap, jabatan: jabatan, periode: periode || '-' });
     if(document.getElementById('org_nama')) document.getElementById('org_nama').value = '';
     if(document.getElementById('org_jabatan')) document.getElementById('org_jabatan').value = '';
     if(document.getElementById('org_periode')) document.getElementById('org_periode').value = '';
-
     renderOrganisasi();
 }
+
 /* ==========================================
-    PERBAIKAN NAVIGASI STEP 6 (Hanya Bagian Ini)
+    7. PERBAIKAN NAVIGASI STEP 6
    ========================================== */
 function goToReview() {
     try {
         let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-
-        // 1. Ambil Kompetensi Bahasa & Komputer
         const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
         data.kompetensi_bahasa = Array.from(checkboxes).map(cb => cb.value).join(', ') || '-';
         data.bahasa_lainnya_input = document.getElementById('bahasa_lainnya')?.value || '';
         data.kemampuan_komputer = document.getElementById('komputer')?.value || '-';
-
-        // 2. Ambil Akun Media Sosial (Sesuai ID di HTML Step 6 Bos)
         data.media_sosial = {
             facebook: document.getElementById('medsos_fb')?.value.trim() || '-',
             instagram: document.getElementById('medsos_ig')?.value.trim() || '-',
@@ -231,25 +310,44 @@ function goToReview() {
             youtube: document.getElementById('medsos_youtube')?.value.trim() || '-',
             linkedin: document.getElementById('medsos_linkedin')?.value.trim() || '-'
         };
-
-        // 3. Simpan dan Lanjut
         localStorage.setItem('kaderData', JSON.stringify(data));
         window.location.href = 'rekap.html';
-
-    } catch (error) {
-        console.error("Error Step 6:", error);
-        alert("Gagal menyimpan data Step 6, Bos.");
-    }
+    } catch (error) { alert("Gagal menyimpan data Step 6, Bos."); }
 }
-
-// Tetap sediakan saveStep6 jika ada tombol yang memanggil nama lama
-function saveStep6() {
-    goToReview();
-}
+function saveStep6() { goToReview(); }
 
 /* ==========================================
-    6. SUBMIT & INITIAL LOAD
+    8. INITIAL LOAD & SUBMIT DATA
    ========================================== */
+window.addEventListener('load', () => {
+    const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
+    ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'pekerjaan', 'kontak', 'agama'].forEach(f => {
+        const el = document.getElementById(f); if(el) el.value = saved[f] || '';
+    });
+    if (saved.jenis_kelamin) {
+        const genderEl = document.querySelector(`input[name="jenis_kelamin"][value="${saved.jenis_kelamin}"]`);
+        if (genderEl) genderEl.checked = true;
+    }
+    if(saved.kab_kota) {
+        const kabEl = document.getElementById('kab_kota');
+        if(kabEl) {
+            kabEl.value = saved.kab_kota; updateKecamatan();
+            if(saved.kecamatan) {
+                const kecEl = document.getElementById('kecamatan');
+                if(kecEl) { kecEl.value = saved.kecamatan; updateKelurahan();
+                    if(saved.kelurahan) { const kelEl = document.getElementById('kelurahan'); if(kelEl) kelEl.value = saved.kelurahan; }
+                }
+            }
+        }
+    }
+    if(saved.media_sosial) {
+        if(document.getElementById('medsos_fb')) document.getElementById('medsos_fb').value = saved.media_sosial.facebook || '';
+        if(document.getElementById('medsos_ig')) document.getElementById('medsos_ig').value = saved.media_sosial.instagram || '';
+        if(document.getElementById('medsos_tiktok')) document.getElementById('medsos_tiktok').value = saved.media_sosial.tiktok || '';
+    }
+    renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
+});
+
 async function submitSeluruhData() {
     const data = JSON.parse(localStorage.getItem('kaderData'));
     if(!data) return alert("Data kosong!");
@@ -262,35 +360,12 @@ async function submitSeluruhData() {
     } catch (e) { alert("Gagal!"); btn.disabled = false; btn.innerHTML = "KIRIM SEKARANG"; }
 }
 
-window.addEventListener('load', () => {
-    const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
-    ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'].forEach(f => {
-        const el = document.getElementById(f); if(el) el.value = saved[f] || '';
-    });
-    if(saved.medsos) {
-        if(document.getElementById('fb_kader')) document.getElementById('fb_kader').value = saved.medsos.facebook || '';
-        if(document.getElementById('ig_kader')) document.getElementById('ig_kader').value = saved.medsos.instagram || '';
-        if(document.getElementById('tt_kader')) document.getElementById('tt_kader').value = saved.medsos.tiktok || '';
-    }
-    renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
-});
-
-/* ==========================================
-    FUNGSI HITUNG UMUR OTOMATIS
-   ========================================== */
 function hitungUmur(tanggalLahir) {
     if (!tanggalLahir) return "-";
-    
     const hariIni = new Date();
     const tglLahir = new Date(tanggalLahir);
-    
     let umur = hariIni.getFullYear() - tglLahir.getFullYear();
     const bulan = hariIni.getMonth() - tglLahir.getMonth();
-    
-    // Cek jika belum ulang tahun di tahun ini
-    if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) {
-        umur--;
-    }
-    
+    if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) { umur--; }
     return umur + " Tahun";
 }
