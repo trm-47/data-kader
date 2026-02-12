@@ -89,8 +89,11 @@ body {
 }
 
 .header-form h2 {
+.header-form h2 {
+    color: var(--dark-void); /* Warna dasar jika gradient gagal */
     background: linear-gradient(180deg, var(--dark-void) 0%, #475569 100%);
     -webkit-background-clip: text;
+    background-clip: text; /* Tambahkan ini agar lebih standar */
     -webkit-text-fill-color: transparent;
     font-size: 22px;
     font-weight: 800;
@@ -98,9 +101,12 @@ body {
 }
 
 .subtitle {
-    font-size: 13px;
-    color: var(--soft-slate);
-    font-weight: 500;
+font-size: 13px;
+    color: var(--primary-red) !important; /* Paksa merah di mode classic */
+    font-weight: 800;
+    letter-spacing: 1px;
+    display: block;
+    -webkit-text-fill-color: initial !important; /* Reset efek transparan */
 }
 
 /* 7. FORM ELEMENTS */
@@ -120,21 +126,20 @@ body {
 .input-field {
     width: 100%;
     padding: 14px 18px;
-    border: 2px solid transparent;
+    border: 2px solid #E2E8F0 !important; /* Beri warna border dasar */
     border-radius: var(--radius-md);
     font-size: 15px;
     font-weight: 500;
-    background: rgba(241, 245, 249, 0.8) !important;
+    background: #F8FAF9 !important; /* Warna background input yang jelas */
     transition: all 0.3s ease;
     outline: none;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    color: var(--dark-void) !important;
 }
 
 .input-field:focus {
     background: #FFF !important;
-    border-color: var(--primary-red);
+    border-color: var(--primary-red) !important;
     box-shadow: 0 10px 15px -3px rgba(215, 25, 32, 0.1);
-    transform: translateY(-2px);
 }
 
 /* 8. BUTTONS */
@@ -209,11 +214,21 @@ body {
 .gender-option { flex: 1; cursor: pointer; }
 .gender-option input { display: none; }
 .gender-card {
-    display: block; padding: 15px; background: #f8fafc; border: 2px solid #e2e8f0;
-    border-radius: 12px; text-align: center; font-weight: 700; color: #64748b; transition: 0.3s;
+    display: block; 
+    padding: 15px; 
+    background: #ffffff !important; /* Putih bersih */
+    border: 2px solid #e2e8f0 !important; /* Border abu-abu jelas */
+    border-radius: 12px; 
+    text-align: center; 
+    font-weight: 700; 
+    color: #64748b; 
+    transition: 0.3s;
 }
+
 .gender-option input:checked + .gender-card {
-    background: #fff1f2; border-color: #D71920; color: #D71920;
+    background: #fff1f2 !important; 
+    border-color: var(--primary-red) !important; 
+    color: var(--primary-red) !important;
 }
 
 /* Hover effect untuk Gender */
