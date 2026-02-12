@@ -240,6 +240,7 @@
                        style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
             </div>
            
+        <div class="filter-body" id="filterBody">
             <div class="filter-group">
                 <label>Jenis Kelamin</label>
                 <select id="fJK" onchange="applyFilters()">
@@ -638,12 +639,9 @@ function resetFilters() {
 }
 
 function applyFilters() {
-    // Ambil value dari input filter wilayah
     const fKota = document.getElementById('fKota').value;
-    const fKec = document.getElementById('fKec').value.toLowerCase().trim();
-    const fDesa = document.getElementById('fDesa').value.toLowerCase().trim();
-    
-    // Ambil value filter lainnya
+    const fKec = document.getElementById('fKec').value.toLowerCase();
+    const fDesa = document.getElementById('fDesa').value.toLowerCase();
     const fJK = document.getElementById('fJK').value;
     const fAgama = document.getElementById('fAgama').value;
     const fEdu = document.getElementById('fPendidikan').value;
@@ -660,44 +658,62 @@ function applyFilters() {
         const medsos = item.medsos || [];    
         const jabatan = item.jabatan || [];  
 
-        // --- KOREKSI FILTER WILAYAH ---
-        // 1. Filter Kota (Exact Match)
-        const matchKota = fKota === "Semua" || (p.kab_kota && p.kab_kota === fKota) || (p.kota && p.kota === fKota);
-        
-        // 2. Filter Kecamatan (Partial Match agar lebih user-friendly)
-        const matchKec = fKec === "" || (p.kec && p.kec.toLowerCase().includes(fKec));
-        
-        // 3. Filter Desa/Kelurahan (Partial Match)
-        const matchDesa = fDesa === "" || (p.desa && p.desa.toLowerCase().includes(fDesa));
-
-        // --- FILTER LAINNYA (Tetap sesuai kode awal Anda) ---
+        // 1. Logika Pendidikan Kader (Cek Kolom Spesifik di Sheet)
         let matchesKader = false;
         if (fKader === "Semua") {
             matchesKader = true;
         } else {
-            const mappingKader = { "Pratama": 2, "Madya": 4, "Utama": 6, "Guru": 8, "Perempuan": 10 };
+            // Mapping Index: Pratama=2, Madya=4, Utama=6, Guru=8, Perempuan=10
+            const mappingKader = { 
+                "Pratama": 2, 
+                "Madya": 4, 
+                "Utama": 6, 
+                "Guru": 8, 
+                "Perempuan": 10 
+            };
+            
             const targetIdx = mappingKader[fKader];
             const hasSertifikat = (kader[targetIdx] && kader[targetIdx] !== "" && kader[targetIdx] !== "-");
+
             if (fKader === "Perempuan") {
-                matchesKader = hasSertifikat && (p.jk === "P" || p.jk === "Perempuan");
+                // Khusus Kader Perempuan: Harus ada sertifikat di index 10 DAN Jenis Kelamin harus Perempuan ('P')
+                if (hasSertifikat && (p.jk === "P" || p.jk === "Perempuan")) {
+                    matchesKader = true;
+                }
             } else {
-                matchesKader = hasSertifikat;
+                // Untuk Pratama, Madya, Utama, Guru
+                if (hasSertifikat) {
+                    matchesKader = true;
+                }
             }
         }
 
+        // 2. Logika Penugasan & Struktur (Multi-Jabatan)
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
+
+        // 3. Logika Bahasa & IT
         const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
-        const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? (valBahasa !== "-" && valBahasa !== "") : (valBahasa === "-" || valBahasa === ""));
+        const hasBahasa = (valBahasa !== "-" && valBahasa !== "");
+        const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? hasBahasa : !hasBahasa);
+
         const valIT = medsos[8] ? medsos[8].toString().trim() : "-";
-        const matchesIT = fIT === "Semua" || (fIT === "Ya" ? (valIT !== "-" && valIT !== "") : (valIT === "-" || valIT === ""));
+        const hasIT = (valIT !== "-" && valIT !== "");
+        const matchesIT = fIT === "Semua" || (fIT === "Ya" ? hasIT : !hasIT);
+
+        const matchKota = fKota === "Semua" || (p.kota && p.kota === fKota);
+        const matchKec = fKec === "" || (p.kec && p.kec.toLowerCase().includes(fKec));
+        const matchDesa = fDesa === "" || (p.desa && p.desa.toLowerCase().includes(fDesa));
+        
+        // 4. Filter Standar (Gender, Agama, dan Pendidikan Terakhir di Index 19)
         const matchesJK = fJK === "Semua" || p.jk === fJK;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
+        
+        // Menggunakan index 19 untuk Pendidikan Formal (Status Terakhir)
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
-        // Gabungkan semua kondisi (termasuk wilayah)
-        return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
+        return matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
     });
 
     renderTable(filtered);
