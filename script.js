@@ -274,3 +274,23 @@ window.addEventListener('load', () => {
     }
     renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
 });
+
+/* ==========================================
+    FUNGSI HITUNG UMUR OTOMATIS
+   ========================================== */
+function hitungUmur(tanggalLahir) {
+    if (!tanggalLahir) return "-";
+    
+    const hariIni = new Date();
+    const tglLahir = new Date(tanggalLahir);
+    
+    let umur = hariIni.getFullYear() - tglLahir.getFullYear();
+    const bulan = hariIni.getMonth() - tglLahir.getMonth();
+    
+    // Cek jika belum ulang tahun di tahun ini
+    if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) {
+        umur--;
+    }
+    
+    return umur + " Tahun";
+}
