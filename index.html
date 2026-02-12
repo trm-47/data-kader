@@ -49,52 +49,57 @@
     </div>
 
     <script>
-        // Fungsi untuk mengatur tema visual tombol
-        function setTheme(theme) {
-            localStorage.setItem('kader_theme', theme);
-            
-            const btnC = document.getElementById('btnClassic');
-            const btnP = document.getElementById('btnPremium');
-
-            if (theme === 'premium') {
-                btnP.style.background = '#bf953f';
-                btnP.style.color = '#fff';
-                btnP.style.borderColor = '#bf953f';
-                
-                btnC.style.background = '#eee';
-                btnC.style.color = '#333';
-                btnC.style.borderColor = '#ddd';
-            } else {
-                btnC.style.background = '#D71920';
-                btnC.style.color = '#fff';
-                btnC.style.borderColor = '#D71920';
-                
-                btnP.style.background = '#eee';
-                btnP.style.color = '#333';
-                btnP.style.borderColor = '#ddd';
+    function setTheme(theme) {
+        localStorage.setItem('kader_theme', theme);
+        
+        const btnC = document.getElementById('btnClassic');
+        const btnP = document.getElementById('btnPremium');
+        
+        // --- LOGIKA OTOMATIS UBAH TAMPILAN INDEX ---
+        let premiumLink = document.getElementById('premium-theme-link');
+        
+        if (theme === 'premium') {
+            // 1. Pasang CSS Premium jika belum ada
+            if (!premiumLink) {
+                premiumLink = document.createElement('link');
+                premiumLink.id = 'premium-theme-link';
+                premiumLink.rel = 'stylesheet';
+                premiumLink.href = 'premium.css';
+                document.head.appendChild(premiumLink);
             }
+            
+            // 2. Styling Tombol Aktif
+            btnP.style.background = '#bf953f';
+            btnP.style.color = '#fff';
+            btnP.style.borderColor = '#bf953f';
+            btnC.style.background = '#eee';
+            btnC.style.color = '#333';
+        } else {
+            // 1. Cabut CSS Premium jika kembali ke Classic
+            if (premiumLink) {
+                premiumLink.remove();
+            }
+            
+            // 2. Styling Tombol Aktif
+            btnC.style.background = '#D71920';
+            btnC.style.color = '#fff';
+            btnC.style.borderColor = '#D71920';
+            btnP.style.background = '#eee';
+            btnP.style.color = '#333';
         }
+    }
 
-        // Fungsi untuk pindah ke Step 1
-        function startForm() {
-            // Ambil tema terakhir sebelum dihapus
-            const savedTheme = localStorage.getItem('kader_theme') || 'classic';
-            
-            // Bersihkan data lama
-            localStorage.clear();
-            
-            // Masukkan kembali tema agar Step 1 tahu harus pakai CSS mana
-            localStorage.setItem('kader_theme', savedTheme);
-            
-            // Pindah halaman
-            window.location.href = 'step1.html';
-        }
+    function startForm() {
+        const savedTheme = localStorage.getItem('kader_theme') || 'classic';
+        localStorage.clear();
+        localStorage.setItem('kader_theme', savedTheme);
+        window.location.href = 'step1.html';
+    }
 
-        // Cek tema saat halaman baru dibuka
-        window.onload = () => {
-            const currentTheme = localStorage.getItem('kader_theme') || 'classic';
-            setTheme(currentTheme);
-        };
-    </script>
+    window.onload = () => {
+        const currentTheme = localStorage.getItem('kader_theme') || 'classic';
+        setTheme(currentTheme);
+    };
+</script>
 </body>
 </html>
