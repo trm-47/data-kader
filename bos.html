@@ -625,41 +625,45 @@ function calculateAge(birthDateString) {
 }
 
 function updateStats(data) {
-        if (!data || data.length === 0) {
-            document.querySelectorAll('.stat-card h2').forEach(el => el.innerText = "-");
-            return;
+    if (!data || data.length === 0) {
+        document.querySelectorAll('.stat-card h2').forEach(el => el.innerText = "-");
+        return;
+    }
+
+    const total = data.length;
+    let totalAge = 0;
+    let youth = 0;
+    let madyaCount = 0; // Variabel baru untuk Kader Madya
+    let countAge = 0;
+
+    data.forEach(item => {
+        // 1. Hitung Usia & Generasi
+        if (item.pribadi && item.pribadi.tgl_lahir) {
+            const ageInfo = calculateAge(item.pribadi.tgl_lahir);
+            if (ageInfo.rawAge > 0) {
+                totalAge += ageInfo.rawAge;
+                countAge++;
+                if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") youth++;
+            }
         }
 
-        const total = data.length;
-        let totalAge = 0;
-        let youth = 0;
-        let itExpert = 0;
-        let countAge = 0;
+        // 2. Hitung Kader Madya (Cek Kolom Kaderisasi Index 4)
+        const k = item.kaderisasi || [];
+        if (k[4] && k[4] !== "-" && k[4] !== "") {
+            madyaCount++;
+        }
+    });
 
-        data.forEach(item => {
-            // Hitung Usia
-            if (item.pribadi && item.pribadi.tgl_lahir) {
-                const ageInfo = calculateAge(item.pribadi.tgl_lahir);
-                if (ageInfo.rawAge > 0) {
-                    totalAge += ageInfo.rawAge;
-                    countAge++;
-                    if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") youth++;
-                }
-            }
-            // Hitung IT (Statistik Baru)
-            const medsos = item.medsos || [];
-            if (medsos[8] && medsos[8] !== "-" && medsos[8] !== "") itExpert++;
-        });
-
-        document.getElementById('statTotal').innerText = total;
-        document.getElementById('statAge').innerText = countAge > 0 ? Math.round(totalAge / countAge) + " Thn" : "-";
-        document.getElementById('statYoung').innerText = Math.round((youth / total) * 100) + "%";
-        
-        // Ganti statArea menjadi Skill IT (Ide Baru)
-        const areaElement = document.getElementById('statArea');
-        areaElement.previousElementSibling.innerText = "Melek Digital";
-        areaElement.innerText = Math.round((itExpert / total) * 100) + "%";
-    }
+    // Update Tampilan Stats
+    document.getElementById('statTotal').innerText = total;
+    document.getElementById('statAge').innerText = countAge > 0 ? Math.round(totalAge / countAge) + " Thn" : "-";
+    document.getElementById('statYoung').innerText = Math.round((youth / total) * 100) + "%";
+    
+    // GANTI MELEK DIGITAL MENJADI KADER MADYA
+    const areaCard = document.getElementById('statArea');
+    areaCard.previousElementSibling.innerText = "Kader Madya"; // Ubah Label
+    areaCard.innerText = madyaCount + " (" + Math.round((madyaCount / total) * 100) + "%)"; // Tampilkan Jumlah & Persen
+}
 
     // FUNGSI APPLY FILTER (DISEMPURNAKAN)
 
