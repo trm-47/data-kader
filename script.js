@@ -188,7 +188,6 @@ function addOrganisasi() {
 
     if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
 
-    // Gabungkan nama dan tingkatan agar rapi di list
     const namaLengkap = tingkat ? `${nama} (${tingkat})` : nama;
 
     saveToLocal('riwayat_organisasi', { 
@@ -197,7 +196,7 @@ function addOrganisasi() {
         periode: periode || '-' 
     });
     
-    // Reset field sesuai ID di HTML Step 6
+    // Reset field
     if(document.getElementById('org_nama')) document.getElementById('org_nama').value = '';
     if(document.getElementById('org_jabatan')) document.getElementById('org_jabatan').value = '';
     if(document.getElementById('org_periode')) document.getElementById('org_periode').value = '';
