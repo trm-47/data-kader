@@ -323,7 +323,7 @@ function openDetail(originalIndex) {
                 </div>
             </div>
             <h2 style="margin-top:20px; color:#1e293b; font-size:26px; font-weight:800; letter-spacing:-0.5px;">${p.nama ? p.nama.toUpperCase() : '-'}</h2>
-            <p style="color:var(--primary-red); font-weight:800; font-size:14px; margin-top:5px;">ID KADER: ${p.kta || '-'}</p>
+            <p style="color:#D71920; font-weight:800; font-size:14px; margin-top:5px;">ID KADER: ${p.kta || '-'}</p>
         </div>
 
         <div class="profile-section">
@@ -363,9 +363,8 @@ function openDetail(originalIndex) {
                     let penugasanUtama = jab[5] && jab[5] !== "-" ? jab[5] : "";
                     let detailJabatan = jab[12] && jab[12] !== "-" ? jab[12] : "";
                     let namaJabatanLengkap = (penugasanUtama && detailJabatan) ? `${penugasanUtama} - ${detailJabatan}` : (penugasanUtama || detailJabatan || "-");
-
                     return `
-                    <div style="background: #f1f5f9; padding:15px; border-radius:12px; border-left: 4px solid var(--primary-red);">
+                    <div style="background: #f1f5f9; padding:15px; border-radius:12px; border-left: 4px solid #D71920;">
                         <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">${kategori} ${tingkat ? `(${tingkat})` : ''}</div>
                         <div style="font-size:15px; font-weight:700; color:#1e293b; margin-top:3px;">${namaJabatanLengkap}</div>
                         <div style="font-size:12px; color:#475569; margin-top:5px;">Periode: ${jab[8] || jab[14] || '-'}</div>
@@ -384,8 +383,6 @@ function openDetail(originalIndex) {
             </div>
         </div>
 
-        // ... (Bagian atas kode openDetail tetap sama) ...
-
         <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
@@ -401,11 +398,9 @@ function openDetail(originalIndex) {
                     { label: 'GURU', year: k[8], color: '#991b1b' },
                     { label: 'WANITA', year: k[10], color: '#db2777' }
                 ].map(lvl => {
-                    const currentYear = new Date().getFullYear();
+                    const cYear = new Date().getFullYear();
                     const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && (!k[4] || k[4] === "" || k[4] === "-");
-                    const waitTime = isPratamaOnly ? (currentYear - parseInt(lvl.year)) : 0;
-                    
-                    // Highlight logic
+                    const waitTime = isPratamaOnly ? (cYear - parseInt(lvl.year)) : 0;
                     const isStagnan = waitTime > 5;
                     const cardBg = isStagnan ? '#fff1f2' : (lvl.year ? '#fff' : '#f8fafc');
                     const borderColor = isStagnan ? '#be123c' : (lvl.year ? lvl.color : '#f1f5f9');
@@ -413,20 +408,14 @@ function openDetail(originalIndex) {
                     return `
                     <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${borderColor}; background: ${cardBg}; position: relative; ${isStagnan ? 'box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);' : ''}">
                         ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${isStagnan ? '#be123c' : lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
-                        
                         <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
                         <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? (isStagnan ? '#be123c' : lvl.color) : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
-                        
-                        ${isStagnan ? `
-                            <div style="font-size:7px; background:#be123c; color:white; font-weight:bold; margin-top:5px; padding: 2px 4px; border-radius: 4px; animation: pulse 2s infinite;">
-                                STAGNAN ${waitTime} THN
-                            </div>
-                        ` : ''}
+                        ${isStagnan ? `<div style="font-size:7px; background:#be123c; color:white; font-weight:bold; margin-top:5px; padding: 2px 4px; border-radius: 4px;">STAGNAN ${waitTime} THN</div>` : ''}
                     </div>`;
                 }).join('')}
             </div>
             
-            <div style="background: ${(!k[4] || k[4] === "-") && k[2] ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white; transition: all 0.3s;">
+            <div style="background: ${(!k[4] || k[4] === "-") && k[2] ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
                 <div style="flex: 1;">
                     <div style="font-size: 10px; color: ${(!k[4] || k[4] === "-") && k[2] ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
                         ${(!k[4] || k[4] === "-") && k[2] ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
@@ -437,8 +426,6 @@ function openDetail(originalIndex) {
                 </div>
             </div>
         </div>
-
-// ... (Sisa kode ke bawah) ...
 
         <div style="text-align:center; padding-top:20px;">
              <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer;">CETAK PROFIL</button>
