@@ -255,6 +255,7 @@
     <option value="Madya">Kader Madya</option>
     <option value="Utama">Kader Utama</option>
     <option value="Guru">Guru Kader</option>
+    <option value="Perempuan">Kader Perempuan</option>
 </select>
             </div>
             <div class="filter-group">
@@ -425,51 +426,45 @@ function calculateAge(birthDateString) {
 
     displayData.forEach((item) => {
         if (!item || !item.pribadi) return;
-
         const p = item.pribadi;
-        
-        // --- FOKUS 1: UMUR ---
         const ageInfo = calculateAge(p.tgl_lahir);
-        
-        // --- FOKUS 2: TINGKAT KADERISASI ---
-        // Kita cek baris dari Pendidikan_Kader (item.kaderisasi)
-        // Berdasarkan baris: .appendRow([timestamp, nik, pk.pt, pk.pp, pk.mt, pk.mp, pk.ut, pk.up, pk.gt, pk.gp...])
-        let statusKader = "Anggota"; 
-        const k = item.kaderisasi;
 
-        if (k && k.length > 0) {
-            if (k[8] && k[8] !== "") statusKader = "Kader Guru";      // Kolom I
-            else if (k[6] && k[6] !== "") statusKader = "Kader Utama"; // Kolom G
-            else if (k[4] && k[4] !== "") statusKader = "Kader Madya"; // Kolom E
-            else if (k[2] && k[2] !== "") statusKader = "Kader Pratama"; // Kolom C
-        }
+        // --- LOGIKA BADGE KADERISASI MULTIPLE ---
+        let htmlBadgeKader = "";
+        const k = item.kaderisasi || [];
+        const listJenjang = [
+            ["Guru", 6], ["Utama", 4], ["Madya", 2], ["Pratama", 0], ["Kader Perempuan", 8]
+        ];
+
+        listJenjang.forEach(jenjang => {
+            const label = jenjang[0];
+            const idx = jenjang[1];
+            if (k[idx] && k[idx] !== "" && k[idx] !== "-") {
+                htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${label} (${k[idx]})</span>`;
+            }
+        });
+
+        if (htmlBadgeKader === "") htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
 
         const originalIdx = databaseKader.indexOf(item);
-        const row = `
+        body.innerHTML += `
             <tr onclick="openDetail(${originalIdx})">
                 <td data-label="Foto">
-                    <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" 
-                         style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
                 </td>
                 <td data-label="Identitas">
-                    <strong>${p.nama || 'Tanpa Nama'}</strong><br>
-                    <small>${p.nik || '-'}</small>
+                    <strong>${p.nama || 'Tanpa Nama'}</strong><br><small>${p.nik || '-'}</small>
                 </td>
                 <td data-label="Usia">
-                    ${ageInfo.age}<br>
-                    <span class="badge badge-gray">${ageInfo.gen}</span>
+                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
                 </td>
                 <td data-label="Domisili">
-                    ${p.kec || '-'}<br>
-                    <small>${p.kota || '-'}</small>
+                    ${p.kec || '-'}<br><small>${p.kota || '-'}</small>
                 </td>
                 <td data-label="Kaderisasi">
-                    <span class="badge badge-red">${statusKader}</span>
+                    ${htmlBadgeKader}
                 </td>
-            </tr>
-        `;
-        body.innerHTML += row;
+            </tr>`;
     });
 }
 
@@ -603,44 +598,40 @@ function resetFilters() {
         const medsos = item.medsos || [];    
         const jabatan = item.jabatan || [];  
 
-        // 1. Presisi Pendidikan Kader (Pencarian Kata)
-       const textKader = kader.join(" ").toLowerCase();
-        // Cek: Apakah kata "madya" (dari filter) ada di dalam "madya_tahun2005" (dari sheet)?
-        const matchesKader = fKader === "Semua" || textKader.includes(fKader.toLowerCase()); // 2. Presisi Penugasan & Tingkat (Melalui Array Jabatan)
-        // Kita gabung semua baris jabatan jadi satu teks untuk pencarian fleksibel
+        // 1. Logika Pendidikan Kader (Cek Kolom Spesifik di Sheet)
+        let matchesKader = false;
+        if (fKader === "Semua") {
+            matchesKader = true;
+        } else {
+            // Pemetaan Index: 0=Pratama, 2=Madya, 4=Utama, 6=Guru, 8=Perempuan
+            const mappingKader = { "Pratama": 0, "Madya": 2, "Utama": 4, "Guru": 6, "Perempuan": 8 };
+            const targetIdx = mappingKader[fKader];
+            if (kader[targetIdx] && kader[targetIdx] !== "" && kader[targetIdx] !== "-") {
+                matchesKader = true;
+            }
+        }
+
+        // 2. Logika Penugasan & Struktur (Multi-Jabatan)
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
-        // 3. Presisi Bahasa (Cek apakah kolom index 3 ada isinya dan bukan '-')
+
+        // 3. Logika Bahasa & IT (Cek ada isinya atau tidak)
         const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
-        let matchesBahasa = true;
-        if (fBahasa !== "Semua") {
-            const hasValue = (valBahasa !== "-" && valBahasa !== "");
-            matchesBahasa = (fBahasa === "Ya" ? hasValue : !hasValue);
-        }
+        const hasBahasa = (valBahasa !== "-" && valBahasa !== "");
+        const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? hasBahasa : !hasBahasa);
 
-        // 4. Presisi IT (Cek apakah kolom index 8 ada isinya dan bukan '-')
         const valIT = medsos[8] ? medsos[8].toString().trim() : "-";
-        let matchesIT = true;
-        if (fIT !== "Semua") {
-            const hasValue = (valIT !== "-" && valIT !== "");
-            matchesIT = (fIT === "Ya" ? hasValue : !hasValue);
-        }
+        const hasIT = (valIT !== "-" && valIT !== "");
+        const matchesIT = fIT === "Semua" || (fIT === "Ya" ? hasIT : !hasIT);
 
-        // Filter Dasar
+        // 4. Filter Standar
         const matchesJK = fJK === "Semua" || p.jk === fJK;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
-        
-        // Pendidikan Formal (Biasanya di index 19 sesuai kode ente sebelumnya)
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19] === fEdu);
-if (fKader !== "Semua" && matchesKader === false) {
-             console.log("Gagal Filter Kader:", p.nama, "Data di Sheet:", textKader, "Mencari:", fKader);
-        }
+
         return matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
     });
-
-    // Debugging: Muncul di Console (F12) untuk cek kenapa data tidak muncul
-    console.log("Filter dijalankan. Hasil:", filtered.length, "dari", databaseKader.length);
 
     renderTable(filtered);
     updateStats(filtered);
