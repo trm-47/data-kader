@@ -209,32 +209,49 @@ function calculateAge(birthDateString) {
     });
 }
 
-    function updateStats(data) {
-        const total = data.length;
-        let totalAge = 0;
-        let youth = 0;
-        let countAge = 0;
+function updateStats(data) {
+    if (!data || data.length === 0) return;
 
-        data.forEach(item => {
+    const total = data.length;
+    let totalAge = 0;
+    let youth = 0;
+    let countAge = 0;
+
+    data.forEach(item => {
+        // --- PROTEKSI DISINI ---
+        if (item && item.pribadi && item.pribadi.tgl_lahir) {
             const ageInfo = calculateAge(item.pribadi.tgl_lahir);
-            if (ageInfo.rawAge) {
+            if (ageInfo.rawAge > 0) {
                 totalAge += ageInfo.rawAge;
                 countAge++;
                 if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") youth++;
             }
-        });
+        }
+    });
 
-        document.getElementById('statTotal').innerText = total;
-        document.getElementById('statAge').innerText = countAge > 0 ? Math.round(totalAge / countAge) + " Thn" : "-";
-        document.getElementById('statYoung').innerText = total > 0 ? Math.round((youth / total) * 100) + "%" : "-";
-        document.getElementById('statArea').innerText = [...new Set(data.map(i => i.pribadi.kec))].filter(Boolean).length + " Kec";
-    }
+    document.getElementById('statTotal').innerText = total;
+    document.getElementById('statAge').innerText = countAge > 0 ? Math.round(totalAge / countAge) + " Thn" : "-";
+    document.getElementById('statYoung').innerText = total > 0 ? Math.round((youth / total) * 100) + "%" : "-";
+    
+    // Proteksi untuk hitung kecamatan
+    const kecList = data
+        .filter(i => i && i.pribadi && i.pribadi.kec)
+        .map(i => i.pribadi.kec);
+    document.getElementById('statArea').innerText = [...new Set(kecList)].length + " Kec";
+}
 
-    function formatDriveUrl(url) {
-        if (!url || !url.includes("drive.google.com")) return url;
-        const fileId = url.split("id=")[1] || url.split("/d/")[1]?.split("/")[0];
-        return fileId ? `https://lh3.googleusercontent.com/u/0/d/${fileId}` : url;
+function formatDriveUrl(url) {
+    if (!url || !url.includes("drive.google.com")) return url;
+    // Mencari ID file dari link Google Drive
+    const parts = url.split("id=");
+    let fileId = parts.length > 1 ? parts[1] : url.split("/d/")[1]?.split("/")[0];
+    
+    if (fileId) {
+        // Link thumbnail langsung (lebih cepat & stabil)
+        return `https://lh3.googleusercontent.com/d/${fileId}`;
     }
+    return url;
+}
 
     function doSearch() {
         const val = document.getElementById('quickSearch').value.toLowerCase();
@@ -244,27 +261,34 @@ function calculateAge(birthDateString) {
         });
     }
 
-    function openDetail(originalIndex) {
-        const item = databaseKader[originalIndex];
-        const p = item.pribadi;
-        const ageInfo = calculateAge(p.tgl_lahir);
-        
-        document.getElementById('modalInnerContent').innerHTML = `
-            <div style="text-align:center; margin-bottom:20px;">
-                <img src="${formatDriveUrl(p.foto)}" style="border-radius:20px; width:120px; height:120px; object-fit:cover; border: 4px solid #f1f5f9;">
-                <h2 style="margin-top:10px; color:var(--primary-red);">${p.nama}</h2>
-                <span class="badge badge-red">${item.formal[19] || 'Kader'}</span>
-            </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:14px; background:#f8fafc; padding:20px; border-radius:15px;">
-                <div><small>NIK</small><br><strong>${p.nik}</strong></div>
-                <div><small>Kecamatan</small><br><strong>${p.kec}</strong></div>
-                <div><small>Usia</small><br><strong>${ageInfo.age} (${ageInfo.gen})</strong></div>
-                <div><small>Kontak</small><br><strong>${p.wa}</strong></div>
-                <div style="grid-column: span 2;"><small>Alamat</small><br><strong>${p.alamat}, RT ${p.rt}/RW ${p.rw}, ${p.desa}</strong></div>
-            </div>
-        `;
-        document.getElementById('modalDetail').style.display = "block";
-    }
+function openDetail(originalIndex) {
+    const item = databaseKader[originalIndex];
+    if (!item || !item.pribadi) return; // Proteksi jika data klik kosong
+
+    const p = item.pribadi;
+    const ageInfo = calculateAge(p.tgl_lahir);
+    
+    // Ambil status kader (kolom terakhir di sheet Pendidikan Formal)
+    const statusKader = (item.formal && item.formal.length > 19) ? item.formal[19] : "Non-Kader";
+    
+    document.getElementById('modalInnerContent').innerHTML = `
+        <div style="text-align:center; margin-bottom:20px;">
+            <img src="${formatDriveUrl(p.foto)}" 
+                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'"
+                 style="border-radius:20px; width:120px; height:120px; object-fit:cover; border: 4px solid #f1f5f9;">
+            <h2 style="margin-top:10px; color:var(--primary-red);">${p.nama || 'Tanpa Nama'}</h2>
+            <span class="badge badge-red">${statusKader}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:14px; background:#f8fafc; padding:20px; border-radius:15px;">
+            <div><small>NIK</small><br><strong>${p.nik || '-'}</strong></div>
+            <div><small>Kecamatan</small><br><strong>${p.kec || '-'}</strong></div>
+            <div><small>Usia</small><br><strong>${ageInfo.age} (${ageInfo.gen})</strong></div>
+            <div><small>Kontak</small><br><strong>${p.wa || '-'}</strong></div>
+            <div style="grid-column: span 2;"><small>Alamat</small><br><strong>${p.alamat || '-'}, RT ${p.rt || '0'}/RW ${p.rw || '0'}, ${p.desa || '-'}</strong></div>
+        </div>
+    `;
+    document.getElementById('modalDetail').style.display = "block";
+}
 
     function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
     
