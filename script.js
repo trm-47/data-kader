@@ -12,7 +12,7 @@
 })();
 
 /* ==========================================
-    2. RENDER ENGINE (SULTAN STYLE)
+    2. RENDER ENGINE (PREMIUM)
    ========================================== */
 function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
@@ -39,16 +39,15 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
     </div>
 `;
 
-// Fungsi Render untuk masing-masing List
-const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
-const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
-const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
-const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => premiumTemplate(item.perusahaan, `${item.jabatan} (${item.masa_kerja})`, 'riwayat_pekerjaan', index, 'renderPekerjaan'));
-const renderOrganisasi = () => renderList('organisasiList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} (${item.periode})`, 'riwayat_organisasi', index, 'renderOrganisasi'));
-const renderPenugasan = () => renderList('penugasanList', 'riwayat_penugasan', (item, index) => premiumTemplate(item.tugas, `${item.wilayah} (${item.tahun})`, 'riwayat_penugasan', index, 'renderPenugasan'));
+// Fungsi Render Khusus Step 4
+const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => 
+    premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
+
+const renderPenugasan = () => renderList('tugasList', 'riwayat_penugasan', (item, index) => 
+    premiumTemplate(item.tugas_jabatan, `${item.tugas_jenis} - ${item.tugas_lokasi} (${item.tugas_periode})`, 'riwayat_penugasan', index, 'renderPenugasan'));
 
 /* ==========================================
-    3. FUNGSI ADD DATA (STEP 2 - 5)
+    3. FUNGSI ADD DATA (Sesuai ID HTML Step 4)
    ========================================== */
 function saveToLocal(key, obj) {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
@@ -58,77 +57,57 @@ function saveToLocal(key, obj) {
     localStorage.setItem('kaderData', JSON.stringify(data));
 }
 
-// Tombol + Step 2
-function addPendidikan() {
-    const jenjang = document.getElementById('jenjang')?.value;
-    const ptJenjangs = ['D1', 'D2', 'D3', 'D4', 'S1', 'S2', 'S3'];
-    const nama = ptJenjangs.includes(jenjang) ? document.getElementById('nama_pt')?.value : document.getElementById('nama_sekolah')?.value;
-    const tahun = document.getElementById('tahun_lulus')?.value;
-    if(!jenjang || !nama) return alert("Isi data pendidikan!");
-    saveToLocal('riwayat_pendidikan', { jenjang, nama, tahun, kota: document.getElementById('kota_sekolah')?.value || '-' });
-    renderPendidikan();
-}
-
-// Tombol + Step 3
-function addPendidikanKader() {
-    const jenis = document.getElementById('jenis_kader')?.value;
-    const penyelenggara = document.getElementById('penyelenggara')?.value;
-    const tahun = document.getElementById('tahun_kader')?.value;
-    if(!jenis || !penyelenggara) return alert("Isi data kaderisasi!");
-    saveToLocal('riwayat_kader', { jenis, penyelenggara, tahun });
-    renderKader();
-}
-
-// Tombol + Step 4 (Jabatan)
+// Handler Tambah Struktur (Step 4)
 function addJabatanPartai() {
     const tingkatan = document.getElementById('tingkatan_partai')?.value;
-    const jabatan = document.getElementById('jabatan_partai')?.value;
+    let jabatan = document.getElementById('jabatan_partai')?.value;
+    const bidang = document.getElementById('bidang_jabatan')?.value;
     const periode = document.getElementById('periode_partai')?.value;
-    if(!tingkatan || !jabatan) return alert("Isi data jabatan!");
+
+    if(!tingkatan || !jabatan) return alert("Lengkapi data struktur!");
+    
+    // Jika ada bidang (Wakil Ketua/Sekretaris), gabungkan namanya
+    if(bidang) jabatan = `${jabatan} ${bidang}`;
+
     saveToLocal('riwayat_jabatan_partai', { tingkatan, jabatan, periode });
     renderJabatan();
+    
+    // Reset fields
+    document.getElementById('bidang_jabatan').value = '';
+    document.getElementById('periode_partai').value = '';
 }
 
-// Tombol + Step 4 (Pekerjaan)
-function addPekerjaan() {
-    const perusahaan = document.getElementById('nama_perusahaan')?.value;
-    const jabatan = document.getElementById('jabatan_kerja')?.value;
-    const masa = document.getElementById('masa_kerja')?.value;
-    if(!perusahaan) return alert("Isi nama perusahaan!");
-    saveToLocal('riwayat_pekerjaan', { perusahaan, jabatan, masa_kerja: masa });
-    renderPekerjaan();
-}
+// Handler Tambah Penugasan (Step 4) - SESUAI HTML BOS
+function addPenugasanPartai() {
+    const tugas_jenis = document.getElementById('tugas_jenis')?.value;
+    const tugas_lembaga = document.getElementById('tugas_lembaga')?.value;
+    const tugas_jabatan = document.getElementById('tugas_jabatan')?.value;
+    const tugas_lokasi = document.getElementById('tugas_lokasi')?.value;
+    const tugas_periode = document.getElementById('tugas_periode')?.value;
 
-// Tombol + Step 5 (Organisasi)
-function addOrganisasi() {
-    const nama = document.getElementById('nama_org')?.value;
-    const jabatan = document.getElementById('jabatan_org')?.value;
-    const periode = document.getElementById('periode_org')?.value;
-    if(!nama) return alert("Isi nama organisasi!");
-    saveToLocal('riwayat_organisasi', { nama, jabatan, periode });
-    renderOrganisasi();
-}
+    if(!tugas_jenis || !tugas_jabatan) return alert("Lengkapi data penugasan!");
 
-// Tombol + Step 5 (Penugasan)
-function addPenugasan() {
-    const tugas = document.getElementById('nama_penugasan')?.value;
-    const wilayah = document.getElementById('wilayah_penugasan')?.value;
-    const tahun = document.getElementById('tahun_penugasan')?.value;
-    if(!tugas) return alert("Isi nama penugasan!");
-    saveToLocal('riwayat_penugasan', { tugas, wilayah, tahun });
+    const dataTugas = {
+        tugas_jenis: tugas_jenis === 'Legislatif' ? `Legislatif (${tugas_lembaga})` : tugas_jenis,
+        tugas_jabatan,
+        tugas_lokasi,
+        tugas_periode
+    };
+
+    saveToLocal('riwayat_penugasan', dataTugas);
     renderPenugasan();
+
+    // Reset fields
+    document.getElementById('tugas_jabatan').value = '';
+    document.getElementById('tugas_lokasi').value = '';
+    document.getElementById('tugas_periode').value = '';
 }
 
 /* ==========================================
-    4. SUBMIT & LOAD
+    4. AUTO LOAD
    ========================================== */
 window.addEventListener('load', () => {
-    const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
-    // Load Step 1
-    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
-    fields.forEach(f => {
-        const el = document.getElementById(f); if(el) el.value = saved[f] || '';
-    });
-    // Render semua list
-    renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
+    renderJabatan();
+    renderPenugasan();
+    // Jika ada fungsi render step lain (pendidikan, kader, dll) tambahkan di bawah sini
 });
