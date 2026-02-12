@@ -300,23 +300,7 @@
 
     <div class="table-card">
         <table>
-            ```
 
----
-
-### 2. Apa yang harus dilakukan (Analisis Masalah)?
-
-1.  **Dosa Struktur:** Tadinya ada tag `<div class="filter-group">` yang terbuka dua kali tapi cuma ditutup sekali. Ini yang bikin tombol Reset "loncat" ke dalam kotak kecil.
-2.  **Search Box:** Tadinya `quickSearch` ada di dalam `filter-body`. Akibatnya, kalau user tidak mengklik "Filter Data", kotak pencariannya tidak akan kelihatan. Saya sudah pindahkan ke bawah (di dalam `control-panel`) supaya selalu tampil.
-3.  **CSS Class:** Saya pastikan `.control-panel` membungkus `.search-box` supaya sesuai dengan CSS yang ente tulis di atas (yang ada `!important` marginnya).
-
-### 3. Tips Tambahan (JavaScript)
-Pada fungsi `formatDriveUrl`, ada typo kecil di bagian return:
-`return https://lh3.googleusercontent.com/d/${fileId};`
-
-**Seharusnya pakai backticks (template literals):**
-```javascript
-return `https://lh3.googleusercontent.com/u/0/d/${fileId}=w200-h200-p-k-nu-iv1`;
             <thead>
                 <tr>
                     <th style="width:80px">Foto</th>
