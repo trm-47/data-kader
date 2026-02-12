@@ -58,3 +58,49 @@ body {
     transform: scale(1.1);
     transition: 0.5s;
 }
+
+/* --- PERBAIKAN INSTRUKSI DI INDEX --- */
+.features-brief {
+    background: rgba(255, 255, 255, 0.05) !important; /* Ubah dari putih ke transparan gelap */
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.features-brief p {
+    color: #e2e8f0 !important; /* Biar teks instruksi jadi putih abu-abu terang */
+}
+
+/* Kotak Peringatan Merah di Index */
+.features-brief div[style*="background: #fff1f2"] {
+    background: rgba(215, 25, 32, 0.1) !important; /* Merah transparan */
+    border-color: var(--primary-red) !important;
+}
+
+.features-brief div p[style*="color: var(--primary-red)"] {
+    color: #ff4d4d !important; /* Merah terang agar terbaca di bg gelap */
+}
+
+
+/* --- PERBAIKAN JENIS KELAMIN DI STEP 1 --- */
+.gender-card {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #94a3b8 !important; /* Teks default saat tidak dipilih */
+}
+
+/* Saat Jenis Kelamin Dipilih */
+.gender-option input:checked + .gender-card {
+    background: rgba(215, 25, 32, 0.2) !important;
+    border-color: var(--primary-red) !important;
+    color: white !important;
+    box-shadow: 0 0 15px rgba(215, 25, 32, 0.3);
+}
+
+/* Hover pada pilihan gender */
+.gender-option:hover .gender-card {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Memperbaiki label Input Group agar tidak tenggelam */
+.input-group label {
+    color: #cbd5e1 !important;
+}
