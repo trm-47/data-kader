@@ -384,6 +384,8 @@ function openDetail(originalIndex) {
             </div>
         </div>
 
+        // ... (Bagian atas kode openDetail tetap sama) ...
+
         <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
@@ -403,24 +405,40 @@ function openDetail(originalIndex) {
                     const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && (!k[4] || k[4] === "" || k[4] === "-");
                     const waitTime = isPratamaOnly ? (currentYear - parseInt(lvl.year)) : 0;
                     
+                    // Highlight logic
+                    const isStagnan = waitTime > 5;
+                    const cardBg = isStagnan ? '#fff1f2' : (lvl.year ? '#fff' : '#f8fafc');
+                    const borderColor = isStagnan ? '#be123c' : (lvl.year ? lvl.color : '#f1f5f9');
+                    
                     return `
-                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${lvl.year ? lvl.color : '#f1f5f9'}; background: ${lvl.year ? '#fff' : '#f8fafc'}; position: relative;">
-                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
+                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${borderColor}; background: ${cardBg}; position: relative; ${isStagnan ? 'box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);' : ''}">
+                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${isStagnan ? '#be123c' : lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
+                        
                         <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
-                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? lvl.color : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
-                        ${waitTime > 5 ? `<div style="font-size:7px; color:#d9534f; font-weight:bold; margin-top:3px;">STAGNAN ${waitTime} THN</div>` : ''}
+                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? (isStagnan ? '#be123c' : lvl.color) : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
+                        
+                        ${isStagnan ? `
+                            <div style="font-size:7px; background:#be123c; color:white; font-weight:bold; margin-top:5px; padding: 2px 4px; border-radius: 4px; animation: pulse 2s infinite;">
+                                STAGNAN ${waitTime} THN
+                            </div>
+                        ` : ''}
                     </div>`;
                 }).join('')}
             </div>
-            <div style="background: #1e293b; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
+            
+            <div style="background: ${(!k[4] || k[4] === "-") && k[2] ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white; transition: all 0.3s;">
                 <div style="flex: 1;">
-                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Rekomendasi Penugasan:</div>
-                    <div style="font-size: 14px; margin-top: 4px;">
-                        ${k[8] ? 'Ideolog Partai: Mentor/Pengajar.' : k[6] ? 'Strategis Nasional/Provinsi.' : k[4] ? 'Pimpinan Struktur/Legislatif.' : k[2] ? 'Militansi Basis Massa.' : 'Segera Pelatihan Pratama.'}
+                    <div style="font-size: 10px; color: ${(!k[4] || k[4] === "-") && k[2] ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
+                        ${(!k[4] || k[4] === "-") && k[2] ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
+                    </div>
+                    <div style="font-size: 14px; margin-top: 4px; font-weight: ${(!k[4] || k[4] === "-") && k[2] ? '700' : '400'};">
+                        ${k[8] ? 'Ideolog Partai: Mentor/Pengajar.' : k[6] ? 'Strategis Nasional/Provinsi.' : k[4] ? 'Pimpinan Struktur/Legislatif.' : k[2] ? 'Kader ini sudah terlalu lama di tingkat Pratama. Wajib didorong ke Pelatihan Madya!' : 'Segera jadwalkan Pelatihan Pratama.'}
                     </div>
                 </div>
             </div>
         </div>
+
+// ... (Sisa kode ke bawah) ...
 
         <div style="text-align:center; padding-top:20px;">
              <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer;">CETAK PROFIL</button>
