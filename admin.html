@@ -236,10 +236,17 @@
 
         sortedData.forEach((kader, index) => {
             const ageInfo = calculateAge(kader.tanggal_lahir);
+            
+            // PROSES LINK FOTO DI SINI
+            const fotoUrl = formatDriveUrl(kader.foto);
+            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(kader.nama_lengkap)}&background=random&color=fff`;
+
             const row = `
                 <tr onclick="openDetail(${index})">
                     <td class="td-img" data-label="Foto">
-                        <img src="${kader.foto && kader.foto !== '-' ? kader.foto : 'https://ui-avatars.com/api/?name=' + kader.nama_lengkap}" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                        <img src="${fotoUrl}" 
+                             onerror="this.onerror=null;this.src='${fallbackAvatar}';" 
+                             style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;">
                     </td>
                     <td data-label="Identitas">
                         <strong>${kader.nama_lengkap || '-'}</strong><br>
