@@ -293,6 +293,7 @@ const fKota = document.getElementById('fKota').value;
     const fJenis = document.getElementById('fJenisTugas').value;
     const fBahasa = document.getElementById('fBahasa').value;
     const fIT = document.getElementById('fIT').value;
+    const fStatusMadya = document.getElementById('fStatusMadya').value;
 
     const filtered = databaseKader.filter(item => {
         const p = item.pribadi || {};
@@ -301,7 +302,7 @@ const fKota = document.getElementById('fKota').value;
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
-const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
+        const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
@@ -313,6 +314,8 @@ const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKo
             matchesKader = (fKader === "Perempuan") ? (hasSertifikat && (p.jk === "P" || p.jk === "Perempuan")) : hasSertifikat;
         }
 
+        const isMadya = kader[4] && kader[4] !== "" && kader[4] !== "-";
+        
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
@@ -327,7 +330,9 @@ const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKo
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
-        return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchesBahasa && matchesIT;
+        return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && 
+               matchesEdu && matchesKader && matchesTingkat && matchesJenis && 
+               matchesBahasa && matchesIT && matchStatusMadya;
     });
 
     renderTable(filtered);
