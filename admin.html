@@ -151,29 +151,63 @@ function calculateAge(birthDateString) {
 }
 
     function renderTable(data) {
-        const body = document.getElementById('bodyKader');
-        body.innerHTML = "";
-        
-        const sortedData = [...data].reverse();
-
-        sortedData.forEach((item, index) => {
-            if (!item.pribadi) return;
-            const p = item.pribadi;
-            const ageInfo = calculateAge(p.tgl_lahir);
-            const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama || 'K')}&background=random&color=fff`;
-            
-            const row = `
-                <tr onclick="openDetail(${data.length - 1 - index})">
-                    <td data-label="Foto"><img src="${formatDriveUrl(p.foto)}" onerror="this.src='${fallbackAvatar}'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;"></td>
-                    <td data-label="Identitas"><strong>${p.nama || '-'}</strong><br><small>${p.nik || '-'}</small></td>
-                    <td data-label="Usia">${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span></td>
-                    <td data-label="Domisili">${p.kec || '-'}<br><small>${p.kota || '-'}</small></td>
-                    <td data-label="Kaderisasi"><span class="badge badge-red">${item.formal[19] || 'Non-Kader'}</span></td>
-                </tr>
-            `;
-            body.innerHTML += row;
-        });
+    const body = document.getElementById('bodyKader');
+    body.innerHTML = "";
+    
+    if (!data || data.length === 0) {
+        body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
+        return;
     }
+
+    const sortedData = [...data].reverse();
+
+    sortedData.forEach((item, index) => {
+        // --- PROTEKSI KERAS ---
+        // Jika item atau item.pribadi tidak ada, langsung skip ke baris berikutnya
+        if (!item || !item.pribadi) return; 
+
+        const p = item.pribadi;
+        
+        // Pastikan tgl_lahir ada nilainya sebelum dikirim ke calculateAge
+        const tgl = p.tgl_lahir ? p.tgl_lahir : "";
+        const ageInfo = calculateAge(tgl);
+        
+        const namaKader = p.nama || "Tanpa Nama";
+        const fallbackAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaKader)}&background=random&color=fff`;
+        
+        // Ambil status kaderisasi (Proteksi jika array formal kosong)
+        let statusKader = "Non-Kader";
+        if (item.formal && Array.isArray(item.formal) && item.formal.length > 19) {
+            statusKader = item.formal[19] || "Non-Kader";
+        }
+
+        const row = `
+            <tr onclick="openDetail(${data.length - 1 - index})">
+                <td data-label="Foto">
+                    <img src="${formatDriveUrl(p.foto)}" 
+                         onerror="this.src='${fallbackAvatar}'" 
+                         style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                </td>
+                <td data-label="Identitas">
+                    <strong>${namaKader}</strong><br>
+                    <small>${p.nik || '-'}</small>
+                </td>
+                <td data-label="Usia">
+                    ${ageInfo.age}<br>
+                    <span class="badge badge-gray">${ageInfo.gen}</span>
+                </td>
+                <td data-label="Domisili">
+                    ${p.kec || '-'}<br>
+                    <small>${p.kota || '-'}</small>
+                </td>
+                <td data-label="Kaderisasi">
+                    <span class="badge badge-red">${statusKader}</span>
+                </td>
+            </tr>
+        `;
+        body.innerHTML += row;
+    });
+}
 
     function updateStats(data) {
         const total = data.length;
