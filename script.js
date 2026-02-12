@@ -203,14 +203,42 @@ function addOrganisasi() {
 
     renderOrganisasi();
 }
+/* ==========================================
+    PERBAIKAN NAVIGASI STEP 6 (Hanya Bagian Ini)
+   ========================================== */
+function goToReview() {
+    try {
+        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+
+        // 1. Ambil Kompetensi Bahasa & Komputer
+        const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
+        data.kompetensi_bahasa = Array.from(checkboxes).map(cb => cb.value).join(', ') || '-';
+        data.bahasa_lainnya_input = document.getElementById('bahasa_lainnya')?.value || '';
+        data.kemampuan_komputer = document.getElementById('komputer')?.value || '-';
+
+        // 2. Ambil Akun Media Sosial (Sesuai ID di HTML Step 6 Bos)
+        data.media_sosial = {
+            facebook: document.getElementById('medsos_fb')?.value.trim() || '-',
+            instagram: document.getElementById('medsos_ig')?.value.trim() || '-',
+            tiktok: document.getElementById('medsos_tiktok')?.value.trim() || '-',
+            twitter_x: document.getElementById('medsos_twitter')?.value.trim() || '-',
+            youtube: document.getElementById('medsos_youtube')?.value.trim() || '-',
+            linkedin: document.getElementById('medsos_linkedin')?.value.trim() || '-'
+        };
+
+        // 3. Simpan dan Lanjut
+        localStorage.setItem('kaderData', JSON.stringify(data));
+        window.location.href = 'rekap.html';
+
+    } catch (error) {
+        console.error("Error Step 6:", error);
+        alert("Gagal menyimpan data Step 6, Bos.");
+    }
+}
+
+// Tetap sediakan saveStep6 jika ada tombol yang memanggil nama lama
 function saveStep6() {
-    const facebook = document.getElementById('fb_kader')?.value || '-';
-    const instagram = document.getElementById('ig_kader')?.value || '-';
-    const tiktok = document.getElementById('tt_kader')?.value || '-';
-    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    existing.medsos = { facebook, instagram, tiktok };
-    localStorage.setItem('kaderData', JSON.stringify(existing));
-    window.location.href = 'rekap.html';
+    goToReview();
 }
 
 /* ==========================================
