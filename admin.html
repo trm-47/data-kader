@@ -3,106 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Database Kader</title>
+    <title>Admin Panel - Data Kader Terbaru</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        .admin-container { padding: 20px; max-width: 1200px; margin: auto; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border-top: 4px solid var(--primary-red); }
-        .stat-card h3 { font-size: 12px; color: #64748b; text-transform: uppercase; margin-bottom: 5px; }
-        .stat-card p { font-size: 24px; font-weight: 800; color: #1e293b; }
+        :root { --primary-red: #D71920; --slate-600: #475569; }
+        body { background: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; padding: 20px; }
         
-        .table-container { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8fafc; padding: 15px; font-size: 13px; color: #64748b; border-bottom: 2px solid #edf2f7; }
-        td { padding: 15px; font-size: 14px; border-bottom: 1px solid #edf2f7; vertical-align: middle; }
-        .img-admin { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
-        .badge-red { background: #fee2e2; color: #ef4444; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        
+        /* Table Style */
+        .table-card { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f1f5f9; padding: 15px; text-align: left; font-size: 12px; text-transform: uppercase; color: var(--slate-600); }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
+        tr:hover td { background: #fff1f2; } /* Highlight saat baris diklik */
+
+        /* Modal / Detail Pop-up */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
+        .modal-content { background: white; width: 90%; max-width: 600px; margin: 50px auto; border-radius: 24px; padding: 25px; position: relative; max-height: 80vh; overflow-y: auto; }
+        .close-btn { position: absolute; right: 20px; top: 20px; font-size: 24px; cursor: pointer; }
+        
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .detail-box { background: #f8fafc; padding: 12px; border-radius: 12px; border-left: 3px solid var(--primary-red); }
+        .detail-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; font-weight: 800; }
+        .detail-value { font-size: 14px; font-weight: 600; color: #1e293b; }
     </style>
 </head>
-<body style="background: #f1f5f9;">
+<body>
 
-<div class="admin-container">
-    <div class="header-admin" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <div>
-            <h2 style="font-weight: 800;">Dashboard Kader</h2>
-            <p style="color: #64748b; font-size: 14px;">Pemantauan Real-time Data Masuk</p>
-        </div>
-        <button onclick="fetchDataAdmin()" class="btn-outline-sm">🔄 Refresh Data</button>
+<div class="admin-header">
+    <div>
+        <h1 style="font-weight: 800; color: #1e293b;">Data Kader Masuk</h1>
+        <p style="color: #64748b;">Klik baris untuk melihat detail lengkap</p>
     </div>
+    <button onclick="fetchData()" class="btn-outline-sm">🔄 Update Data</button>
+</div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Total Kader</h3>
-            <p id="countTotal">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>Kecamatan Terdata</h3>
-            <p id="countKec">0</p>
-        </div>
-    </div>
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>Foto</th>
+                <th>Nama (Step 1)</th>
+                <th>Kecamatan</th>
+                <th>Kaderisasi (Step 3)</th>
+                <th>Waktu</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            </tbody>
+    </table>
+</div>
 
-    <div class="table-container">
-        <table id="adminTable">
-            <thead>
-                <tr>
-                    <th>Foto</th>
-                    <th>Nama Lengkap</th>
-                    <th>Wilayah</th>
-                    <th>Jabatan</th>
-                    <th>Kontak</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="adminBody">
-                </tbody>
-        </table>
-        <div id="loadingAdmin" style="padding: 40px; text-align: center; display: none;">
-            <p>⏳ Sedang mengambil data dari pusat...</p>
-        </div>
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="fotoDetail" style="text-align: center; margin-bottom: 20px;"></div>
+        <h2 id="namaDetail" style="text-align: center; margin-bottom: 5px;"></h2>
+        <p id="nikDetail" style="text-align: center; color: #64748b; font-size: 14px; margin-bottom: 20px;"></p>
+        
+        <hr style="border: 0; border-top: 1px solid #eee;">
+        
+        <div class="detail-grid" id="isiDetail">
+            </div>
     </div>
 </div>
 
 <script>
-    const URL_API = 'https://script.google.com/macros/s/AKfycbzMBsu39WMKLJd9WmBKXiIov5yUEUjTDncQ5yvg8wm7YuVX_HzT0h5PhUOp4D1-pCJsQA/exec';
-
-    async function fetchDataAdmin() {
-        const body = document.getElementById('adminBody');
-        const loader = document.getElementById('loadingAdmin');
-        
-        body.innerHTML = '';
-        loader.style.display = 'block';
-
-        try {
-            // Kita pakai GET untuk ambil data (Pastikan di Google Script sudah ada fungsi doGet)
-            const response = await fetch(URL_API + '?action=read');
-            const result = await response.json();
-            
-            loader.style.display = 'none';
-            document.getElementById('countTotal').innerText = result.length;
-
-            result.forEach(kader => {
-                const row = `
-                    <tr>
-                        <td><img src="${kader.foto || 'https://via.placeholder.com/40'}" class="img-admin"></td>
-                        <td><b>${kader.nama_lengkap}</b><br><small>${kader.nik}</small></td>
-                        <td>${kader.kecamatan}</td>
-                        <td><span class="badge badge-red">${kader.pekerjaan || 'Kader'}</span></td>
-                        <td>${kader.kontak}</td>
-                        <td><button class="btn-outline-sm" style="font-size:10px;">Detail</button></td>
-                    </tr>
-                `;
-                body.innerHTML += row;
-            });
-        } catch (e) {
-            loader.innerHTML = '❌ Gagal memuat data. Pastikan Google Script sudah mendukung "GET".';
+    // Data dummy untuk tes tampilan sebelum hubung ke GAS
+    let databaseKader = [
+        {
+            timestamp: "2023-10-27 10:00",
+            nama_lengkap: "Budi Santoso",
+            nik: "3578000000111",
+            kecamatan: "Tegalsari",
+            foto: "https://via.placeholder.com/100",
+            riwayat_kader: [{ jenis: "Pratama", tahun: "2021" }],
+            kontak: "08123456789",
+            alamat: "Jl. Merdeka No. 1",
+            pekerjaan: "Wiraswasta"
         }
+    ];
+
+    function renderTable(data) {
+        const body = document.getElementById('tableBody');
+        // Sortir: Data terbaru di paling atas
+        const sortedData = data.reverse(); 
+        
+        body.innerHTML = sortedData.map((k, index) => `
+            <tr onclick="showDetail(${index})">
+                <td><img src="${k.foto}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;"></td>
+                <td><b>${k.nama_lengkap}</b><br><small>${k.nik}</small></td>
+                <td>${k.kecamatan}</td>
+                <td><span style="background:#fee2e2; color:red; padding:3px 8px; border-radius:5px; font-size:11px; font-weight:700;">
+                    ${k.riwayat_kader ? k.riwayat_kader[0]?.jenis : '-'}
+                </span></td>
+                <td><small>${k.timestamp || '-'}</small></td>
+            </tr>
+        `).join('');
     }
 
-    // Jalankan saat load
-    window.onload = fetchDataAdmin;
+    function showDetail(index) {
+        const k = databaseKader[index];
+        document.getElementById('fotoDetail').innerHTML = `<img src="${k.foto}" style="width:120px; height:120px; border-radius:20px; object-fit:cover; border:4px solid #f1f5f9;">`;
+        document.getElementById('namaDetail').innerText = k.nama_lengkap;
+        document.getElementById('nikDetail').innerText = "NIK: " + k.nik;
+
+        const detailHtml = `
+            <div class="detail-box"><div class="detail-label">Kecamatan</div><div class="detail-value">${k.kecamatan}</div></div>
+            <div class="detail-box"><div class="detail-label">WA / Kontak</div><div class="detail-value">${k.kontak}</div></div>
+            <div class="detail-box"><div class="detail-label">Pekerjaan</div><div class="detail-value">${k.pekerjaan}</div></div>
+            <div class="detail-box"><div class="detail-label">Alamat</div><div class="detail-value">${k.alamat}</div></div>
+            <div class="detail-box" style="grid-column: span 2;">
+                <div class="detail-label">Pendidikan Kader</div>
+                <div class="detail-value">${k.riwayat_kader ? k.riwayat_kader.map(rk => rk.jenis + ' ('+rk.tahun+')').join(', ') : '-'}</div>
+            </div>
+        `;
+        document.getElementById('isiDetail').innerHTML = detailHtml;
+        document.getElementById('detailModal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('detailModal').style.display = "none";
+    }
+
+    // Jalankan saat buka halaman
+    window.onload = () => renderTable(databaseKader);
 </script>
 
 </body>
