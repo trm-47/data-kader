@@ -109,10 +109,26 @@ function renderTable(data) {
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // 1. Logika Stagnan (Warning)
-        const isStagnan = (k[2] && k[2] !== "" && k[2] !== "-" && (!k[4] || k[4] === "" || k[4] === "-"));
-        const rowClass = isStagnan ? "warning-row" : "";
-        const badgeWarning = isStagnan ? '<br><span class="warning-badge">⚠️ BUTUH MADYA</span>' : '';
+        // 1. Logika Stagnan (Warning) - Update Progresif
+        const currentYear = new Date().getFullYear();
+        const hasPratama = k[2] && k[2] !== "" && k[2] !== "-";
+        const noMadya = !k[4] || k[4] === "" || k[4] === "-";
+        
+        let rowClass = "";
+        let badgeWarning = "";
+
+        if (hasPratama && noMadya) {
+            const tahunPratama = parseInt(k[2]);
+            const masaTunggu = currentYear - tahunPratama;
+
+            if (masaTunggu > 5) {
+                rowClass = "urgent-row"; // Class untuk CSS Merah (🚨 PRIORITAS)
+                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (> ${masaTunggu} Thn)</span>`;
+            } else {
+                rowClass = "warning-row"; // Class untuk CSS Kuning (⚠️ BUTUH)
+                badgeWarning = `<br><span class="warning-badge">⚠️ BUTUH MADYA (${masaTunggu} Thn)</span>`;
+            }
+        }
 
         // 2. Logika WhatsApp
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
@@ -338,38 +354,6 @@ function openDetail(originalIndex) {
             </div>
         </div>
 
-        <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
-                    <span style="background: #D71920; width: 4px; height: 18px; border-radius: 2px; display: inline-block;"></span>
-                    Analisa Jenjang Kaderisasi
-                </h3>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
-                ${[
-                    { label: 'PRATAMA', year: k[2], color: '#ef4444' },
-                    { label: 'MADYA', year: k[4], color: '#dc2626' },
-                    { label: 'UTAMA', year: k[6], color: '#b91c1c' },
-                    { label: 'GURU', year: k[8], color: '#991b1b' },
-                    { label: 'WANITA', year: k[10], color: '#db2777' }
-                ].map(lvl => `
-                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${lvl.year ? lvl.color : '#f1f5f9'}; background: ${lvl.year ? '#fff' : '#f8fafc'}; position: relative;">
-                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
-                        <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
-                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? lvl.color : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
-                    </div>
-                `).join('')}
-            </div>
-            <div style="background: #1e293b; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
-                <div style="flex: 1;">
-                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Rekomendasi Penugasan:</div>
-                    <div style="font-size: 14px; margin-top: 4px;">
-                        ${k[8] ? 'Ideolog Partai: Mentor/Pengajar.' : k[6] ? 'Strategis Nasional/Provinsi.' : k[4] ? 'Pimpinan Struktur/Legislatif.' : k[2] ? 'Militansi Basis Massa.' : 'Segera Pelatihan Pratama.'}
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="profile-section">
             <div class="section-title">Riwayat Jabatan & Penugasan</div>
             <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -397,6 +381,44 @@ function openDetail(originalIndex) {
                 <div class="data-item"><label>Skill Komputer</label><span>${m[8] || '-'}</span></div>
                 <div class="data-item"><label>Facebook</label><span>${m[9] || '-'}</span></div>
                 <div class="data-item"><label>Instagram</label><span>${m[10] || '-'}</span></div>
+            </div>
+        </div>
+
+        <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span style="background: #D71920; width: 4px; height: 18px; border-radius: 2px; display: inline-block;"></span>
+                    Analisa Jenjang & Masa Tunggu
+                </h3>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
+                ${[
+                    { label: 'PRATAMA', year: k[2], color: '#ef4444' },
+                    { label: 'MADYA', year: k[4], color: '#dc2626' },
+                    { label: 'UTAMA', year: k[6], color: '#b91c1c' },
+                    { label: 'GURU', year: k[8], color: '#991b1b' },
+                    { label: 'WANITA', year: k[10], color: '#db2777' }
+                ].map(lvl => {
+                    const currentYear = new Date().getFullYear();
+                    const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && (!k[4] || k[4] === "" || k[4] === "-");
+                    const waitTime = isPratamaOnly ? (currentYear - parseInt(lvl.year)) : 0;
+                    
+                    return `
+                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${lvl.year ? lvl.color : '#f1f5f9'}; background: ${lvl.year ? '#fff' : '#f8fafc'}; position: relative;">
+                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
+                        <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
+                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? lvl.color : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
+                        ${waitTime > 5 ? `<div style="font-size:7px; color:#d9534f; font-weight:bold; margin-top:3px;">STAGNAN ${waitTime} THN</div>` : ''}
+                    </div>`;
+                }).join('')}
+            </div>
+            <div style="background: #1e293b; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
+                <div style="flex: 1;">
+                    <div style="font-size: 10px; color: #94a3b8; text-transform: uppercase;">Rekomendasi Penugasan:</div>
+                    <div style="font-size: 14px; margin-top: 4px;">
+                        ${k[8] ? 'Ideolog Partai: Mentor/Pengajar.' : k[6] ? 'Strategis Nasional/Provinsi.' : k[4] ? 'Pimpinan Struktur/Legislatif.' : k[2] ? 'Militansi Basis Massa.' : 'Segera Pelatihan Pratama.'}
+                    </div>
+                </div>
             </div>
         </div>
 
