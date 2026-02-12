@@ -50,7 +50,7 @@
         <div class="filter-body" id="filterBody">
             <div class="filter-group">
                 <label>Kabupaten / Kota</label>
-                <select id="fKota" onchange="applyFilters()">
+                <select id="fKota" onchange="updateKecamatanOptions()">
                     <option value="Semua">Semua Wilayah</option>
                     <option value="Yogyakarta">Kota Yogyakarta</option>
                     <option value="Sleman">Sleman</option>
@@ -60,17 +60,19 @@
                 </select>
             </div>
 
-            <div class="filter-group">
-                <label>Kecamatan</label>
-                <input type="text" id="fKec" onkeyup="applyFilters()" placeholder="Cari Kecamatan..." 
-                       style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
-            </div>
+<div class="filter-group">
+    <label>Kecamatan</label>
+    <select id="fKec" onchange="updateDesaOptions()">
+        <option value="Semua">Semua Kecamatan</option>
+    </select>
+</div>
 
-            <div class="filter-group">
-                <label>Kelurahan / Desa</label>
-                <input type="text" id="fDesa" onkeyup="applyFilters()" placeholder="Cari Desa..." 
-                       style="padding: 14px 20px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; outline: none; font-size: 13px;">
-            </div>
+<div class="filter-group">
+    <label>Kelurahan / Desa</label>
+    <select id="fDesa" onchange="applyFilters()">
+        <option value="Semua">Semua Kelurahan/Desa</option>
+    </select>
+</div>
             
             <div class="filter-group">
                 <label>Jenis Kelamin</label>
