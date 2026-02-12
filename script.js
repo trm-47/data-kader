@@ -160,9 +160,22 @@ function addPenugasanPartai() {
 function addPekerjaan() {
     const perusahaan = document.getElementById('nama_perusahaan')?.value;
     const jabatan = document.getElementById('jabatan_kerja')?.value;
-    const masa = document.getElementById('masa_kerja')?.value;
+    const masa = document.getElementById('masa_kerja')?.value; // ID harus sesuai HTML
+
     if(!perusahaan || !jabatan) return alert("Lengkapi data kerja!");
-    saveToLocal('riwayat_pekerjaan', { perusahaan, jabatan, masa_kerja: masa });
+    
+    // Simpan ke local dengan key masa_kerja
+    saveToLocal('riwayat_pekerjaan', { 
+        perusahaan: perusahaan, 
+        jabatan: jabatan, 
+        masa_kerja: masa // Ambil dari variabel masa di atas
+    });
+    
+    // Reset input biar bisa nambah lagi
+    document.getElementById('nama_perusahaan').value = '';
+    document.getElementById('jabatan_kerja').value = '';
+    document.getElementById('masa_kerja').value = '';
+    
     renderPekerjaan();
 }
 
