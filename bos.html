@@ -318,73 +318,97 @@
     min-width: 200px; /* Agar nama dan badge tidak bertumpuk terlalu rapat */
 }
 
-        /* Responsive Table untuk HP */
 @media screen and (max-width: 768px) {
-    /* Sembunyikan Header Asli */
+    /* 1. Sembunyikan Header */
     thead { display: none; }
 
-    /* Baris Jadi Card */
+    /* 2. Styling Card */
     #bodyKader tr {
         display: block;
         background: white;
         margin-bottom: 20px;
         border-radius: 15px;
         border: 1px solid #e2e8f0;
-        padding: 15px;
+        padding: 0; /* Padding diatur di dalam td */
+        overflow: hidden;
         box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    /* Pengaturan Sel agar tidak tabrakan */
-    #bodyKader td {
-        display: flex; /* Gunakan Flexbox */
-        justify-content: space-between; /* Judul kiri, Isi kanan */
-        align-items: flex-start; /* Sejajarkan di atas kalau isinya panjang */
-        padding: 12px 0 !important;
-        border-bottom: 1px dashed #f1f5f9;
-        min-height: 40px; /* Biar ada ruang minimal */
-        width: 100% !important;
+    /* 3. Styling Foto (Dibuat Standout di Atas) */
+    #bodyKader td[data-label="Foto"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f8fafc;
+        padding: 20px !important;
+        border-bottom: 1px solid #f1f5f9;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    #bodyKader td[data-label="Foto"]::before { display: none; }
+    #bodyKader td[data-label="Foto"] img {
+        width: 80px !important;
+        height: 80px !important;
+        border-radius: 50% !important;
+        border: 3px solid white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        object-fit: cover;
     }
 
-    /* Styling Judul (Kiri) */
+    /* 4. Pengaturan Baris Data agar TIDAK TABRAKAN */
+    #bodyKader td {
+        display: grid; /* Gunakan Grid agar presisi */
+        grid-template-columns: 100px 1fr; /* Kunci judul 100px, sisa buat isi */
+        gap: 10px;
+        padding: 12px 15px !important;
+        border-bottom: 1px solid #f8fafc;
+        align-items: center;
+        text-align: right;
+    }
+
+    /* Judul di Kiri */
     #bodyKader td::before {
         content: attr(data-label);
         font-weight: 800;
         color: #94a3b8;
         font-size: 10px;
         text-transform: uppercase;
-        min-width: 100px; /* Kunci lebar judul biar isinya nggak nabrak ke kiri */
         text-align: left;
-        padding-right: 10px;
     }
 
-    /* Styling Isi (Kanan) */
-    #bodyKader td > * {
-        flex: 1; /* Ambil sisa ruang */
-        text-align: right; /* Isinya mepet kanan */
-        word-break: break-word; /* Biar kalau nama panjang nggak tembus layar */
+    /* Isi Data di Kanan */
+    #bodyKader td > div, 
+    #bodyKader td strong, 
+    #bodyKader td span {
+        word-break: break-word;
+        font-size: 13px;
     }
 
-    /* Khusus Kolom Foto: Buat Full Tengah */
-    #bodyKader td[data-label="Foto"] {
-        display: flex;
-        justify-content: center;
-        border-bottom: 2px solid #f1f5f9;
-        padding-bottom: 15px !important;
-        margin-bottom: 10px;
+    /* Perbaikan Khusus Kolom Usia */
+    #bodyKader td[data-label="Usia"] {
+        align-items: center;
     }
-    #bodyKader td[data-label="Foto"]::before { display: none; }
-
-    /* Khusus Kolom Aksi (Tombol WA) */
+    
+    /* Tombol WA Full Width di Bawah */
     #bodyKader td[data-label="Aksi"] {
-        border-bottom: none;
-        padding-top: 15px !important;
-        display: block; /* Tombol WA biar full width ke bawah */
+        display: block;
+        padding: 15px !important;
+        border: none;
     }
+    #bodyKader td[data-label="Aksi"]::before { display: none; }
     #bodyKader td[data-label="Aksi"] a {
+        display: flex;
         width: 100%;
-        box-sizing: border-box;
         justify-content: center;
         padding: 12px !important;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+    
+    /* Warna khusus untuk baris stagnan di HP */
+    tr.warning-row {
+        border: 2px solid #f59e0b !important;
+        background: #fffdf5 !important;
     }
 }
     /* Ubah Baris Tabel Jadi Card */
