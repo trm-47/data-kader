@@ -1,8 +1,11 @@
+/* ==========================================
+    1. THEME ENGINE & INITIALIZER
+   ========================================== */
 (function() {
-    // Kita samakan kuncinya dengan index yaitu 'kader_theme'
     const savedTheme = localStorage.getItem('kader_theme'); 
     if (savedTheme === 'premium') {
         const link = document.createElement('link');
+        link.id = 'premium-theme-link';
         link.rel = 'stylesheet';
         link.href = 'premium.css'; 
         document.head.appendChild(link);
@@ -10,34 +13,8 @@
 })();
 
 /* ==========================================
-    LOGIKA STEP 1: DATA PRIBADI
+    2. HANDLER FOTO (SELFIE & GALERI)
    ========================================== */
-function saveStep1() {
-    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-    const fields = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
-    
-    let dataStep1 = {
-        jenis_kelamin: genderEl ? genderEl.value : ''
-    };
-
-    fields.forEach(f => {
-        const el = document.getElementById(f);
-        dataStep1[f] = el ? el.value.trim() : '';
-    });
-
-    const isMissing = fields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin;
-    if (isMissing) {
-        alert("⚠️ Instruksi: Semua kolom wajib diisi. Gunakan (-) jika tidak ada data.");
-        return;
-    }
-
-    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    const finalData = { ...existing, ...dataStep1 };
-    localStorage.setItem('kaderData', JSON.stringify(finalData));
-    window.location.href = 'step2.html';
-}
-
-// Handler Foto
 const handlePhoto = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -61,16 +38,44 @@ const handlePhoto = (e) => {
     reader.readAsDataURL(file);
 };
 
-// Pasang event listener ke kedua input (Gunakan pengecekan agar tidak error di halaman lain)
+// Pasang event listener secara global agar tidak error di halaman lain
 document.addEventListener('change', (e) => {
     if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') {
         handlePhoto(e);
     }
 });
+
+/* ==========================================
+    3. LOGIKA STEP 1: DATA PRIBADI
+   ========================================== */
+function saveStep1() {
+    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
+    const fields = ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'];
+    
+    let dataStep1 = {
+        jenis_kelamin: genderEl ? genderEl.value : ''
+    };
+
+    fields.forEach(f => {
+        const el = document.getElementById(f);
+        dataStep1[f] = el ? el.value.trim() : '';
+    });
+
+    // Validasi
+    const isMissing = fields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin;
+    if (isMissing) {
+        alert("⚠️ Instruksi: Semua kolom wajib diisi. Gunakan (-) jika tidak ada data.");
+        return;
+    }
+
+    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
+    const finalData = { ...existing, ...dataStep1 };
+    localStorage.setItem('kaderData', JSON.stringify(finalData));
+    window.location.href = 'step2.html';
 }
 
 /* ==========================================
-    LOGIKA STEP 2: PENDIDIKAN FORMAL
+    4. LOGIKA STEP 2: PENDIDIKAN FORMAL
    ========================================== */
 function toggleExtraFields() {
     const jenjang = document.getElementById('jenjang').value;
@@ -129,9 +134,9 @@ function renderPendidikan() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data.riwayat_pendidikan || [];
     container.innerHTML = list.map((item, index) => `
-        <div class="data-box-item" style="background:#f8fafc; padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+        <div class="data-box-item" style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid var(--primary-red); display:flex; justify-content:space-between;">
             <div><b>${item.jenjang}: ${item.nama}</b><br><small>${item.info} | ${item.tahun}</small></div>
-            <button onclick="deletePendidikan(${index})" style="color:red; border:none; background:none;">&times;</button>
+            <button onclick="deletePendidikan(${index})" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
         </div>
     `).join('');
 }
@@ -144,7 +149,7 @@ function deletePendidikan(index) {
 }
 
 /* ==========================================
-    LOGIKA STEP 3 & 4: KADERISASI & JABATAN
+    5. LOGIKA STEP 3 & 4: KADERISASI, JABATAN & TUGAS
    ========================================== */
 function addPendidikanKader() {
     const jenis = document.getElementById('jenis_kader').value;
@@ -166,9 +171,9 @@ function renderKader() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data.riwayat_kader || [];
     container.innerHTML = list.map((item, index) => `
-        <div style="background:#fff5f5; padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+        <div style="background:rgba(215, 25, 32, 0.05); padding:10px; margin-bottom:5px; border-left:4px solid var(--primary-red); display:flex; justify-content:space-between;">
             <div><b>${item.jenis}</b><br><small>${item.penyelenggara} (${item.tahun})</small></div>
-            <button onclick="deleteKader(${index})" style="color:red; border:none; background:none;">&times;</button>
+            <button onclick="deleteKader(${index})" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
         </div>
     `).join('');
 }
@@ -202,9 +207,9 @@ function renderJabatan() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data.riwayat_jabatan_partai || [];
     container.innerHTML = list.map((item, index) => `
-        <div style="background:#fff; padding:10px; margin-bottom:5px; border-left:4px solid red; display:flex; justify-content:space-between;">
+        <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-left:4px solid var(--primary-red); display:flex; justify-content:space-between;">
             <div><b>${item.jabatan}</b><br><small>${item.tingkatan} | ${item.periode}</small></div>
-            <button onclick="deleteJabatanPartai(${index})" style="color:red; border:none; background:none;">&times;</button>
+            <button onclick="deleteJabatanPartai(${index})" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
         </div>
     `).join('');
 }
@@ -216,8 +221,66 @@ function deleteJabatanPartai(index) {
     renderJabatan();
 }
 
+function addPenugasanPartai() {
+    const jenis = document.getElementById('tugas_jenis').value;
+    const lembaga = document.getElementById('tugas_lembaga').value;
+    const jabatan = document.getElementById('tugas_jabatan').value;
+    const lokasi = document.getElementById('tugas_lokasi').value;
+    const periode = document.getElementById('tugas_periode').value;
+
+    if (!jenis || !jabatan || !periode) {
+        alert("⚠️ Mohon isi Jenis Penugasan, Jabatan, dan Periode!");
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_penugasan_partai || [];
+
+    list.push({
+        jenis: jenis,
+        lembaga: (jenis === 'Legislatif') ? lembaga : 'Eksekutif',
+        jabatan: jabatan,
+        lokasi: lokasi,
+        periode: periode
+    });
+
+    data.riwayat_penugasan_partai = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
+
+    // Reset fields
+    document.getElementById('tugas_jabatan').value = '';
+    document.getElementById('tugas_lokasi').value = '';
+    document.getElementById('tugas_periode').value = '';
+
+    renderPenugasan();
+}
+
+function renderPenugasan() {
+    const container = document.getElementById('tugasList');
+    if (!container) return;
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data.riwayat_penugasan_partai || [];
+    container.innerHTML = list.map((item, index) => `
+        <div style="background:rgba(255,255,255,0.05); padding:12px; margin-bottom:10px; border-left:4px solid var(--primary-red); border-radius:8px; display:flex; justify-content:space-between;">
+            <div style="font-size:13px;">
+                <strong style="color:var(--primary-red);">${item.jenis} - ${item.jabatan}</strong><br>
+                <span>${item.lembaga} | ${item.lokasi}</span><br>
+                <small>Periode: ${item.periode}</small>
+            </div>
+            <button onclick="deletePenugasan(${index})" style="color:red; border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
+        </div>
+    `).join('');
+}
+
+function deletePenugasan(index) {
+    let data = JSON.parse(localStorage.getItem('kaderData'));
+    data.riwayat_penugasan_partai.splice(index, 1);
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    renderPenugasan();
+}
+
 /* ==========================================
-    LOGIKA STEP 5 & 6: KERJA & ORGANISASI
+    6. LOGIKA STEP 5 & 6: KERJA & ORGANISASI
    ========================================== */
 function addPekerjaan() {
     const perusahaan = document.getElementById('nama_perusahaan').value.trim();
@@ -239,9 +302,9 @@ function renderPekerjaan() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data.riwayat_pekerjaan || [];
     container.innerHTML = list.map((item, index) => `
-        <div style="background:#f1f5f9; padding:10px; margin-bottom:5px; border-left:4px solid #475569; display:flex; justify-content:space-between;">
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid #475569; display:flex; justify-content:space-between;">
             <div><b>${item.perusahaan}</b><br><small>${item.jabatan} (${item.masa_kerja})</small></div>
-            <button onclick="deletePekerjaan(${index})" style="color:red; border:none; background:none;">&times;</button>
+            <button onclick="deletePekerjaan(${index})" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
         </div>
     `).join('');
 }
@@ -273,9 +336,9 @@ function renderOrganisasi() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
     let list = data.riwayat_organisasi || [];
     container.innerHTML = list.map((item, index) => `
-        <div style="background:#f8fafc; padding:10px; margin-bottom:5px; border-left:4px solid gray; display:flex; justify-content:space-between;">
+        <div style="background:rgba(0,0,0,0.03); padding:10px; margin-bottom:5px; border-left:4px solid gray; display:flex; justify-content:space-between;">
             <div><b>${item.nama}</b><br><small>${item.jabatan} (${item.periode})</small></div>
-            <button onclick="deleteOrg(${index})" style="color:red; border:none; background:none;">&times;</button>
+            <button onclick="deleteOrg(${index})" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
         </div>
     `).join('');
 }
@@ -288,7 +351,7 @@ function deleteOrg(index) {
 }
 
 /* ==========================================
-    FINAL: REVIEW & SUBMIT
+    7. FINAL: REVIEW & SUBMIT
    ========================================== */
 function goToReview() {
     let data = JSON.parse(localStorage.getItem('kaderData')) || {};
@@ -342,27 +405,31 @@ async function submitSeluruhData() {
     }
 }
 
-// Auto Load & Render on Page Load
+/* ==========================================
+    8. AUTO LOAD & RENDER ON PAGE LOAD
+   ========================================== */
 window.addEventListener('load', () => {
     const savedData = JSON.parse(localStorage.getItem('kaderData'));
-    if (!savedData) return;
-
-    // Fill Step 1 Fields
+    
+    // 1. Isi input yang ada di halaman ini
     ['nama_lengkap', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak'].forEach(f => {
         const el = document.getElementById(f);
-        if (el && savedData[f]) el.value = savedData[f];
+        if (el && savedData && savedData[f]) el.value = savedData[f];
     });
 
-    if (savedData.jenis_kelamin) {
+    // 2. Isi Gender
+    if (savedData && savedData.jenis_kelamin) {
         const radio = document.querySelector(`input[name="jenis_kelamin"][value="${savedData.jenis_kelamin}"]`);
         if (radio) radio.checked = true;
     }
 
-    if (savedData.foto && document.getElementById('photoPreview')) {
+    // 3. Isi Foto
+    if (savedData && savedData.foto && document.getElementById('photoPreview')) {
         document.getElementById('photoPreview').innerHTML = `<img src="${savedData.foto}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        document.getElementById('photoPreview').style.border = "3px solid var(--primary-red)";
     }
 
-    // Render Lists
+    // 4. Jalankan Render List
     renderPendidikan();
     renderKader();
     renderJabatan();
@@ -370,63 +437,3 @@ window.addEventListener('load', () => {
     renderOrganisasi();
     renderPenugasan();
 });
-
-/* --- KHUSUS PENUGASAN PARTAI (STEP 4) --- */
-function addPenugasanPartai() {
-    const jenis = document.getElementById('tugas_jenis').value;
-    const lembaga = document.getElementById('tugas_lembaga').value;
-    const jabatan = document.getElementById('tugas_jabatan').value;
-    const lokasi = document.getElementById('tugas_lokasi').value;
-    const periode = document.getElementById('tugas_periode').value;
-
-    if (!jenis || !jabatan || !periode) {
-        alert("⚠️ Mohon isi Jenis Penugasan, Jabatan, dan Periode!");
-        return;
-    }
-
-    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-    let list = data.riwayat_penugasan_partai || [];
-
-    list.push({
-        jenis: jenis,
-        lembaga: (jenis === 'Legislatif') ? lembaga : 'Eksekutif',
-        jabatan: jabatan,
-        lokasi: lokasi,
-        periode: periode
-    });
-
-    data.riwayat_penugasan_partai = list;
-    localStorage.setItem('kaderData', JSON.stringify(data));
-
-    document.getElementById('tugas_jabatan').value = '';
-    document.getElementById('tugas_lokasi').value = '';
-    document.getElementById('tugas_periode').value = '';
-
-    renderPenugasan();
-}
-
-function renderPenugasan() {
-    const container = document.getElementById('tugasList');
-    if (!container) return;
-
-    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-    let list = data.riwayat_penugasan_partai || [];
-
-    container.innerHTML = list.map((item, index) => `
-        <div class="data-box-item" style="background:rgba(255,255,255,0.05); padding:12px; margin-bottom:10px; border-left:4px solid #D71920; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-            <div style="font-size:13px;">
-                <strong style="color:var(--primary-red);">${item.jenis} - ${item.jabatan}</strong><br>
-                <span>${item.lembaga} | ${item.lokasi}</span><br>
-                <small>Periode: ${item.periode}</small>
-            </div>
-            <button onclick="deletePenugasan(${index})" style="color:#D71920; border:none; background:none; font-size:20px; cursor:pointer;">&times;</button>
-        </div>
-    `).join('');
-}
-
-function deletePenugasan(index) {
-    let data = JSON.parse(localStorage.getItem('kaderData'));
-    data.riwayat_penugasan_partai.splice(index, 1);
-    localStorage.setItem('kaderData', JSON.stringify(data));
-    renderPenugasan();
-}
