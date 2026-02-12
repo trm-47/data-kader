@@ -282,9 +282,9 @@ function resetFilters() {
 }
 
 function applyFilters() {
-    const fKota = document.getElementById('fKota').value;
-    const fKec = document.getElementById('fKec').value.toLowerCase().trim();
-    const fDesa = document.getElementById('fDesa').value.toLowerCase().trim();
+const fKota = document.getElementById('fKota').value;
+    const fKec = document.getElementById('fKec').value; // Sekarang ambil .value dari select
+    const fDesa = document.getElementById('fDesa').value; // Sekarang ambil .value dari select
     const fJK = document.getElementById('fJK').value;
     const fAgama = document.getElementById('fAgama').value;
     const fEdu = document.getElementById('fPendidikan').value;
@@ -301,9 +301,9 @@ function applyFilters() {
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
-        const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
-        const matchKec = fKec === "" || (p.kec && p.kec.toLowerCase().includes(fKec));
-        const matchDesa = fDesa === "" || (p.desa && p.desa.toLowerCase().includes(fDesa));
+const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
+        const matchKec = fKec === "Semua" || (p.kec === fKec);
+        const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
         let matchesKader = (fKader === "Semua");
         if (!matchesKader) {
@@ -486,3 +486,49 @@ window.onclick = function(event) {
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") closeDetail();
 });
+
+// Jalankan ini saat Kota dipilih
+function updateKecamatanOptions() {
+    const selectedKota = document.getElementById('fKota').value;
+    const kecSelect = document.getElementById('fKec');
+    const desaSelect = document.getElementById('fDesa');
+    
+    // Reset dropdown di bawahnya
+    kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
+    desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
+
+    if (selectedKota !== "Semua") {
+        // Ambil data yang kotanya cocok saja
+        const filteredData = databaseKader.filter(item => 
+            (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota)
+        );
+        // Ambil list kecamatan unik
+        const uniqueKec = [...new Set(filteredData.map(item => item.pribadi.kec))].filter(Boolean).sort();
+        uniqueKec.forEach(kec => {
+            kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
+        });
+    }
+    applyFilters(); // Jalankan filter tabel
+}
+
+// Jalankan ini saat Kecamatan dipilih
+function updateDesaOptions() {
+    const selectedKota = document.getElementById('fKota').value;
+    const selectedKec = document.getElementById('fKec').value;
+    const desaSelect = document.getElementById('fDesa');
+
+    desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
+
+    if (selectedKec !== "Semua") {
+        // Ambil data yang Kota DAN Kecamatannya cocok (SANGAT PENTING untuk kasus Jetis)
+        const filteredData = databaseKader.filter(item => 
+            (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota) && 
+            item.pribadi.kec === selectedKec
+        );
+        const uniqueDesa = [...new Set(filteredData.map(item => item.pribadi.desa))].filter(Boolean).sort();
+        uniqueDesa.forEach(desa => {
+            desaSelect.innerHTML += `<option value="${desa}">${desa}</option>`;
+        });
+    }
+    applyFilters();
+}
