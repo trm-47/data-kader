@@ -49,29 +49,59 @@
     </div>
 
     <script>
-        function startForm() {
-            // Bersihkan data lama agar fresh
-            localStorage.clear();
-            // Langsung meluncur ke step 1
-            window.location.href = 'step1.html';
+<script>
+    // Fungsi Utama untuk Set Tema
+    function setTheme(theme) {
+        // Simpan pilihan ke storage
+        localStorage.setItem('kader_theme', theme);
+        
+        const btnC = document.getElementById('btnClassic');
+        const btnP = document.getElementById('btnPremium');
+
+        // Logika Perubahan Warna Tombol
+        if (theme === 'premium') {
+            // Tombol Premium Aktif (Warna Emas/Night)
+            btnP.style.background = '#bf953f';
+            btnP.style.color = '#fff';
+            btnP.style.borderColor = '#bf953f';
+            
+            // Tombol Classic Non-Aktif
+            btnC.style.background = '#eee';
+            btnC.style.color = '#333';
+            btnC.style.borderColor = '#ddd';
+        } else {
+            // Tombol Classic Aktif (Warna Merah PDI)
+            btnC.style.background = '#D71920';
+            btnC.style.color = '#fff';
+            btnC.style.borderColor = '#D71920';
+            
+            // Tombol Premium Non-Aktif
+            btnP.style.background = '#eee';
+            btnP.style.color = '#333';
+            btnP.style.borderColor = '#ddd';
         }
+    }
 
-        function setTheme(theme) {
-    localStorage.setItem('theme', theme);
-    applyTheme();
-    
-    // Beri tanda tombol yang aktif
-    document.getElementById('btnClassic').style.background = (theme === 'classic') ? '#D71920' : '#eee';
-    document.getElementById('btnClassic').style.color = (theme === 'classic') ? '#fff' : '#333';
-    document.getElementById('btnPremium').style.background = (theme === 'premium') ? '#bf953f' : '#eee';
-    document.getElementById('btnPremium').style.color = (theme === 'premium') ? '#fff' : '#333';
-}
+    function startForm() {
+        // 1. Ambil dulu tema yang dipilih sebelum dihapus
+        const selectedTheme = localStorage.getItem('kader_theme') || 'classic';
+        
+        // 2. Bersihkan data isian lama (kaderData, dll)
+        localStorage.clear();
+        
+        // 3. Masukkan kembali pilihan temanya agar terbawa ke Step 1
+        localStorage.setItem('kader_theme', selectedTheme);
+        
+        // 4. Meluncur ke step 1
+        window.location.href = 'step1.html';
+    }
 
-// Jalankan saat halaman dibuka
-window.onload = () => {
-    const savedTheme = localStorage.getItem('theme') || 'classic';
-    setTheme(savedTheme);
-};
+    // Jalankan otomatis saat halaman dibuka agar posisi tombol sinkron
+    window.onload = () => {
+        const savedTheme = localStorage.getItem('kader_theme') || 'classic';
+        setTheme(savedTheme);
+    };
+</script>
     </script>
 </body>
 </html>
