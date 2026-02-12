@@ -35,11 +35,11 @@
             </div>
 
             <div style="margin-bottom: 20px; display: flex; justify-content: center; gap: 10px;">
-    <button onclick="setTheme('classic')" id="btnClassic" style="padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; font-size: 12px; font-weight: bold;">⚪ Classic Mode</button>
-    <button onclick="setTheme('premium')" id="btnPremium" style="padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; font-size: 12px; font-weight: bold;">⭐ Night Mode</button>
-</div>
+                <button type="button" onclick="setTheme('classic')" id="btnClassic" style="padding: 10px 18px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">⚪ Classic Mode</button>
+                <button type="button" onclick="setTheme('premium')" id="btnPremium" style="padding: 10px 18px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">⭐ Night Mode</button>
+            </div>
 
-            <button onclick="startForm()" class="btn-primary">MULAI PENGISIAN FORM</button>
+            <button type="button" onclick="startForm()" class="btn-primary">MULAI PENGISIAN FORM</button>
             
             <p style="margin-top: 25px; font-size: 11px; color: var(--soft-slate); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
                 Sistem Informasi Kader Digital <br>
@@ -49,59 +49,52 @@
     </div>
 
     <script>
-<script>
-    // Fungsi Utama untuk Set Tema
-    function setTheme(theme) {
-        // Simpan pilihan ke storage
-        localStorage.setItem('kader_theme', theme);
-        
-        const btnC = document.getElementById('btnClassic');
-        const btnP = document.getElementById('btnPremium');
+        // Fungsi untuk mengatur tema visual tombol
+        function setTheme(theme) {
+            localStorage.setItem('kader_theme', theme);
+            
+            const btnC = document.getElementById('btnClassic');
+            const btnP = document.getElementById('btnPremium');
 
-        // Logika Perubahan Warna Tombol
-        if (theme === 'premium') {
-            // Tombol Premium Aktif (Warna Emas/Night)
-            btnP.style.background = '#bf953f';
-            btnP.style.color = '#fff';
-            btnP.style.borderColor = '#bf953f';
-            
-            // Tombol Classic Non-Aktif
-            btnC.style.background = '#eee';
-            btnC.style.color = '#333';
-            btnC.style.borderColor = '#ddd';
-        } else {
-            // Tombol Classic Aktif (Warna Merah PDI)
-            btnC.style.background = '#D71920';
-            btnC.style.color = '#fff';
-            btnC.style.borderColor = '#D71920';
-            
-            // Tombol Premium Non-Aktif
-            btnP.style.background = '#eee';
-            btnP.style.color = '#333';
-            btnP.style.borderColor = '#ddd';
+            if (theme === 'premium') {
+                btnP.style.background = '#bf953f';
+                btnP.style.color = '#fff';
+                btnP.style.borderColor = '#bf953f';
+                
+                btnC.style.background = '#eee';
+                btnC.style.color = '#333';
+                btnC.style.borderColor = '#ddd';
+            } else {
+                btnC.style.background = '#D71920';
+                btnC.style.color = '#fff';
+                btnC.style.borderColor = '#D71920';
+                
+                btnP.style.background = '#eee';
+                btnP.style.color = '#333';
+                btnP.style.borderColor = '#ddd';
+            }
         }
-    }
 
-    function startForm() {
-        // 1. Ambil dulu tema yang dipilih sebelum dihapus
-        const selectedTheme = localStorage.getItem('kader_theme') || 'classic';
-        
-        // 2. Bersihkan data isian lama (kaderData, dll)
-        localStorage.clear();
-        
-        // 3. Masukkan kembali pilihan temanya agar terbawa ke Step 1
-        localStorage.setItem('kader_theme', selectedTheme);
-        
-        // 4. Meluncur ke step 1
-        window.location.href = 'step1.html';
-    }
+        // Fungsi untuk pindah ke Step 1
+        function startForm() {
+            // Ambil tema terakhir sebelum dihapus
+            const savedTheme = localStorage.getItem('kader_theme') || 'classic';
+            
+            // Bersihkan data lama
+            localStorage.clear();
+            
+            // Masukkan kembali tema agar Step 1 tahu harus pakai CSS mana
+            localStorage.setItem('kader_theme', savedTheme);
+            
+            // Pindah halaman
+            window.location.href = 'step1.html';
+        }
 
-    // Jalankan otomatis saat halaman dibuka agar posisi tombol sinkron
-    window.onload = () => {
-        const savedTheme = localStorage.getItem('kader_theme') || 'classic';
-        setTheme(savedTheme);
-    };
-</script>
+        // Cek tema saat halaman baru dibuka
+        window.onload = () => {
+            const currentTheme = localStorage.getItem('kader_theme') || 'classic';
+            setTheme(currentTheme);
+        };
     </script>
 </body>
 </html>
