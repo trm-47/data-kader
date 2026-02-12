@@ -155,13 +155,34 @@
 
 <script src="script.js"></script>
 <script>
-    window.addEventListener('load', loadRekapitulasi);
+   /* ==========================================
+    LOGIKA SLIDER & AUTO-LOAD REKAP
+   ========================================== */
 
-    function slide(direction) {
-        const slider = document.getElementById('rekapSlider');
-        const scrollAmount = slider.offsetWidth * 0.9;
-        slider.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+// 1. Pastikan data dimuat saat halaman rekap terbuka
+window.addEventListener('load', () => {
+    // Jalankan fungsi muat data
+    if (typeof loadRekap === 'function') {
+        loadRekap();
     }
+    
+    // Jika ada fungsi loadRekapitulasi (nama lama), jalankan juga agar aman
+    if (typeof loadRekapitulasi === 'function') {
+        loadRekapitulasi();
+    }
+});
+
+// 2. Fungsi Slide (JANGAN DIHAPUS, ini untuk geser tampilan rekap)
+function slide(direction) {
+    const slider = document.getElementById('rekapSlider');
+    if (!slider) return; // Supaya tidak error di halaman selain rekap
+    
+    const scrollAmount = slider.offsetWidth * 0.9;
+    slider.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+    });
+}
 
     function loadRekapitulasi() {
         const data = JSON.parse(localStorage.getItem('kaderData')) || {};
