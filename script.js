@@ -529,7 +529,6 @@ function goToReview() {
         alert("Ada kesalahan teknis, cek konsol!");
     }
 }
-
     // 4. Update LocalStorage
     localStorage.setItem('kaderData', JSON.stringify(data));
 
