@@ -695,81 +695,120 @@ function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
-    const p = item.pribadi;
+    const p = item.pribadi || {};
     const f = item.formal || [];
     const k = item.kaderisasi || [];
     const j = item.jabatan || [];
+    const w = item.riwayat_kerja || [];
     const m = item.medsos || [];
+    const org = item.organisasi || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
+    // --- TEMPLATE DETAIL HYPER-PREMIUM ---
     let htmlContent = `
-        <div style="text-align:center; margin-bottom:40px; background: linear-gradient(to bottom, #fff1f2, #ffffff); padding: 30px; border-radius: 25px;">
+        <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
             <div style="position: relative; display: inline-block;">
                 <img src="${formatDriveUrl(p.foto)}" 
-                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'"
-                     style="width:150px; height:150px; border-radius:50%; object-fit:cover; border: 5px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
+                     style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 6px solid white; box-shadow: 0 15px 35px rgba(215,25,32,0.2);">
+                <div style="position:absolute; bottom:5px; right:5px; background:white; padding:5px; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                    <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" style="width:25px; height:auto;">
+                </div>
             </div>
-            <h2 style="margin-top:15px; color:var(--dark-slate); font-size:24px; font-weight:800;">${p.nama || '-'}</h2>
-            <p style="color:#64748b; font-weight:600;">${p.nik || '-'}</p>
-            <div class="badge-kader-list" style="justify-content:center;">
-                ${(f[19] && f[19] !== "-") ? `<span class="badge badge-red" style="font-size:12px; padding:6px 15px;">${f[19]}</span>` : ''}
-            </div>
+            <h2 style="margin-top:20px; color:#1e293b; font-size:26px; font-weight:800; letter-spacing:-0.5px;">${p.nama ? p.nama.toUpperCase() : '-'}</h2>
+            <p style="color:var(--primary-red); font-weight:800; font-size:14px; margin-top:5px;">ID KADER: ${p.kta || '-'}</p>
         </div>
 
         <div class="profile-section">
-            <div class="section-title">Informasi Pribadi</div>
+            <div class="section-title">Identitas Pribadi</div>
             <div class="data-grid">
+                <div class="data-item"><label>NIK</label><span>${p.nik || '-'}</span></div>
+                <div class="data-item"><label>Jenis Kelamin</label><span>${p.jk || '-'}</span></div>
                 <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
                 <div class="data-item"><label>Usia</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
-                <div class="data-item"><label>Jenis Kelamin</label><span>${p.jk || '-'}</span></div>
                 <div class="data-item"><label>Agama</label><span>${p.agama || '-'}</span></div>
+                <div class="data-item"><label>Pekerjaan Utama</label><span>${p.kerja_skrg || '-'}</span></div>
                 <div class="data-item"><label>WhatsApp</label><span>${p.wa || '-'}</span></div>
-                <div class="data-item"><label>Pekerjaan</label><span>${p.kerja_skrg || '-'}</span></div>
+                <div class="data-item"><label>Email</label><span>${p.email || '-'}</span></div>
                 <div class="data-item" style="grid-column: span 2;"><label>Alamat Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
             </div>
         </div>
 
         <div class="profile-section">
-            <div class="section-title">Riwayat Pendidikan</div>
+            <div class="section-title">Pendidikan Formal</div>
             <div class="data-grid">
-                ${f[11] ? `<div class="data-item"><label>Perguruan Tinggi (S1)</label><span>${f[11]}</span></div>` : ''}
-                ${f[12] ? `<div class="data-item"><label>Fakultas/Prodi</label><span>${f[12]}</span></div>` : ''}
-                ${f[6] ? `<div class="data-item"><label>SMA/SMK</label><span>${f[6]}</span></div>` : ''}
-                <div class="data-item"><label>Kemampuan IT</label><span>${(m[8] && m[8] !== "-") ? 'Bisa/Mahir' : 'Tidak'}</span></div>
+                ${f[2] ? `<div class="data-item"><label>SD</label><span>${f[2]} (${f[3] || ''})</span></div>` : ''}
+                ${f[4] ? `<div class="data-item"><label>SMP</label><span>${f[4]} (${f[5] || ''})</span></div>` : ''}
+                ${f[6] ? `<div class="data-item"><label>SMA/SMK</label><span>${f[6]} (${f[8] || ''})</span></div>` : ''}
+                ${f[9] ? `<div class="data-item"><label>Diploma (D1-D4)</label><span>${f[9]} (${f[10] || ''})</span></div>` : ''}
+                ${f[11] ? `<div class="data-item"><label>Sarjana (S1)</label><span>${f[11]} - ${f[12] || ''} (${f[14] || ''})</span></div>` : ''}
+                ${f[15] ? `<div class="data-item"><label>Magister (S2)</label><span>${f[15]} (${f[16] || ''})</span></div>` : ''}
+                ${f[17] ? `<div class="data-item"><label>Doktor (S3)</label><span>${f[17]} (${f[18] || ''})</span></div>` : ''}
             </div>
         </div>
 
         <div class="profile-section">
-            <div class="section-title">Jabatan & Organisasi</div>
-            <div style="background: #f8fafc; padding:15px; border-radius:15px;">
+            <div class="section-title">Pendidikan Kaderisasi</div>
+            <div class="data-grid">
+                <div class="data-item"><label>Pratama</label><span>${k[2] ? 'Lulus Tahun ' + k[2] : '-'}</span></div>
+                <div class="data-item"><label>Madya</label><span>${k[4] ? 'Lulus Tahun ' + k[4] : '-'}</span></div>
+                <div class="data-item"><label>Utama</label><span>${k[6] ? 'Lulus Tahun ' + k[6] : '-'}</span></div>
+                <div class="data-item"><label>Guru Kader</label><span>${k[8] ? 'Lulus Tahun ' + k[8] : '-'}</span></div>
+                <div class="data-item"><label>Kader Perempuan</label><span>${k[10] ? 'Lulus Tahun ' + k[10] : '-'}</span></div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">Riwayat Jabatan & Penugasan</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
                 ${j.length > 0 ? j.map(jab => `
-                    <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid #e2e8f0;">
-                        <span style="font-weight:700; color:var(--primary-red);">${jab[5] || '-'}</span><br>
-                        <small style="color:#64748b;">${jab[4] || '-'} | Periode: ${jab[8] || '-'}</small>
+                    <div style="background: #f1f5f9; padding:15px; border-radius:12px; border-left: 4px solid var(--primary-red);">
+                        <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">${jab[2]} (${jab[4] || '-'})</div>
+                        <div style="font-size:15px; font-weight:700; color:#1e293b;">${jab[5] || jab[12]}</div>
+                        <div style="font-size:12px; color:#475569;">Periode: ${jab[8] || jab[14] || '-'}</div>
                     </div>
-                `).join('') : '<span style="color:#94a3b8; font-style:italic;">Tidak ada riwayat jabatan struktur</span>'}
+                `).join('') : '<p style="color:#94a3b8; font-style:italic; font-size:13px;">Belum ada riwayat jabatan/penugasan.</p>'}
             </div>
         </div>
 
         <div class="profile-section">
-            <div class="section-title">Media Sosial</div>
+            <div class="section-title">Pengalaman Kerja & Organisasi Lain</div>
+            <div class="data-grid" style="margin-bottom:15px;">
+                ${w.length > 0 ? w.map(pk => `
+                    <div style="background:#fff; border:1px solid #e2e8f0; padding:10px; border-radius:10px;">
+                        <small style="color:#94a3b8; font-weight:800;">PEKERJAAN</small><br>
+                        <strong>${pk[3]}</strong> di ${pk[2]}<br><small>${pk[4]}</small>
+                    </div>
+                `).join('') : ''}
+                ${org.length > 0 ? org.map(o => `
+                    <div style="background:#fff; border:1px solid #e2e8f0; padding:10px; border-radius:10px;">
+                        <small style="color:#94a3b8; font-weight:800;">ORGANISASI</small><br>
+                        <strong>${o[4]}</strong> - ${o[2]}<br><small>${o[5]}</small>
+                    </div>
+                `).join('') : ''}
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">Kompetensi & Media Sosial</div>
             <div class="data-grid">
+                <div class="data-item"><label>Kemampuan Bahasa</label><span>${(item.medsos && item.medsos[2]) ? 'Indonesia' : ''} ${(item.medsos && item.medsos[3]) ? ', Inggris' : ''}</span></div>
+                <div class="data-item"><label>Skill Komputer</label><span>${m[8] || '-'}</span></div>
                 <div class="data-item"><label>Facebook</label><span>${m[9] || '-'}</span></div>
                 <div class="data-item"><label>Instagram</label><span>${m[10] || '-'}</span></div>
                 <div class="data-item"><label>TikTok</label><span>${m[11] || '-'}</span></div>
-                <div class="data-item"><label>X (Twitter)</label><span>${m[12] || '-'}</span></div>
+                <div class="data-item"><label>X / Twitter</label><span>${m[12] || '-'}</span></div>
+                <div class="data-item"><label>YouTube</label><span>${m[13] || '-'}</span></div>
             </div>
         </div>
 
-        <div style="text-align:center; padding: 20px 0; color:#cbd5e1; font-size:10px;">
-            Data ini ditarik secara sistem otomatis pada ${new Date().toLocaleDateString('id-ID')}
+        <div style="text-align:center; padding-top:20px;">
+             <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer; font-size:12px;">CETAK PROFIL</button>
         </div>
     `;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
-    
-    // Auto scroll ke atas saat dibuka
     document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
