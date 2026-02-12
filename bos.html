@@ -320,56 +320,69 @@
 
         /* Responsive Table untuk HP */
 @media screen and (max-width: 768px) {
-    /* Sembunyikan Header Tabel Asli */
-    thead {
-        display: none;
-    }
-#bodyKader tr {
+    /* Sembunyikan Header Asli */
+    thead { display: none; }
+
+    /* Baris Jadi Card */
+    #bodyKader tr {
         display: block;
         background: white;
         margin-bottom: 20px;
         border-radius: 15px;
         border: 1px solid #e2e8f0;
         padding: 15px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    /* 3. Paksa setiap sel (TD) jadi baris baru di dalam kartu */
+    /* Pengaturan Sel agar tidak tabrakan */
     #bodyKader td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #f1f5f9;
-        padding: 10px 0 !important;
-        text-align: right;
+        display: flex; /* Gunakan Flexbox */
+        justify-content: space-between; /* Judul kiri, Isi kanan */
+        align-items: flex-start; /* Sejajarkan di atas kalau isinya panjang */
+        padding: 12px 0 !important;
+        border-bottom: 1px dashed #f1f5f9;
+        min-height: 40px; /* Biar ada ruang minimal */
+        width: 100% !important;
     }
 
-    /* 4. Munculkan Nama Kolom di sebelah kiri */
+    /* Styling Judul (Kiri) */
     #bodyKader td::before {
         content: attr(data-label);
         font-weight: 800;
-        color: #64748b;
-        text-transform: uppercase;
+        color: #94a3b8;
         font-size: 10px;
-        flex: 1;
+        text-transform: uppercase;
+        min-width: 100px; /* Kunci lebar judul biar isinya nggak nabrak ke kiri */
         text-align: left;
+        padding-right: 10px;
     }
 
-    /* 5. Styling khusus foto agar di tengah */
+    /* Styling Isi (Kanan) */
+    #bodyKader td > * {
+        flex: 1; /* Ambil sisa ruang */
+        text-align: right; /* Isinya mepet kanan */
+        word-break: break-word; /* Biar kalau nama panjang nggak tembus layar */
+    }
+
+    /* Khusus Kolom Foto: Buat Full Tengah */
     #bodyKader td[data-label="Foto"] {
+        display: flex;
         justify-content: center;
         border-bottom: 2px solid #f1f5f9;
-        margin-bottom: 5px;
+        padding-bottom: 15px !important;
+        margin-bottom: 10px;
     }
     #bodyKader td[data-label="Foto"]::before { display: none; }
 
-    /* 6. Styling tombol WA agar lebar dan mantap di jempol */
+    /* Khusus Kolom Aksi (Tombol WA) */
     #bodyKader td[data-label="Aksi"] {
         border-bottom: none;
         padding-top: 15px !important;
+        display: block; /* Tombol WA biar full width ke bawah */
     }
     #bodyKader td[data-label="Aksi"] a {
         width: 100%;
+        box-sizing: border-box;
         justify-content: center;
         padding: 12px !important;
     }
