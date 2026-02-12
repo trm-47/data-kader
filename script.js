@@ -1,3 +1,13 @@
+(function() {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'premium') {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'premium.css'; // Pastikan file premium.css sudah Bos buat
+        document.head.appendChild(link);
+    }
+})();
+
 /* ==========================================
     LOGIKA STEP 1: DATA PRIBADI
    ========================================== */
