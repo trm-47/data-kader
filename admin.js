@@ -293,7 +293,7 @@ function applyFilters() {
     const fJenis = document.getElementById('fJenisTugas').value;
     const fBahasa = document.getElementById('fBahasa').value;
     const fIT = document.getElementById('fIT').value;
-    const fStatusMadya = document.getElementById('fStatusMadya').value; // Ambil nilai dropdown status madya
+    const fStatusMadya = document.getElementById('fStatusMadya').value; 
 
     const filtered = databaseKader.filter(item => {
         const p = item.pribadi || {};
@@ -302,12 +302,12 @@ function applyFilters() {
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
-        // 1. Filter Wilayah
+        // 1. Filter Wilayah (TIDAK DISENTUH)
         const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
-        // 2. Filter Kaderisasi (Jenjang Spesifik)
+        // 2. Filter Kaderisasi (TIDAK DISENTUH)
         let matchesKader = (fKader === "Semua");
         if (!matchesKader) {
             const mappingKader = { "Pratama": 2, "Madya": 4, "Utama": 6, "Guru": 8, "Perempuan": 10 };
@@ -316,16 +316,25 @@ function applyFilters() {
             matchesKader = (fKader === "Perempuan") ? (hasSertifikat && (p.jk === "P" || p.jk === "Perempuan")) : hasSertifikat;
         }
 
-        // 3. Filter Status Madya (SUDAH / BELUM) -> INI YANG TADI KURANG
+        // --- 3. MODIFIKASI KHUSUS LOGIKA MADYA ---
+        const currentYear = new Date().getFullYear();
+        const hasPratama = (kader[2] && kader[2] !== "" && kader[2] !== "-");
         const isMadya = (kader[4] && kader[4] !== "" && kader[4] !== "-");
+        const tahunPratama = hasPratama ? parseInt(kader[2]) : 0;
+        const masaTunggu = (tahunPratama > 0) ? (currentYear - tahunPratama) : 0;
+
         let matchStatusMadya = true;
-        if (fStatusMadya === "Belum") {
-            matchStatusMadya = !isMadya;
-        } else if (fStatusMadya === "Sudah") {
+        if (fStatusMadya === "Sudah") {
             matchStatusMadya = isMadya;
+        } else if (fStatusMadya === "Belum") {
+            matchStatusMadya = !isMadya;
+        } else if (fStatusMadya === "Prioritas") {
+            // Syarat: Sudah Pratama + Belum Madya + Sudah lewat 5 tahun
+            matchStatusMadya = (hasPratama && !isMadya && masaTunggu > 5);
         }
+        // --- SELESAI MODIFIKASI MADYA ---
         
-        // 4. Filter Lainnya
+        // 4. Filter Lainnya (TIDAK DISENTUH)
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
@@ -340,7 +349,6 @@ function applyFilters() {
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
-        // Return gabungan semua kriteria
         return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && 
                matchesEdu && matchesKader && matchesTingkat && matchesJenis && 
                matchesBahasa && matchesIT && matchStatusMadya;
