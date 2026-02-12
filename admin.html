@@ -162,7 +162,7 @@
 
 <script>
     // 1. KONFIGURASI - Paste URL Web App dari GAS Bos di sini
-    const URL_GAS = "https://script.google.com/macros/s/AKfycbzjnsTa5Wi75hP9HNPq19F8abi3x0QJlHNncBF9c9atS6PrrF0gg40ZaRzgkZRzbUncoQ/exec";
+    const URL_GAS = "PASTE_URL_WEB_APP_BOS_DI_SINI";
     let databaseKader = [];
 
     // 2. FUNGSI AMBIL DATA (FETCH)
@@ -173,43 +173,65 @@
         try {
             const response = await fetch(URL_GAS + "?action=read");
             const data = await response.json();
+            
             databaseKader = data;
             
             renderTable(databaseKader);
             updateStats(databaseKader);
+            // Fungsi ini sekarang sudah ada di bawah agar tidak error lagi
             populateFilters(databaseKader);
             
         } catch (error) {
             console.error("Error:", error);
-            body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data. Pastikan URL Deployment benar dan akses diset ke "Anyone".</td></tr>';
+            body.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data! <br><small>${error.message}</small></td></tr>`;
         }
     }
 
-    // 3. FUNGSI HITUNG USIA & GEN (DINAMIS)
-    function calculateAge(birthDateString) {
-        if (!birthDateString) return { age: "-", gen: "-" };
-        const birthDate = new Date(birthDateString);
-        const today = new Date();
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
-
-        const year = birthDate.getFullYear();
-        let gen = "Unknown";
-        if (year >= 1997 && year <= 2012) gen = "Gen Z";
-        else if (year >= 1981 && year <= 1996) gen = "Millennial";
-        else if (year >= 1965 && year <= 1980) gen = "Gen X";
-        else if (year <= 1964) gen = "Boomer";
-
-        return { age: age + " Thn", gen: gen };
+    // 3. FUNGSI POPULATE FILTERS (BIAR TIDAK ERROR)
+    function populateFilters(data) {
+        const selectKec = document.querySelector('.filter-group select'); // Select pertama (Wilayah)
+        const kecamatans = [...new Set(data.map(k => k.kecamatan))].filter(Boolean);
+        
+        // Reset dan isi filter kecamatan
+        selectKec.innerHTML = '<option value="">Semua Kecamatan</option>';
+        kecamatans.forEach(kec => {
+            selectKec.innerHTML += `<option value="${kec}">${kec}</option>`;
+        });
     }
 
-    // 4. TAMPILKAN KE TABEL
+    // 4. FUNGSI HITUNG USIA & GEN
+    function calculateAge(birthDateString) {
+        if (!birthDateString) return { age: "-", gen: "-" };
+        try {
+            const birthDate = new Date(birthDateString);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+
+            const year = birthDate.getFullYear();
+            let gen = "Lainnya";
+            if (year >= 1997 && year <= 2012) gen = "Gen Z";
+            else if (year >= 1981 && year <= 1996) gen = "Millennial";
+            else if (year >= 1965 && year <= 1980) gen = "Gen X";
+            else if (year <= 1964) gen = "Boomer";
+
+            return { age: age + " Thn", gen: gen };
+        } catch (e) {
+            return { age: "-", gen: "-" };
+        }
+    }
+
+    // 5. TAMPILKAN KE TABEL
     function renderTable(data) {
         const body = document.getElementById('bodyKader');
         body.innerHTML = "";
         
-        // Data terbaru muncul paling atas
+        if (data.length === 0) {
+            body.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Data kosong.</td></tr>';
+            return;
+        }
+
         const sortedData = [...data].reverse();
 
         sortedData.forEach((kader, index) => {
@@ -217,7 +239,7 @@
             const row = `
                 <tr onclick="openDetail(${index})">
                     <td class="td-img" data-label="Foto">
-                        <img src="${kader.foto || 'https://via.placeholder.com/50'}" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                        <img src="${kader.foto && kader.foto !== '-' ? kader.foto : 'https://ui-avatars.com/api/?name=' + kader.nama_lengkap}" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
                     </td>
                     <td data-label="Identitas">
                         <strong>${kader.nama_lengkap || '-'}</strong><br>
@@ -240,12 +262,11 @@
         });
     }
 
-    // 5. UPDATE ANGKA STATISTIK ATAS
+    // 6. UPDATE STATISTIK
     function updateStats(data) {
         const total = data.length;
         document.querySelector('.stats-grid .stat-card:nth-child(1) h2').innerText = total;
         
-        // Hitung % Gen Z & Millennial
         const youngKader = data.filter(k => {
             const gen = calculateAge(k.tanggal_lahir).gen;
             return gen === "Gen Z" || gen === "Millennial";
@@ -253,19 +274,11 @@
         
         const percentYoung = total > 0 ? Math.round((youngKader / total) * 100) : 0;
         document.querySelector('.stats-grid .stat-card:nth-child(3) h2').innerText = percentYoung + "%";
+        
+        const wilayahUnik = [...new Set(data.map(k => k.kecamatan))].filter(Boolean).length;
+        document.querySelector('.stats-grid .stat-card:nth-child(4) h2').innerText = wilayahUnik;
     }
 
-    // Fungsi Search (Tetap sama)
-    function doSearch() {
-        let input = document.getElementById('quickSearch').value.toUpperCase();
-        let tr = document.getElementById("tableKader").getElementsByTagName("tr");
-        for (let i = 1; i < tr.length; i++) {
-            let txt = tr[i].textContent || tr[i].innerText;
-            tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
-        }
-    }
-
-    // Fungsi Modal & Toggle Filter (Tetap sama)
     function toggleFilter() {
         const panel = document.getElementById('panelFilter');
         const btn = document.getElementById('btnToggle');
@@ -278,9 +291,23 @@
         }
     }
 
+    function doSearch() {
+        let input = document.getElementById('quickSearch').value.toUpperCase();
+        let tr = document.getElementById("tableKader").getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            let txt = tr[i].textContent || tr[i].innerText;
+            tr[i].style.display = txt.toUpperCase().indexOf(input) > -1 ? "" : "none";
+        }
+    }
+
+    function openDetail(index) {
+        const kader = databaseKader[databaseKader.length - 1 - index]; // Karena di-reverse
+        // Logic modal detail menyusul agar tidak crash dulu
+        document.getElementById('modalDetail').style.display = "block";
+    }
+
     function closeDetail() { document.getElementById('modalDetail').style.display = "none"; }
 
-    // Jalankan saat halaman dibuka
     window.onload = fetchData;
 </script>
 </body>
