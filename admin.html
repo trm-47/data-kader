@@ -23,11 +23,42 @@
         .stat-card h2 { font-size: 20px; margin-top: 5px; }
 
         /* CONTROL PANEL */
-        .control-panel { background: white; padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.05); overflow: hidden; transition: 0.3s; }
-        .search-box { position: relative; margin-bottom: 20px; }
-        .search-box input { width: 100%; padding: 12px 20px 12px 45px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none; font-size: 14px; }
-        .search-box::before { content: '🔍'; position: absolute; left: 15px; top: 12px; opacity: 0.5; }
+        /* Update Kotak Pencarian agar senada dengan Filter */
+.control-panel { 
+    background: white; 
+    padding: 20px 25px; 
+    border-radius: 30px; /* Samakan bulatnya dengan filter */
+    margin-bottom: 25px; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04); 
+}
 
+.search-box input { 
+    width: 100%; 
+    padding: 15px 20px 15px 50px; /* Padding kiri lebih besar untuk icon */
+    border-radius: 20px; /* Buat lebih bulat/oval */
+    border: 2px solid #f1f5f9; 
+    outline: none; 
+    font-size: 14px;
+    background-color: #f8fafc;
+    transition: 0.3s;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-red);
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* Pindahkan icon kaca pembesar sedikit ke kanan */
+.search-box::before { 
+    content: '🔍'; 
+    position: absolute; 
+    left: 20px; 
+    top: 15px; 
+    opacity: 0.6;
+    font-size: 16px;
+}
+        
         /* TABLE */
         .table-card { background: white; border-radius: 20px; overflow-x: auto; box-shadow: 0 10px 15px rgba(0,0,0,0.05); }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
@@ -57,11 +88,11 @@
 /* Filter Panel - Rounded & Modern Version */
 .filter-container { 
     background: white; 
-    border-radius: 30px; /* Super rounded agar tidak kotak kaku */
-    margin-bottom: 25px; 
+    border-radius: 30px; 
+    margin-bottom: 40px; /* Jarak ditambah dari 25px ke 40px */
     box-shadow: 0 15px 35px rgba(0,0,0,0.06); 
     overflow: hidden; 
-    border: none; /* Hilangkan border agar terlihat clean */
+    border: none;
 }
 
 .filter-header { 
