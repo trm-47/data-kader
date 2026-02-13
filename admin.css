@@ -392,3 +392,43 @@ tr:hover td {
     font-weight: 600;
     color: var(--dark-slate);
 }
+
+/* Membuat dropdown filter yang aktif terlihat lebih tegas */
+.filter-priority {
+    border: 2px solid #D71920 !important; /* Warna merah PDI */
+    background-color: #fff1f2 !important;
+    font-weight: bold;
+    color: #D71920;
+}
+
+/* Animasi berkedip halus untuk menarik perhatian */
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(215, 25, 32, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(215, 25, 32, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(215, 25, 32, 0); }
+}
+
+.pulse-effect {
+    animation: pulse-red 2s infinite;
+}
+
+/* Warna baris di tabel hasil filter */
+.urgent-row {
+    background-color: #ffe4e6 !important; /* Merah muda halus */
+    border-left: 5px solid #D71920 !important;
+}
+
+.warning-row {
+    background-color: #fef9c3 !important; /* Kuning halus */
+    border-left: 5px solid #eab308 !important;
+}
+
+/* Badge di dalam kolom identitas */
+.urgent-badge {
+    background: #D71920;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: bold;
+}
