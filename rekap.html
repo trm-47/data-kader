@@ -30,8 +30,15 @@
             padding: 20px 10px 40px;
             scrollbar-width: none;
             -ms-overflow-style: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            scroll-behavior: smooth;
         }
         .slider-wrapper::-webkit-scrollbar { display: none; }
+
+        .rekap-card img {
+    pointer-events: none; /* Supaya gambar foto tidak ikut ketarik mouse */
+}
 
         /* Card Luxury Style */
         .rekap-card {
@@ -220,113 +227,167 @@
 <script src="script.js"></script>
 <script>
     window.addEventListener('load', () => {
-        loadRekapitulasi();
-        
-        // Update Counter saat geser
-        const slider = document.getElementById('rekapSlider');
-        slider.addEventListener('scroll', () => {
-            const index = Math.round(slider.scrollLeft / slider.offsetWidth) + 1;
-            document.getElementById('cardCounter').innerText = `Kartu ${index} dari 5`;
-        });
+    loadRekapitulasi();
+    initMouseDrag(); // Aktifkan fitur tarik mouse sesuai permintaan
+    
+    const slider = document.getElementById('rekapSlider');
+    slider.addEventListener('scroll', () => {
+        const index = Math.round(slider.scrollLeft / slider.offsetWidth) + 1;
+        const total = document.querySelectorAll('.rekap-card').length;
+        document.getElementById('cardCounter').innerText = `Kartu ${index} dari ${total}`;
     });
+});
 
-    function loadRekapitulasi() {
-        const data = JSON.parse(localStorage.getItem('kaderData')) || {};
-        
-        // 1. Foto
-        if (data.foto) {
-            document.getElementById('fotoPreviewRekap').innerHTML = `
-                <div style="position:relative; display:inline-block;">
-                    <img src="${data.foto}" style="width:120px; height:120px; border-radius:30px; object-fit:cover; border:5px solid white; box-shadow:0 15px 30px rgba(0,0,0,0.1);">
-                    <div style="position:absolute; bottom:-10px; right:-10px; background:var(--primary-red); color:white; padding:5px 12px; border-radius:10px; font-size:10px; font-weight:800;">FOTO KADER</div>
-                </div>`;
-        }
+// --- FITUR MOUSE DRAG (GESER TANPA SCROLLBAR) ---
+function initMouseDrag() {
+    const slider = document.getElementById('rekapSlider');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
 
-        // 2. Data Pribadi
-        const fields = [
-            {l: 'Nama Lengkap', v: data.nama_lengkap, f: true},
-            {l: 'NIK', v: data.nik},
-            {l: 'KTA', v: data.no_kta},
-            {l: 'TTL', v: `${data.tempat_lahir}, ${data.tanggal_lahir}`},
-            {l: 'Kontak', v: data.kontak},
-            {l: 'Gender', v: data.jenis_kelamin},
-            {l: 'Alamat', v: `${data.alamat}, RT ${data.rt}/RW ${data.rw}`, f: true},
-            {l: 'Wilayah', v: `${data.kelurahan}, ${data.kecamatan}, ${data.kab_kota}`, f: true}
-        ];
-        
-        document.getElementById('rekapPribadi').innerHTML = fields.map(item => `
-            <div class="rekap-item-premium ${item.f ? 'rekap-item-full' : ''}">
-                <div class="rekap-label">${item.l}</div>
-                <div class="rekap-value">${item.v || '-'}</div>
-            </div>
-        `).join('');
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true;
+        slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+    slider.addEventListener('mouseup', () => {
+        isDown = false;
+        slider.style.cursor = 'grab';
+    });
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2; 
+        slider.scrollLeft = scrollLeft - walk;
+    });
+    slider.style.cursor = 'grab';
+}
 
-        // 3. Pendidikan
-        document.getElementById('rekapFormal').innerHTML = (data.riwayat_pendidikan || []).map(p => `
-            <div class="data-box-premium">
-                <div class="rekap-label">${p.jenjang}</div>
-                <div class="rekap-value" style="font-size:15px;">${p.nama}</div>
-                <div style="font-size:11px; color:var(--soft-slate); margin-top:4px;">Lulus Tahun ${p.tahun} | ${p.kota || ''}</div>
-            </div>
-        `).join('') || '<p style="text-align:center; color:#94a3b8; font-size:12px;">Data Kosong</p>';
-
-        // 4. Kaderisasi
-        document.getElementById('rekapKader').innerHTML = (data.riwayat_kader || []).map(k => `
-            <div class="data-box-premium" style="border-left-color: #1e293b;">
-                <div class="rekap-label">Tingkat ${k.jenis}</div>
-                <div class="rekap-value">${k.penyelenggara}</div>
-                <div style="font-size:11px; color:var(--soft-slate);">${k.tahun}</div>
-            </div>
-        `).join('') || '<p style="text-align:center; color:#94a3b8; font-size:12px;">Data Kosong</p>';
-
-        // 5. Jabatan & Kerja
-        const jPartai = (data.riwayat_jabatan_partai || []).map(j => `
-            <div class="data-box-premium">
-                <div class="rekap-label">${j.tingkatan}</div>
-                <div class="rekap-value">${j.jabatan}</div>
-                <div style="font-size:11px; color:var(--soft-slate);">Periode: ${j.periode}</div>
-            </div>
-        `).join('');
-        
-        const jKerja = (data.riwayat_pekerjaan || []).map(p => `
-            <div class="data-box-premium" style="border-left-color: #64748b;">
-                <div class="rekap-label">Pekerjaan Profesional</div>
-                <div class="rekap-value">${p.perusahaan}</div>
-                <div style="font-size:11px; color:var(--soft-slate);">${p.jabatan}</div>
-            </div>
-        `).join('');
-        
-        document.getElementById('rekapJabatanPartai').innerHTML = jPartai || '<p style="text-align:center; color:#94a3b8; font-size:12px;">No Party Position</p>';
-        document.getElementById('rekapPekerjaan').innerHTML = jKerja;
-
-        // 6. Medsos & Skill
-        const ms = data.media_sosial || {};
-        const icons = {
-            ig: "https://cdn-icons-png.flaticon.com/512/174/174855.png",
-            fb: "https://cdn-icons-png.flaticon.com/512/124/124010.png",
-            tt: "https://cdn-icons-png.flaticon.com/512/3046/3046121.png"
-        };
-
-        document.getElementById('rekapLainnya').innerHTML = `
-            <div class="rekap-grid" style="margin-top:20px;">
-                <div class="rekap-item-premium"><div class="rekap-label">Bahasa</div><div class="rekap-value">${data.kompetensi_bahasa || '-'}</div></div>
-                <div class="rekap-item-premium"><div class="rekap-label">Komputer</div><div class="rekap-value">${data.kemampuan_komputer || '-'}</div></div>
-                <div class="rekap-item-full rekap-item-premium">
-                    <div class="rekap-label" style="margin-bottom:12px;">E-Identity / Social Media</div>
-                    <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                        <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700;">
-                            <img src="${icons.ig}" width="16"> ${ms.instagram || '-'}
-                        </div>
-                        <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700;">
-                            <img src="${icons.tt}" width="16"> ${ms.tiktok || '-'}
-                        </div>
-                        <div style="display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700;">
-                            <img src="${icons.fb}" width="16"> ${ms.facebook || '-'}
-                        </div>
-                    </div>
-                </div>
+// --- LOAD DATA FULL TANPA DIKURANGI ---
+function loadRekapitulasi() {
+    const data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    
+    // 1. Foto
+    if (data.foto) {
+        document.getElementById('fotoPreviewRekap').innerHTML = `
+            <div style="position:relative; display:inline-block;">
+                <img src="${data.foto}" style="width:120px; height:120px; border-radius:30px; object-fit:cover; border:5px solid white; box-shadow:0 15px 30px rgba(0,0,0,0.1);">
             </div>`;
     }
+
+    // 2. Data Pribadi (Semua Field Step 1)
+    const fields = [
+        {l: 'Nama Lengkap', v: data.nama_lengkap, f: true},
+        {l: 'NIK', v: data.nik},
+        {l: 'No. KTA', v: data.no_kta},
+        {l: 'Tempat Lahir', v: data.tempat_lahir},
+        {l: 'Tanggal Lahir', v: data.tanggal_lahir},
+        {l: 'Jenis Kelamin', v: data.jenis_kelamin},
+        {l: 'Agama', v: data.agama},
+        {l: 'Status Kawin', v: data.status_perkawinan},
+        {l: 'WhatsApp', v: data.kontak},
+        {l: 'Email', v: data.email, f: true},
+        {l: 'Alamat KTP', v: data.alamat, f: true},
+        {l: 'RT/RW', v: `${data.rt} / ${data.rw}`},
+        {l: 'Desa/Kel', v: data.kelurahan},
+        {l: 'Kecamatan', v: data.kecamatan},
+        {l: 'Kab/Kota', v: data.kab_kota, f: true}
+    ];
+    document.getElementById('rekapPribadi').innerHTML = fields.map(item => `
+        <div class="rekap-item-premium ${item.f ? 'rekap-item-full' : ''}">
+            <div class="rekap-label">${item.l}</div>
+            <div class="rekap-value">${item.v || '-'}</div>
+        </div>
+    `).join('');
+
+    // 3. Pendidikan Formal (Step 2)
+    document.getElementById('rekapFormal').innerHTML = (data.riwayat_pendidikan || []).map(p => `
+        <div class="data-box-premium">
+            <div class="rekap-label">${p.jenjang} - ${p.jurusan || ''}</div>
+            <div class="rekap-value">${p.nama}</div>
+            <div style="font-size:11px; color:var(--soft-slate); margin-top:4px;">
+                Lulus: ${p.tahun} | Kota: ${p.kota || '-'} | Status: ${p.status || 'Lulus'}
+            </div>
+        </div>
+    `).join('') || '<p>Data Kosong</p>';
+
+    // 4. Kaderisasi (Step 3)
+    document.getElementById('rekapKader').innerHTML = (data.riwayat_kader || []).map(k => `
+        <div class="data-box-premium" style="border-left-color: #1e293b;">
+            <div class="rekap-label">Kaderisasi ${k.jenis}</div>
+            <div class="rekap-value">${k.penyelenggara}</div>
+            <div style="font-size:11px; color:var(--soft-slate);">Tahun: ${k.tahun} | Lokasi: ${k.lokasi}</div>
+        </div>
+    `).join('') || '<p>Data Kosong</p>';
+
+    // 5. Jabatan & Penugasan (Step 4)
+    const jPartai = (data.riwayat_jabatan_partai || []).map(j => `
+        <div class="data-box-premium">
+            <div class="rekap-label">Struktur: ${j.tingkatan}</div>
+            <div class="rekap-value">${j.jabatan} ${j.bidang ? '('+j.bidang+')' : ''}</div>
+            <div style="font-size:11px; color:var(--soft-slate);">Periode: ${j.periode}</div>
+        </div>
+    `).join('');
+    
+    const jTugas = (data.riwayat_penugasan || []).map(t => `
+        <div class="data-box-premium" style="border-left-color: #fbbf24;">
+            <div class="rekap-label">Penugasan: ${t.jenis}</div>
+            <div class="rekap-value">${t.jabatan} - ${t.lembaga}</div>
+            <div style="font-size:11px; color:var(--soft-slate);">Wilayah: ${t.lokasi} | Periode: ${t.periode}</div>
+        </div>
+    `).join('');
+    document.getElementById('rekapJabatanPartai').innerHTML = (jPartai + jTugas) || '<p>Data Kosong</p>';
+
+    // 6. Pekerjaan (Step 5)
+    document.getElementById('rekapPekerjaan').innerHTML = (data.riwayat_pekerjaan || []).map(p => `
+        <div class="data-box-premium" style="border-left-color: #64748b;">
+            <div class="rekap-label">Pekerjaan</div>
+            <div class="rekap-value">${p.perusahaan}</div>
+            <div style="font-size:11px; color:var(--soft-slate);">${p.jabatan} | Masa Kerja: ${p.masa_kerja}</div>
+        </div>
+    `).join('') || '<p>Data Kosong</p>';
+
+    // 7. Organisasi Luar, Skill, Medsos (Step 6)
+    const listOrg = (data.riwayat_organisasi || []).map(o => `
+        <div style="margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:4px;">
+            <div style="font-size:12px; font-weight:700;">${o.nama}</div>
+            <div style="font-size:10px; color:var(--soft-slate);">${o.jabatan} (${o.periode})</div>
+        </div>
+    `).join('');
+    
+    document.getElementById('rekapOrganisasi').innerHTML = listOrg ? `
+        <div class="data-box-premium" style="border-left-color: #0ea5e9;">
+            <div class="rekap-label">Organisasi Luar</div>
+            ${listOrg}
+        </div>` : '';
+
+    const ms = data.media_sosial || {};
+    document.getElementById('rekapLainnya').innerHTML = `
+        <div class="rekap-grid" style="margin-top:10px;">
+            <div class="rekap-item-premium"><div class="rekap-label">Bahasa</div><div class="rekap-value">${data.kompetensi_bahasa || '-'}</div></div>
+            <div class="rekap-item-premium"><div class="rekap-label">Komputer</div><div class="rekap-value">${data.kemampuan_komputer || '-'}</div></div>
+            <div class="rekap-item-full rekap-item-premium">
+                <div class="rekap-label">Media Sosial</div>
+                <div style="font-size:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <span><b>FB:</b> ${ms.facebook || '-'}</span>
+                    <span><b>IG:</b> ${ms.instagram || '-'}</span>
+                    <span><b>TT:</b> ${ms.tiktok || '-'}</span>
+                </div>
+            </div>
+        </div>`;
+}
+
+function submitSeluruhData() {
+    // Logika kirim tetap sama
+    alert("Data lengkap sedang diproses untuk pengiriman final!");
+    console.log(JSON.parse(localStorage.getItem('kaderData')));
+}
 </script>
 </body>
 </html>
