@@ -378,10 +378,12 @@ function hitungUmur(tanggalLahir) {
 
 // --- Taruh di paling bawah script.js ---
 
+// TARUH INI DI PALING BAWAH SCRIPT.JS UNTUK GANTIKAN YANG TADI
 function formatNama(elemen) {
+    let cursorStart = elemen.selectionStart;
+    let cursorEnd = elemen.selectionEnd;
     let string = elemen.value;
     
-    // Logika agar kursor tidak lari ke belakang saat spasi
     let words = string.split(' ');
     let hasil = words.map(kata => {
         if (kata.length > 0) {
@@ -391,18 +393,7 @@ function formatNama(elemen) {
     }).join(' ');
 
     elemen.value = hasil;
-}
-
-// Fungsi pembantu jika di HTML dipanggil via onclick
-function saveStep1() {
-    // Jika Bos sudah punya fungsi simpan sendiri di atas, 
-    // pastikan namanya tidak bentrok.
-    console.log("Menjalankan simpan Step 1...");
     
-    // Logika simpan data (contoh)
-    const nama = document.getElementById('nama_lengkap').value;
-    localStorage.setItem('nama_kader', nama);
-    
-    // Pindah halaman
-    window.location.href = 'step2.html';
+    // Kembalikan posisi kursor supaya tidak lompat ke belakang
+    elemen.setSelectionRange(cursorStart, cursorEnd);
 }
