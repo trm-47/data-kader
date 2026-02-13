@@ -221,7 +221,15 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
     </div>`;
 
 const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
-const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
+const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => 
+    premiumTemplate(
+        `Kader ${item.jenis}`, 
+        `${item.penyelenggara} - ${item.lokasi} (${item.tahun})`, // Lokasi dimunculkan di sini
+        'riwayat_kader', 
+        index, 
+        'renderKader'
+    )
+);
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
 const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => premiumTemplate(item.perusahaan, `${item.jabatan} (${item.masa_kerja})`, 'riwayat_pekerjaan', index, 'renderPekerjaan'));
 const renderOrganisasi = () => renderList('orgList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} | ${item.periode}`, 'riwayat_organisasi', index, 'renderOrganisasi'));
@@ -245,13 +253,52 @@ function addPendidikan() {
     renderPendidikan();
 }
 
-function addPendidikanKader() {
-    const jenis = document.getElementById('jenis_kader')?.value;
-    const penyelenggara = document.getElementById('penyelenggara')?.value;
-    const tahun = document.getElementById('tahun_kader')?.value;
-    if(!jenis || !penyelenggara) return alert("Lengkapi data kader!");
-    saveToLocal('riwayat_kader', { jenis, penyelenggara, tahun });
-    renderKader();
+/* ==========================================
+    9. FUNGSI TAMBAHAN (CUSTOM LOGIC)
+   ========================================== */
+
+// Fungsi untuk mengubah label lokasi secara dinamis di Step 3
+function updateLabelLokasi() {
+    const pen = document.getElementById('penyelenggara');
+    const label = document.getElementById('label_lokasi');
+    const input = document.getElementById('lokasi_kader');
+
+    // Cek jika elemen ada di halaman tersebut (mencegah error di step lain)
+    if (!pen || !label || !input) return;
+
+    const nilai = pen.value;
+
+    if (nilai === "DPP PDI PERJUANGAN") {
+        label.innerHTML = "Kota Penyelenggaraan <span class='required'>*</span>";
+        input.placeholder = "Contoh: JAKARTA";
+    } else if (nilai === "DPD PDI PERJUANGAN") {
+        label.innerHTML = "Nama Provinsi <span class='required'>*</span>";
+        input.placeholder = "Contoh: DIY / JAWA TENGAH";
+    } else if (nilai === "DPC PDI PERJUANGAN") {
+        label.innerHTML = "Nama Kabupaten/Kota <span class='required'>*</span>";
+        input.placeholder = "Contoh: BANTUL / SLEMAN";
+    } else {
+        label.innerHTML = "Lokasi / Wilayah <span class='required'>*</span>";
+        input.placeholder = "Contoh: NAMA KOTA ATAU WILAYAH";
+    }
+}
+
+// Fungsi Format Nama (Capital Each Word) yang kita buat sebelumnya
+function formatNama(elemen) {
+    if (!elemen) return;
+    let cursorStart = elemen.selectionStart;
+    let cursorEnd = elemen.selectionEnd;
+    
+    let words = elemen.value.split(' ');
+    let hasil = words.map(kata => {
+        if (kata.length > 0) {
+            return kata.charAt(0).toUpperCase() + kata.slice(1).toLowerCase();
+        }
+        return '';
+    }).join(' ');
+
+    elemen.value = hasil;
+    elemen.setSelectionRange(cursorStart, cursorEnd);
 }
 
 function addJabatanPartai() {
