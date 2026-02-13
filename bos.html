@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Kader Alt</title>
+    <title>Kader Dashboard Pro</title>
     <link rel="stylesheet" href="bos.css">
 </head>
 <body>
@@ -11,32 +11,43 @@
         <header class="main-header">
             <div class="brand">
                 <h1>Database Kader</h1>
-                <p id="statusInfo">Menghubungkan ke server...</p>
+                <div class="status-indicator">
+                    <span id="dot" class="dot"></span>
+                    <span id="statusText">Menghubungkan...</span>
+                </div>
             </div>
             <div class="stats-grid">
-                <div class="stat-box">Total: <span id="sTotal">0</span></div>
-                <div class="stat-box">Muda: <span id="sYouth">0</span></div>
-                <div class="stat-box">Madya: <span id="sMadya">0</span></div>
+                <div class="stat-box">Total <h2 id="sTotal">0</h2></div>
+                <div class="stat-box">Madya <h2 id="sMadya">0</h2></div>
+                <div class="stat-box urgent">Prioritas <h2 id="sUrgent">0</h2></div>
             </div>
         </header>
 
         <div class="toolbar">
-            <input type="text" id="searchInput" placeholder="Cari Nama/KTA...">
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" placeholder="Cari Nama atau No. KTA...">
+            </div>
+            <div class="filter-wrapper">
+                <select id="filterKec">
+                    <option value="all">Semua Kecamatan</option>
+                </select>
+            </div>
         </div>
 
-        <main class="table-wrapper">
+        <div class="table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Foto</th>
+                        <th>Profil</th>
                         <th>Identitas</th>
                         <th>Jenjang Kaderisasi</th>
-                        <th>Aksi</th>
+                        <th>Kecamatan</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody"></tbody>
+                <tbody id="tableBody">
+                    </tbody>
             </table>
-        </main>
+        </div>
     </div>
 
     <script src="bos.js"></script>
