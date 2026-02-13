@@ -101,79 +101,114 @@ function formatDriveUrl(url) {
 }
 
 
-// --- CORE RENDERING (VERSI HYPER PREMIUM & CLEAN) ---
+// --- CORE RENDERING ---
+// --- CORE RENDERING (VERSI PERBAIKAN) ---
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
     if (!body) return;
-    
-    // 1. BERSIHKAN BODY (Cegah tampilan dobel)
     body.innerHTML = "";
 
     if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px; color:#64748b;">Data tidak ditemukan.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
         return;
     }
 
-    // Urutkan dari yang terbaru masuk
     const displayData = [...data].reverse();
 
     displayData.forEach((item) => {
         if (!item || !item.pribadi) return;
-        
         const p = item.pribadi;
         const f = item.formal || [];
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- LOGIKA BADGE KADERISASI (BIAR KECIL BERJEJER) ---
+        // --- LOGIKA KADERISASI ---
+        const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
+        const textTahunKader = k[5] ? k[5].toString() : ""; 
+
+        // Ambil tahun Pratama
+        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
+        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
+        
+        const isMadya = textJenisKader.includes("madya");
+        const hasPratama = textJenisKader.includes("pratama");
+        
+        let rowClass = "";
+        let badgeWarning = "";
+
+        if (hasPratama && !isMadya && tahunPratama) {
+            const currentYear = new Date().getFullYear();
+            const masaTunggu = currentYear - tahunPratama;
+
+            if (masaTunggu >= 5) {
+                rowClass = "urgent-row"; 
+                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+            } else {
+                rowClass = "warning-row"; 
+                badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+            }
+        }
+
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
             const listJenjang = k[2].toString().split("\n");
-            htmlBadgeKader = `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;">`;
             listJenjang.forEach(jenjangText => {
                 if(jenjangText.trim()) {
-                    let bColor = "#fee2e2"; let tColor = "#D71920";
-                    if(jenjangText.toUpperCase().includes("MADYA")) { bColor = "#1e293b"; tColor = "#fbbf24"; }
-                    
-                    htmlBadgeKader += `<span style="background:${bColor}; color:${tColor}; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid rgba(0,0,0,0.05); white-space:nowrap;">${jenjangText.trim().toUpperCase()}</span>`;
+                    htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjangText.trim()}</span>`;
                 }
             });
-            htmlBadgeKader += `</div>`;
         } else {
-            htmlBadgeKader = `<span class="badge badge-gray">ANGGOTA</span>`;
+            htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
         }
 
+        // --- WHATSAPP ---
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
+        const btnWA = waNumber ?
+            `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">💬 Chat</a>` :
+            `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
+
+        // --- PENDIDIKAN ---
+        let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`;
+        const listEdu = [
+            { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
+            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
+        ];
+
+        for (let edu of listEdu) {
+            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
+                let detail = (edu.label === "S1") ? `<br><small>${(f[12] && f[12] !== "-") ? f[12] : f[11]}</small>` : `<br><small>${f[edu.idx]}</small>`;
+                infoPendidikan = `<strong>${edu.label}</strong>${detail}`;
+                break;
+            }
+        }
 
         const originalIdx = databaseKader.indexOf(item);
 
-        const tr = document.createElement('tr');
-        tr.onclick = () => openDetail(originalIdx);
-        tr.innerHTML = `
-            <td data-label="Foto">
-                <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'" style="width:45px; height:45px; border-radius:12px; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-            </td>
-            <td data-label="Identitas">
-                <div style="font-weight:800; color:#1e293b; font-size:14px;">${p.nama || 'TANPA NAMA'}</div>
-                <div style="font-size:10px; color:#D71920; font-weight:700; letter-spacing:0.5px;">KTA: ${p.kta || '-'}</div>
-            </td>
-            <td data-label="Usia" style="text-align:center;">
-                <div style="font-weight:700;">${ageInfo.age}</div>
-                <div style="font-size:10px; color:#64748b;">${ageInfo.gen}</div>
-            </td>
-            <td data-label="Wilayah">
-                <div style="font-weight:600; font-size:12px;">${p.kec || '-'}</div>
-                <div style="font-size:10px; color:#94a3b8;">${p.desa || '-'}</div>
-            </td>
-            <td data-label="Kaderisasi">
-                ${htmlBadgeKader}
-            </td>
-            <td data-label="Aksi" style="text-align:center;">
-                ${waNumber ? `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; width:32px; height:32px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 4px 8px rgba(37,211,102,0.3);">💬</a>` : '-'}
-            </td>
-        `;
-        body.appendChild(tr);
+        // --- RENDER BARIS ---
+        body.innerHTML += `
+            <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
+                <td data-label="Foto">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                </td>
+                <td data-label="Identitas">
+                    <strong style="font-size:15px;">${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}
+                    <br>
+                    <small style="color: #D71920; font-weight: 700;">No. KTA: ${p.kta || '-'}</small>
+                </td>
+                <td data-label="Usia" style="text-align:center;">
+                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
+                </td>
+                <td data-label="Pendidikan">
+                    ${infoPendidikan}
+                </td>
+                <td data-label="Kaderisasi">
+                    ${htmlBadgeKader}
+                </td>
+                <td data-label="Aksi" style="text-align:center;">
+                    ${btnWA}
+                </td>
+            </tr>`;
     });
 }
 
@@ -199,6 +234,7 @@ function updateStats(data) {
             }
         }
 
+        // --- MODIFIKASI STATS (START) ---
         const textJenis = k[2] ? k[2].toString().toLowerCase() : "";
         const isMadya = textJenis.includes("madya");
         const hasPratama = textJenis.includes("pratama");
@@ -208,6 +244,7 @@ function updateStats(data) {
         } else if (hasPratama) {
             needMadyaCount++;
         }
+        // --- MODIFIKASI STATS (END) ---
     });
 
     document.getElementById('statTotal').innerText = total;
@@ -262,189 +299,171 @@ function applyFilters() {
         const p = item.pribadi || {};
         const formal = item.formal || [];
         const kader = item.kaderisasi || [];
+        const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
         const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
-        const matchesJK = fJK === "Semua" || p.jk === fJK;
-        const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
-        const textFormal = formal.join(" ");
-        const matchesEdu = fEdu === "Semua" || textFormal.includes(fEdu);
-        const textKader = kader[2] ? kader[2].toString().toLowerCase() : "";
-        const matchesKader = (fKader === "Semua") || textKader.includes(fKader.toLowerCase());
 
+        // Filter Kaderisasi Dasar
+        let matchesKader = (fKader === "Semua");
+        const textKader = kader[2] ? kader[2].toString().toLowerCase() : "";
+        if (!matchesKader) {
+            matchesKader = textKader.includes(fKader.toLowerCase());
+        }
+
+        // --- MODIFIKASI KHUSUS LOGIKA FILTER MADYA ---
         const currentYear = new Date().getFullYear();
         const isMadya = textKader.includes("madya");
         const hasPratama = textKader.includes("pratama");
+        
         const textTahun = kader[5] ? kader[5].toString() : "";
-        const matchTahunPratama = textTahun.match(/1\.\s*(\d{4})/) || textTahun.match(/^(\d{4})/);
-        const tahunPratama = matchTahunPratama ? parseInt(matchTahunPratama[1]) : 0;
+        const matchPratama = textTahun.match(/1\.\s*(\d{4})/);
+        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : 0;
         const masaTunggu = tahunPratama > 0 ? (currentYear - tahunPratama) : 0;
 
         let matchStatusMadya = true;
-        if (fStatusMadya === "Sudah") matchStatusMadya = isMadya;
-        else if (fStatusMadya === "Belum") matchStatusMadya = !isMadya;
-        else if (fStatusMadya === "Prioritas") matchStatusMadya = (hasPratama && !isMadya && masaTunggu >= 5);
-
+        if (fStatusMadya === "Sudah") {
+            matchStatusMadya = isMadya;
+        } else if (fStatusMadya === "Belum") {
+            matchStatusMadya = !isMadya;
+        } else if (fStatusMadya === "Prioritas") {
+            matchStatusMadya = (hasPratama && !isMadya && masaTunggu > 5);
+        }
+        
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
-        const matchesIT = fIT === "Semua" || (item.pribadi.it === fIT);
-        const matchesBahasa = fBahasa === "Semua" || (item.pribadi.bahasa === fBahasa);
+        
+        const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
+        const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? (valBahasa !== "-" && valBahasa !== "") : (valBahasa === "-" || valBahasa === ""));
+        
+        const valIT = medsos[8] ? medsos[8].toString().trim() : "-";
+        const matchesIT = fIT === "Semua" || (fIT === "Ya" ? (valIT !== "-" && valIT !== "") : (valIT === "-" || valIT === ""));
+        
+        const matchesJK = fJK === "Semua" || p.jk === fJK;
+        const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
+        const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
-        return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && matchesEdu && 
-               matchesKader && matchesTingkat && matchesJenis && matchStatusMadya && matchesIT && matchesBahasa;
+        return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && 
+               matchesEdu && matchesKader && matchesTingkat && matchesJenis && 
+               matchesBahasa && matchesIT && matchStatusMadya;
     });
 
     renderTable(filtered);
     updateStats(filtered);
 }
 
+// --- MODAL DETAIL LOGIC ---
 function openDetail(originalIndex) {
-    const data = databaseKader[originalIndex]; // Data mentah dari DB Admin
-    if (!data) return;
+    const item = databaseKader[originalIndex];
+    if (!item) return;
 
-    // --- PROSES MAPPING DATA (Agar sama dengan variabel rekap.html) ---
-    const p = data.pribadi || {};
-    const formal = data.formal || [];
-    const kader = data.kaderisasi || [];
-    const jabatan = data.jabatan || [];
-    const medsos = data.medsos || [];
+    const p = item.pribadi || {};
+    const f = item.formal || [];
+    const k = item.kaderisasi || [];
+    const j = item.jabatan || [];
+    const m = item.medsos || [];
+    const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- CLONE STRUKTUR HTML DARI REKAP.HTML ---
+    // --- MODIFIKASI MODAL ANALISA (START) ---
+    const listThn = k[5] ? k[5].toString().split("\n") : [];
+    const getYear = (no) => {
+        const found = listThn.find(t => t.trim().startsWith(no + "."));
+        return found ? found.replace(no + ".", "").trim() : null;
+    };
+
+    const thnPratama = getYear("1");
+    const thnMadya = getYear("2");
+    const thnUtama = getYear("3");
+    const thnGuru = getYear("4");
+    const thnWanita = getYear("5");
+
+    const listAnalisa = [
+        { label: 'PRATAMA', year: thnPratama, color: '#ef4444' },
+        { label: 'MADYA', year: thnMadya, color: '#dc2626' },
+        { label: 'UTAMA', year: thnUtama, color: '#b91c1c' },
+        { label: 'GURU', year: thnGuru, color: '#991b1b' },
+        { label: 'WANITA', year: thnWanita, color: '#db2777' }
+    ];
+    // --- MODIFIKASI MODAL ANALISA (END) ---
+
     let htmlContent = `
-    <div class="hyper-premium-modal">
-        <div class="header-form" style="text-align: center; margin-bottom: 10px; padding-top:15px;">
-            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo" style="width: 45px; margin-bottom: 5px;">
-            <h2 style="font-weight: 800; letter-spacing: -0.5px; margin:0; font-size:18px;">Final Review Admin</h2>
+        <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
+            <div style="position: relative; display: inline-block;">
+                <img src="${formatDriveUrl(p.foto)}" 
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
+                     style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 6px solid white; box-shadow: 0 15px 35px rgba(215,25,32,0.2);">
+                <div style="position:absolute; bottom:5px; right:5px; background:white; padding:5px; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                    <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" style="width:25px; height:auto;">
+                </div>
+            </div>
+            <h2 style="margin-top:20px; color:#1e293b; font-size:26px; font-weight:800; letter-spacing:-0.5px;">${p.nama ? p.nama.toUpperCase() : '-'}</h2>
+            <p style="color:#D71920; font-weight:800; font-size:14px; margin-top:5px;">ID KADER: ${p.kta || '-'}</p>
         </div>
 
-        <div class="slider-wrapper" id="adminRekapSlider">
+        <div class="profile-section">
+            <div class="section-title">Identitas Pribadi</div>
+            <div class="data-grid">
+                <div class="data-item"><label>NIK</label><span>${p.nik || '-'}</span></div>
+                <div class="data-item"><label>Jenis Kelamin</label><span>${p.jk || '-'}</span></div>
+                <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
+                <div class="data-item"><label>Usia</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
+                <div class="data-item"><label>Agama</label><span>${p.agama || '-'}</span></div>
+                <div class="data-item"><label>Pekerjaan Utama</label><span>${p.kerja_skrg || '-'}</span></div>
+                <div class="data-item"><label>WhatsApp</label><span>${p.wa || '-'}</span></div>
+                <div class="data-item"><label>Email</label><span>${p.email || '-'}</span></div>
+                <div class="data-item" style="grid-column: span 2;"><label>Alamat Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
+            </div>
+        </div>
+
+        <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
+                    <span style="background: #D71920; width: 4px; height: 18px; border-radius: 2px; display: inline-block;"></span>
+                    Analisa Jenjang & Masa Tunggu
+                </h3>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
+                ${listAnalisa.map(lvl => {
+                    const cYear = new Date().getFullYear();
+                    const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && !thnMadya;
+                    const waitTime = isPratamaOnly ? (cYear - parseInt(lvl.year)) : 0;
+                    const isStagnan = waitTime > 5;
+                    const cardBg = isStagnan ? '#fff1f2' : (lvl.year ? '#fff' : '#f8fafc');
+                    const borderColor = isStagnan ? '#be123c' : (lvl.year ? lvl.color : '#f1f5f9');
+                    
+                    return `
+                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${borderColor}; background: ${cardBg}; position: relative; ${isStagnan ? 'box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);' : ''}">
+                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${isStagnan ? '#be123c' : lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
+                        <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
+                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? (isStagnan ? '#be123c' : lvl.color) : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
+                        ${isStagnan ? `<div style="font-size:7px; background:#be123c; color:white; font-weight:bold; margin-top:5px; padding: 2px 4px; border-radius: 4px;">STAGNAN ${waitTime} THN</div>` : ''}
+                    </div>`;
+                }).join('')}
+            </div>
             
-            <div class="rekap-card">
-                <div class="section-title"><span>Profil Kader</span></div>
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'" 
-                         style="width:120px; height:120px; border-radius:30px; object-fit:cover; border:5px solid white; box-shadow:0 15px 30px rgba(0,0,0,0.1); pointer-events:none;">
-                </div>
-                <div class="rekap-grid">
-                    ${renderRow('Nama Lengkap', p.nama, true)}
-                    ${renderRow('NIK', p.nik)}
-                    ${renderRow('No. KTA', p.kta)}
-                    ${renderRow('Tempat Lahir', p.tmp_lahir)}
-                    ${renderRow('Tanggal Lahir', p.tgl_lahir)}
-                    ${renderRow('Jenis Kelamin', p.jk)}
-                    ${renderRow('Agama', p.agama)}
-                    ${renderRow('WhatsApp', p.wa)}
-                    ${renderRow('Email', p.email, true)}
-                    ${renderRow('Alamat KTP', p.alamat, true)}
-                    ${renderRow('Desa/Kel', p.desa)}
-                    ${renderRow('Kecamatan', p.kec)}
-                </div>
-            </div>
-
-            <div class="rekap-card">
-                <div class="section-title"><span>Pendidikan</span></div>
-                ${formal.map(f => `
-                    <div class="data-box-premium">
-                        <div class="rekap-label">${f[2]} - ${f[4] || ''}</div>
-                        <div class="rekap-value">${f[3]}</div>
-                        <div style="font-size:11px; color:#64748b; margin-top:4px;">Lulus: ${f[5]} | Status: ${f[7] || 'Lulus'}</div>
+            <div style="background: ${!thnMadya && thnPratama ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
+                <div style="flex: 1;">
+                    <div style="font-size: 10px; color: ${!thnMadya && thnPratama ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
+                        ${!thnMadya && thnPratama ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
                     </div>
-                `).join('') || '<p>Data Kosong</p>'}
-            </div>
-
-            <div class="rekap-card">
-                <div class="section-title"><span>Kaderisasi</span></div>
-                ${kader.map(k => `
-                    <div class="data-box-premium" style="border-left-color: #1e293b;">
-                        <div class="rekap-label">Kaderisasi ${k[2]}</div>
-                        <div class="rekap-value">${k[3]}</div>
-                        <div style="font-size:11px; color:#64748b;">Tahun: ${k[5]} | Lokasi: ${k[4]}</div>
-                    </div>
-                `).join('') || '<p>Data Kosong</p>'}
-            </div>
-
-            <div class="rekap-card">
-                <div class="section-title"><span>Jabatan & Kerja</span></div>
-                ${jabatan.map(j => `
-                    <div class="data-box-premium" style="border-left-color: ${j[0] === 'TUGAS' ? '#fbbf24' : '#D71920'};">
-                        <div class="rekap-label">${j[0] === 'TUGAS' ? 'Penugasan' : 'Struktur'}: ${j[5]}</div>
-                        <div class="rekap-value">${j[4]}</div>
-                        <div style="font-size:11px; color:#64748b;">Periode: ${j[8]}</div>
-                    </div>
-                `).join('') || '<p>Data Kosong</p>'}
-            </div>
-
-            <div class="rekap-card">
-                <div class="section-title"><span>Skill & Medsos</span></div>
-                <div class="rekap-grid">
-                    ${renderRow('Bahasa', medsos[7])}
-                    ${renderRow('Komputer', medsos[8])}
-                    <div class="rekap-item-full rekap-item-premium">
-                        <div class="rekap-label">Media Sosial</div>
-                        <div style="font-size:12px; display:flex; gap:10px; flex-wrap:wrap; font-weight:700;">
-                            <span>FB: ${medsos[9] || '-'}</span>
-                            <span>IG: ${medsos[10] || '-'}</span>
-                            <span>TT: ${medsos[11] || '-'}</span>
-                        </div>
+                    <div style="font-size: 14px; margin-top: 4px; font-weight: ${!thnMadya && thnPratama ? '700' : '400'};">
+                        ${thnGuru ? 'Ideolog Partai: Mentor/Pengajar.' : thnUtama ? 'Strategis Nasional/Provinsi.' : thnMadya ? 'Pimpinan Struktur/Legislatif.' : thnPratama ? 'Kader ini sudah terlalu lama di tingkat Pratama. Wajib didorong ke Pelatihan Madya!' : 'Segera jadwalkan Pelatihan Pratama.'}
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <div class="nav-indicator">
-            <span id="adminCardCounter">Kartu 1 dari 5</span>
+        <div style="text-align:center; padding-top:20px;">
+             <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer;">CETAK PROFIL</button>
         </div>
-
-        <div style="padding: 10px 20px 20px; display: flex; gap: 10px;">
-            <button onclick="closeDetail()" class="btn-final" style="background:#1e293b; flex:3;">TUTUP DETAIL</button>
-            <button onclick="window.print()" class="btn-final" style="flex:1;">🖨️</button>
-        </div>
-    </div>`;
+    `;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
-    
-    // Inisialisasi ulang fitur Drag & Counter
-    initMouseDragAdmin('adminRekapSlider');
-}
-
-// Helper untuk Render baris agar identik dengan map(item => ...) di rekap.html
-function renderRow(label, value, isFull = false) {
-    return `
-        <div class="rekap-item-premium ${isFull ? 'rekap-item-full' : ''}">
-            <div class="rekap-label">${label}</div>
-            <div class="rekap-value">${value || '-'}</div>
-        </div>`;
-}
-
-// Inisialisasi Drag Scroll
-function initMouseDragAdmin(id) {
-    const slider = document.getElementById(id);
-    let isDown = false; let startX; let scrollLeft;
-    
-    slider.addEventListener('scroll', () => {
-        const index = Math.round(slider.scrollLeft / slider.offsetWidth) + 1;
-        const total = slider.querySelectorAll('.rekap-card').length;
-        document.getElementById('adminCardCounter').innerText = `Kartu ${index} dari ${total}`;
-    });
-
-    slider.addEventListener('mousedown', (e) => {
-        isDown = true; slider.style.cursor = 'grabbing';
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-    });
-    slider.addEventListener('mouseleave', () => isDown = false);
-    slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'grab'; });
-    slider.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const walk = (e.pageX - slider.offsetLeft - startX) * 2;
-        slider.scrollLeft = scrollLeft - walk;
-    });
+    document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
 function closeDetail() {
