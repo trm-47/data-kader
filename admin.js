@@ -309,10 +309,6 @@ function applyFilters() {
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
-        const isRegionMatch = matchKota && matchKec && matchDesa;
-
-        return isRegionMatch && matchesJK && matchesAgama && ...
-            
         // Filter Kaderisasi Dasar (Dropdown Jenjang)
         const textKader = kader[2] ? kader[2].toString().toLowerCase() : "";
         const matchesKader = (fKader === "Semua") || textKader.includes(fKader.toLowerCase());
