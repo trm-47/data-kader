@@ -122,64 +122,40 @@ function renderTable(data) {
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- LOGIKA KADERISASI ---
-        const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
-        const textTahunKader = k[5] ? k[5].toString() : ""; 
-
-        // Ambil tahun Pratama
-        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
-        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
-        
-        const isMadya = textJenisKader.includes("madya");
-        const hasPratama = textJenisKader.includes("pratama");
-        
+        // --- LOGIKA KADERISASI (SATU PINTU) ---
+        let htmlBadgeKader = "";
         let rowClass = "";
         let badgeWarning = "";
 
-        if (hasPratama && !isMadya && tahunPratama) {
-            const currentYear = new Date().getFullYear();
-            const masaTunggu = currentYear - tahunPratama;
+        if (k && k.length > 0) {
+            // 1. Ambil semua jenjang (kolom index 2)
+            const jenjangs = k.map(row => row[2]).filter(Boolean);
+            
+            // 2. Tampilkan semua sebagai badge
+            jenjangs.forEach(j => {
+                htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center; font-size:9px;">${j}</span>`;
+            });
 
-            if (masaTunggu >= 5) {
-                rowClass = "urgent-row"; 
-                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
-            } else {
-                rowClass = "warning-row"; 
-                badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+            // 3. Cek Prioritas (Hanya jika punya Pratama tapi belum Madya)
+            const pratamaData = k.find(row => row[2].toString().toLowerCase().includes("pratama"));
+            const isMadya = jenjangs.some(j => j.toLowerCase().includes("madya"));
+            
+            if (pratamaData && !isMadya) {
+                const thnPratama = parseInt(pratamaData[5]); // Kolom index 5 adalah Tahun
+                if (thnPratama) {
+                    const masaTunggu = new Date().getFullYear() - thnPratama;
+                    if (masaTunggu >= 5) {
+                        rowClass = "urgent-row";
+                        badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+                    } else {
+                        rowClass = "warning-row";
+                        badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+                    }
+                }
             }
+        } else {
+            htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
         }
-
-        // --- LOGIKA KADERISASI (FIX: MUNCUL SEMUA) ---
-let htmlBadgeKader = "";
-let rowClass = "";
-let badgeWarning = "";
-
-if (k && k.length > 0) {
-    // Ambil semua jenjang yang ada (Kolom index 2 adalah Jenis Kaderisasi)
-    const jenjangs = k.map(item => item[2]).filter(Boolean);
-    
-    // Tampilkan semua sebagai badge
-    jenjangs.forEach(j => {
-        htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center; font-size:9px;">${j}</span>`;
-    });
-
-    // Cek Prioritas Madya (Jika punya Pratama tapi belum Madya > 5 tahun)
-    const pratamaData = k.find(item => item[2].toString().toLowerCase().includes("pratama"));
-    const isMadya = jenjangs.some(j => j.toLowerCase().includes("madya"));
-    
-    if (pratamaData && !isMadya) {
-        const thnPratama = parseInt(pratamaData[5]); // Kolom index 5 adalah Tahun
-        if (thnPratama) {
-            const masaTunggu = new Date().getFullYear() - thnPratama;
-            if (masaTunggu >= 5) {
-                rowClass = "urgent-row";
-                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
-            }
-        }
-    }
-} else {
-    htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
-}
 
         // --- WHATSAPP ---
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
