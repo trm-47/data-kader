@@ -1,4 +1,4 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbymocP9faBGHUX9_aQOof1zXpNO3L4O5TRcSHrL-wRcBdIfaxpblkV5i3Fbu33Txw1bCQ/exec";
 let databaseKader = [];
 
 // --- INITIALIZATION ---
@@ -484,22 +484,19 @@ function updateKecamatanOptions() {
     const kecSelect = document.getElementById('fKec');
     const desaSelect = document.getElementById('fDesa');
     
-    // Reset dropdown di bawahnya
     kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
     desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
 
     if (selectedKota !== "Semua") {
-        // Ambil data yang kotanya cocok saja
         const filteredData = databaseKader.filter(item => 
             (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota)
         );
-        // Ambil daftar kecamatan unik
         const uniqueKec = [...new Set(filteredData.map(item => item.pribadi.kec))].filter(Boolean).sort();
         uniqueKec.forEach(kec => {
             kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
         });
     }
-    applyFilters(); // Langsung filter tabel
+    applyFilters();
 }
 
 function updateDesaOptions() {
@@ -510,7 +507,6 @@ function updateDesaOptions() {
     desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
 
     if (selectedKec !== "Semua") {
-        // Kunci berdasarkan KOTA dan KECAMATAN agar rigid
         const filteredData = databaseKader.filter(item => 
             (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota) && 
             item.pribadi.kec === selectedKec
@@ -520,5 +516,5 @@ function updateDesaOptions() {
             desaSelect.innerHTML += `<option value="${desa}">${desa}</option>`;
         });
     }
-    applyFilters(); // Langsung filter tabel
+    applyFilters();
 }
