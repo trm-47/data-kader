@@ -125,6 +125,9 @@ function renderTable(data) {
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
 
+        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
+        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
+
         // Parsing tahun Pratama dari format "1. YYYY"
         const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/);
         const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
@@ -139,14 +142,14 @@ function renderTable(data) {
             const currentYear = new Date().getFullYear();
             const masaTunggu = currentYear - tahunPratama;
 
-            if (masaTunggu > 5) {
-                rowClass = "urgent-row"; 
-                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (> ${masaTunggu} Thn)</span>`;
-            } else {
-                rowClass = "warning-row"; 
-                badgeWarning = `<br><span class="warning-badge">⚠️ BUTUH MADYA (${masaTunggu} Thn)</span>`;
-            }
-        }
+            if (masaTunggu >= 5) {
+        rowClass = "urgent-row"; 
+        badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+    } else {
+        rowClass = "warning-row"; 
+        badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+    }
+}
 
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
@@ -183,27 +186,30 @@ function renderTable(data) {
 
         const originalIdx = databaseKader.indexOf(item);
 
-        body.innerHTML += `
-            <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
-                <td data-label="Foto">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
-                </td>
-                <td data-label="Identitas">
-                    <strong>${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}<br><small>${p.nik || '-'}</small>
-                </td>
-                <td data-label="Usia" style="text-align:center;">
-                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
-                </td>
-                <td data-label="Pendidikan">
-                    ${infoPendidikan}
-                </td>
-                <td data-label="Kaderisasi">
-                    ${htmlBadgeKader}
-                </td>
-                <td data-label="Aksi" style="text-align:center;">
-                    ${btnWA}
-                </td>
-            </tr>`;
+        // Cari bagian ini di dalam fungsi renderTable Anda:
+
+body.innerHTML += `
+    <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
+        <td data-label="Foto">
+            <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+        </td>
+        <td data-label="Identitas">
+            <strong>${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}<br>
+            <small style="color: #D71920; font-weight: 700;">No. KTA: ${p.kta || '-'}</small>
+        </td>
+        <td data-label="Usia" style="text-align:center;">
+            ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
+        </td>
+        <td data-label="Pendidikan">
+            ${infoPendidikan}
+        </td>
+        <td data-label="Kaderisasi">
+            ${htmlBadgeKader}
+        </td>
+        <td data-label="Aksi" style="text-align:center;">
+            ${btnWA}
+        </td>
+    </tr>`;
     });
 }
 
