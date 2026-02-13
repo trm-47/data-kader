@@ -128,12 +128,10 @@ function renderTable(data) {
         // --- LOGIKA BADGE KADERISASI (BIAR KECIL BERJEJER) ---
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
-            // Pecah berdasarkan baris baru, bersihkan, dan tampilkan berjejer (inline-block)
             const listJenjang = k[2].toString().split("\n");
             htmlBadgeKader = `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;">`;
             listJenjang.forEach(jenjangText => {
                 if(jenjangText.trim()) {
-                    // Warna otomatis: Pratama (Merah), Madya (Emas/Dark), Lainnya (Gray)
                     let bColor = "#fee2e2"; let tColor = "#D71920";
                     if(jenjangText.toUpperCase().includes("MADYA")) { bColor = "#1e293b"; tColor = "#fbbf24"; }
                     
@@ -145,13 +143,11 @@ function renderTable(data) {
             htmlBadgeKader = `<span class="badge badge-gray">ANGGOTA</span>`;
         }
 
-        // --- WHATSAPP LOGIC ---
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
 
         const originalIdx = databaseKader.indexOf(item);
 
-        // --- RENDER ROW ---
         const tr = document.createElement('tr');
         tr.onclick = () => openDetail(originalIdx);
         tr.innerHTML = `
@@ -203,7 +199,6 @@ function updateStats(data) {
             }
         }
 
-        // --- MODIFIKASI STATS (START) ---
         const textJenis = k[2] ? k[2].toString().toLowerCase() : "";
         const isMadya = textJenis.includes("madya");
         const hasPratama = textJenis.includes("pratama");
@@ -213,7 +208,6 @@ function updateStats(data) {
         } else if (hasPratama) {
             needMadyaCount++;
         }
-        // --- MODIFIKASI STATS (END) ---
     });
 
     document.getElementById('statTotal').innerText = total;
@@ -251,7 +245,6 @@ function resetFilters() {
 }
 
 function applyFilters() {
-    // 1. Ambil semua nilai dari dropdown HTML
     const fKota = document.getElementById('fKota').value;
     const fKec = document.getElementById('fKec').value;
     const fDesa = document.getElementById('fDesa').value;
@@ -265,202 +258,189 @@ function applyFilters() {
     const fIT = document.getElementById('fIT').value;
     const fStatusMadya = document.getElementById('fStatusMadya').value; 
 
-    // 2. Proses penyaringan data
     const filtered = databaseKader.filter(item => {
         const p = item.pribadi || {};
         const formal = item.formal || [];
         const kader = item.kaderisasi || [];
         const jabatan = item.jabatan || [];
 
-        // --- FILTER WILAYAH (RIGID) ---
         const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
-
-        // --- FILTER IDENTITAS ---
         const matchesJK = fJK === "Semua" || p.jk === fJK;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
-        
-        // --- FILTER PENDIDIKAN ---
-        // Mencocokkan teks pendidikan di kolom formal
         const textFormal = formal.join(" ");
         const matchesEdu = fEdu === "Semua" || textFormal.includes(fEdu);
-
-        // --- FILTER KADERISASI DASAR ---
         const textKader = kader[2] ? kader[2].toString().toLowerCase() : "";
         const matchesKader = (fKader === "Semua") || textKader.includes(fKader.toLowerCase());
 
-        // --- LOGIKA KHUSUS MADYA & PRIORITAS ---
         const currentYear = new Date().getFullYear();
         const isMadya = textKader.includes("madya");
         const hasPratama = textKader.includes("pratama");
-        
         const textTahun = kader[5] ? kader[5].toString() : "";
         const matchTahunPratama = textTahun.match(/1\.\s*(\d{4})/) || textTahun.match(/^(\d{4})/);
         const tahunPratama = matchTahunPratama ? parseInt(matchTahunPratama[1]) : 0;
         const masaTunggu = tahunPratama > 0 ? (currentYear - tahunPratama) : 0;
 
         let matchStatusMadya = true;
-        if (fStatusMadya === "Sudah") {
-            matchStatusMadya = isMadya;
-        } else if (fStatusMadya === "Belum") {
-            matchStatusMadya = !isMadya;
-        } else if (fStatusMadya === "Prioritas") {
-            matchStatusMadya = (hasPratama && !isMadya && masaTunggu >= 5);
-        }
+        if (fStatusMadya === "Sudah") matchStatusMadya = isMadya;
+        else if (fStatusMadya === "Belum") matchStatusMadya = !isMadya;
+        else if (fStatusMadya === "Prioritas") matchStatusMadya = (hasPratama && !isMadya && masaTunggu >= 5);
 
-        // --- FILTER STRUKTUR & TUGAS ---
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
-        
-        // --- FILTER IT & BAHASA ---
         const matchesIT = fIT === "Semua" || (item.pribadi.it === fIT);
         const matchesBahasa = fBahasa === "Semua" || (item.pribadi.bahasa === fBahasa);
 
-        // KEMBALIKAN HASIL AKHIR (Harus True Semua)
-        return matchKota && matchKec && matchDesa && 
-               matchesJK && matchesAgama && matchesEdu && 
-               matchesKader && matchesTingkat && matchesJenis && 
-               matchStatusMadya && matchesIT && matchesBahasa;
+        return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && matchesEdu && 
+               matchesKader && matchesTingkat && matchesJenis && matchStatusMadya && matchesIT && matchesBahasa;
     });
 
-    // 3. Render ulang tabel & Statistik
     renderTable(filtered);
     updateStats(filtered);
 }
 
+// --- FUNGSI BARU: OPEN DETAIL ADOPSI REKAP SLIDER HYPER PREMIUM ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
-    // Mapping Alias agar kode lebih bersih
     const p = item.pribadi || {};      
     const formal = item.formal || [];    
     const kader = item.kaderisasi || []; 
     const jabatan = item.jabatan || [];  
-    const kerja = item.riwayat_kerja || []; 
     const medsos = item.medsos || [];    
-
-    // Hitung Usia & Gen untuk Header
     const ageInfo = calculateAge(p.tgl_lahir);
 
     let htmlContent = `
-        <div style="font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b;">
-            
-            <div style="background: linear-gradient(145deg, #D71920, #991b1b); padding: 50px 20px; text-align: center; color: white; border-radius: 0 0 50px 50px; box-shadow: 0 10px 30px rgba(215,25,32,0.2);">
-                <div style="position: relative; display: inline-block;">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=ffffff&color=D71920&size=150'"
-                         style="width:150px; height:150px; border-radius:35px; border: 5px solid white; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
-                    <div style="position: absolute; bottom: -10px; right: -10px; background: #fbbf24; color: #000; padding: 5px 15px; border-radius: 12px; font-weight: 900; font-size: 10px; border: 3px solid white;">
-                        ${ageInfo.gen.toUpperCase()}
-                    </div>
+    <div class="hyper-premium-modal">
+        <div class="modal-header-premium">
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo">
+            <div class="header-text">
+                <h3 style="margin:0; font-weight:800;">DOSIR DIGITAL KADER</h3>
+                <p style="margin:0; font-size:10px; color:#64748b; letter-spacing:1px;">PDI PERJUANGAN - DATA PARIPURNA</p>
+            </div>
+        </div>
+
+        <div class="slider-wrapper-admin" id="adminRekapSlider">
+            <div class="rekap-card">
+                <div class="section-title">
+                    <span>PROFIL KADER</span>
+                    <span class="badge-step">CARD 1</span>
                 </div>
-                <h1 style="font-size: 28px; font-weight: 800; margin: 25px 0 5px 0; text-transform: uppercase; letter-spacing: -1px;">${p.nama}</h1>
-                <p style="opacity: 0.9; font-weight: 600; font-size: 14px;">NIK: ${p.nik || '-'} • KTA: ${p.kta || '-'}</p>
+                <div class="foto-container-premium">
+                    <img src="${formatDriveUrl(p.foto)}" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'">
+                </div>
+                <div class="rekap-grid">
+                    <div class="rekap-item-premium rekap-item-full">
+                        <div class="rekap-label">Nama Lengkap</div>
+                        <div class="rekap-value" style="font-size: 16px; color: #D71920;">${p.nama || '-'}</div>
+                    </div>
+                    <div class="rekap-item-premium"><div class="rekap-label">NIK</div><div class="rekap-value">${p.nik || '-'}</div></div>
+                    <div class="rekap-item-premium"><div class="rekap-label">No. KTA</div><div class="rekap-value">${p.kta || '-'}</div></div>
+                    <div class="rekap-item-premium"><div class="rekap-label">WhatsApp</div><div class="rekap-value" style="color:#16a34a">${p.wa || '-'}</div></div>
+                    <div class="rekap-item-premium"><div class="rekap-label">Gen / Usia</div><div class="rekap-value">${ageInfo.gen} / ${ageInfo.age}</div></div>
+                    <div class="rekap-item-premium rekap-item-full"><div class="rekap-label">Alamat Sesuai KTP</div><div class="rekap-value">${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</div></div>
+                </div>
             </div>
 
-            <div style="max-width: 800px; margin: -30px auto 0; padding: 0 20px 50px 20px;">
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                    
-                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">👤</span> DATA PERSONAL
-                        </h3>
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Lahir</span>
-                                <span style="font-weight: 700; font-size: 13px;">${p.tmpt_lahir}, ${p.tgl_lahir}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Agama / Gender</span>
-                                <span style="font-weight: 700; font-size: 13px;">${p.agama} / ${p.jk}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Kontak (WA)</span>
-                                <span style="font-weight: 700; font-size: 13px; color: #16a34a;">${p.wa}</span>
-                            </div>
-                            <div style="background: #f8fafc; padding: 15px; border-radius: 15px;">
-                                <small style="color: #94a3b8; font-weight: 800; font-size: 9px; text-transform: uppercase;">Alamat Domisili</small>
-                                <p style="font-size: 13px; font-weight: 700; margin-top: 5px; line-height: 1.5;">${p.alamat}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</p>
-                            </div>
-                        </div>
+            <div class="rekap-card">
+                <div class="section-title"><span>PENDIDIKAN FORMAL</span><span class="badge-step">CARD 2</span></div>
+                ${formal.length > 0 ? formal.map(edu => `
+                    <div class="data-box-premium">
+                        <div class="rekap-label">${edu[2]} - ${edu[4]}</div>
+                        <div class="rekap-value">${edu[3]}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:4px;">Lulus: ${edu[5]}</div>
                     </div>
+                `).join('') : '<div class="empty-state">Data Belum Diisi</div>'}
+            </div>
 
-                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">🎓</span> PENDIDIKAN FORMAL
-                        </h3>
-                        <div style="display: flex; flex-direction: column; gap: 12px;">
-                            ${(Array.isArray(item.formal) && item.formal.length > 0) ? item.formal.map(edu => `
-                                <div style="border-left: 3px solid #D71920; padding-left: 15px; position: relative; margin-bottom: 5px;">
-                                    <div style="font-weight: 800; font-size: 13px; color: #1e293b;">${edu[2]}</div>
-                                    <div style="font-size: 11px; color: #64748b; font-weight: 600;">${edu[3]} (${edu[4]} - ${edu[5]})</div>
-                                </div>
-                            `).join('') : '<p style="font-size:12px; color:#94a3b8;">Belum ada data pendidikan</p>'}
-                        </div>
-                    </div>
-
-                    <div style="background: #1e293b; padding: 25px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); grid-column: 1 / -1; color: white;">
-                        <h3 style="color: #fbbf24; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <span style="background: rgba(251,191,36,0.1); padding: 8px; border-radius: 10px;">🚩</span> RIWAYAT KADERISASI
-                        </h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                            ${(Array.isArray(item.kaderisasi) && item.kaderisasi.length > 0) ? item.kaderisasi.map(k => `
-                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                                    <div style="font-weight: 800; font-size: 13px; color: #fbbf24;">${String(k[2]).toUpperCase()}</div>
-                                    <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">Penyelenggara: ${k[3]}</div>
-                                    <div style="font-size: 11px; font-weight: 700; margin-top: 2px;">Tahun ${k[5]}</div>
-                                </div>
-                            `).join('') : '<p style="opacity:0.5; font-size:12px;">Belum pernah mengikuti pendidikan kader</p>'}
-                        </div>
-                    </div>
-
-                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">🏛️</span> JABATAN STRUKTURAL
-                        </h3>
-                        ${(Array.isArray(item.jabatan) && item.jabatan.length > 0) ? item.jabatan.map(j => `
-                            <div style="background: #f8fafc; padding: 12px 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #edf2f7;">
-                                <div style="font-weight: 800; font-size: 12px; color: #D71920;">${j[5]}</div>
-                                <div style="font-size: 10px; font-weight: 700; color: #1e293b;">${j[4]} (${j[8]})</div>
-                            </div>
-                        `).join('') : '<p style="font-size:12px; color:#94a3b8;">Tidak ada jabatan aktif</p>'}
-                    </div>
-
-                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">📱</span> PROFESI & SOSMED
-                        </h3>
-                        <div style="margin-bottom: 15px;">
-                            <label style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Pekerjaan Saat Ini</label>
-                            <div style="font-weight: 800; font-size: 13px; color: #1e293b;">${p.kerja_skrg || '-'}</div>
-                        </div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <div style="background: #eff6ff; color: #1d4ed8; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700;">IG: ${medsos[10] || '-'}</div>
-                            <div style="background: #f0fdf4; color: #15803d; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700;">FB: ${medsos[9] || '-'}</div>
-                            <div style="background: #faf5ff; color: #7e22ce; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700;">TT: ${medsos[11] || '-'}</div>
-                        </div>
-                    </div>
-
+            <div class="rekap-card" style="border: 2px solid #fcd34d; background: linear-gradient(to bottom, #ffffff, #fffdf5);">
+                <div class="section-title" style="border-bottom-color: #fde68a;">
+                    <span style="color: #92400e;">PENDIDIKAN KADER</span>
+                    <span class="badge-step" style="background: #92400e; color: white;">PRO</span>
                 </div>
+                ${kader.length > 0 ? kader.map(k => `
+                    <div class="data-box-premium" style="border-left-color: #92400e; background: #fffcf0;">
+                        <div class="rekap-label" style="color: #b45309;">Kaderisasi: ${k[2]}</div>
+                        <div class="rekap-value" style="font-size: 14px;">${k[3]}</div>
+                        <div style="font-size:11px; color:#92400e; margin-top:4px; font-weight:600;">Tahun: ${k[5]} | Lokasi: ${k[4]}</div>
+                    </div>
+                `).join('') : '<div class="empty-state">Belum Mengikuti Kaderisasi</div>'}
+            </div>
 
-                <div style="margin-top: 30px; display: flex; gap: 10px;">
-                    <button onclick="window.print()" style="flex: 1; background: #D71920; color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 10px 20px rgba(215,25,32,0.2);">
-                        🖨️ CETAK PROFIL
-                    </button>
-                    <button onclick="closeDetail()" style="background: #1e293b; color: white; border: none; padding: 0 25px; border-radius: 20px; font-weight: 800; cursor: pointer;">
-                        TUTUP
-                    </button>
+            <div class="rekap-card">
+                <div class="section-title"><span>JABATAN & TUGAS</span><span class="badge-step">CARD 4</span></div>
+                ${jabatan.length > 0 ? jabatan.map(j => `
+                    <div class="data-box-premium" style="border-left-color: #D71920;">
+                        <div class="rekap-label">Struktur: ${j[5]}</div>
+                        <div class="rekap-value">${j[4]}</div>
+                        <div style="font-size:11px; color:#64748b;">Periode: ${j[8]}</div>
+                    </div>
+                `).join('') : '<p style="font-size:12px; color:#94a3b8; text-align:center;">Tidak ada riwayat jabatan</p>'}
+            </div>
+
+            <div class="rekap-card">
+                <div class="section-title"><span>SKILL & SOSMED</span><span class="badge-step">CARD 5</span></div>
+                <div class="rekap-item-premium rekap-item-full" style="margin-bottom:10px;">
+                    <div class="rekap-label">Pekerjaan Saat Ini</div>
+                    <div class="rekap-value">${p.kerja_skrg || '-'}</div>
+                </div>
+                <div class="rekap-grid">
+                    <div class="rekap-item-premium"><div class="rekap-label">Bahasa</div><div class="rekap-value">${p.bahasa || '-'}</div></div>
+                    <div class="rekap-item-premium"><div class="rekap-label">Keahlian Komp.</div><div class="rekap-value">${medsos[8] || '-'}</div></div>
+                </div>
+                <div class="rekap-item-premium rekap-item-full" style="margin-top:10px;">
+                    <div class="rekap-label">Media Sosial</div>
+                    <div style="display:flex; gap:12px; margin-top:5px; flex-wrap:wrap;">
+                        <span style="font-size:11px;"><b>IG:</b> ${medsos[10] || '-'}</span>
+                        <span style="font-size:11px;"><b>FB:</b> ${medsos[9] || '-'}</span>
+                        <span style="font-size:11px;"><b>TT:</b> ${medsos[11] || '-'}</span>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="nav-indicator-admin" style="text-align:center; padding:10px 0;">
+            <span id="adminCardCounter" style="font-weight:800; font-size:14px;">Kartu 1 dari 5</span>
+            <p style="font-size:11px; color:#94a3b8; margin:2px 0;">Geser ke samping untuk detail data</p>
+        </div>
+        
+        <div style="padding: 0 20px 20px; display: flex; gap:10px;">
+            <button onclick="window.print()" style="flex:1; background:#D71920; color:white; border:none; padding:15px; border-radius:15px; font-weight:800; cursor:pointer;">CETAK</button>
+            <button onclick="closeDetail()" style="flex:1; background:#1e293b; color:white; border:none; padding:15px; border-radius:15px; font-weight:800; cursor:pointer;">TUTUP</button>
+        </div>
+    </div>
     `;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
-    document.getElementById('modalInnerContent').scrollTop = 0;
+    
+    // Aktifkan Slider Drag & Counter
+    const slider = document.getElementById('adminRekapSlider');
+    let isDown = false; let startX; let scrollLeft;
+
+    slider.addEventListener('scroll', () => {
+        const index = Math.round(slider.scrollLeft / (slider.clientWidth * 0.8)) + 1;
+        document.getElementById('adminCardCounter').innerText = `Kartu ${index} dari 5`;
+    });
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true; slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => isDown = false);
+    slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'grab'; });
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 2;
+        slider.scrollLeft = scrollLeft - walk;
+    });
 }
 
 function closeDetail() {
@@ -482,22 +462,19 @@ function updateKecamatanOptions() {
     const kecSelect = document.getElementById('fKec');
     const desaSelect = document.getElementById('fDesa');
     
-    // Reset dropdown di bawahnya
     kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
     desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
 
     if (selectedKota !== "Semua") {
-        // Ambil data yang kotanya cocok saja
         const filteredData = databaseKader.filter(item => 
             (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota)
         );
-        // Ambil daftar kecamatan unik
         const uniqueKec = [...new Set(filteredData.map(item => item.pribadi.kec))].filter(Boolean).sort();
         uniqueKec.forEach(kec => {
             kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
         });
     }
-    applyFilters(); // Langsung filter tabel
+    applyFilters();
 }
 
 function updateDesaOptions() {
@@ -508,7 +485,6 @@ function updateDesaOptions() {
     desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
 
     if (selectedKec !== "Semua") {
-        // Kunci berdasarkan KOTA dan KECAMATAN agar rigid
         const filteredData = databaseKader.filter(item => 
             (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota) && 
             item.pribadi.kec === selectedKec
@@ -518,5 +494,5 @@ function updateDesaOptions() {
             desaSelect.innerHTML += `<option value="${desa}">${desa}</option>`;
         });
     }
-    applyFilters(); // Langsung filter tabel
+    applyFilters();
 }
