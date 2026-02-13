@@ -117,11 +117,26 @@
 
 <script src="script.js"></script>
 <script>
-    function toggleBidang() {
-        const jab = document.getElementById('jabatan_partai').value;
-        const wrap = document.getElementById('wrap_bidang');
-        wrap.style.display = (jab === 'Wakil Ketua' || jab === 'Wakil Sekretaris') ? 'block' : 'none';
+function toggleBidang() {
+    // Gunakan const agar lebih aman
+    const elJabatan = document.getElementById('jabatan_partai');
+    const elWrap = document.getElementById('wrap_bidang');
+
+    // Cek apakah elemennya memang ada, supaya tidak error (hang)
+    if (!elJabatan || !elWrap) return;
+
+    const nilaiJabatan = elJabatan.value;
+
+    // Logika pengecekan yang lebih rapi
+    // Kita tampilkan bidang jika jabatan adalah Wakil Ketua atau Wakil Sekretaris
+    if (nilaiJabatan === 'Wakil Ketua' || nilaiJabatan === 'Wakil Sekretaris') {
+        elWrap.style.display = 'block';
+    } else {
+        elWrap.style.display = 'none';
+        // Opsional: Kosongkan input bidang jika disembunyikan
+        document.getElementById('bidang_jabatan').value = ""; 
     }
+}
 
     function toggleTugas() {
         const jenis = document.getElementById('tugas_jenis').value;
