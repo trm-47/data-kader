@@ -1,57 +1,97 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec";
-let dataKader = [];
+const CONFIG = {
+    URL: "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec",
+    YEAR: 2026
+};
 
-// Ambil Data
-async function loadData() {
+let MASTER_DATA = [];
+
+// Init Aplikasi
+async function init() {
     try {
-        const response = await fetch(`${URL_GAS}?action=read`);
-        const result = await response.json();
-        dataKader = result.reverse();
-        renderTable(dataKader);
-        document.getElementById('statusInfo').innerText = "Data Sinkron";
-    } catch (error) {
-        document.getElementById('statusInfo').innerText = "Gagal memuat data!";
+        const response = await fetch(`${CONFIG.URL}?action=read`);
+        const data = await response.json();
+        
+        MASTER_DATA = data.reverse();
+        
+        populateKecamatan(MASTER_DATA);
+        render(MASTER_DATA);
+        
+        document.getElementById('statusText').innerText = "Terhubung";
+        document.getElementById('dot').classList.add('online');
+    } catch (err) {
+        document.getElementById('statusText').innerText = "Koneksi Gagal";
+        console.error(err);
     }
 }
 
-// Render Tabel
-function renderTable(data) {
-    const body = document.getElementById('tableBody');
-    body.innerHTML = data.map(item => {
-        const p = item.pribadi;
+// Render Tabel Utama
+function render(data) {
+    const tbody = document.getElementById('tableBody');
+    let madyaCount = 0;
+    let urgentCount = 0;
+
+    tbody.innerHTML = data.map(item => {
+        const p = item.pribadi || {};
         const k = item.kaderisasi || [];
         
-        // Logika Badge & Prioritas
-        const badges = k.map(rk => `<span class="badge">${rk[2]}</span>`).join('');
-        const isMadya = k.some(rk => rk[2].toLowerCase().includes('madya'));
-        const pratama = k.find(rk => rk[2].toLowerCase().includes('pratama'));
-        const isUrgent = (pratama && !isMadya && (2026 - parseInt(pratama[5])) >= 5);
+        // Cek Jenjang & Prioritas
+        const isMadya = k.some(r => r[2].toLowerCase().includes('madya'));
+        const pratama = k.find(r => r[2].toLowerCase().includes('pratama'));
+        const waitTime = (pratama && !isMadya) ? CONFIG.YEAR - parseInt(pratama[5]) : 0;
+        const isUrgent = waitTime >= 5;
+
+        if (isMadya) madyaCount++;
+        if (isUrgent) urgentCount++;
+
+        const badges = k.map(r => `<span class="badge">${r[2]}</span>`).join('');
 
         return `
             <tr class="${isUrgent ? 'urgent-row' : ''}">
-                <td><img src="https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random" width="40" style="border-radius:50%"></td>
-                <td><strong>${p.nama}</strong><br><small>${p.kta || '-'}</small></td>
-                <td>${badges || 'Anggota'}</td>
-                <td><button onclick="alert('Nama: ${p.nama}')">Cek</button></td>
+                <td><img class="avatar" src="https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random"></td>
+                <td>
+                    <strong>${p.nama}</strong><br>
+                    <small style="color:var(--gray)">${p.kta || '-'}</small>
+                    ${isUrgent ? `<br><small style="color:red; font-weight:bold">⚠ Stagnan ${waitTime} Thn</small>` : ''}
+                </td>
+                <td>${badges || '<span class="badge" style="background:#eee; color:#666">Anggota</span>'}</td>
+                <td>${p.kec || '-'}</td>
             </tr>
         `;
     }).join('');
-    
-    updateStats(data);
-}
 
-// Stats
-function updateStats(data) {
+    // Update Stats
     document.getElementById('sTotal').innerText = data.length;
-    // Tambahkan logika stats lainnya di sini
+    document.getElementById('sMadya').innerText = madyaCount;
+    document.getElementById('sUrgent').innerText = urgentCount;
 }
 
-// Filter Search
-document.getElementById('searchInput').addEventListener('input', (e) => {
-    const search = e.target.value.toLowerCase();
-    const filtered = dataKader.filter(item => item.pribadi.nama.toLowerCase().includes(search));
-    renderTable(filtered);
-});
+// Ambil list kecamatan unik untuk dropdown
+function populateKecamatan(data) {
+    const select = document.getElementById('filterKec');
+    const list = [...new Set(data.map(i => i.pribadi.kec))].filter(Boolean).sort();
+    list.forEach(kec => {
+        const opt = document.createElement('option');
+        opt.value = opt.innerText = kec;
+        select.appendChild(opt);
+    });
+}
 
-// Jalankan saat startup
-window.onload = loadData;
+// Event Listeners untuk Search & Filter
+const handleFilter = () => {
+    const sTerm = document.getElementById('searchInput').value.toLowerCase();
+    const sKec = document.getElementById('filterKec').value;
+
+    const filtered = MASTER_DATA.filter(item => {
+        const matchNama = item.pribadi.nama.toLowerCase().includes(sTerm) || 
+                          (item.pribadi.kta && item.pribadi.kta.includes(sTerm));
+        const matchKec = sKec === 'all' || item.pribadi.kec === sKec;
+        return matchNama && matchKec;
+    });
+
+    render(filtered);
+};
+
+document.getElementById('searchInput').addEventListener('input', handleFilter);
+document.getElementById('filterKec').addEventListener('change', handleFilter);
+
+window.onload = init;
