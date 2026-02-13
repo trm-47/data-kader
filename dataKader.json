@@ -1,0 +1,19 @@
+[
+  {
+    "pribadi": {
+      "nama": "Ahmad",
+      "kta": "12345",
+      "tgl_lahir": "12/05/1990",
+      "jk": "L",
+      "kec": "Cempaka",
+      "desa": "Suka Maju",
+      "kab_kota": "Jakarta",
+      "kota": "Jakarta",
+      "foto": "-"
+    },
+    "formal": [],
+    "kaderisasi": ["Pratama", "Madya", "Utama", "", ""],
+    "jabatan": [],
+    "medsos": []
+  }
+]
