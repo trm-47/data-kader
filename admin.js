@@ -149,17 +149,37 @@ function renderTable(data) {
             }
         }
 
-        let htmlBadgeKader = "";
-        if (k[2] && k[2] !== "" && k[2] !== "-") {
-            const listJenjang = k[2].toString().split("\n");
-            listJenjang.forEach(jenjangText => {
-                if(jenjangText.trim()) {
-                    htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjangText.trim()}</span>`;
-                }
-            });
-        } else {
-            htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
+        // --- LOGIKA KADERISASI (FIX: MUNCUL SEMUA) ---
+let htmlBadgeKader = "";
+let rowClass = "";
+let badgeWarning = "";
+
+if (k && k.length > 0) {
+    // Ambil semua jenjang yang ada (Kolom index 2 adalah Jenis Kaderisasi)
+    const jenjangs = k.map(item => item[2]).filter(Boolean);
+    
+    // Tampilkan semua sebagai badge
+    jenjangs.forEach(j => {
+        htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center; font-size:9px;">${j}</span>`;
+    });
+
+    // Cek Prioritas Madya (Jika punya Pratama tapi belum Madya > 5 tahun)
+    const pratamaData = k.find(item => item[2].toString().toLowerCase().includes("pratama"));
+    const isMadya = jenjangs.some(j => j.toLowerCase().includes("madya"));
+    
+    if (pratamaData && !isMadya) {
+        const thnPratama = parseInt(pratamaData[5]); // Kolom index 5 adalah Tahun
+        if (thnPratama) {
+            const masaTunggu = new Date().getFullYear() - thnPratama;
+            if (masaTunggu >= 5) {
+                rowClass = "urgent-row";
+                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+            }
         }
+    }
+} else {
+    htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
+}
 
         // --- WHATSAPP ---
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
@@ -367,27 +387,27 @@ function openDetail(originalIndex) {
     const m = item.medsos || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- MODIFIKASI MODAL ANALISA (START) ---
-    const listThn = k[5] ? k[5].toString().split("\n") : [];
-    const getYear = (no) => {
-        const found = listThn.find(t => t.trim().startsWith(no + "."));
-        return found ? found.replace(no + ".", "").trim() : null;
-    };
+// --- MODIFIKASI MODAL ANALISA (FIX: DATA ARRAY) ---
+// Kita mapping data k (kaderisasi) ke objek supaya gampang dipanggil
+const mapKader = {};
+if (Array.isArray(k)) {
+    k.forEach(row => {
+        const namaJenjang = row[2].toString().toUpperCase();
+        if (namaJenjang.includes("PRATAMA")) mapKader.PRATAMA = row[5];
+        if (namaJenjang.includes("MADYA")) mapKader.MADYA = row[5];
+        if (namaJenjang.includes("UTAMA")) mapKader.UTAMA = row[5];
+        if (namaJenjang.includes("GURU")) mapKader.GURU = row[5];
+        if (namaJenjang.includes("PEREMPUAN")) mapKader.PEREMPUAN = row[5];
+    });
+}
 
-    const thnPratama = getYear("1");
-    const thnMadya = getYear("2");
-    const thnUtama = getYear("3");
-    const thnGuru = getYear("4");
-    const thnWanita = getYear("5");
-
-    const listAnalisa = [
-        { label: 'PRATAMA', year: thnPratama, color: '#ef4444' },
-        { label: 'MADYA', year: thnMadya, color: '#dc2626' },
-        { label: 'UTAMA', year: thnUtama, color: '#b91c1c' },
-        { label: 'GURU', year: thnGuru, color: '#991b1b' },
-        { label: 'WANITA', year: thnWanita, color: '#db2777' }
-    ];
-    // --- MODIFIKASI MODAL ANALISA (END) ---
+const listAnalisa = [
+    { label: 'PRATAMA', year: mapKader.PRATAMA, color: '#ef4444' },
+    { label: 'MADYA', year: mapKader.MADYA, color: '#dc2626' },
+    { label: 'UTAMA', year: mapKader.UTAMA, color: '#b91c1c' },
+    { label: 'GURU', year: mapKader.GURU, color: '#991b1b' },
+    { label: 'PEREMPUAN', year: mapKader.PEREMPUAN, color: '#db2777' }
+];
 
     let htmlContent = `
         <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
