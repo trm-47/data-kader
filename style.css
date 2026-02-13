@@ -197,8 +197,5 @@ body {
     color: var(--dark-void);
 }
 
-select {
-    position: relative;
-    z-index: 9999;
-}
+
 
