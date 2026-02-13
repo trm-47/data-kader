@@ -1,21 +1,11 @@
-// ---------------------------
-// bos.js - Dashboard Kaderisasi
-// ---------------------------
-
-// URL GAS lama (doGet?action=read)
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec?action=read";
 
-// Variabel global untuk data
 let BOS_DATA = [];
 
-// ---------------------------
-// LOGIN SEDERHANA
-// ---------------------------
 function login() {
     const user = document.getElementById("username").value;
     const pass = document.getElementById("password").value;
 
-    // Contoh login sederhana (bisa diganti DB / Google Auth)
     if (user === "admin" && pass === "pdi123") {
         document.getElementById("login-section").style.display = "none";
         document.getElementById("dashboard-section").style.display = "block";
@@ -25,19 +15,12 @@ function login() {
     }
 }
 
-// ---------------------------
-// LOAD DATA DARI GAS (JSONP)
-// ---------------------------
 function loadData() {
-    // Buat tag <script> untuk JSONP
     const script = document.createElement("script");
     script.src = GAS_URL + "&callback=handleData";
     document.body.appendChild(script);
 }
 
-// ---------------------------
-// CALLBACK JSONP dari GAS
-// ---------------------------
 function handleData(data) {
     if (!data || data.error) {
         alert("Gagal mengambil data: " + (data ? data.error : "tidak ada data"));
@@ -45,15 +28,10 @@ function handleData(data) {
     }
 
     BOS_DATA = data;
-
-    // Render dashboard
     renderKPI();
     renderTable();
 }
 
-// ---------------------------
-// RENDER KPI / STATISTIK
-// ---------------------------
 function renderKPI() {
     const totalKader = BOS_DATA.length;
     const genZMilenial = BOS_DATA.filter(k => {
@@ -62,12 +40,10 @@ function renderKPI() {
     }).length;
     const rasioPerempuan = (BOS_DATA.filter(k => k.pribadi.jk === "Perempuan").length / totalKader * 100).toFixed(1);
 
-    // Update HTML
     document.getElementById("total-kader").innerText = totalKader;
     document.getElementById("percent-genz-milenial").innerText = genZMilenial + " orang";
     document.getElementById("rasio-perempuan").innerText = rasioPerempuan + " %";
 
-    // Hitung total Pratama / Madya / Utama
     let totalPratama = 0, totalMadya = 0, totalUtama = 0;
     BOS_DATA.forEach(k => {
         const kdr = k.kaderisasi;
@@ -81,9 +57,6 @@ function renderKPI() {
     document.getElementById("total-utama").innerText = totalUtama;
 }
 
-// ---------------------------
-// RENDER TABEL KADER
-// ---------------------------
 function renderTable() {
     const tableBody = document.getElementById("kader-table-body");
     tableBody.innerHTML = "";
@@ -104,16 +77,11 @@ function renderTable() {
             <td>${k.kaderisasi[6] || "-"}</td>
         `;
 
-        // Klik row untuk lihat detail
         row.addEventListener("click", () => showDetail(k));
-
         tableBody.appendChild(row);
     });
 }
 
-// ---------------------------
-// DETAIL KADER
-// ---------------------------
 function showDetail(k) {
     const detailDiv = document.getElementById("detail-kader");
     detailDiv.innerHTML = `
