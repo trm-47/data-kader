@@ -195,3 +195,9 @@ body {
     font-weight: 700;
     color: var(--dark-void);
 }
+
+select {
+    position: relative;
+    z-index: 9999;
+}
+
