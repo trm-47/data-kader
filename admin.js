@@ -301,147 +301,150 @@ function applyFilters() {
     updateStats(filtered);
 }
 
-// --- FUNGSI BARU: OPEN DETAIL ADOPSI REKAP SLIDER HYPER PREMIUM ---
-// --- FUNGSI OPEN DETAIL: VERSI PRESISI & CLEAN ---
 function openDetail(originalIndex) {
-    const item = databaseKader[originalIndex];
-    if (!item) return;
+    const data = databaseKader[originalIndex]; // Data mentah dari DB Admin
+    if (!data) return;
 
-    const p = item.pribadi || {};      
-    const formal = item.formal || [];    
-    const kader = item.kaderisasi || []; 
-    const jabatan = item.jabatan || [];  
-    const medsos = item.medsos || [];    
-    const ageInfo = calculateAge(p.tgl_lahir);
+    // --- PROSES MAPPING DATA (Agar sama dengan variabel rekap.html) ---
+    const p = data.pribadi || {};
+    const formal = data.formal || [];
+    const kader = data.kaderisasi || [];
+    const jabatan = data.jabatan || [];
+    const medsos = data.medsos || [];
 
-    // 1. HELPER: Hanya buat baris jika nilainya ada
-    const renderRow = (label, value, fullWidth = false) => {
-        if (!value || value === "-" || value === "" || value === "0") return "";
-        return `
-            <div class="rekap-item-premium ${fullWidth ? 'rekap-item-full' : ''}">
-                <div class="rekap-label">${label}</div>
-                <div class="rekap-value">${value}</div>
-            </div>
-        `;
-    };
-
-    // 2. HELPER: Sembunyikan Card jika array kosong
-    const renderCard = (title, badge, content) => {
-        if (!content || content.trim() === "" || content.includes('empty-state')) return "";
-        return `
-            <div class="rekap-card">
-                <div class="section-title"><span>${title}</span><span class="badge-step">${badge}</span></div>
-                ${content}
-            </div>
-        `;
-    };
-
-    // Konten Pendidikan Formal
-    const formalContent = formal.map(edu => `
-        <div class="data-box-premium">
-            <div class="rekap-label">${edu[2]} ${edu[4] ? '- ' + edu[4] : ''}</div>
-            <div class="rekap-value">${edu[3]}</div>
-            <div style="font-size:11px; color:#64748b; margin-top:4px;">Lulus: ${edu[5]}</div>
-        </div>
-    `).join('');
-
-    // Konten Kaderisasi
-    const kaderContent = kader.map(k => `
-        <div class="data-box-premium" style="border-left-color: #1e293b;">
-            <div class="rekap-label">Kaderisasi: ${k[2]}</div>
-            <div class="rekap-value">${k[3]}</div>
-            <div style="font-size:11px; color:#64748b; margin-top:4px;">Tahun: ${k[5]} | Lokasi: ${k[4]}</div>
-        </div>
-    `).join('');
-
-    // Konten Jabatan
-    const jabatanContent = jabatan.map(j => `
-        <div class="data-box-premium" style="border-left-color: #D71920;">
-            <div class="rekap-label">Struktur: ${j[5]}</div>
-            <div class="rekap-value">${j[4]}</div>
-            <div style="font-size:11px; color:#64748b;">Periode: ${j[8]}</div>
-        </div>
-    `).join('');
-
+    // --- CLONE STRUKTUR HTML DARI REKAP.HTML ---
     let htmlContent = `
     <div class="hyper-premium-modal">
-        <div class="modal-header-premium">
-            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo">
-            <div class="header-text">
-                <h3 style="margin:0; font-weight:800;">DOSIR DIGITAL KADER</h3>
-                <p style="margin:0; font-size:10px; color:#64748b; letter-spacing:1px;">DATA PARIPURNA</p>
-            </div>
+        <div class="header-form" style="text-align: center; margin-bottom: 10px; padding-top:15px;">
+            <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo" style="width: 45px; margin-bottom: 5px;">
+            <h2 style="font-weight: 800; letter-spacing: -0.5px; margin:0; font-size:18px;">Final Review Admin</h2>
         </div>
 
-        <div class="slider-wrapper-admin" id="adminRekapSlider">
+        <div class="slider-wrapper" id="adminRekapSlider">
             
             <div class="rekap-card">
-                <div class="section-title"><span>PROFIL KADER</span><span class="badge-step">CARD 1</span></div>
-                <div class="foto-container-premium">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'">
+                <div class="section-title"><span>Profil Kader</span></div>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'" 
+                         style="width:120px; height:120px; border-radius:30px; object-fit:cover; border:5px solid white; box-shadow:0 15px 30px rgba(0,0,0,0.1); pointer-events:none;">
                 </div>
                 <div class="rekap-grid">
-                    ${renderRow("Nama Lengkap", p.nama, true)}
-                    ${renderRow("NIK", p.nik)}
-                    ${renderRow("No. KTA", p.kta)}
-                    ${renderRow("WhatsApp", p.wa)}
-                    ${renderRow("Email", p.email, true)}
-                    ${renderRow("Gen / Usia", `${ageInfo.gen} / ${ageInfo.age}`)}
-                    ${renderRow("Alamat KTP", `${p.alamat || ''} RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}`, true)}
+                    ${renderRow('Nama Lengkap', p.nama, true)}
+                    ${renderRow('NIK', p.nik)}
+                    ${renderRow('No. KTA', p.kta)}
+                    ${renderRow('Tempat Lahir', p.tmp_lahir)}
+                    ${renderRow('Tanggal Lahir', p.tgl_lahir)}
+                    ${renderRow('Jenis Kelamin', p.jk)}
+                    ${renderRow('Agama', p.agama)}
+                    ${renderRow('WhatsApp', p.wa)}
+                    ${renderRow('Email', p.email, true)}
+                    ${renderRow('Alamat KTP', p.alamat, true)}
+                    ${renderRow('Desa/Kel', p.desa)}
+                    ${renderRow('Kecamatan', p.kec)}
                 </div>
             </div>
 
-            ${renderCard("PENDIDIKAN FORMAL", "CARD 2", formalContent)}
-
-            ${renderCard("PENDIDIKAN KADER", "PRO", kaderContent)}
-
-            ${renderCard("JABATAN & TUGAS", "CARD 4", jabatanContent)}
+            <div class="rekap-card">
+                <div class="section-title"><span>Pendidikan</span></div>
+                ${formal.map(f => `
+                    <div class="data-box-premium">
+                        <div class="rekap-label">${f[2]} - ${f[4] || ''}</div>
+                        <div class="rekap-value">${f[3]}</div>
+                        <div style="font-size:11px; color:#64748b; margin-top:4px;">Lulus: ${f[5]} | Status: ${f[7] || 'Lulus'}</div>
+                    </div>
+                `).join('') || '<p>Data Kosong</p>'}
+            </div>
 
             <div class="rekap-card">
-                <div class="section-title"><span>SKILL & SOSMED</span><span class="badge-step">CARD 5</span></div>
+                <div class="section-title"><span>Kaderisasi</span></div>
+                ${kader.map(k => `
+                    <div class="data-box-premium" style="border-left-color: #1e293b;">
+                        <div class="rekap-label">Kaderisasi ${k[2]}</div>
+                        <div class="rekap-value">${k[3]}</div>
+                        <div style="font-size:11px; color:#64748b;">Tahun: ${k[5]} | Lokasi: ${k[4]}</div>
+                    </div>
+                `).join('') || '<p>Data Kosong</p>'}
+            </div>
+
+            <div class="rekap-card">
+                <div class="section-title"><span>Jabatan & Kerja</span></div>
+                ${jabatan.map(j => `
+                    <div class="data-box-premium" style="border-left-color: ${j[0] === 'TUGAS' ? '#fbbf24' : '#D71920'};">
+                        <div class="rekap-label">${j[0] === 'TUGAS' ? 'Penugasan' : 'Struktur'}: ${j[5]}</div>
+                        <div class="rekap-value">${j[4]}</div>
+                        <div style="font-size:11px; color:#64748b;">Periode: ${j[8]}</div>
+                    </div>
+                `).join('') || '<p>Data Kosong</p>'}
+            </div>
+
+            <div class="rekap-card">
+                <div class="section-title"><span>Skill & Medsos</span></div>
                 <div class="rekap-grid">
-                    ${renderRow("Pekerjaan", p.kerja_skrg, true)}
-                    ${renderRow("Bahasa", p.bahasa)}
-                    ${renderRow("Keahlian Komp.", medsos[8])}
-                    
-                    <div class="rekap-item-premium rekap-item-full">
+                    ${renderRow('Bahasa', medsos[7])}
+                    ${renderRow('Komputer', medsos[8])}
+                    <div class="rekap-item-full rekap-item-premium">
                         <div class="rekap-label">Media Sosial</div>
-                        <div style="display:flex; gap:12px; margin-top:5px; flex-wrap:wrap;">
-                            ${medsos[10] ? `<span style="font-size:11px;"><b>IG:</b> ${medsos[10]}</span>` : ''}
-                            ${medsos[9] ? `<span style="font-size:11px;"><b>FB:</b> ${medsos[9]}</span>` : ''}
-                            ${medsos[11] ? `<span style="font-size:11px;"><b>TT:</b> ${medsos[11]}</span>` : ''}
+                        <div style="font-size:12px; display:flex; gap:10px; flex-wrap:wrap; font-weight:700;">
+                            <span>FB: ${medsos[9] || '-'}</span>
+                            <span>IG: ${medsos[10] || '-'}</span>
+                            <span>TT: ${medsos[11] || '-'}</span>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
 
-        <div class="nav-indicator-admin">
-            <span id="adminCardCounter" style="font-weight:800; font-size:14px;">Detail Data</span>
-            <p style="font-size:11px; color:#94a3b8; margin:2px 0;">Geser untuk melihat kartu lain</p>
+        <div class="nav-indicator">
+            <span id="adminCardCounter">Kartu 1 dari 5</span>
         </div>
-        
-        <div style="padding: 0 20px 20px; display: flex; gap:10px;">
-            <button onclick="window.print()" style="flex:1; background:#D71920; color:white; border:none; padding:15px; border-radius:15px; font-weight:800; cursor:pointer;">CETAK</button>
-            <button onclick="closeDetail()" style="flex:1; background:#1e293b; color:white; border:none; padding:15px; border-radius:15px; font-weight:800; cursor:pointer;">TUTUP</button>
+
+        <div style="padding: 10px 20px 20px; display: flex; gap: 10px;">
+            <button onclick="closeDetail()" class="btn-final" style="background:#1e293b; flex:3;">TUTUP DETAIL</button>
+            <button onclick="window.print()" class="btn-final" style="flex:1;">🖨️</button>
         </div>
-    </div>
-    `;
+    </div>`;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
     
-    // Auto-update counter berdasarkan jumlah card yang benar-benar tampil
-    const slider = document.getElementById('adminRekapSlider');
-    const totalCards = slider.querySelectorAll('.rekap-card').length;
+    // Inisialisasi ulang fitur Drag & Counter
+    initMouseDragAdmin('adminRekapSlider');
+}
+
+// Helper untuk Render baris agar identik dengan map(item => ...) di rekap.html
+function renderRow(label, value, isFull = false) {
+    return `
+        <div class="rekap-item-premium ${isFull ? 'rekap-item-full' : ''}">
+            <div class="rekap-label">${label}</div>
+            <div class="rekap-value">${value || '-'}</div>
+        </div>`;
+}
+
+// Inisialisasi Drag Scroll
+function initMouseDragAdmin(id) {
+    const slider = document.getElementById(id);
+    let isDown = false; let startX; let scrollLeft;
     
     slider.addEventListener('scroll', () => {
-        const index = Math.round(slider.scrollLeft / (slider.clientWidth * 0.8)) + 1;
-        document.getElementById('adminCardCounter').innerText = `Kartu ${index} dari ${totalCards}`;
+        const index = Math.round(slider.scrollLeft / slider.offsetWidth) + 1;
+        const total = slider.querySelectorAll('.rekap-card').length;
+        document.getElementById('adminCardCounter').innerText = `Kartu ${index} dari ${total}`;
     });
-    
-    // Inisialisasi counter pertama kali
-    document.getElementById('adminCardCounter').innerText = `Kartu 1 dari ${totalCards}`;
+
+    slider.addEventListener('mousedown', (e) => {
+        isDown = true; slider.style.cursor = 'grabbing';
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+    });
+    slider.addEventListener('mouseleave', () => isDown = false);
+    slider.addEventListener('mouseup', () => { isDown = false; slider.style.cursor = 'grab'; });
+    slider.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const walk = (e.pageX - slider.offsetLeft - startX) * 2;
+        slider.scrollLeft = scrollLeft - walk;
+    });
 }
 
 function closeDetail() {
