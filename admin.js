@@ -84,13 +84,11 @@ function formatDriveUrl(url) {
 
     let fileId = null;
 
-    // Format ...?id=FILE_ID
     const idParam = url.split("id=")[1];
     if (idParam) {
         fileId = idParam.split("&")[0];
     }
 
-    // Format .../d/FILE_ID/
     if (!fileId && url.includes("/d/")) {
         fileId = url.split("/d/")[1].split("/")[0];
     }
@@ -123,35 +121,52 @@ function renderTable(data) {
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // 1. Logika Stagnan (Warning) - Update Progresif
-        const currentYear = new Date().getFullYear();
-        const hasPratama = k[2] && k[2] !== "" && k[2] !== "-";
-        const noMadya = !k[4] || k[4] === "" || k[4] === "-";
+        // --- LOGIKA KADERISASI BARU (MODIFIKASI) ---
+        const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
+        const textTahunKader = k[5] ? k[5].toString() : ""; 
+
+        // Parsing tahun Pratama dari format "1. YYYY"
+        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/);
+        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
+        
+        const isMadya = textJenisKader.includes("madya");
+        const hasPratama = textJenisKader.includes("pratama");
         
         let rowClass = "";
         let badgeWarning = "";
 
-        if (hasPratama && noMadya) {
-            const tahunPratama = parseInt(k[2]);
+        if (hasPratama && !isMadya && tahunPratama) {
+            const currentYear = new Date().getFullYear();
             const masaTunggu = currentYear - tahunPratama;
 
             if (masaTunggu > 5) {
-                rowClass = "urgent-row"; // Class untuk CSS Merah (🚨 PRIORITAS)
+                rowClass = "urgent-row"; 
                 badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (> ${masaTunggu} Thn)</span>`;
             } else {
-                rowClass = "warning-row"; // Class untuk CSS Kuning (⚠️ BUTUH)
+                rowClass = "warning-row"; 
                 badgeWarning = `<br><span class="warning-badge">⚠️ BUTUH MADYA (${masaTunggu} Thn)</span>`;
             }
         }
 
-        // 2. Logika WhatsApp
+        let htmlBadgeKader = "";
+        if (k[2] && k[2] !== "" && k[2] !== "-") {
+            const listJenjang = k[2].toString().split("\n");
+            listJenjang.forEach(jenjangText => {
+                if(jenjangText.trim()) {
+                    htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjangText.trim()}</span>`;
+                }
+            });
+        } else {
+            htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
+        }
+        // --- SELESAI MODIFIKASI KADERISASI ---
+
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
         const btnWA = waNumber ?
             `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">💬 Chat</a>` :
             `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
 
-        // 3. Logika Pendidikan
         let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`;
         const listEdu = [
             { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
@@ -165,16 +180,6 @@ function renderTable(data) {
                 break;
             }
         }
-
-        // 4. Logika Badge Kaderisasi
-        let htmlBadgeKader = "";
-        const listJenjang = [["Guru", 8], ["Utama", 6], ["Madya", 4], ["Pratama", 2], ["Kader Perempuan", 10]];
-        listJenjang.forEach(jenjang => {
-            if (k[jenjang[1]] && k[jenjang[1]] !== "" && k[jenjang[1]] !== "-") {
-                htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjang[0]} (${k[jenjang[1]]})</span>`;
-            }
-        });
-        if (htmlBadgeKader === "") htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
 
         const originalIdx = databaseKader.indexOf(item);
 
@@ -209,17 +214,14 @@ function updateStats(data) {
     }
 
     const total = data.length;
-    const currentYear = new Date().getFullYear();
-    
     let youth = 0;
     let madyaCount = 0;
-    let needMadyaCount = 0; // Gabungan Butuh & Prioritas
+    let needMadyaCount = 0; 
 
     data.forEach(item => {
         const p = item.pribadi || {};
         const k = item.kaderisasi || [];
 
-        // 1. Hitung Gen Z & Milenial
         if (p.tgl_lahir) {
             const ageInfo = calculateAge(p.tgl_lahir);
             if (ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") {
@@ -227,30 +229,23 @@ function updateStats(data) {
             }
         }
 
-        // 2. Hitung Kader Madya Existing
-        const isMadya = k[4] && k[4] !== "-" && k[4] !== "";
+        // --- MODIFIKASI STATS (START) ---
+        const textJenis = k[2] ? k[2].toString().toLowerCase() : "";
+        const isMadya = textJenis.includes("madya");
+        const hasPratama = textJenis.includes("pratama");
+
         if (isMadya) {
             madyaCount++;
-        }
-
-        // 3. Hitung Butuh & Prioritas Madya
-        // Logika: Punya Pratama tapi Belum Madya
-        const hasPratama = k[2] && k[2] !== "" && k[2] !== "-";
-        if (hasPratama && !isMadya) {
+        } else if (hasPratama) {
             needMadyaCount++;
         }
+        // --- MODIFIKASI STATS (END) ---
     });
 
-    // Masukkan ke Tampilan
     document.getElementById('statTotal').innerText = total;
-    
-    // Gen Z & Milenial
     document.getElementById('statYoung').innerText = youth + " (" + Math.round((youth / total) * 100) + "%)";
-    
-    // Butuh & Prioritas Madya (Kuning/Orange)
     document.getElementById('statNeedMadya').innerText = needMadyaCount;
     
-    // Total Kader Madya Existing
     const areaCard = document.getElementById('statArea');
     areaCard.innerText = madyaCount + " (" + Math.round((madyaCount / total) * 100) + "%)";
 }
@@ -302,26 +297,26 @@ function applyFilters() {
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
-        // 1. Filter Wilayah (TIDAK DISENTUH)
         const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
-        // 2. Filter Kaderisasi (TIDAK DISENTUH)
+        // Filter Kaderisasi Dasar
         let matchesKader = (fKader === "Semua");
+        const textKader = kader[2] ? kader[2].toString().toLowerCase() : "";
         if (!matchesKader) {
-            const mappingKader = { "Pratama": 2, "Madya": 4, "Utama": 6, "Guru": 8, "Perempuan": 10 };
-            const targetIdx = mappingKader[fKader];
-            const hasSertifikat = (kader[targetIdx] && kader[targetIdx] !== "" && kader[targetIdx] !== "-");
-            matchesKader = (fKader === "Perempuan") ? (hasSertifikat && (p.jk === "P" || p.jk === "Perempuan")) : hasSertifikat;
+            matchesKader = textKader.includes(fKader.toLowerCase());
         }
 
-        // --- 3. MODIFIKASI KHUSUS LOGIKA MADYA ---
+        // --- MODIFIKASI KHUSUS LOGIKA FILTER MADYA ---
         const currentYear = new Date().getFullYear();
-        const hasPratama = (kader[2] && kader[2] !== "" && kader[2] !== "-");
-        const isMadya = (kader[4] && kader[4] !== "" && kader[4] !== "-");
-        const tahunPratama = hasPratama ? parseInt(kader[2]) : 0;
-        const masaTunggu = (tahunPratama > 0) ? (currentYear - tahunPratama) : 0;
+        const isMadya = textKader.includes("madya");
+        const hasPratama = textKader.includes("pratama");
+        
+        const textTahun = kader[5] ? kader[5].toString() : "";
+        const matchPratama = textTahun.match(/1\.\s*(\d{4})/);
+        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : 0;
+        const masaTunggu = tahunPratama > 0 ? (currentYear - tahunPratama) : 0;
 
         let matchStatusMadya = true;
         if (fStatusMadya === "Sudah") {
@@ -329,12 +324,9 @@ function applyFilters() {
         } else if (fStatusMadya === "Belum") {
             matchStatusMadya = !isMadya;
         } else if (fStatusMadya === "Prioritas") {
-            // Syarat: Sudah Pratama + Belum Madya + Sudah lewat 5 tahun
             matchStatusMadya = (hasPratama && !isMadya && masaTunggu > 5);
         }
-        // --- SELESAI MODIFIKASI MADYA ---
         
-        // 4. Filter Lainnya (TIDAK DISENTUH)
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
@@ -367,10 +359,30 @@ function openDetail(originalIndex) {
     const f = item.formal || [];
     const k = item.kaderisasi || [];
     const j = item.jabatan || [];
-    const w = item.riwayat_kerja || [];
     const m = item.medsos || [];
-    const org = item.organisasi || [];
     const ageInfo = calculateAge(p.tgl_lahir);
+
+    // --- MODIFIKASI MODAL ANALISA (START) ---
+    const listThn = k[5] ? k[5].toString().split("\n") : [];
+    const getYear = (no) => {
+        const found = listThn.find(t => t.trim().startsWith(no + "."));
+        return found ? found.replace(no + ".", "").trim() : null;
+    };
+
+    const thnPratama = getYear("1");
+    const thnMadya = getYear("2");
+    const thnUtama = getYear("3");
+    const thnGuru = getYear("4");
+    const thnWanita = getYear("5");
+
+    const listAnalisa = [
+        { label: 'PRATAMA', year: thnPratama, color: '#ef4444' },
+        { label: 'MADYA', year: thnMadya, color: '#dc2626' },
+        { label: 'UTAMA', year: thnUtama, color: '#b91c1c' },
+        { label: 'GURU', year: thnGuru, color: '#991b1b' },
+        { label: 'WANITA', year: thnWanita, color: '#db2777' }
+    ];
+    // --- MODIFIKASI MODAL ANALISA (END) ---
 
     let htmlContent = `
         <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
@@ -401,48 +413,6 @@ function openDetail(originalIndex) {
             </div>
         </div>
 
-        <div class="profile-section">
-            <div class="section-title">Pendidikan Formal</div>
-            <div class="data-grid">
-                ${f[2] ? `<div class="data-item"><label>SD</label><span>${f[2]} (${f[3] || ''})</span></div>` : ''}
-                ${f[4] ? `<div class="data-item"><label>SMP</label><span>${f[4]} (${f[5] || ''})</span></div>` : ''}
-                ${f[6] ? `<div class="data-item"><label>SMA/SMK</label><span>${f[6]} (${f[8] || ''})</span></div>` : ''}
-                ${f[9] ? `<div class="data-item"><label>Diploma (D1-D4)</label><span>${f[9]} (${f[10] || ''})</span></div>` : ''}
-                ${f[11] ? `<div class="data-item"><label>Sarjana (S1)</label><span>${f[11]} - ${f[12] || ''} (${f[14] || ''})</span></div>` : ''}
-                ${f[15] ? `<div class="data-item"><label>Magister (S2)</label><span>${f[15]} (${f[16] || ''})</span></div>` : ''}
-                ${f[17] ? `<div class="data-item"><label>Doktor (S3)</label><span>${f[17]} (${f[18] || ''})</span></div>` : ''}
-            </div>
-        </div>
-
-        <div class="profile-section">
-            <div class="section-title">Riwayat Jabatan & Penugasan</div>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                ${j.length > 0 ? j.map(jab => {
-                    let kategori = jab[2] || "Penugasan";
-                    let tingkat = jab[4] && jab[4] !== "-" ? jab[4].toUpperCase() : "";
-                    let penugasanUtama = jab[5] && jab[5] !== "-" ? jab[5] : "";
-                    let detailJabatan = jab[12] && jab[12] !== "-" ? jab[12] : "";
-                    let namaJabatanLengkap = (penugasanUtama && detailJabatan) ? `${penugasanUtama} - ${detailJabatan}` : (penugasanUtama || detailJabatan || "-");
-                    return `
-                    <div style="background: #f1f5f9; padding:15px; border-radius:12px; border-left: 4px solid #D71920;">
-                        <div style="font-size:10px; font-weight:800; color:#64748b; text-transform:uppercase;">${kategori} ${tingkat ? `(${tingkat})` : ''}</div>
-                        <div style="font-size:15px; font-weight:700; color:#1e293b; margin-top:3px;">${namaJabatanLengkap}</div>
-                        <div style="font-size:12px; color:#475569; margin-top:5px;">Periode: ${jab[8] || jab[14] || '-'}</div>
-                    </div>`;
-                }).join('') : '<p style="text-align:center; color:#94a3b8;">Belum ada riwayat jabatan.</p>'}
-            </div>
-        </div>
-
-        <div class="profile-section">
-            <div class="section-title">Kompetensi & Media Sosial</div>
-            <div class="data-grid">
-                <div class="data-item"><label>Kemampuan Bahasa</label><span>${(m[2]) ? 'Indonesia' : ''} ${(m[3]) ? ', Inggris' : ''}</span></div>
-                <div class="data-item"><label>Skill Komputer</label><span>${m[8] || '-'}</span></div>
-                <div class="data-item"><label>Facebook</label><span>${m[9] || '-'}</span></div>
-                <div class="data-item"><label>Instagram</label><span>${m[10] || '-'}</span></div>
-            </div>
-        </div>
-
         <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
@@ -451,15 +421,9 @@ function openDetail(originalIndex) {
                 </h3>
             </div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
-                ${[
-                    { label: 'PRATAMA', year: k[2], color: '#ef4444' },
-                    { label: 'MADYA', year: k[4], color: '#dc2626' },
-                    { label: 'UTAMA', year: k[6], color: '#b91c1c' },
-                    { label: 'GURU', year: k[8], color: '#991b1b' },
-                    { label: 'WANITA', year: k[10], color: '#db2777' }
-                ].map(lvl => {
+                ${listAnalisa.map(lvl => {
                     const cYear = new Date().getFullYear();
-                    const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && (!k[4] || k[4] === "" || k[4] === "-");
+                    const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && !thnMadya;
                     const waitTime = isPratamaOnly ? (cYear - parseInt(lvl.year)) : 0;
                     const isStagnan = waitTime > 5;
                     const cardBg = isStagnan ? '#fff1f2' : (lvl.year ? '#fff' : '#f8fafc');
@@ -475,13 +439,13 @@ function openDetail(originalIndex) {
                 }).join('')}
             </div>
             
-            <div style="background: ${(!k[4] || k[4] === "-") && k[2] ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
+            <div style="background: ${!thnMadya && thnPratama ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
                 <div style="flex: 1;">
-                    <div style="font-size: 10px; color: ${(!k[4] || k[4] === "-") && k[2] ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
-                        ${(!k[4] || k[4] === "-") && k[2] ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
+                    <div style="font-size: 10px; color: ${!thnMadya && thnPratama ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
+                        ${!thnMadya && thnPratama ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
                     </div>
-                    <div style="font-size: 14px; margin-top: 4px; font-weight: ${(!k[4] || k[4] === "-") && k[2] ? '700' : '400'};">
-                        ${k[8] ? 'Ideolog Partai: Mentor/Pengajar.' : k[6] ? 'Strategis Nasional/Provinsi.' : k[4] ? 'Pimpinan Struktur/Legislatif.' : k[2] ? 'Kader ini sudah terlalu lama di tingkat Pratama. Wajib didorong ke Pelatihan Madya!' : 'Segera jadwalkan Pelatihan Pratama.'}
+                    <div style="font-size: 14px; margin-top: 4px; font-weight: ${!thnMadya && thnPratama ? '700' : '400'};">
+                        ${thnGuru ? 'Ideolog Partai: Mentor/Pengajar.' : thnUtama ? 'Strategis Nasional/Provinsi.' : thnMadya ? 'Pimpinan Struktur/Legislatif.' : thnPratama ? 'Kader ini sudah terlalu lama di tingkat Pratama. Wajib didorong ke Pelatihan Madya!' : 'Segera jadwalkan Pelatihan Pratama.'}
                     </div>
                 </div>
             </div>
@@ -511,31 +475,26 @@ document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") closeDetail();
 });
 
-// Jalankan ini saat Kota dipilih
 function updateKecamatanOptions() {
     const selectedKota = document.getElementById('fKota').value;
     const kecSelect = document.getElementById('fKec');
     const desaSelect = document.getElementById('fDesa');
     
-    // Reset dropdown di bawahnya
     kecSelect.innerHTML = '<option value="Semua">Semua Kecamatan</option>';
     desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
 
     if (selectedKota !== "Semua") {
-        // Ambil data yang kotanya cocok saja
         const filteredData = databaseKader.filter(item => 
             (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota)
         );
-        // Ambil list kecamatan unik
         const uniqueKec = [...new Set(filteredData.map(item => item.pribadi.kec))].filter(Boolean).sort();
         uniqueKec.forEach(kec => {
             kecSelect.innerHTML += `<option value="${kec}">${kec}</option>`;
         });
     }
-    applyFilters(); // Jalankan filter tabel
+    applyFilters();
 }
 
-// Jalankan ini saat Kecamatan dipilih
 function updateDesaOptions() {
     const selectedKota = document.getElementById('fKota').value;
     const selectedKec = document.getElementById('fKec').value;
@@ -544,7 +503,6 @@ function updateDesaOptions() {
     desaSelect.innerHTML = '<option value="Semua">Semua Kelurahan/Desa</option>';
 
     if (selectedKec !== "Semua") {
-        // Ambil data yang Kota DAN Kecamatannya cocok (SANGAT PENTING untuk kasus Jetis)
         const filteredData = databaseKader.filter(item => 
             (item.pribadi.kab_kota === selectedKota || item.pribadi.kota === selectedKota) && 
             item.pribadi.kec === selectedKec
