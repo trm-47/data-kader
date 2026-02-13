@@ -367,51 +367,32 @@ function openDetail(originalIndex) {
     if (!item) return;
 
     const p = item.pribadi || {};
-    const f = item.formal || [];
-    const k = item.kaderisasi || [];
-    const j = item.jabatan || [];
-    const m = item.medsos || [];
+    const f = item.formal || [];       // Step 2
+    const k = item.kaderisasi || [];   // Step 3
+    const j = item.jabatan || [];      // Step 4
+    const rj = item.riwayat_kerja || [];// Step 5
+    const ms = item.medsos || [];      // Step 6
+    const org = item.organisasi || []; // Step 6 (Organisasi Lain)
+    
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- FUNGSI MEMBERSIHKAN TANGGAL (SOLUSI FORMAT ANEH) ---
-    const formatTanggalIndo = (tglString) => {
-        if (!tglString || tglString === "-") return "-";
+    // Fungsi Helper: Bersihkan Tanggal
+    const formatTanggalIndo = (tgl) => {
+        if (!tgl || tgl === "-") return "-";
         try {
-            const d = new Date(tglString);
-            if (isNaN(d.getTime())) return tglString; // Balikkan string asli jika gagal parse
-            
-            return d.toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-        } catch (e) {
-            return tglString;
-        }
+            const d = new Date(tgl);
+            return isNaN(d.getTime()) ? tgl : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        } catch (e) { return tgl; }
     };
 
-    const tglLahirBersih = formatTanggalIndo(p.tgl_lahir);
-
-    // --- LOGIKA MODAL ANALISA ---
-    const listThn = k[5] ? k[5].toString().split("\n") : [];
-    const getYear = (no) => {
-        const found = listThn.find(t => t.trim().startsWith(no + "."));
+    // --- LOGIKA ANALISA JENJANG (Kaderisasi) ---
+    const listThnKader = k[5] ? k[5].toString().split("\n") : [];
+    const getYearKader = (no) => {
+        const found = listThnKader.find(t => t.trim().startsWith(no + "."));
         return found ? found.replace(no + ".", "").trim() : null;
     };
-
-    const thnPratama = getYear("1");
-    const thnMadya = getYear("2");
-    const thnUtama = getYear("3");
-    const thnGuru = getYear("4");
-    const thnWanita = getYear("5");
-
-    const listAnalisa = [
-        { label: 'PRATAMA', year: thnPratama, color: '#ef4444' },
-        { label: 'MADYA', year: thnMadya, color: '#dc2626' },
-        { label: 'UTAMA', year: thnUtama, color: '#b91c1c' },
-        { label: 'GURU', year: thnGuru, color: '#991b1b' },
-        { label: 'WANITA', year: thnWanita, color: '#db2777' }
-    ];
+    const thnPratama = getYearKader("1");
+    const thnMadya = getYearKader("2");
 
     let htmlContent = `
         <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
@@ -419,71 +400,79 @@ function openDetail(originalIndex) {
                 <img src="${formatDriveUrl(p.foto)}" 
                      onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
                      style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 6px solid white; box-shadow: 0 15px 35px rgba(215,25,32,0.2);">
-                <div style="position:absolute; bottom:5px; right:5px; background:white; padding:5px; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                    <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" style="width:25px; height:auto;">
-                </div>
             </div>
-            <h2 style="margin-top:20px; color:#1e293b; font-size:26px; font-weight:800; letter-spacing:-0.5px;">${p.nama ? p.nama.toUpperCase() : '-'}</h2>
-            <p style="color:#D71920; font-weight:800; font-size:14px; margin-top:5px;">ID KADER: ${p.kta || '-'}</p>
+            <h2 style="margin-top:20px; color:#1e293b; font-size:26px; font-weight:800;">${p.nama ? p.nama.toUpperCase() : '-'}</h2>
+            <p style="color:#D71920; font-weight:800; font-size:14px;">ID KADER: ${p.kta || '-'}</p>
         </div>
 
         <div class="profile-section">
-            <div class="section-title">Identitas Pribadi</div>
+            <div class="section-title">📍 Identitas & Kontak</div>
             <div class="data-grid">
                 <div class="data-item"><label>NIK</label><span>${p.nik || '-'}</span></div>
-                <div class="data-item"><label>Jenis Kelamin</label><span>${p.jk || '-'}</span></div>
-                <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${tglLahirBersih}</span></div>
-                <div class="data-item"><label>Usia</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
+                <div class="data-item"><label>JK</label><span>${p.jk || '-'}</span></div>
+                <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${formatTanggalIndo(p.tgl_lahir)}</span></div>
                 <div class="data-item"><label>Agama</label><span>${p.agama || '-'}</span></div>
-                <div class="data-item"><label>Pekerjaan Utama</label><span>${p.kerja_skrg || '-'}</span></div>
                 <div class="data-item"><label>WhatsApp</label><span>${p.wa || '-'}</span></div>
-                
                 <div class="data-item"><label>Email</label><span>${p.email || '-'}</span></div>
-                
-                <div class="data-item" style="grid-column: span 2;"><label>Alamat Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
+                <div class="data-item" style="grid-column: span 2;"><label>Alamat</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
             </div>
         </div>
 
-        <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
-                    <span style="background: #D71920; width: 4px; height: 18px; border-radius: 2px; display: inline-block;"></span>
-                    Analisa Jenjang & Masa Tunggu
-                </h3>
+        <div class="profile-section">
+            <div class="section-title">🎓 Pendidikan Formal</div>
+            <div class="data-grid">
+                <div class="data-item"><label>SD</label><span>${f[2] || '-'} (${f[3] || ''})</span></div>
+                <div class="data-item"><label>SMP</label><span>${f[4] || '-'} (${f[5] || ''})</span></div>
+                <div class="data-item"><label>SMA/SMK</label><span>${f[6] || '-'} (${f[8] || ''})</span></div>
+                <div class="data-item"><label>D1-D4</label><span>${f[9] || '-'} (${f[10] || ''})</span></div>
+                <div class="data-item"><label>Sarjana (S1)</label><span>${f[11] || '-'} (${f[14] || ''})</span></div>
+                <div class="data-item"><label>Pascasarjana</label><span>${f[15] || '-'} / ${f[17] || '-'}</span></div>
             </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
-                ${listAnalisa.map(lvl => {
-                    const cYear = new Date().getFullYear();
-                    const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && !thnMadya;
-                    const waitTime = isPratamaOnly ? (cYear - parseInt(lvl.year)) : 0;
-                    const isStagnan = waitTime > 5;
-                    const cardBg = isStagnan ? '#fff1f2' : (lvl.year ? '#fff' : '#f8fafc');
-                    const borderColor = isStagnan ? '#be123c' : (lvl.year ? lvl.color : '#f1f5f9');
-                    
-                    return `
-                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${borderColor}; background: ${cardBg}; position: relative; ${isStagnan ? 'box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);' : ''}">
-                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${isStagnan ? '#be123c' : lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
-                        <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
-                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? (isStagnan ? '#be123c' : lvl.color) : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
-                        ${isStagnan ? `<div style="font-size:7px; background:#be123c; color:white; font-weight:bold; margin-top:5px; padding: 2px 4px; border-radius: 4px;">STAGNAN ${waitTime} THN</div>` : ''}
-                    </div>`;
-                }).join('')}
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">🚩 Riwayat Struktur & Penugasan</div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                ${j.length > 0 ? j.map(row => `
+                    <div style="padding:10px; background:#f8fafc; border-left:4px solid #D71920; border-radius:4px;">
+                        <div style="font-weight:800; color:#1e293b; font-size:13px;">${row[2] === 'Struktur Partai' ? row[5] : row[12]}</div>
+                        <div style="font-size:11px; color:#64748b;">${row[4] || row[10]} | Periode: ${row[8] || row[14]}</div>
+                    </div>
+                `).join('') : '<div style="color:#cbd5e1; font-style:italic;">Belum ada riwayat penugasan</div>'}
             </div>
-            
-            <div style="background: ${!thnMadya && thnPratama ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
-                <div style="flex: 1;">
-                    <div style="font-size: 10px; color: ${!thnMadya && thnPratama ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
-                        ${!thnMadya && thnPratama ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
-                    </div>
-                    <div style="font-size: 14px; margin-top: 4px; font-weight: ${!thnMadya && thnPratama ? '700' : '400'};">
-                        ${thnGuru ? 'Ideolog Partai: Mentor/Pengajar.' : thnUtama ? 'Strategis Nasional/Provinsi.' : thnMadya ? 'Pimpinan Struktur/Legislatif.' : thnPratama ? 'Kader ini sudah terlalu lama di tingkat Pratama. Wajib didorong ke Pelatihan Madya!' : 'Segera jadwalkan Pelatihan Pratama.'}
-                    </div>
+        </div>
+
+        <div class="profile-section">
+            <div class="section-title">💼 Pekerjaan & Organisasi Lain</div>
+            <div class="data-grid">
+                <div class="data-item" style="grid-column: span 2;">
+                    <label>Riwayat Kerja</label>
+                    <span>${rj.length > 0 ? rj.map(r => `${r[3]} di ${r[2]} (${r[4]})`).join("<br>") : "-"}</span>
+                </div>
+                <div class="data-item" style="grid-column: span 2;">
+                    <label>Organisasi Luar Partai</label>
+                    <span>${org.length > 0 ? org.map(o => `${o[4]} - ${o[2]} (${o[5]})`).join("<br>") : "-"}</span>
                 </div>
             </div>
         </div>
 
-        <div style="text-align:center; padding-top:20px;">
-             <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer;">CETAK PROFIL</button>
+        <div class="profile-section">
+            <div class="section-title">📱 Kompetensi & Media Sosial</div>
+            <div class="data-grid">
+                <div class="data-item"><label>Bahasa Asing</label><span>${(ms[3] === 'Ya' ? 'Inggris ' : '') + (ms[4] === 'Ya' ? 'Mandarin ' : '') || '-'}</span></div>
+                <div class="data-item"><label>Skill IT</label><span>${ms[8] || '-'}</span></div>
+            </div>
+            <div style="margin-top:15px; display:flex; flex-wrap:wrap; gap:8px;">
+                ${ms[9] && ms[9] !== '-' ? `<span class="badge-medsos">FB: ${ms[9]}</span>` : ''}
+                ${ms[10] && ms[10] !== '-' ? `<span class="badge-medsos">IG: ${ms[10]}</span>` : ''}
+                ${ms[11] && ms[11] !== '-' ? `<span class="badge-medsos">TikTok: ${ms[11]}</span>` : ''}
+            </div>
+        </div>
+
+        <div style="text-align:center; padding-top:20px; border-top: 1px solid #eee;">
+             <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:12px 25px; border-radius:12px; font-weight:800; cursor:pointer;">
+                🖨️ CETAK PROFIL LENGKAP
+             </button>
         </div>
     `;
 
