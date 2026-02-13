@@ -1,101 +1,57 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec?action=read";
-let BOS_DATA = [];
+const URL_GAS = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec";
+let dataKader = [];
 
-// langsung load data saat halaman dibuka
-window.onload = loadData;
-
-function loadData() {
-    const script = document.createElement("script");
-    script.src = GAS_URL + "&callback=handleData";
-    document.body.appendChild(script);
-}
-
-function handleData(data) {
-    if (!data || data.error) {
-        alert("Gagal mengambil data: " + (data ? data.error : "tidak ada data"));
-        return;
+// Ambil Data
+async function loadData() {
+    try {
+        const response = await fetch(`${URL_GAS}?action=read`);
+        const result = await response.json();
+        dataKader = result.reverse();
+        renderTable(dataKader);
+        document.getElementById('statusInfo').innerText = "Data Sinkron";
+    } catch (error) {
+        document.getElementById('statusInfo').innerText = "Gagal memuat data!";
     }
-
-    BOS_DATA = data;
-    renderTable();
 }
 
-function calculateAge(birthDateString) {
-    if (!birthDateString) return "-";
-    const parts = birthDateString.includes('/') ? birthDateString.split('/') : birthDateString.split('-');
-    let birth;
-    if(parts.length>=3){
-        birth = new Date(parts[2], parts[1]-1, parts[0]);
-    } else {
-        birth = new Date(birthDateString);
-    }
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if(m<0 || (m===0 && today.getDate()<birth.getDate())) age--;
-    return age;
-}
+// Render Tabel
+function renderTable(data) {
+    const body = document.getElementById('tableBody');
+    body.innerHTML = data.map(item => {
+        const p = item.pribadi;
+        const k = item.kaderisasi || [];
+        
+        // Logika Badge & Prioritas
+        const badges = k.map(rk => `<span class="badge">${rk[2]}</span>`).join('');
+        const isMadya = k.some(rk => rk[2].toLowerCase().includes('madya'));
+        const pratama = k.find(rk => rk[2].toLowerCase().includes('pratama'));
+        const isUrgent = (pratama && !isMadya && (2026 - parseInt(pratama[5])) >= 5);
 
-function renderTable() {
-    const tableBody = document.getElementById("kader-table-body");
-    tableBody.innerHTML = "";
-
-    BOS_DATA.forEach(k => {
-        const row = document.createElement("tr");
-
-        // Pendidikan formal (ambil yang terakhir ada)
-        let pendidikanFormal = "-";
-        for(let i=k.formal.length-1; i>=0; i--){
-            if(k.formal[i] && k.formal[i]!="-"){ pendidikanFormal = k.formal[i]; break; }
-        }
-
-        // Pendidikan kader lengkap
-        let pendidikanKader = [];
-        if(k.kaderisasi[2] && k.kaderisasi[2]!="-") pendidikanKader.push(`<span class="badge badge-pratama">Pratama</span>`);
-        if(k.kaderisasi[4] && k.kaderisasi[4]!="-") pendidikanKader.push(`<span class="badge badge-madya">Madya</span>`);
-        if(k.kaderisasi[6] && k.kaderisasi[6]!="-") pendidikanKader.push(`<span class="badge badge-utama">Utama</span>`);
-        if(k.kaderisasi[7] && k.kaderisasi[7]!="-") pendidikanKader.push(`<span class="badge badge-guru">Guru</span>`);
-        if(k.kaderisasi[8] && k.kaderisasi[8]!="-") pendidikanKader.push(`<span class="badge badge-perempuan">Perempuan</span>`);
-        if(k.kaderisasi[9] && k.kaderisasi[9]!="-") pendidikanKader.push(`<span class="badge badge-tema">Tema Khusus</span>`);
-
-        row.innerHTML = `
-            <td>${k.pribadi.nama} <br><small>No.KTA: ${k.pribadi.kta || "-"}</small></td>
-            <td>${calculateAge(k.pribadi.tgl_lahir)}</td>
-            <td>${k.pribadi.jk}</td>
-            <td>${pendidikanFormal}</td>
-            <td>${pendidikanKader.join(" ")}</td>
+        return `
+            <tr class="${isUrgent ? 'urgent-row' : ''}">
+                <td><img src="https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random" width="40" style="border-radius:50%"></td>
+                <td><strong>${p.nama}</strong><br><small>${p.kta || '-'}</small></td>
+                <td>${badges || 'Anggota'}</td>
+                <td><button onclick="alert('Nama: ${p.nama}')">Cek</button></td>
+            </tr>
         `;
-
-        row.addEventListener("click", () => showDetail(k));
-        tableBody.appendChild(row);
-    });
+    }).join('');
+    
+    updateStats(data);
 }
 
-function showDetail(k) {
-    const detailDiv = document.getElementById("detail-kader");
-    detailDiv.innerHTML = `
-        <h3>${k.pribadi.nama} (No.KTA: ${k.pribadi.kta || "-"})</h3>
-        <img src="${k.pribadi.foto || 'https://ui-avatars.com/api/?name='+encodeURIComponent(k.pribadi.nama)}" width="150" style="border-radius:50%; margin-bottom:15px;" />
-        <p><b>Nama:</b> ${k.pribadi.nama}</p>
-        <p><b>JK:</b> ${k.pribadi.jk}</p>
-        <p><b>Tempat, Tgl Lahir:</b> ${k.pribadi.tmpt_lahir || "-"}, ${k.pribadi.tgl_lahir || "-"}</p>
-        <p><b>Alamat:</b> ${k.pribadi.alamat || "-"}, RT ${k.pribadi.rt || "-"} / RW ${k.pribadi.rw || "-"}, ${k.pribadi.desa || "-"}, ${k.pribadi.kec || "-"}, ${k.pribadi.kota || "-"}</p>
-        <p><b>Umur:</b> ${calculateAge(k.pribadi.tgl_lahir)}</p>
-        <p><b>Agama:</b> ${k.pribadi.agama || "-"}</p>
-        <p><b>Email:</b> ${k.pribadi.email || "-"}</p>
-        <p><b>No. WA:</b> ${k.pribadi.wa || "-"}</p>
-        <p><b>Pendidikan Formal:</b> ${k.formal.filter(f=>f && f!="-").join(", ") || "-"}</p>
-        <p><b>Pendidikan Kader:</b> Pratama: ${k.kaderisasi[2]||"-"}, Madya: ${k.kaderisasi[4]||"-"}, Utama: ${k.kaderisasi[6]||"-"}, Guru: ${k.kaderisasi[7]||"-"}, Perempuan: ${k.kaderisasi[8]||"-"}, Tema Khusus: ${k.kaderisasi[9]||"-"}</p>
-    `;
-    document.getElementById("modalDetail").style.display = "block";
+// Stats
+function updateStats(data) {
+    document.getElementById('sTotal').innerText = data.length;
+    // Tambahkan logika stats lainnya di sini
 }
 
-function closeDetail() {
-    document.getElementById("modalDetail").style.display = "none";
-}
+// Filter Search
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    const search = e.target.value.toLowerCase();
+    const filtered = dataKader.filter(item => item.pribadi.nama.toLowerCase().includes(search));
+    renderTable(filtered);
+});
 
-// klik luar modal untuk close
-window.onclick = function(event){
-    const modal = document.getElementById("modalDetail");
-    if(event.target==modal) closeDetail();
-}
+// Jalankan saat startup
+window.onload = loadData;
