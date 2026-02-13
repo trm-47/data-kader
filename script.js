@@ -150,7 +150,7 @@ const handlePhoto = (e) => {
 // Gabungan event listener untuk foto dan transformasi teks
 document.addEventListener('input', (e) => {
     // List ID yang harus KAPITAL SEMUA
-    const toUpper = ['nama_lengkap', 'tempat_lahir', 'alamat', 'pekerjaan', 'no_kta', 'rt', 'rw', 'nama_pt', 'nama_sekolah', 'kota_sekolah', 'penyelenggara', 'tugas_jabatan', 'tugas_lokasi', 'nama_perusahaan', 'jabatan_kerja', 'org_nama', 'org_jabatan'];
+    const toUpper = ['tempat_lahir', 'alamat', 'pekerjaan', 'no_kta', 'rt', 'rw', 'nama_pt', 'nama_sekolah', 'kota_sekolah', 'penyelenggara', 'tugas_jabatan', 'tugas_lokasi', 'nama_perusahaan', 'jabatan_kerja', 'org_nama', 'org_jabatan'];
     
     if (toUpper.includes(e.target.id)) {
         e.target.value = e.target.value.toUpperCase();
