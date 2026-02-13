@@ -53,7 +53,7 @@ body {
     box-shadow: var(--shadow-premium);
     border: 1px solid rgba(0, 0, 0, 0.05);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .form-card::after {
