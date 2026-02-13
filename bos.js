@@ -6,7 +6,7 @@ function login() {
     const user = document.getElementById("username").value;
     const pass = document.getElementById("password").value;
 
-    if (user === "admin" && pass === "pdi123") {
+    if(user === "admin" && pass === "pdi123") {
         document.getElementById("login-section").style.display = "none";
         document.getElementById("dashboard-section").style.display = "block";
         loadData();
@@ -22,7 +22,7 @@ function loadData() {
 }
 
 function handleData(data) {
-    if (!data || data.error) {
+    if(!data || data.error) {
         alert("Gagal mengambil data: " + (data ? data.error : "tidak ada data"));
         return;
     }
@@ -32,67 +32,127 @@ function handleData(data) {
     renderTable();
 }
 
-function renderKPI() {
-    const totalKader = BOS_DATA.length;
-    const genZMilenial = BOS_DATA.filter(k => {
-        const umur = parseInt(k.pribadi.umur);
-        return umur >= 17 && umur <= 40;
-    }).length;
-    const rasioPerempuan = (BOS_DATA.filter(k => k.pribadi.jk === "Perempuan").length / totalKader * 100).toFixed(1);
+// --- Hitung usia & generasi ---
+function calculateAge(tgl_lahir) {
+    if(!tgl_lahir || tgl_lahir === "-") return {age:"-", gen:"-", rawAge:0};
+    const parts = tgl_lahir.split("/");
+    if(parts.length !== 3) return {age:"-", gen:"-", rawAge:0};
+    const birth = new Date(parts[2], parts[1]-1, parts[0]);
+    if(isNaN(birth)) return {age:"-", gen:"-", rawAge:0};
 
-    document.getElementById("total-kader").innerText = totalKader;
-    document.getElementById("percent-genz-milenial").innerText = genZMilenial + " orang";
-    document.getElementById("rasio-perempuan").innerText = rasioPerempuan + " %";
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if(m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
 
-    let totalPratama = 0, totalMadya = 0, totalUtama = 0;
-    BOS_DATA.forEach(k => {
-        const kdr = k.kaderisasi;
-        if (kdr[2] && kdr[2] !== "") totalPratama++;
-        if (kdr[4] && kdr[4] !== "") totalMadya++;
-        if (kdr[6] && kdr[6] !== "") totalUtama++;
-    });
+    let gen = "Lainnya";
+    const y = birth.getFullYear();
+    if(y >= 1997 && y <= 2012) gen="Gen Z";
+    else if(y >= 1981 && y <= 1996) gen="Millennial";
+    else if(y >= 1965 && y <= 1980) gen="Gen X";
+    else if(y <= 1964) gen="Boomer";
 
-    document.getElementById("total-pratama").innerText = totalPratama;
-    document.getElementById("total-madya").innerText = totalMadya;
-    document.getElementById("total-utama").innerText = totalUtama;
+    return {age: age + " Thn", gen: gen, rawAge: age};
 }
 
+// --- Render KPI ---
+function renderKPI() {
+    const total = BOS_DATA.length;
+    let youth = 0;
+    BOS_DATA.forEach(k => {
+        const ageInfo = calculateAge(k.pribadi.tgl_lahir);
+        if(ageInfo.gen === "Gen Z" || ageInfo.gen === "Millennial") youth++;
+    });
+
+    document.getElementById("total-kader").innerText = total;
+    document.getElementById("percent-genz-milenial").innerText = youth + " orang";
+}
+
+// --- Render Table ---
 function renderTable() {
     const tableBody = document.getElementById("kader-table-body");
     tableBody.innerHTML = "";
 
-    BOS_DATA.forEach(k => {
+    BOS_DATA.slice().reverse().forEach((k,index)=>{
+        const ageInfo = calculateAge(k.pribadi.tgl_lahir);
+
+        // --- Badge Kader Lengkap ---
+        const jenjangList = ["Pratama","Madya","Utama","Guru","Perempuan","Tema Khusus"];
+        let badges = "";
+        if(k.kaderisasi && k.kaderisasi.length > 2){
+            jenjangList.forEach(j => {
+                const match = k.kaderisasi.find(kdr => kdr && kdr.toLowerCase() === j.toLowerCase());
+                if(match) badges += `<span class="badge badge-red" style="margin:2px; display:inline-block;">${j}</span>`;
+            });
+        }
+
+        // --- Pendidikan Formal ---
+        let pendidikan = "-";
+        const formalOrder = [17,15,11,9,6,4,2]; // S3,S2,S1,D1-D3,SMA,SMP,SD
+        for(let idx of formalOrder){
+            if(k.formal[idx] && k.formal[idx] !== "-" && k.formal[idx].trim() !== ""){
+                pendidikan = k.formal[idx];
+                break;
+            }
+        }
+
         const row = document.createElement("tr");
-
         row.innerHTML = `
-            <td>${k.pribadi.nama}</td>
-            <td>${k.pribadi.nik}</td>
-            <td>${k.pribadi.kota}</td>
-            <td>${k.pribadi.kec}</td>
-            <td>${k.pribadi.desa}</td>
-            <td>${k.pribadi.jk}</td>
-            <td>${k.pribadi.umur}</td>
-            <td>${k.kaderisasi[2] || "-"}</td>
-            <td>${k.kaderisasi[4] || "-"}</td>
-            <td>${k.kaderisasi[6] || "-"}</td>
+            <td><strong>${k.pribadi.nama}</strong><br><small>No. KTA: ${k.pribadi.kta || "-"}</small></td>
+            <td style="text-align:center;">${ageInfo.age}</td>
+            <td style="text-align:center;">${k.pribadi.jk}</td>
+            <td>${pendidikan}</td>
+            <td>${badges}</td>
         `;
-
-        row.addEventListener("click", () => showDetail(k));
+        row.addEventListener("click",()=>showDetail(index));
         tableBody.appendChild(row);
     });
 }
 
-function showDetail(k) {
+// --- Modal Detail ---
+function showDetail(idx){
+    const k = BOS_DATA[idx];
+    const ageInfo = calculateAge(k.pribadi.tgl_lahir);
+
+    // --- Kaderisasi Lengkap ---
+    const jenjangList = ["Pratama","Madya","Utama","Guru","Perempuan","Tema Khusus"];
+    let badges = "";
+    if(k.kaderisasi && k.kaderisasi.length>2){
+        jenjangList.forEach(j=>{
+            const match = k.kaderisasi.find(kdr => kdr && kdr.toLowerCase() === j.toLowerCase());
+            if(match) badges += `<span class="badge badge-red" style="margin:2px; display:inline-block;">${j}</span>`;
+        });
+    }
+
     const detailDiv = document.getElementById("detail-kader");
     detailDiv.innerHTML = `
         <h3>${k.pribadi.nama}</h3>
-        <img src="${k.pribadi.foto}" width="150" />
-        <p><b>NIK:</b> ${k.pribadi.nik}</p>
-        <p><b>Alamat:</b> ${k.pribadi.alamat}, ${k.pribadi.desa}, ${k.pribadi.kec}, ${k.pribadi.kota}</p>
-        <p><b>Umur:</b> ${k.pribadi.umur}</p>
+        <img src="${k.pribadi.foto || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(k.pribadi.nama)}" width="150" style="border-radius:50%;" />
+        <p><b>No. KTA:</b> ${k.pribadi.kta || "-"}</p>
+        <p><b>Nama:</b> ${k.pribadi.nama}</p>
         <p><b>Jenis Kelamin:</b> ${k.pribadi.jk}</p>
-        <p><b>Pendidikan Terakhir:</b> ${k.formal[19] || "-"}</p>
-        <p><b>Kaderisasi:</b> Pratama ${k.kaderisasi[2] || "-"}, Madya ${k.kaderisasi[4] || "-"}, Utama ${k.kaderisasi[6] || "-"}</p>
-        <p><b>Jabatan:</b> ${k.jabatan.map(j => j[5]).join(", ") || "-"}</p>
+        <p><b>Tempat, Tgl Lahir:</b> ${k.pribadi.tmpt_lahir || '-'}, ${k.pribadi.tgl_lahir || '-'}</p>
+        <p><b>Alamat:</b> ${k.pribadi.alamat || '-'}, RT ${k.pribadi.rt || '-'}, RW ${k.pribadi.rw || '-'}, ${k.pribadi.desa || '-'}, ${k.pribadi.kec || '-'}, ${k.pribadi.kota || k.pribadi.kab_kota || '-'}</p>
+        <p><b>Umur:</b> ${ageInfo.age} (${ageInfo.gen})</p>
+        <p><b>Agama:</b> ${k.pribadi.agama || '-'}</p>
+        <p><b>Email:</b> ${k.pribadi.email || '-'}</p>
+        <p><b>No. WA:</b> ${k.pribadi.wa || '-'}</p>
+        <p><b>Pendidikan Formal:</b> ${k.formal[19] || '-'}</p>
+        <p><b>Pendidikan Kader:</b><br>${badges}</p>
     `;
+
+    document.getElementById("modalDetail").style.display = "block";
 }
+
+// --- Tutup Modal ---
+function closeDetail(){
+    document.getElementById("modalDetail").style.display = "none";
+}
+
+window.onclick = function(event){
+    const modal = document.getElementById("modalDetail");
+    if(event.target == modal) closeDetail();
+}
+document.addEventListener('keydown', function(event){
+    if(event.key === "Escape") closeDetail();
+});
