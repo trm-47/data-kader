@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <h3 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;">🚩 Struktur Partai</h3>
+        <h3 style="font-size: 14px; color: var(--primary-red); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;">🚩 Struktur Partai</h3>
         
         <div class="input-group">
             <label>Tingkatan Struktur</label>
@@ -40,7 +40,7 @@
 
         <div class="input-group">
             <label>Jabatan</label>
-            <select id="jabatan_partai" class="input-field" onchange="toggleBidang()">
+            <select id="jabatan_partai" class="input-field" onchange="pilihJabatan()">
                 <option value="">-- Pilih Jabatan --</option>
                 <option value="Ketua">Ketua</option>
                 <option value="Sekretaris">Sekretaris</option>
@@ -117,24 +117,20 @@
 
 <script src="script.js"></script>
 <script>
-function toggleBidang() {
-    // Gunakan const agar lebih aman
+function pilihJabatan() { // Namanya diganti biar gak bentrok
     const elJabatan = document.getElementById('jabatan_partai');
     const elWrap = document.getElementById('wrap_bidang');
 
-    // Cek apakah elemennya memang ada, supaya tidak error (hang)
     if (!elJabatan || !elWrap) return;
 
     const nilaiJabatan = elJabatan.value;
 
-    // Logika pengecekan yang lebih rapi
-    // Kita tampilkan bidang jika jabatan adalah Wakil Ketua atau Wakil Sekretaris
     if (nilaiJabatan === 'Wakil Ketua' || nilaiJabatan === 'Wakil Sekretaris') {
         elWrap.style.display = 'block';
     } else {
         elWrap.style.display = 'none';
-        // Opsional: Kosongkan input bidang jika disembunyikan
-        document.getElementById('bidang_jabatan').value = ""; 
+        const inputBidang = document.getElementById('bidang_jabatan');
+        if(inputBidang) inputBidang.value = ""; 
     }
 }
 
