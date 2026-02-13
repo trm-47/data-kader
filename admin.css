@@ -432,3 +432,10 @@ tr:hover td {
     font-size: 10px;
     font-weight: bold;
 }
+
+.filter-kader-khusus {
+    border: 2px solid #db2777 !important;
+    background-color: #fdf2f8 !important; /* Pink sangat muda */
+    color: #db2777 !important;
+    font-weight: 800 !important;
+}
