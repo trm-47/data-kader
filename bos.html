@@ -3,50 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Kaderisasi</title>
-<link rel="stylesheet" href="bos.css">
+<title>Dashboard BOS</title>
+<style>
+    body { font-family: Arial, sans-serif; background:#f9f9f9; margin:0; padding:20px;}
+    table { width:100%; border-collapse: collapse; margin-bottom:20px; }
+    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
+    th { background:#D71920; color:white; }
+    tr:nth-child(even) { background:#f2f2f2; }
+    tr:hover { background:#ffe6e6; cursor:pointer; }
+    .badge { display:inline-block; padding:3px 6px; border-radius:4px; font-size:11px; margin:2px; color:white; }
+    .badge-pratama { background:#ef4444; }
+    .badge-madya { background:#dc2626; }
+    .badge-utama { background:#b91c1c; }
+    .badge-guru { background:#991b1b; }
+    .badge-perempuan { background:#db2777; }
+    .badge-tema { background:#8b5cf6; }
+    #modalDetail { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); overflow:auto; }
+    #modalInnerContent { background:white; margin:50px auto; padding:20px; border-radius:12px; max-width:700px; }
+    #closeModal { float:right; cursor:pointer; font-size:18px; font-weight:bold; }
+</style>
 </head>
 <body>
 
-<!-- LOGO -->
-<div id="logo">
-    <img src="https://i.ibb.co/5WyjxSkV/PDI-Perjuangan-3.png" alt="PDI Perjuangan Logo">
-</div>
+<h1>Dashboard BOS</h1>
 
-<!-- LOGIN -->
-<div id="login-section">
-    <h2>Login Dashboard</h2>
-    <input id="username" placeholder="Username" />
-    <input id="password" placeholder="Password" type="password"/>
-    <button onclick="login()">Login</button>
-</div>
+<table>
+    <thead>
+        <tr>
+            <th>Nama / No.KTA</th>
+            <th>Umur</th>
+            <th>JK</th>
+            <th>Pendidikan Formal</th>
+            <th>Pendidikan Kader</th>
+        </tr>
+    </thead>
+    <tbody id="kader-table-body"></tbody>
+</table>
 
-<!-- DASHBOARD -->
-<div id="dashboard-section" style="display:none;">
-
-    <h2>Dashboard Kaderisasi</h2>
-
-    <div id="kpi">
-        <div class="kpi-card">Total Kader: <span id="total-kader"></span></div>
-        <div class="kpi-card">% Gen Z & Milenial: <span id="percent-genz-milenial"></span></div>
-        <div class="kpi-card">Rasio Perempuan: <span id="rasio-perempuan"></span></div>
-        <div class="kpi-card">Total Pratama: <span id="total-pratama"></span></div>
-        <div class="kpi-card">Total Madya: <span id="total-madya"></span></div>
-        <div class="kpi-card">Total Utama: <span id="total-utama"></span></div>
+<div id="modalDetail">
+    <div id="modalInnerContent">
+        <span id="closeModal" onclick="closeDetail()">×</span>
+        <div id="detail-kader"></div>
     </div>
-
-    <h3>Daftar Kader</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Nama</th><th>NIK</th><th>Kota</th><th>Kec</th><th>Desa</th><th>JK</th><th>Umur</th><th>Pratama</th><th>Madya</th><th>Utama</th>
-            </tr>
-        </thead>
-        <tbody id="kader-table-body"></tbody>
-    </table>
-
-    <h3>Detail Kader</h3>
-    <div id="detail-kader"></div>
 </div>
 
 <script src="bos.js"></script>
