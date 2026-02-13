@@ -111,10 +111,12 @@ body {
 .filter-body {
     padding: 30px;
     display: none;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     background: #ffffff;
     border-radius: 0 0 30px 30px;
+    width: 100%; /* Pastikan tidak tumpah ke samping */
+    box-sizing: border-box;
 }
 
 .filter-body.active {
@@ -131,6 +133,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
 }
 
 .filter-group label {
@@ -155,6 +158,8 @@ body {
 }
 
 .filter-group select {
+    position: relative;
+    z-index: 5;
     padding: 14px 20px;
     border-radius: 20px;
     border: 2px solid #f1f5f9;
