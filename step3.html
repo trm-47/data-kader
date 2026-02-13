@@ -6,15 +6,6 @@
     <title>Pendidikan Kader - Step 3</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* CSS Tambahan agar List Riwayat terlihat Bagus */
-        #kaderList {
-            margin-top: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .required { color: #D71920; }
-    </style>
 </head>
 <body>
 
@@ -28,7 +19,7 @@
             <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI Perjuangan" class="logo-small">
             <div>
                 <h2>Pendidikan Kader</h2>
-                <p style="font-size: 12px; color: #64748b;">Riwayat kaderisasi yang pernah diikuti</p>
+                <p style="font-size: 11px; color: #64748b;">Lengkapi riwayat kaderisasi Anda</p>
             </div>
         </div>
 
@@ -58,7 +49,7 @@
 
         <div class="input-group">
             <label id="label_lokasi">Lokasi / Wilayah <span class="required">*</span></label>
-            <input type="text" id="lokasi_kader" placeholder="Contoh: BANTUL / JAKARTA" class="input-field">
+            <input type="text" id="lokasi_kader" placeholder="Pilih penyelenggara dulu..." class="input-field">
         </div>
 
         <div class="input-group">
@@ -68,44 +59,29 @@
             </select>
         </div>
 
-        <button type="button" onclick="addPendidikanKader()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px; border: 1px solid #D71920; color: #D71920; background: #fff; font-weight: 600;">
-            ➕ Tambah Pendidikan Kader
+        <button type="button" onclick="addPendidikanKader()" class="btn-outline-sm" style="width: 100%; margin-bottom: 20px; border: 1px solid #D71920; color: #D71920; background: transparent; font-weight: bold;">
+            ➕ TAMBAH DATA KADER
         </button>
 
-        <div id="kaderList">
-            </div>
+        <div id="kaderList"></div>
 
-        <div class="nav-buttons" style="display: flex; gap: 10px; margin-top: 20px;">
-            <button onclick="window.location.href='step2.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
-            <button onclick="nextStepKader()" class="btn-primary" style="flex: 1;">Lanjut</button>
+        <div class="nav-buttons" style="display: flex; gap: 10px; margin-top: 10px;">
+            <button type="button" onclick="window.location.href='step2.html'" class="btn-outline-sm" style="flex: 1;">Kembali</button>
+            <button type="button" onclick="window.location.href='step4.html'" class="btn-primary" style="flex: 1;">Lanjut</button>
         </div>
     </div>
 </div>
 
 <script src="script.js"></script>
+
 <script>
-    // Inisialisasi saat halaman dimuat
+    // Memastikan inisialisasi berjalan saat halaman terbuka
     document.addEventListener('DOMContentLoaded', () => {
-        // 1. Panggil Dropdown Tahun (Wajib biar muncul isinya)
-        if (typeof generateTahunKader === 'function') {
-            generateTahunKader();
-        }
-        
-        // 2. Render List yang sudah ada di localStorage
-        if (typeof renderKader === 'function') {
-            renderKader();
-        }
-
-        // 3. Set label lokasi awal
-        if (typeof updateLabelLokasi === 'function') {
-            updateLabelLokasi();
-        }
+        // Fungsi-fungsi ini ada di script.js Bos
+        if (typeof generateTahunKader === 'function') generateTahunKader();
+        if (typeof renderKader === 'function') renderKader();
+        if (typeof updateLabelLokasi === 'function') updateLabelLokasi();
     });
-
-    function nextStepKader() {
-        // Boleh lanjut meski kosong (opsional bagi yang belum ikut kaderisasi)
-        window.location.href = 'step4.html';
-    }
 </script>
 
 </body>
