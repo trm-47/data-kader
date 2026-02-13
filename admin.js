@@ -334,147 +334,165 @@ function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
-    // --- MAPPING DATA (Step 1 - 6) ---
-    const p = item.pribadi || {};        // Step 1: Identitas
-    const f = item.formal || [];         // Step 2: Pendidikan
-    const k = item.kaderisasi || [];     // Step 3: Kaderisasi
-    const j = item.jabatan || [];        // Step 4: Jabatan & Penugasan
-    const rj = item.riwayat_kerja || []; // Step 5: Kerja & Organisasi
-    const ms = item.medsos || [];        // Step 6: Skill & Medsos
+    const p = item.pribadi || {};
+    const f = item.formal || [];
+    const k = item.kaderisasi || [];
+    const j = item.jabatan || [];
+    const rj = item.riwayat_kerja || [];
+    const ms = item.medsos || [];
 
-    // --- ANALISA KADERISASI (PRIORITAS) ---
+    // --- LOGIKA ANALISA KADERISASI (DATA PRIORITAS) ---
     const listJenis = k[2] ? String(k[2]).split("\n") : [];
     const listPenyel = k[3] ? String(k[3]).split("\n") : [];
     const listTahun = k[5] ? String(k[5]).split("\n") : [];
     const isPratama = listJenis.some(v => v.toUpperCase().includes("PRATAMA"));
     const isMadya = listJenis.some(v => v.toUpperCase().includes("MADYA"));
     
-    let infoPrioritas = "";
+    let labelPrioritas = "";
+    let shadowKader = "rgba(215, 25, 32, 0.1) 0px 20px 40px";
+    
     if (isPratama && !isMadya) {
         const idxP = listJenis.findIndex(v => v.toUpperCase().includes("PRATAMA"));
         const thnP = parseInt(listTahun[idxP]);
         const masaTunggu = thnP ? (new Date().getFullYear() - thnP) : 0;
         if (masaTunggu >= 5) {
-            infoPrioritas = `<div style="background: linear-gradient(to right, #D71920, #b91c1c); color:white; padding:12px; border-radius:15px; margin-bottom:20px; font-weight:800; text-align:center; box-shadow:0 4px 15px rgba(215,25,32,0.3); animation: pulse 2s infinite;">🔥 PRIORITAS MADYA: ANTRIAN ${masaTunggu} TAHUN</div>`;
+            labelPrioritas = `<div style="background: #fbbf24; color: #000; padding: 6px 15px; border-radius: 50px; font-size: 10px; font-weight: 900; margin-bottom: 15px; display: inline-block; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4); animation: pulse 2s infinite;">🔥 PRIORITAS MADYA: WAITING ${masaTunggu} YEARS</div>`;
+            shadowKader = "rgba(251, 191, 36, 0.2) 0px 20px 50px";
         }
     }
 
     let htmlContent = `
-        <div style="text-align:center; padding: 50px 20px; background: #1e293b; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; color:white; position:relative;">
-            <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
-                 style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 5px solid #D71920; box-shadow: 0 15px 30px rgba(0,0,0,0.5);">
-            <h1 style="margin-top:20px; font-size:26px; font-weight:900; letter-spacing:1px;">${(p.nama || 'NO NAME').toUpperCase()}</h1>
-            <p style="color:#fbbf24; font-weight:700; margin-top:5px;">KTA: ${p.kta || '-'} | NIK: ${p.nik || '-'}</p>
-        </div>
-
-        <div style="padding: 0 5px;">
-            ${infoPrioritas}
-
-            <div class="det-section" style="background:#fff; padding:25px; border-radius:25px; border:1px solid #e2e8f0; margin-bottom:25px;">
-                <div style="color:#D71920; font-weight:900; margin-bottom:20px; font-size:16px; border-left:5px solid #D71920; padding-left:15px;">I. IDENTITAS PRIBADI</div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; font-size:12px;">
-                    <div><label style="color:#94a3b8; font-weight:700; font-size:10px;">JENIS KELAMIN</label><div style="font-weight:700;">${p.jk || '-'}</div></div>
-                    <div><label style="color:#94a3b8; font-weight:700; font-size:10px;">AGAMA</label><div style="font-weight:700;">${p.agama || '-'}</div></div>
-                    <div><label style="color:#94a3b8; font-weight:700; font-size:10px;">TEMPAT, TGL LAHIR</label><div style="font-weight:700;">${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</div></div>
-                    <div><label style="color:#94a3b8; font-weight:700; font-size:10px;">STATUS PERKAWINAN</label><div style="font-weight:700;">${p.status_nikah || '-'}</div></div>
-                    <div><label style="color:#94a3b8; font-weight:700; font-size:10px;">WHATSAPP</label><div style="font-weight:700;">${p.wa || '-'}</div></div>
-                    <div><label style="color:#94a3b8; font-weight:700; font-size:10px;">EMAIL</label><div style="font-weight:700;">${p.email || '-'}</div></div>
-                    <div style="grid-column:span 2;"><label style="color:#94a3b8; font-weight:700; font-size:10px;">ALAMAT KTP</label><div style="font-weight:700;">${p.alamat || '-'}, RT${p.rt}/RW${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</div></div>
-                </div>
-            </div>
-
-            <div class="det-section" style="background:#f8fafc; padding:25px; border-radius:25px; border:1px solid #e2e8f0; margin-bottom:25px;">
-                <div style="color:#1e293b; font-weight:900; margin-bottom:15px; font-size:16px;">🎓 PENDIDIKAN FORMAL</div>
-                <div style="display:flex; flex-direction:column; gap:12px;">
-                    ${[
-                        {j: 'SD', n: f[2], t: f[3]},
-                        {j: 'SMP', n: f[4], t: f[5]},
-                        {j: 'SMA/SMK', n: f[6], t: f[8]},
-                        {j: 'Diploma', n: f[9], t: f[10]},
-                        {j: 'S1/Sarjana', n: f[11], t: f[14], prodi: f[12]},
-                        {j: 'S2/Magister', n: f[15], t: f[16]},
-                        {j: 'S3/Doktor', n: f[17], t: f[18]}
-                    ].filter(edu => edu.n && edu.n !== '-').map(edu => `
-                        <div style="background:white; padding:12px; border-radius:15px; border:1px solid #edf2f7;">
-                            <span style="font-size:10px; font-weight:800; color:#D71920;">${edu.j}</span>
-                            <div style="font-weight:700; font-size:13px; color:#1e293b;">${edu.n} ${edu.prodi ? '<br><small>'+edu.prodi+'</small>' : ''}</div>
-                            <div style="font-size:11px; color:#64748b;">Lulus Tahun: ${edu.t}</div>
-                        </div>
-                    `).join('')}
-                    <div style="background:#1e293b; color:white; padding:10px; border-radius:12px; text-align:center; font-size:12px;">
-                        <b>Pendidikan Terakhir:</b> ${f[19] || '-'}
-                    </div>
-                </div>
-            </div>
-
-            <div class="det-section" style="background:linear-gradient(to bottom right, #fff, #fff1f2); padding:25px; border-radius:25px; border:2px solid #D71920; margin-bottom:25px;">
-                <div style="color:#D71920; font-weight:900; margin-bottom:15px; font-size:16px;">📜 SERTIFIKASI KADERISASI</div>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                    ${listJenis.length > 0 && listJenis[0] !== "" ? listJenis.map((val, idx) => `
-                        <div style="background: white; border: 1px solid #D71920; padding: 12px; border-radius: 15px; flex: 1 1 calc(50% - 10px); min-width: 140px; box-shadow: 0 4px 10px rgba(215,25,32,0.05);">
-                            <div style="color: #D71920; font-weight: 900; font-size: 13px;">${val.toUpperCase()}</div>
-                            <div style="font-size: 10px; color: #475569; margin-top: 5px; line-height:1.4;">
-                                🏛️ ${listPenyel[idx] || '-'}<br>
-                                📅 <b>Tahun ${listTahun[idx] || '-'}</b>
-                            </div>
-                        </div>
-                    `).join('') : '<div style="color:#94a3b8; font-style:italic;">Belum ada riwayat kaderisasi jenjang.</div>'}
-                </div>
-            </div>
-
-            <div class="det-section" style="background:#fff; padding:25px; border-radius:25px; border:1px solid #e2e8f0; margin-bottom:25px;">
-                <div style="color:#D71920; font-weight:900; margin-bottom:15px; font-size:16px;">🚩 STRUKTUR & PENUGASAN</div>
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    ${j.length > 0 ? j.map(row => `
-                        <div style="background:#f1f5f9; padding:12px; border-radius:15px;">
-                            <div style="font-weight:800; font-size:13px; color:#1e293b;">${row[5] || row[12]}</div>
-                            <div style="font-size:11px; color:#64748b;">${row[4] || row[10]}</div>
-                            <div style="font-size:11px; font-weight:700; color:#D71920; margin-top:4px;">Periode: ${row[8] || row[14]}</div>
-                        </div>
-                    `).join('') : '<div style="color:#94a3b8; font-size:12px;">Tidak ada riwayat jabatan partai.</div>'}
-                </div>
-            </div>
-
-            <div class="det-section" style="background:#fff; padding:25px; border-radius:25px; border:1px solid #e2e8f0; margin-bottom:25px;">
-                <div style="color:#D71920; font-weight:900; margin-bottom:15px; font-size:16px;">💼 PEKERJAAN & ORGANISASI KEMASYARAKATAN</div>
-                <div style="margin-bottom:15px;"><label style="font-size:10px; color:#94a3b8; font-weight:800;">PEKERJAAN SEKARANG:</label><div style="font-weight:700;">${p.kerja_skrg || '-'}</div></div>
-                <hr style="border:0; border-top:1px solid #f1f5f9; margin:15px 0;">
-                <div style="font-size:11px; line-height:1.6;">
-                    <b style="color:#1e293b;">Riwayat Organisasi:</b><br>
-                    ${rj.length > 0 ? rj.map(o => `• <b>${o[2]}</b> sebagai ${o[4]} (${o[5]})`).join('<br>') : '<span style="color:#94a3b8;">Tidak ada riwayat organisasi.</span>'}
-                </div>
-            </div>
-
-            <div class="det-section" style="background:#0f172a; padding:25px; border-radius:25px; color:white; margin-bottom:30px;">
-                <div style="color:#fbbf24; font-weight:900; margin-bottom:20px; font-size:16px;">🌐 KOMPETENSI & DIGITAL ASSETS</div>
+        <div style="font-family: 'Inter', sans-serif; color: #1e293b; background: #fcfcfc;">
+            
+            <div style="position: relative; background: #0f172a; padding: 60px 20px 80px 20px; border-radius: 0 0 50px 50px; text-align: center; overflow: hidden; margin: -30px -30px 0 -30px;">
+                <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(215,25,32,0.15) 0%, rgba(0,0,0,0) 70%); border-radius: 50%;"></div>
                 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px;">
-                    <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:15px;">
-                        <label style="font-size:9px; color:#94a3b8; font-weight:800; display:block;">🗣️ BAHASA</label>
-                        <span style="font-size:12px; font-weight:700;">${p.bahasa || '-'}</span>
-                    </div>
-                    <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:15px;">
-                        <label style="font-size:9px; color:#94a3b8; font-weight:800; display:block;">💻 KOMPUTER/IT</label>
-                        <span style="font-size:12px; font-weight:700;">${ms[8] || '-'}</span>
-                    </div>
+                <div style="position: relative; display: inline-block;">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=200'"
+                         style="width:150px; height:150px; border-radius:35% 65% 61% 39% / 30% 28% 72% 70%; object-fit:cover; border: 6px solid #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+                    <div style="position: absolute; bottom: 10px; right: 10px; background: #25D366; width: 35px; height: 35px; border-radius: 50%; border: 3px solid #0f172a; display: flex; align-items: center; justify-content: center; font-size: 18px;">💬</div>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.1); padding:10px; border-radius:12px;">
-                        <div style="width:30px; font-size:18px;">🔵</div><div style="font-size:12px;"><b>Facebook:</b> ${ms[9] || '-'}</div>
+                <h1 style="color: #fff; margin-top: 25px; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 5px;">${(p.nama || 'UNDEFINED').toUpperCase()}</h1>
+                <div style="display: flex; justify-content: center; gap: 15px; align-items: center;">
+                    <span style="color: #94a3b8; font-size: 12px; font-weight: 600; letter-spacing: 2px;">KTA: ${p.kta || '-'}</span>
+                    <span style="width: 4px; height: 4px; background: #475569; border-radius: 50%;"></span>
+                    <span style="color: #94a3b8; font-size: 12px; font-weight: 600; letter-spacing: 2px;">NIK: ${p.nik || '-'}</span>
+                </div>
+            </div>
+
+            <div style="margin: -40px 10px 30px 10px; position: relative; z-index: 100;">
+                <div style="background: #fff; padding: 30px; border-radius: 30px; box-shadow: ${shadowKader}; border: 1px solid rgba(215, 25, 32, 0.1); text-align: center;">
+                    ${labelPrioritas}
+                    <div style="text-align: left; font-weight: 900; font-size: 14px; color: #D71920; margin-bottom: 20px; letter-spacing: 1px; display: flex; align-items: center; gap: 10px;">
+                        <span style="background: #D71920; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; color: #fff; font-size: 12px;">★</span>
+                        SERTIFIKASI KADERISASI UTAMA
                     </div>
-                    <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.1); padding:10px; border-radius:12px;">
-                        <div style="width:30px; font-size:18px;">📸</div><div style="font-size:12px;"><b>Instagram:</b> ${ms[10] || '-'}</div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.1); padding:10px; border-radius:12px;">
-                        <div style="width:30px; font-size:18px;">⚫</div><div style="font-size:12px;"><b>TikTok:</b> ${ms[11] || '-'}</div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        ${listJenis.length > 0 && listJenis[0] !== "" ? listJenis.map((val, idx) => `
+                            <div style="background: linear-gradient(145deg, #ffffff, #f9f9f9); border: 2px solid ${val.toUpperCase().includes('MADYA') ? '#fbbf24' : '#f1f5f9'}; padding: 18px; border-radius: 20px; position: relative; overflow: hidden; transition: all 0.3s ease;">
+                                ${val.toUpperCase().includes('MADYA') ? '<div style="position:absolute; top:-10px; right:-10px; font-size:40px; opacity:0.05;">🏆</div>' : ''}
+                                <div style="color: ${val.toUpperCase().includes('MADYA') ? '#b45309' : '#1e293b'}; font-weight: 900; font-size: 14px; margin-bottom: 8px;">${val.trim().toUpperCase()}</div>
+                                <div style="font-size: 10px; font-weight: 700; color: #64748b; line-height: 1.5;">
+                                    🏛️ ${listPenyel[idx] || '-'}<br>
+                                    📅 ANGKATAN TAHUN ${listTahun[idx] || '-'}
+                                </div>
+                            </div>
+                        `).join('') : '<div style="grid-column: span 2; padding: 20px; color: #94a3b8; font-style: italic; background: #f8fafc; border-radius: 15px;">Data kaderisasi belum tercatat dalam sistem</div>'}
                     </div>
                 </div>
             </div>
 
-            <button onclick="window.print()" style="width:100%; background:#D71920; color:white; border:none; padding:20px; border-radius:25px; font-weight:900; cursor:pointer; font-size:16px; box-shadow:0 10px 20px rgba(215,25,32,0.3);">
-                🖨️ CETAK DOSSIER LENGKAP
-            </button>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 20px; padding: 0 10px;">
+                
+                <div style="background: #fff; padding: 25px; border-radius: 30px; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px rgba(0,0,0,0.02);">
+                    <div style="font-weight: 800; color: #1e293b; margin-bottom: 20px; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b;">Informasi Identitas</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div><label style="display:block; color:#94a3b8; font-size:9px; font-weight:800; margin-bottom:4px;">GENDER</label><span style="font-weight:700; font-size:13px;">${p.jk || '-'}</span></div>
+                        <div><label style="display:block; color:#94a3b8; font-size:9px; font-weight:800; margin-bottom:4px;">AGAMA</label><span style="font-weight:700; font-size:13px;">${p.agama || '-'}</span></div>
+                        <div style="grid-column: span 2;"><label style="display:block; color:#94a3b8; font-size:9px; font-weight:800; margin-bottom:4px;">TEMPAT, TGL LAHIR</label><span style="font-weight:700; font-size:13px;">${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
+                        <div style="grid-column: span 2;"><label style="display:block; color:#94a3b8; font-size:9px; font-weight:800; margin-bottom:4px;">ALAMAT DOMISILI</label><span style="font-weight:700; font-size:13px; line-height:1.4;">${p.alamat || '-'}, RT${p.rt}/RW${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
+                    </div>
+                </div>
+
+                <div style="background: #fff; padding: 25px; border-radius: 30px; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px rgba(0,0,0,0.02);">
+                    <div style="font-weight: 800; color: #64748b; margin-bottom: 20px; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Pendidikan Formal</div>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        ${[
+                            {j: 'S3', n: f[17], t: f[18]},
+                            {j: 'S2', n: f[15], t: f[16]},
+                            {j: 'S1', n: f[11], t: f[14], d: f[12]},
+                            {j: 'SMA', n: f[6], t: f[8]}
+                        ].filter(e => e.n && e.n !== '-').map(e => `
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="background: #f1f5f9; width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 10px; color: #475569;">${e.j}</div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 13px; color: #1e293b;">${e.n} ${e.d ? '<span style="color:#94a3b8; font-weight:400;">— '+e.d+'</span>' : ''}</div>
+                                    <div style="font-size: 10px; color: #94a3b8;">Tahun Lulus: ${e.t}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div style="background: #fff; padding: 25px; border-radius: 30px; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px rgba(0,0,0,0.02);">
+                    <div style="font-weight: 800; color: #64748b; margin-bottom: 20px; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Struktur & Penugasan</div>
+                    <div style="display: grid; gap: 12px;">
+                        ${j.length > 0 ? j.map(row => `
+                            <div style="background: #f8fafc; padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 6px solid #D71920;">
+                                <div>
+                                    <div style="font-weight: 800; font-size: 12px; color: #1e293b;">${row[5] || row[12]}</div>
+                                    <div style="font-size: 10px; color: #64748b; margin-top: 2px;">${row[4] || row[10]}</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 10px; font-weight: 900; color: #D71920;">${row[8] || row[14]}</div>
+                                </div>
+                            </div>
+                        `).join('') : '<div style="font-size:12px; color:#94a3b8;">Tidak ada riwayat penugasan partai</div>'}
+                    </div>
+                </div>
+
+                <div style="background: #fff; padding: 25px; border-radius: 30px; border: 1px solid #f1f5f9; box-shadow: 0 10px 25px rgba(0,0,0,0.02);">
+                    <div style="font-weight: 800; color: #64748b; margin-bottom: 15px; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px;">Karier & Sosial</div>
+                    <div style="background: #1e293b; color: #fff; padding: 15px; border-radius: 18px; margin-bottom: 15px;">
+                        <label style="font-size: 9px; opacity: 0.6; display: block; margin-bottom: 4px; font-weight: 700;">OCCUPATION</label>
+                        <div style="font-weight: 700; font-size: 14px;">${p.kerja_skrg || '-'}</div>
+                    </div>
+                    <div style="font-size: 11px; color: #475569; line-height: 1.7;">
+                        <b style="color:#D71920;">Riwayat Ormas:</b><br>
+                        ${rj.length > 0 ? rj.map(o => `• <b>${o[2]}</b> (${o[4]})`).join('<br>') : '-'}
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 30px; border-radius: 40px; color: #fff; margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <span style="font-weight: 900; font-size: 14px; color: #fbbf24; letter-spacing: 1px;">DIGITAL ASSETS</span>
+                        <div style="background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 10px; font-size: 10px; font-weight: 700;">IT: ${ms[8] || '-'}</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                            <label style="font-size: 8px; color: #94a3b8; display: block; margin-bottom: 5px;">LANGUAGES</label>
+                            <div style="font-weight: 700; font-size: 12px;">${p.bahasa || '-'}</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);">
+                            <label style="font-size: 8px; color: #94a3b8; display: block; margin-bottom: 5px;">FB ACCOUNT</label>
+                            <div style="font-weight: 700; font-size: 12px;">${ms[9] || '-'}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; text-align: center; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1);">IG: ${ms[10] || '-'}</div>
+                        <div style="flex: 1; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; text-align: center; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1);">TT: ${ms[11] || '-'}</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="padding: 0 10px 40px 10px;">
+                <button onclick="window.print()" style="width: 100%; background: #D71920; color: #fff; border: none; padding: 22px; border-radius: 25px; font-weight: 900; font-size: 16px; letter-spacing: 1px; cursor: pointer; box-shadow: 0 15px 35px rgba(215, 25, 32, 0.4);">
+                    DOWNLOAD DOSSIER LENGKAP
+                </button>
+            </div>
         </div>
     `;
 
