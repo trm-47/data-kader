@@ -93,7 +93,7 @@ const dataDIY = {
 };
 
 /* ==========================================
-    3. FUNGSI HELPER WILAYAH
+    3. FUNGSI HELPER & TRANSFORMASI DATA
    ========================================== */
 function updateKecamatan() {
     const kabSel = document.getElementById("kab_kota").value;
@@ -130,8 +130,36 @@ function updateKelurahan() {
     }
 }
 
+function formatNama(elemen) {
+    if (!elemen) return;
+    let cursorStart = elemen.selectionStart;
+    let cursorEnd = elemen.selectionEnd;
+    let words = elemen.value.split(' ');
+    let hasil = words.map(kata => {
+        if (kata.length > 0) {
+            return kata.charAt(0).toUpperCase() + kata.slice(1).toLowerCase();
+        }
+        return '';
+    }).join(' ');
+    elemen.value = hasil;
+    elemen.setSelectionRange(cursorStart, cursorEnd);
+}
+
+// Event listener global untuk transformasi teks (Kapital/Kecil)
+document.addEventListener('input', (e) => {
+    const toUpper = ['tempat_lahir', 'alamat', 'pekerjaan', 'no_kta', 'rt', 'rw', 'nama_pt', 'nama_sekolah', 'kota_sekolah', 'penyelenggara', 'tugas_jabatan', 'tugas_lokasi', 'nama_perusahaan', 'jabatan_kerja', 'org_nama', 'org_jabatan', 'lokasi_kader'];
+    
+    if (toUpper.includes(e.target.id)) {
+        e.target.value = e.target.value.toUpperCase();
+    }
+    
+    if (e.target.id === 'email') {
+        e.target.value = e.target.value.toLowerCase();
+    }
+});
+
 /* ==========================================
-    4. HANDLER FOTO & OTOMATIS KAPITAL
+    4. HANDLER FOTO
    ========================================== */
 const handlePhoto = (e) => {
     const file = e.target.files[0];
@@ -147,55 +175,21 @@ const handlePhoto = (e) => {
     reader.readAsDataURL(file);
 };
 
-// Gabungan event listener untuk foto dan transformasi teks
-document.addEventListener('input', (e) => {
-    // List ID yang harus KAPITAL SEMUA
-    const toUpper = ['tempat_lahir', 'alamat', 'pekerjaan', 'no_kta', 'rt', 'rw', 'nama_pt', 'nama_sekolah', 'kota_sekolah', 'penyelenggara', 'tugas_jabatan', 'tugas_lokasi', 'nama_perusahaan', 'jabatan_kerja', 'org_nama', 'org_jabatan'];
-    
-    if (toUpper.includes(e.target.id)) {
-        e.target.value = e.target.value.toUpperCase();
-    }
-    
-    // Khusus Email harus KECIL SEMUA
-    if (e.target.id === 'email') {
-        e.target.value = e.target.value.toLowerCase();
-    }
-});
-
 document.addEventListener('change', (e) => {
     if (e.target.id === 'inputCamera' || e.target.id === 'inputGallery') handlePhoto(e);
 });
 
 /* ==========================================
-    5. LOGIKA SAVE STEP 1
+    5. RENDER ENGINE & CORE STORAGE
    ========================================== */
-function saveStep1() {
-    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
-    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'agama', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak', 'email'];
-    
-    let dataStep1 = { 
-        jenis_kelamin: genderEl ? genderEl.value : '' 
-    };
-
-    fields.forEach(f => {
-        const el = document.getElementById(f);
-        dataStep1[f] = el ? el.value.trim() : '';
-    });
-
-    const requiredFields = fields.filter(f => f !== 'no_kta');
-    if (requiredFields.some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) {
-        alert("⚠️ Mohon lengkapi semua data wajib."); 
-        return;
-    }
-
-    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
-    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
-    window.location.href = 'step2.html';
+function saveToLocal(key, obj) {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    let list = data[key] || [];
+    list.push(obj);
+    data[key] = list;
+    localStorage.setItem('kaderData', JSON.stringify(data));
 }
 
-/* ==========================================
-    6. RENDER ENGINE & ADD DATA FUNCTIONS
-   ========================================== */
 function deleteItem(key, index, callbackName) {
     let data = JSON.parse(localStorage.getItem('kaderData'));
     data[key].splice(index, 1);
@@ -220,28 +214,16 @@ const premiumTemplate = (title, subtitle, key, index, callbackName) => `
         <button onclick="deleteItem('${key}', ${index}, '${callbackName}')" style="color:#ef4444; border:none; background:none; font-size:20px; cursor:pointer; padding:0 10px;">&times;</button>
     </div>`;
 
+/* ==========================================
+    6. FUNGSI ADD DATA (STEPS 2 - 5)
+   ========================================== */
+
 const renderPendidikan = () => renderList('pendidikanList', 'riwayat_pendidikan', (item, index) => premiumTemplate(`${item.jenjang}: ${item.nama}`, `${item.tahun} | ${item.kota}`, 'riwayat_pendidikan', index, 'renderPendidikan'));
-const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => 
-    premiumTemplate(
-        `Kader ${item.jenis}`, 
-        `${item.penyelenggara} - ${item.lokasi} (${item.tahun})`, // Lokasi dimunculkan di sini
-        'riwayat_kader', 
-        index, 
-        'renderKader'
-    )
-);
+const renderKader = () => renderList('kaderList', 'riwayat_kader', (item, index) => premiumTemplate(`Kader ${item.jenis}`, `${item.penyelenggara} - ${item.lokasi} (${item.tahun})`, 'riwayat_kader', index, 'renderKader'));
 const renderJabatan = () => renderList('jabatanList', 'riwayat_jabatan_partai', (item, index) => premiumTemplate(item.jabatan, `${item.tingkatan} | ${item.periode}`, 'riwayat_jabatan_partai', index, 'renderJabatan'));
 const renderPekerjaan = () => renderList('pekerjaanList', 'riwayat_pekerjaan', (item, index) => premiumTemplate(item.perusahaan, `${item.jabatan} (${item.masa_kerja})`, 'riwayat_pekerjaan', index, 'renderPekerjaan'));
 const renderOrganisasi = () => renderList('orgList', 'riwayat_organisasi', (item, index) => premiumTemplate(item.nama, `${item.jabatan} | ${item.periode}`, 'riwayat_organisasi', index, 'renderOrganisasi'));
 const renderPenugasan = () => renderList('tugasList', 'riwayat_penugasan', (item, index) => premiumTemplate(item.jabatan, `${item.jenis} - ${item.lokasi} (${item.periode})`, 'riwayat_penugasan', index, 'renderPenugasan'));
-
-function saveToLocal(key, obj) {
-    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-    let list = data[key] || [];
-    list.push(obj);
-    data[key] = list;
-    localStorage.setItem('kaderData', JSON.stringify(data));
-}
 
 function addPendidikan() {
     const jenjang = document.getElementById('jenjang')?.value;
@@ -253,52 +235,39 @@ function addPendidikan() {
     renderPendidikan();
 }
 
-/* ==========================================
-    9. FUNGSI TAMBAHAN (CUSTOM LOGIC)
-   ========================================== */
+function generateTahunKader() {
+    const select = document.getElementById('tahun_kader');
+    if (!select) return;
+    select.innerHTML = '<option value="">-- Pilih Tahun --</option>';
+    const tahunSekarang = new Date().getFullYear();
+    for (let i = tahunSekarang; i >= 1970; i--) {
+        let opt = document.createElement('option');
+        opt.value = i; opt.innerHTML = i;
+        select.appendChild(opt);
+    }
+}
 
-// Fungsi untuk mengubah label lokasi secara dinamis di Step 3
 function updateLabelLokasi() {
     const pen = document.getElementById('penyelenggara');
     const label = document.getElementById('label_lokasi');
     const input = document.getElementById('lokasi_kader');
-
-    // Cek jika elemen ada di halaman tersebut (mencegah error di step lain)
     if (!pen || !label || !input) return;
-
     const nilai = pen.value;
-
-    if (nilai === "DPP PDI PERJUANGAN") {
-        label.innerHTML = "Kota Penyelenggaraan <span class='required'>*</span>";
-        input.placeholder = "Contoh: JAKARTA";
-    } else if (nilai === "DPD PDI PERJUANGAN") {
-        label.innerHTML = "Nama Provinsi <span class='required'>*</span>";
-        input.placeholder = "Contoh: DIY / JAWA TENGAH";
-    } else if (nilai === "DPC PDI PERJUANGAN") {
-        label.innerHTML = "Nama Kabupaten/Kota <span class='required'>*</span>";
-        input.placeholder = "Contoh: BANTUL / SLEMAN";
-    } else {
-        label.innerHTML = "Lokasi / Wilayah <span class='required'>*</span>";
-        input.placeholder = "Contoh: NAMA KOTA ATAU WILAYAH";
-    }
+    if (nilai === "DPP PDI PERJUANGAN") { label.innerHTML = "Kota Penyelenggaraan *"; input.placeholder = "JAKARTA"; }
+    else if (nilai === "DPD PDI PERJUANGAN") { label.innerHTML = "Nama Provinsi *"; input.placeholder = "DIY / JATENG"; }
+    else if (nilai === "DPC PDI PERJUANGAN") { label.innerHTML = "Nama Kabupaten/Kota *"; input.placeholder = "BANTUL / SLEMAN"; }
+    else { label.innerHTML = "Lokasi / Wilayah *"; input.placeholder = "NAMA KOTA"; }
 }
 
-// Fungsi Format Nama (Capital Each Word) yang kita buat sebelumnya
-function formatNama(elemen) {
-    if (!elemen) return;
-    let cursorStart = elemen.selectionStart;
-    let cursorEnd = elemen.selectionEnd;
-    
-    let words = elemen.value.split(' ');
-    let hasil = words.map(kata => {
-        if (kata.length > 0) {
-            return kata.charAt(0).toUpperCase() + kata.slice(1).toLowerCase();
-        }
-        return '';
-    }).join(' ');
-
-    elemen.value = hasil;
-    elemen.setSelectionRange(cursorStart, cursorEnd);
+function addPendidikanKader() {
+    const jenis = document.getElementById('jenis_kader')?.value;
+    const pen = document.getElementById('penyelenggara')?.value;
+    const lok = document.getElementById('lokasi_kader')?.value;
+    const thn = document.getElementById('tahun_kader')?.value;
+    if(!jenis || !pen || !lok || !thn) return alert("Lengkapi data kader!");
+    saveToLocal('riwayat_kader', { jenis, penyelenggara: pen, lokasi: lok, tahun: thn });
+    document.getElementById('lokasi_kader').value = '';
+    renderKader();
 }
 
 function addJabatanPartai() {
@@ -319,11 +288,10 @@ function addPenugasanPartai() {
     const lokasi = document.getElementById('tugas_lokasi')?.value;
     const periode = document.getElementById('tugas_periode')?.value;
     if(!jenis || !jabatan) return alert("Lengkapi data penugasan!");
-    const dataTugas = {
+    saveToLocal('riwayat_penugasan', { 
         jenis: jenis === 'Legislatif' ? `Legislatif (${lembaga})` : jenis,
-        jabatan: jabatan, lokasi: lokasi, periode: periode
-    };
-    saveToLocal('riwayat_penugasan', dataTugas);
+        jabatan, lokasi, periode 
+    });
     renderPenugasan();
 }
 
@@ -332,8 +300,8 @@ function addPekerjaan() {
     const jabatan = document.getElementById('jabatan_kerja')?.value;
     const masa = document.getElementById('masa_kerja')?.value;
     if(!perusahaan || !jabatan) return alert("Lengkapi data kerja!");
-    saveToLocal('riwayat_pekerjaan', { perusahaan: perusahaan, jabatan: jabatan, masa_kerja: masa });
-    if(document.getElementById('nama_perusahaan')) document.getElementById('nama_perusahaan').value = '';
+    saveToLocal('riwayat_pekerjaan', { perusahaan, jabatan, masa_kerja: masa });
+    document.getElementById('nama_perusahaan').value = '';
     renderPekerjaan();
 }
 
@@ -343,46 +311,68 @@ function addOrganisasi() {
     const jabatan = document.getElementById('org_jabatan')?.value;
     const periode = document.getElementById('org_periode')?.value;
     if(!nama || !jabatan) return alert("Lengkapi data organisasi!");
-    const namaLengkap = tingkat ? `${nama} (${tingkat})` : nama;
-    saveToLocal('riwayat_organisasi', { nama: namaLengkap, jabatan: jabatan, periode: periode || '-' });
-    if(document.getElementById('org_nama')) document.getElementById('org_nama').value = '';
+    saveToLocal('riwayat_organisasi', { nama: tingkat ? `${nama} (${tingkat})` : nama, jabatan, periode: periode || '-' });
+    document.getElementById('org_nama').value = '';
     renderOrganisasi();
 }
 
 /* ==========================================
-    7. NAVIGASI STEP 6 & REVIEW
+    7. LOGIKA SAVE STEP & FINAL SUBMIT
    ========================================== */
-function goToReview() {
-    try {
-        let data = JSON.parse(localStorage.getItem('kaderData')) || {};
-        const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
-        data.kompetensi_bahasa = Array.from(checkboxes).map(cb => cb.value).join(', ') || '-';
-        data.bahasa_lainnya_input = document.getElementById('bahasa_lainnya')?.value || '';
-        data.kemampuan_komputer = document.getElementById('komputer')?.value || '-';
-        data.media_sosial = {
-            facebook: document.getElementById('medsos_fb')?.value.trim() || '-',
-            instagram: document.getElementById('medsos_ig')?.value.trim() || '-',
-            tiktok: document.getElementById('medsos_tiktok')?.value.trim() || '-',
-            twitter_x: document.getElementById('medsos_twitter')?.value.trim() || '-',
-            youtube: document.getElementById('medsos_youtube')?.value.trim() || '-',
-            linkedin: document.getElementById('medsos_linkedin')?.value.trim() || '-'
-        };
-        localStorage.setItem('kaderData', JSON.stringify(data));
-        window.location.href = 'rekap.html';
-    } catch (error) { alert("Gagal menyimpan data Step 6, Bos."); }
+function saveStep1() {
+    const genderEl = document.querySelector('input[name="jenis_kelamin"]:checked');
+    const fields = ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'agama', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kab_kota', 'pekerjaan', 'kontak', 'email'];
+    let dataStep1 = { jenis_kelamin: genderEl ? genderEl.value : '' };
+    fields.forEach(f => {
+        const el = document.getElementById(f);
+        dataStep1[f] = el ? el.value.trim() : '';
+    });
+    if (fields.filter(f => f !== 'no_kta').some(f => !dataStep1[f]) || !dataStep1.jenis_kelamin) return alert("Lengkapi data wajib!");
+    let existing = JSON.parse(localStorage.getItem('kaderData')) || {};
+    localStorage.setItem('kaderData', JSON.stringify({ ...existing, ...dataStep1 }));
+    window.location.href = 'step2.html';
 }
-function saveStep6() { goToReview(); }
+
+function goToReview() {
+    let data = JSON.parse(localStorage.getItem('kaderData')) || {};
+    const checkboxes = document.querySelectorAll('input[name="bahasa"]:checked');
+    data.kompetensi_bahasa = Array.from(checkboxes).map(cb => cb.value).join(', ') || '-';
+    data.media_sosial = {
+        facebook: document.getElementById('medsos_fb')?.value.trim() || '-',
+        instagram: document.getElementById('medsos_ig')?.value.trim() || '-',
+        tiktok: document.getElementById('medsos_tiktok')?.value.trim() || '-',
+        twitter_x: document.getElementById('medsos_twitter')?.value.trim() || '-',
+        youtube: document.getElementById('medsos_youtube')?.value.trim() || '-',
+        linkedin: document.getElementById('medsos_linkedin')?.value.trim() || '-'
+    };
+    localStorage.setItem('kaderData', JSON.stringify(data));
+    window.location.href = 'rekap.html';
+}
+
+async function submitSeluruhData() {
+    const data = JSON.parse(localStorage.getItem('kaderData'));
+    if(!data) return alert("Data kosong!");
+    const btn = document.querySelector('.btn-final');
+    btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
+    const URL_API = 'https://script.google.com/macros/s/AKfycbzQA3fNn9ZcnXqfGL0yBA2SqFVx9MAQjLniltAkb5_0SHA2OGKTSXp3xpgVRVb6X7fq7g/exec';
+    try {
+        await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
+        alert("MERDEKA! Data Terkirim."); localStorage.clear(); window.location.href = 'finish.html';
+    } catch (e) { alert("Gagal!"); btn.disabled = false; btn.innerHTML = "KIRIM SEKARANG"; }
+}
 
 /* ==========================================
-    8. INITIAL LOAD & SUBMIT DATA
+    8. INITIAL LOAD (AUTO-RUN)
    ========================================== */
 window.addEventListener('load', () => {
     const saved = JSON.parse(localStorage.getItem('kaderData')) || {};
+    
+    // Load Input Biasa
     ['nama_lengkap', 'tempat_lahir', 'tanggal_lahir', 'nik', 'no_kta', 'alamat', 'rt', 'rw', 'pekerjaan', 'kontak', 'agama', 'email'].forEach(f => {
         const el = document.getElementById(f); if(el) el.value = saved[f] || '';
     });
     
-    // Auto Load Wilayah jika ada
+    // Load Wilayah
     if(saved.kab_kota) {
         const kabEl = document.getElementById('kab_kota');
         if(kabEl) {
@@ -396,51 +386,7 @@ window.addEventListener('load', () => {
         }
     }
 
-    // Render semua list riwayat
+    // Jalankan inisialisasi tambahan
+    generateTahunKader();
     renderPendidikan(); renderKader(); renderJabatan(); renderPekerjaan(); renderOrganisasi(); renderPenugasan();
 });
-
-async function submitSeluruhData() {
-    const data = JSON.parse(localStorage.getItem('kaderData'));
-    if(!data) return alert("Data kosong!");
-    const btn = document.querySelector('.btn-final');
-    btn.disabled = true; btn.innerHTML = "⏳ MENGIRIM...";
-    
-    const URL_API = 'https://script.google.com/macros/s/AKfycbzQA3fNn9ZcnXqfGL0yBA2SqFVx9MAQjLniltAkb5_0SHA2OGKTSXp3xpgVRVb6X7fq7g/exec';
-    try {
-        await fetch(URL_API, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-        alert("MERDEKA! Data Terkirim."); localStorage.clear(); window.location.href = 'finish.html';
-    } catch (e) { alert("Gagal!"); btn.disabled = false; btn.innerHTML = "KIRIM SEKARANG"; }
-}
-
-function hitungUmur(tanggalLahir) {
-    if (!tanggalLahir) return "-";
-    const hariIni = new Date();
-    const tglLahir = new Date(tanggalLahir);
-    let umur = hariIni.getFullYear() - tglLahir.getFullYear();
-    const bulan = hariIni.getMonth() - tglLahir.getMonth();
-    if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) { umur--; }
-    return umur + " Tahun";
-}
-
-// --- Taruh di paling bawah script.js ---
-
-// TARUH INI DI PALING BAWAH SCRIPT.JS UNTUK GANTIKAN YANG TADI
-function formatNama(elemen) {
-    let cursorStart = elemen.selectionStart;
-    let cursorEnd = elemen.selectionEnd;
-    let string = elemen.value;
-    
-    let words = string.split(' ');
-    let hasil = words.map(kata => {
-        if (kata.length > 0) {
-            return kata.charAt(0).toUpperCase() + kata.slice(1).toLowerCase();
-        }
-        return '';
-    }).join(' ');
-
-    elemen.value = hasil;
-    
-    // Kembalikan posisi kursor supaya tidak lompat ke belakang
-    elemen.setSelectionRange(cursorStart, cursorEnd);
-}
