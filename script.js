@@ -375,3 +375,34 @@ function hitungUmur(tanggalLahir) {
     if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) { umur--; }
     return umur + " Tahun";
 }
+
+// --- Taruh di paling bawah script.js ---
+
+function formatNama(elemen) {
+    let string = elemen.value;
+    
+    // Logika agar kursor tidak lari ke belakang saat spasi
+    let words = string.split(' ');
+    let hasil = words.map(kata => {
+        if (kata.length > 0) {
+            return kata.charAt(0).toUpperCase() + kata.slice(1).toLowerCase();
+        }
+        return '';
+    }).join(' ');
+
+    elemen.value = hasil;
+}
+
+// Fungsi pembantu jika di HTML dipanggil via onclick
+function saveStep1() {
+    // Jika Bos sudah punya fungsi simpan sendiri di atas, 
+    // pastikan namanya tidak bentrok.
+    console.log("Menjalankan simpan Step 1...");
+    
+    // Logika simpan data (contoh)
+    const nama = document.getElementById('nama_lengkap').value;
+    localStorage.setItem('nama_kader', nama);
+    
+    // Pindah halaman
+    window.location.href = 'step2.html';
+}
