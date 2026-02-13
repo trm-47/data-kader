@@ -67,7 +67,7 @@
         </button>
         <div id="jabatanList" style="margin-bottom: 25px;"></div>
 
-        <h3 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;">🏛️ Penugasan Partai</h3>
+        <h3 style="font-size: 14px; color: var(--primary-red); margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 5px;">🏛️ Penugasan Partai</h3>
         
         <div class="input-group">
             <label>Jenis Penugasan</label>
@@ -78,19 +78,32 @@
             </select>
         </div>
 
+        <div id="wrap_eksekutif" class="input-group" style="display: none;">
+            <label>Jabatan Eksekutif</label>
+            <select id="tugas_jabatan_eksekutif" class="input-field">
+                <option value="">-- Pilih Jabatan --</option>
+                <option value="GUBERNUR">GUBERNUR</option>
+                <option value="WAKIL GUBERNUR">WAKIL GUBERNUR</option>
+                <option value="BUPATI">BUPATI</option>
+                <option value="WAKIL BUPATI">WAKIL BUPATI</option>
+                <option value="WALIKOTA">WALIKOTA</option>
+                <option value="WAKIL WALIKOTA">WAKIL WALIKOTA</option>
+            </select>
+        </div>
+
         <div id="wrap_legislatif" class="input-group" style="display: none;">
             <label>Lembaga Legislatif</label>
             <select id="tugas_lembaga" class="input-field">
                 <option value="DPR RI">DPR RI</option>
                 <option value="DPD RI">DPD RI</option>
-                <option value="DPRD Provinsi">DPRD Provinsi</option>
-                <option value="DPRD Kabupaten/Kota">DPRD Kabupaten/Kota</option>
+                <option value="DPRD PROVINSI">DPRD PROVINSI</option>
+                <option value="DPRD KABUPATEN/KOTA">DPRD KABUPATEN/KOTA</option>
             </select>
         </div>
 
-        <div class="input-group">
-            <label>Jabatan Penugasan</label>
-            <input type="text" id="tugas_jabatan" placeholder="Contoh: Anggota Komisi III / Bupati" class="input-field">
+        <div id="wrap_jabatan_manual" class="input-group" style="display: none;">
+            <label>Jabatan di Legislatif</label>
+            <input type="text" id="tugas_jabatan" placeholder="Contoh: Anggota Komisi III / Ketua Fraksi" class="input-field">
         </div>
 
         <div class="input-group">
@@ -103,7 +116,7 @@
             <input type="text" id="tugas_periode" placeholder="Contoh: 2019 - 2024" class="input-field">
         </div>
 
-        <button type="button" onclick="addPenugasanPartai()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px;">
+        <button type="button" onclick="handleTambahPenugasan()" class="btn-outline-sm" style="width: 100%; margin-bottom: 15px;">
             ➕ Tambah Penugasan
         </button>
         <div id="tugasList" style="margin-bottom: 20px;"></div>
@@ -117,29 +130,62 @@
 
 <script src="script.js"></script>
 <script>
-function pilihJabatan() { // Namanya diganti biar gak bentrok
-    const elJabatan = document.getElementById('jabatan_partai');
-    const elWrap = document.getElementById('wrap_bidang');
+    // 1. Logika Tampilkan Bidang di Struktur Partai
+    function pilihJabatan() {
+        const elJabatan = document.getElementById('jabatan_partai');
+        const elWrap = document.getElementById('wrap_bidang');
+        if (!elJabatan || !elWrap) return;
 
-    if (!elJabatan || !elWrap) return;
-
-    const nilaiJabatan = elJabatan.value;
-
-    if (nilaiJabatan === 'Wakil Ketua' || nilaiJabatan === 'Wakil Sekretaris') {
-        elWrap.style.display = 'block';
-    } else {
-        elWrap.style.display = 'none';
-        const inputBidang = document.getElementById('bidang_jabatan');
-        if(inputBidang) inputBidang.value = ""; 
+        const val = elJabatan.value;
+        if (val === 'Wakil Ketua' || val === 'Wakil Sekretaris' || val === 'Wakil Bendahara') {
+            elWrap.style.display = 'block';
+        } else {
+            elWrap.style.display = 'none';
+            if(document.getElementById('bidang_jabatan')) document.getElementById('bidang_jabatan').value = "";
+        }
     }
-}
 
+    // 2. Logika Tampilkan Form Berdasarkan Jenis Penugasan
     function toggleTugas() {
         const jenis = document.getElementById('tugas_jenis').value;
-        const wrap = document.getElementById('wrap_legislatif');
-        wrap.style.display = (jenis === 'Legislatif') ? 'block' : 'none';
+        const wrapLegis = document.getElementById('wrap_legislatif');
+        const wrapEks = document.getElementById('wrap_eksekutif');
+        const wrapManual = document.getElementById('wrap_jabatan_manual');
+
+        // Reset display
+        wrapLegis.style.display = 'none';
+        wrapEks.style.display = 'none';
+        wrapManual.style.display = 'none';
+
+        if (jenis === 'Eksekutif') {
+            wrapEks.style.display = 'block';
+        } else if (jenis === 'Legislatif') {
+            wrapLegis.style.display = 'block';
+            wrapManual.style.display = 'block';
+        }
     }
 
+    // 3. Fungsi Handler sebelum simpan ke LocalStorage
+    function handleTambahPenugasan() {
+        const jenis = document.getElementById('tugas_jenis').value;
+        const inputManual = document.getElementById('tugas_jabatan');
+        const inputEks = document.getElementById('tugas_jabatan_eksekutif');
+
+        // Jika Eksekutif, pindahkan nilai dropdown ke input manual 
+        // agar fungsi addPenugasanPartai() di script.js bisa membacanya
+        if (jenis === 'Eksekutif') {
+            inputManual.value = inputEks.value;
+        }
+
+        // Panggil fungsi asli dari script.js
+        if (typeof addPenugasanPartai === 'function') {
+            addPenugasanPartai();
+            // Reset pilihan eksekutif setelah input
+            inputEks.value = "";
+        }
+    }
+
+    // 4. Initial Load
     window.addEventListener('load', () => {
         if(typeof renderJabatan === 'function') renderJabatan();
         if(typeof renderPenugasan === 'function') renderPenugasan();
