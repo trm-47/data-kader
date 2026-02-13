@@ -1,4 +1,4 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbymocP9faBGHUX9_aQOof1zXpNO3L4O5TRcSHrL-wRcBdIfaxpblkV5i3Fbu33Txw1bCQ/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec";
 let databaseKader = [];
 
 // --- INITIALIZATION ---
@@ -282,7 +282,6 @@ function resetFilters() {
 }
 
 function applyFilters() {
-    // 1. Ambil semua nilai dari dropdown HTML
     const fKota = document.getElementById('fKota').value;
     const fKec = document.getElementById('fKec').value;
     const fDesa = document.getElementById('fDesa').value;
@@ -296,7 +295,6 @@ function applyFilters() {
     const fIT = document.getElementById('fIT').value;
     const fStatusMadya = document.getElementById('fStatusMadya').value; 
 
-    // 2. Proses penyaringan data
     const filtered = databaseKader.filter(item => {
         const p = item.pribadi || {};
         const formal = item.formal || [];
@@ -304,24 +302,25 @@ function applyFilters() {
         const medsos = item.medsos || [];
         const jabatan = item.jabatan || [];
 
-        // Filter Wilayah
         const matchKota = fKota === "Semua" || (p.kab_kota === fKota) || (p.kota === fKota);
         const matchKec = fKec === "Semua" || (p.kec === fKec);
         const matchDesa = fDesa === "Semua" || (p.desa === fDesa);
 
-        // Filter Kaderisasi Dasar (Dropdown Jenjang)
+        // Filter Kaderisasi Dasar
+        let matchesKader = (fKader === "Semua");
         const textKader = kader[2] ? kader[2].toString().toLowerCase() : "";
-        const matchesKader = (fKader === "Semua") || textKader.includes(fKader.toLowerCase());
+        if (!matchesKader) {
+            matchesKader = textKader.includes(fKader.toLowerCase());
+        }
 
-        // --- LOGIKA KHUSUS MADYA ---
+        // --- MODIFIKASI KHUSUS LOGIKA FILTER MADYA ---
         const currentYear = new Date().getFullYear();
         const isMadya = textKader.includes("madya");
         const hasPratama = textKader.includes("pratama");
         
-        // Ambil tahun Pratama dari kolom kaderisasi indeks ke-5 (kolom F)
         const textTahun = kader[5] ? kader[5].toString() : "";
-        const matchTahunPratama = textTahun.match(/1\.\s*(\d{4})/) || textTahun.match(/^(\d{4})/);
-        const tahunPratama = matchTahunPratama ? parseInt(matchTahunPratama[1]) : 0;
+        const matchPratama = textTahun.match(/1\.\s*(\d{4})/);
+        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : 0;
         const masaTunggu = tahunPratama > 0 ? (currentYear - tahunPratama) : 0;
 
         let matchStatusMadya = true;
@@ -330,26 +329,28 @@ function applyFilters() {
         } else if (fStatusMadya === "Belum") {
             matchStatusMadya = !isMadya;
         } else if (fStatusMadya === "Prioritas") {
-            // Syarat Prioritas: Sudah Pratama, Belum Madya, dan Tunggu > 5 Tahun
-            matchStatusMadya = (hasPratama && !isMadya && masaTunggu >= 5);
+            matchStatusMadya = (hasPratama && !isMadya && masaTunggu > 5);
         }
-
-        // Filter Lainnya
+        
         const textJabatan = jabatan.map(j => j.join(" ")).join(" ").toLowerCase();
         const matchesTingkat = fTingkat === "Semua" || textJabatan.includes(fTingkat.toLowerCase());
         const matchesJenis = fJenis === "Semua" || textJabatan.includes(fJenis.toLowerCase());
         
+        const valBahasa = medsos[3] ? medsos[3].toString().trim() : "-";
+        const matchesBahasa = fBahasa === "Semua" || (fBahasa === "Ya" ? (valBahasa !== "-" && valBahasa !== "") : (valBahasa === "-" || valBahasa === ""));
+        
+        const valIT = medsos[8] ? medsos[8].toString().trim() : "-";
+        const matchesIT = fIT === "Semua" || (fIT === "Ya" ? (valIT !== "-" && valIT !== "") : (valIT === "-" || valIT === ""));
+        
         const matchesJK = fJK === "Semua" || p.jk === fJK;
         const matchesAgama = fAgama === "Semua" || p.agama === fAgama;
-        
-        // Filter Pendidikan (Mengecek kolom formal indeks 19 yang berisi string pendidikan)
         const matchesEdu = fEdu === "Semua" || (formal[19] && formal[19].toString().includes(fEdu));
 
         return matchKota && matchKec && matchDesa && matchesJK && matchesAgama && 
-               matchesEdu && matchesKader && matchesTingkat && matchesJenis && matchStatusMadya;
+               matchesEdu && matchesKader && matchesTingkat && matchesJenis && 
+               matchesBahasa && matchesIT && matchStatusMadya;
     });
 
-    // 3. Render ulang tabel dengan data yang sudah difilter
     renderTable(filtered);
     updateStats(filtered);
 }
