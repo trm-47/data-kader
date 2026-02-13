@@ -356,7 +356,9 @@ tr:hover td {
 /* --- PROFILE COMPONENTS (INSIDE MODAL) --- */
 .profile-section {
     margin-bottom: 25px;
-    padding: 0 30px;
+    padding: 15px;
+    background: #ffffff;
+    border-radius: 12px;
 }
 
 .section-title {
@@ -396,6 +398,11 @@ tr:hover td {
     font-size: 14px;
     font-weight: 600;
     color: var(--dark-slate);
+    /* TAMBAHKAN INI AGAR TAMPILAN RAPI */
+    display: block;          /* Memastikan teks panjang turun ke bawah */
+    line-height: 1.5;        /* Memberi spasi antar baris agar enak dibaca */
+    word-break: break-word;  /* Mencegah teks panjang (seperti email/link) keluar jalur */
+    white-space: pre-line;   /* Penting: Agar karakter "\n" (baris baru) dari skrip terbaca */
 }
 
 /* Membuat dropdown filter yang aktif terlihat lebih tegas */
@@ -443,4 +450,14 @@ tr:hover td {
     background-color: #fdf2f8 !important; /* Pink sangat muda */
     color: #db2777 !important;
     font-weight: 800 !important;
+}
+
+.badge-medsos {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
 }
