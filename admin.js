@@ -373,7 +373,26 @@ function openDetail(originalIndex) {
     const m = item.medsos || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- MODIFIKASI MODAL ANALISA (START) ---
+    // --- FUNGSI MEMBERSIHKAN TANGGAL (SOLUSI FORMAT ANEH) ---
+    const formatTanggalIndo = (tglString) => {
+        if (!tglString || tglString === "-") return "-";
+        try {
+            const d = new Date(tglString);
+            if (isNaN(d.getTime())) return tglString; // Balikkan string asli jika gagal parse
+            
+            return d.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        } catch (e) {
+            return tglString;
+        }
+    };
+
+    const tglLahirBersih = formatTanggalIndo(p.tgl_lahir);
+
+    // --- LOGIKA MODAL ANALISA ---
     const listThn = k[5] ? k[5].toString().split("\n") : [];
     const getYear = (no) => {
         const found = listThn.find(t => t.trim().startsWith(no + "."));
@@ -393,7 +412,6 @@ function openDetail(originalIndex) {
         { label: 'GURU', year: thnGuru, color: '#991b1b' },
         { label: 'WANITA', year: thnWanita, color: '#db2777' }
     ];
-    // --- MODIFIKASI MODAL ANALISA (END) ---
 
     let htmlContent = `
         <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
@@ -414,12 +432,14 @@ function openDetail(originalIndex) {
             <div class="data-grid">
                 <div class="data-item"><label>NIK</label><span>${p.nik || '-'}</span></div>
                 <div class="data-item"><label>Jenis Kelamin</label><span>${p.jk || '-'}</span></div>
-                <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
+                <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${tglLahirBersih}</span></div>
                 <div class="data-item"><label>Usia</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
                 <div class="data-item"><label>Agama</label><span>${p.agama || '-'}</span></div>
                 <div class="data-item"><label>Pekerjaan Utama</label><span>${p.kerja_skrg || '-'}</span></div>
                 <div class="data-item"><label>WhatsApp</label><span>${p.wa || '-'}</span></div>
+                
                 <div class="data-item"><label>Email</label><span>${p.email || '-'}</span></div>
+                
                 <div class="data-item" style="grid-column: span 2;"><label>Alamat Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
             </div>
         </div>
