@@ -334,136 +334,126 @@ function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
-    // --- MAPPING DATA BERDASARKAN STRUKTUR HTML STEP 1-6 ---
-    const p = item.pribadi || {};        // Step 1: Identitas + Alamat + Domisili
-    const f = item.formal || [];         // Step 2: Pendidikan (Array of objects)
-    const k = item.kaderisasi || [];     // Step 3: Pendidikan Kader (Array of objects)
-    const j = item.jabatan || [];        // Step 4: Struktur & Penugasan (Array of objects)
-    const rj = item.riwayat_kerja || []; // Step 5: Pekerjaan (Array of objects)
-    const ms = item.medsos || [];        // Step 6: Organisasi Lain, Bahasa, Komputer, Sosmed
+    // Mapping Alias agar kode lebih bersih
+    const p = item.pribadi || {};      
+    const formal = item.formal || [];    
+    const kader = item.kaderisasi || []; 
+    const jabatan = item.jabatan || [];  
+    const kerja = item.riwayat_kerja || []; 
+    const medsos = item.medsos || [];    
 
-    // --- LOGIKA PRIORITAS KADERISASI (Visual Focus) ---
-    // Mengambil data pendidikan kader terakhir untuk badge utama
-    const lastKader = (Array.isArray(k) && k.length > 0) ? k[k.length - 1] : null;
-    const badgeColor = lastKader && String(lastKader[2]).toUpperCase().includes("MADYA") ? "#fbbf24" : "#D71920";
+    // Hitung Usia & Gen untuk Header
+    const ageInfo = calculateAge(p.tgl_lahir);
 
     let htmlContent = `
-        <div style="font-family: 'Inter', sans-serif; background: #f4f7f9; color: #1e293b; padding-bottom: 40px;">
+        <div style="font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; color: #1e293b;">
             
-            <div style="background: #0f172a; padding: 60px 20px; border-radius: 0 0 40px 40px; text-align: center; color: white; position: relative; overflow: hidden; margin: -30px -30px 20px -30px;">
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://i.ibb.co.com/N2K0XRMW/logo-pdi.png') no-repeat center; opacity: 0.05; background-size: contain;"></div>
-                
-                <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=150'"
-                     style="width:140px; height:140px; border-radius:30px; border: 4px solid #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.5); object-fit: cover; position: relative; z-index: 1;">
-                
-                <h1 style="font-size: 26px; font-weight: 900; margin: 20px 0 5px 0; letter-spacing: -0.5px;">${(p.nama || 'DATA KADER').toUpperCase()}</h1>
-                <div style="font-size: 13px; color: #94a3b8; font-weight: 600; letter-spacing: 1px;">KTA: ${p.kta || '-'} | NIK: ${p.nik || '-'}</div>
+            <div style="background: linear-gradient(145deg, #D71920, #991b1b); padding: 50px 20px; text-align: center; color: white; border-radius: 0 0 50px 50px; box-shadow: 0 10px 30px rgba(215,25,32,0.2);">
+                <div style="position: relative; display: inline-block;">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=ffffff&color=D71920&size=150'"
+                         style="width:150px; height:150px; border-radius:35px; border: 5px solid white; object-fit: cover; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
+                    <div style="position: absolute; bottom: -10px; right: -10px; background: #fbbf24; color: #000; padding: 5px 15px; border-radius: 12px; font-weight: 900; font-size: 10px; border: 3px solid white;">
+                        ${ageInfo.gen.toUpperCase()}
+                    </div>
+                </div>
+                <h1 style="font-size: 28px; font-weight: 800; margin: 25px 0 5px 0; text-transform: uppercase; letter-spacing: -1px;">${p.nama}</h1>
+                <p style="opacity: 0.9; font-weight: 600; font-size: 14px;">NIK: ${p.nik || '-'} • KTA: ${p.kta || '-'}</p>
             </div>
 
-            <div style="margin: -50px 15px 25px 15px; position: relative; z-index: 10;">
-                <div style="background: white; border-radius: 25px; padding: 25px; border-top: 5px solid ${badgeColor}; box-shadow: 0 15px 30px rgba(0,0,0,0.08);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <span style="font-weight: 900; font-size: 12px; color: ${badgeColor}; letter-spacing: 1.5px; text-transform: uppercase;">Sertifikasi Kaderisasi</span>
-                        <span style="background: ${badgeColor}; color: ${badgeColor === '#fbbf24' ? '#000' : '#fff'}; padding: 4px 12px; border-radius: 50px; font-size: 10px; font-weight: 900;">OFFICIAL KADER</span>
-                    </div>
+            <div style="max-width: 800px; margin: -30px auto 0; padding: 0 20px 50px 20px;">
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     
-                    <div style="display: grid; gap: 12px;">
-                        ${Array.isArray(k) && k.length > 0 ? k.map(val => `
-                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 18px; display: flex; gap: 15px; align-items: center;">
-                                <div style="font-size: 24px;">🎖️</div>
-                                <div>
-                                    <div style="font-weight: 800; font-size: 14px; color: #0f172a;">${String(val[2]).toUpperCase()}</div>
-                                    <div style="font-size: 11px; color: #64748b;">${val[3]} | ${val[4]} (${val[5]})</div>
+                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">👤</span> DATA PERSONAL
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
+                                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Lahir</span>
+                                <span style="font-weight: 700; font-size: 13px;">${p.tmpt_lahir}, ${p.tgl_lahir}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
+                                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Agama / Gender</span>
+                                <span style="font-weight: 700; font-size: 13px;">${p.agama} / ${p.jk}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
+                                <span style="color: #64748b; font-size: 12px; font-weight: 600;">Kontak (WA)</span>
+                                <span style="font-weight: 700; font-size: 13px; color: #16a34a;">${p.wa}</span>
+                            </div>
+                            <div style="background: #f8fafc; padding: 15px; border-radius: 15px;">
+                                <small style="color: #94a3b8; font-weight: 800; font-size: 9px; text-transform: uppercase;">Alamat Domisili</small>
+                                <p style="font-size: 13px; font-weight: 700; margin-top: 5px; line-height: 1.5;">${p.alamat}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">🎓</span> PENDIDIKAN FORMAL
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            ${(Array.isArray(item.formal) && item.formal.length > 0) ? item.formal.map(edu => `
+                                <div style="border-left: 3px solid #D71920; padding-left: 15px; position: relative; margin-bottom: 5px;">
+                                    <div style="font-weight: 800; font-size: 13px; color: #1e293b;">${edu[2]}</div>
+                                    <div style="font-size: 11px; color: #64748b; font-weight: 600;">${edu[3]} (${edu[4]} - ${edu[5]})</div>
                                 </div>
+                            `).join('') : '<p style="font-size:12px; color:#94a3b8;">Belum ada data pendidikan</p>'}
+                        </div>
+                    </div>
+
+                    <div style="background: #1e293b; padding: 25px; border-radius: 30px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); grid-column: 1 / -1; color: white;">
+                        <h3 style="color: #fbbf24; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <span style="background: rgba(251,191,36,0.1); padding: 8px; border-radius: 10px;">🚩</span> RIWAYAT KADERISASI
+                        </h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                            ${(Array.isArray(item.kaderisasi) && item.kaderisasi.length > 0) ? item.kaderisasi.map(k => `
+                                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                                    <div style="font-weight: 800; font-size: 13px; color: #fbbf24;">${String(k[2]).toUpperCase()}</div>
+                                    <div style="font-size: 11px; opacity: 0.7; margin-top: 4px;">Penyelenggara: ${k[3]}</div>
+                                    <div style="font-size: 11px; font-weight: 700; margin-top: 2px;">Tahun ${k[5]}</div>
+                                </div>
+                            `).join('') : '<p style="opacity:0.5; font-size:12px;">Belum pernah mengikuti pendidikan kader</p>'}
+                        </div>
+                    </div>
+
+                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">🏛️</span> JABATAN STRUKTURAL
+                        </h3>
+                        ${(Array.isArray(item.jabatan) && item.jabatan.length > 0) ? item.jabatan.map(j => `
+                            <div style="background: #f8fafc; padding: 12px 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #edf2f7;">
+                                <div style="font-weight: 800; font-size: 12px; color: #D71920;">${j[5]}</div>
+                                <div style="font-size: 10px; font-weight: 700; color: #1e293b;">${j[4]} (${j[8]})</div>
                             </div>
-                        `).join('') : '<div style="text-align:center; padding: 20px; color:#94a3b8; font-style:italic;">Data kaderisasi belum diinput</div>'}
+                        `).join('') : '<p style="font-size:12px; color:#94a3b8;">Tidak ada jabatan aktif</p>'}
                     </div>
-                </div>
-            </div>
 
-            <div style="padding: 0 15px; display: grid; gap: 20px;">
-
-                <div style="background: white; border-radius: 25px; padding: 25px; border: 1px solid #e2e8f0;">
-                    <h3 style="font-size: 13px; font-weight: 800; color: #64748b; margin-bottom: 20px; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">📍 Identitas & Domisili</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 12px;">
-                        <div><label style="color:#94a3b8; font-weight:700; display:block; font-size:10px;">GENDER / AGAMA</label><b>${p.jk || '-'} / ${p.agama || '-'}</b></div>
-                        <div><label style="color:#94a3b8; font-weight:700; display:block; font-size:10px;">TGL LAHIR</label><b>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</b></div>
-                        <div style="grid-column: span 2;"><label style="color:#94a3b8; font-weight:700; display:block; font-size:10px;">ALAMAT LENGKAP</label><b style="line-height:1.4;">${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</b></div>
-                        <div><label style="color:#94a3b8; font-weight:700; display:block; font-size:10px;">WHATSAPP</label><b>${p.wa || '-'}</b></div>
-                        <div><label style="color:#94a3b8; font-weight:700; display:block; font-size:10px;">EMAIL</label><b>${p.email || '-'}</b></div>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 25px; padding: 25px; border: 1px solid #e2e8f0;">
-                    <h3 style="font-size: 13px; font-weight: 800; color: #64748b; margin-bottom: 20px; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">🎓 Pendidikan Formal</h3>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        ${Array.isArray(f) ? f.map(edu => `
-                            <div style="border-left: 3px solid #D71920; padding-left: 15px;">
-                                <div style="font-weight: 800; font-size: 13px;">${edu[2]}</div>
-                                <div style="font-size: 11px; color: #64748b;">${edu[3]} (${edu[4]} - ${edu[5]})</div>
-                            </div>
-                        `).join('') : '-'}
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 25px; padding: 25px; border: 1px solid #e2e8f0;">
-                    <h3 style="font-size: 13px; font-weight: 800; color: #64748b; margin-bottom: 20px; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">🚩 Jabatan & Penugasan</h3>
-                    <div style="display: grid; gap: 15px;">
-                        ${Array.isArray(j) ? j.map(jb => `
-                            <div style="background: #fff5f5; padding: 15px; border-radius: 15px;">
-                                <div style="font-weight: 800; font-size: 12px; color: #D71920;">${jb[5] || jb[12]}</div>
-                                <div style="font-size: 10px; color: #1e293b;">${jb[4] || jb[10]} | Periode: ${jb[8] || jb[14]}</div>
-                            </div>
-                        `).join('') : '-'}
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 25px; padding: 25px; border: 1px solid #e2e8f0;">
-                    <h3 style="font-size: 13px; font-weight: 800; color: #64748b; margin-bottom: 20px; text-transform: uppercase; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">💼 Karier & Organisasi Lain</h3>
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 9px; font-weight: 800; color: #94a3b8;">PEKERJAAN SAAT INI:</label>
-                        <div style="font-weight: 800; font-size: 14px; color: #1e293b;">${p.kerja_skrg || '-'}</div>
-                    </div>
-                    <div style="font-size: 11px; line-height: 1.6;">
-                        <b style="color:#D71920;">Organisasi Kemasyarakatan:</b><br>
-                        ${Array.isArray(ms) && Array.isArray(ms[7]) ? ms[7].map(o => `• ${o[2]} (${o[4]})`).join('<br>') : '-'}
-                    </div>
-                </div>
-
-                <div style="background: #0f172a; border-radius: 30px; padding: 30px; color: white;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-                        <div>
-                            <label style="font-size: 8px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">BAHASA</label>
-                            <div style="font-weight: 700; font-size: 12px; color: #fbbf24;">${p.bahasa || '-'}</div>
+                    <div style="background: white; padding: 25px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+                        <h3 style="color: #D71920; font-size: 14px; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                            <span style="background: #fef2f2; padding: 8px; border-radius: 10px;">📱</span> PROFESI & SOSMED
+                        </h3>
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-size: 9px; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Pekerjaan Saat Ini</label>
+                            <div style="font-weight: 800; font-size: 13px; color: #1e293b;">${p.kerja_skrg || '-'}</div>
                         </div>
-                        <div>
-                            <label style="font-size: 8px; color: #94a3b8; font-weight: 800; letter-spacing: 1px;">KOMPUTER</label>
-                            <div style="font-weight: 700; font-size: 12px; color: #fbbf24;">${ms[8] || '-'}</div>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div style="background: #eff6ff; color: #1d4ed8; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700;">IG: ${medsos[10] || '-'}</div>
+                            <div style="background: #f0fdf4; color: #15803d; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700;">FB: ${medsos[9] || '-'}</div>
+                            <div style="background: #faf5ff; color: #7e22ce; padding: 5px 12px; border-radius: 10px; font-size: 11px; font-weight: 700;">TT: ${medsos[11] || '-'}</div>
                         </div>
                     </div>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex:1; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; text-align: center;">
-                            <div style="font-size: 10px; font-weight: 800;">FB</div>
-                            <div style="font-size: 10px; opacity: 0.6;">${ms[9] || '-'}</div>
-                        </div>
-                        <div style="flex:1; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; text-align: center;">
-                            <div style="font-size: 10px; font-weight: 800;">IG</div>
-                            <div style="font-size: 10px; opacity: 0.6;">${ms[10] || '-'}</div>
-                        </div>
-                        <div style="flex:1; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; text-align: center;">
-                            <div style="font-size: 10px; font-weight: 800;">TT</div>
-                            <div style="font-size: 10px; opacity: 0.6;">${ms[11] || '-'}</div>
-                        </div>
-                    </div>
+
                 </div>
 
-            </div>
-
-            <div style="padding: 20px 15px;">
-                <button onclick="window.print()" style="width: 100%; background: #D71920; color: white; border: none; padding: 20px; border-radius: 20px; font-weight: 900; font-size: 14px; box-shadow: 0 10px 20px rgba(215,25,32,0.3);">
-                    CETAK PROFIL PARIPURNA
-                </button>
+                <div style="margin-top: 30px; display: flex; gap: 10px;">
+                    <button onclick="window.print()" style="flex: 1; background: #D71920; color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 10px 20px rgba(215,25,32,0.2);">
+                        🖨️ CETAK PROFIL
+                    </button>
+                    <button onclick="closeDetail()" style="background: #1e293b; color: white; border: none; padding: 0 25px; border-radius: 20px; font-weight: 800; cursor: pointer;">
+                        TUTUP
+                    </button>
+                </div>
             </div>
         </div>
     `;
