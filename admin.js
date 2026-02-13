@@ -334,116 +334,127 @@ function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
-    const p = item.pribadi || {};
-    const f = item.formal || [];
-    const k = item.kaderisasi || [];
-    const j = item.jabatan || [];
-    const ms = item.medsos || [];
+    // Mapping Alias Data (Sesuai Struktur Spreadsheet dari Step 1-6)
+    const p = item.pribadi || {};      // Step 1
+    const f = item.formal || [];       // Step 2
+    const k = item.kaderisasi || [];   // Step 3
+    const j = item.jabatan || [];      // Step 4 (Struktur & Penugasan)
+    const rj = item.riwayat_kerja || []; // Step 5 (Kerja & Organisasi)
+    const ms = item.medsos || [];      // Step 6
 
-    // --- LOGIKA ANALISA DATA (STEP 3) ---
+    // --- LOGIKA ANALISA KADERISASI ---
     const listJenis = k[2] ? String(k[2]).split("\n") : [];
     const listPenyel = k[3] ? String(k[3]).split("\n") : [];
+    const listLokasi = k[4] ? String(k[4]).split("\n") : [];
     const listTahun = k[5] ? String(k[5]).split("\n") : [];
 
     const isPratama = listJenis.some(v => v.toUpperCase().includes("PRATAMA"));
     const isMadya = listJenis.some(v => v.toUpperCase().includes("MADYA"));
     
-    // Hitung Masa Tunggu (Jika sudah Pratama tapi belum Madya)
     let infoAntrian = "";
     if (isPratama && !isMadya) {
         const idxP = listJenis.findIndex(v => v.toUpperCase().includes("PRATAMA"));
         const thnPratama = parseInt(listTahun[idxP]);
         if (thnPratama) {
             const masaTunggu = new Date().getFullYear() - thnPratama;
-            infoAntrian = `<div style="margin-top:10px; font-size:12px; color:#D71920; font-weight:700; background:#fff1f2; padding:8px; border-radius:10px; border:1px dashed #D71920;">
-                ⏳ ANTRIAN MADYA: ${masaTunggu} TAHUN
-            </div>`;
+            infoAntrian = `<div style="margin-top:12px; font-size:11px; color:#fbbf24; font-weight:700; border:1px dashed #fbbf24; padding:5px 10px; border-radius:8px;">⏳ MASA TUNGGU MADYA: ${masaTunggu} TAHUN</div>`;
         }
     }
 
     let htmlContent = `
-        <div style="text-align:center; padding: 40px 20px; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border-radius: 0 0 40px 40px; margin: -30px -30px 30px -30px; position: relative; overflow: hidden;">
-            <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(215, 25, 32, 0.1); border-radius: 50%;"></div>
-            
+        <div style="text-align:center; padding: 40px 20px; background: linear-gradient(135deg, #D71920 0%, #8b0000 100%); border-radius: 0 0 40px 40px; margin: -30px -30px 30px -30px; color:white;">
             <img src="${formatDriveUrl(p.foto)}" 
-                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
-                 style="width:130px; height:130px; border-radius:50%; object-fit:cover; border: 4px solid rgba(255,255,255,0.2); box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+                 onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=ffffff&color=D71920&size=128'"
+                 style="width:120px; height:120px; border-radius:50%; object-fit:cover; border: 4px solid white; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+            <h2 style="margin-top:15px; font-size:22px; font-weight:800;">${(p.nama || '-').toUpperCase()}</h2>
+            <div style="font-size:12px; opacity:0.9;">KTA: ${p.kta || '-'} | NIK: ${p.nik || '-'}</div>
             
-            <h2 style="margin-top:20px; color:white; font-size:24px; font-weight:800; letter-spacing:0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">${(p.nama || '-').toUpperCase()}</h2>
-            <div style="color: #fbbf24; font-weight: 700; font-size: 13px; letter-spacing: 1px;">ID: ${p.kta || '-'}</div>
-            
-            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-                <div style="background: ${isPratama ? '#059669' : 'rgba(255,255,255,0.1)'}; color: white; padding: 6px 15px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1);">
-                    PRATAMA: ${isPratama ? '✅' : '❌'}
-                </div>
-                <div style="background: ${isMadya ? '#059669' : 'rgba(255,255,255,0.1)'}; color: white; padding: 6px 15px; border-radius: 12px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.1);">
-                    MADYA: ${isMadya ? '✅' : '❌'}
-                </div>
+            <div style="display: flex; justify-content: center; gap: 10px; margin-top: 15px;">
+                <span style="background:${isPratama ? '#059669':'rgba(0,0,0,0.3)'}; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:700;">PRATAMA ${isPratama ? '✅':'❌'}</span>
+                <span style="background:${isMadya ? '#059669':'rgba(0,0,0,0.3)'}; padding:4px 12px; border-radius:20px; font-size:10px; font-weight:700;">MADYA ${isMadya ? '✅':'❌'}</span>
             </div>
             ${infoAntrian}
         </div>
 
-        <div style="padding: 0 5px;">
-            <div class="profile-section" style="background: white; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);">
-                <div style="font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 20px;">👤</span> INFORMASI PRIBADI
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div style="font-size: 12px;"><label style="display:block; color:#94a3b8; font-weight:600; font-size:10px;">NIK</label><span style="color:#1e293b; font-weight:700;">${p.nik || '-'}</span></div>
-                    <div style="font-size: 12px;"><label style="display:block; color:#94a3b8; font-weight:600; font-size:10px;">WHATSAPP</label><span style="color:#1e293b; font-weight:700;">${p.wa || '-'}</span></div>
-                    <div style="font-size: 12px; grid-column: span 2;"><label style="display:block; color:#94a3b8; font-weight:600; font-size:10px;">TEMPAT, TGL LAHIR</label><span style="color:#1e293b; font-weight:700;">${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
-                    <div style="font-size: 12px; grid-column: span 2;"><label style="display:block; color:#94a3b8; font-weight:600; font-size:10px;">ALAMAT DOMISILI</label><span style="color:#1e293b; font-weight:700;">${p.alamat || '-'}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
+        <div style="display: flex; flex-direction: column; gap: 20px; padding-bottom:30px;">
+            
+            <div style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                <div style="font-weight:800; font-size:14px; color:#D71920; margin-bottom:15px; border-bottom:1px solid #f1f5f9; padding-bottom:5px;">📍 IDENTITAS & KONTAK</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div><label style="display:block; font-size:9px; color:#94a3b8; font-weight:700;">TTL</label><span style="font-size:12px; font-weight:600;">${p.tmpt_lahir}, ${p.tgl_lahir}</span></div>
+                    <div><label style="display:block; font-size:9px; color:#94a3b8; font-weight:700;">AGAMA</label><span style="font-size:12px; font-weight:600;">${p.agama}</span></div>
+                    <div><label style="display:block; font-size:9px; color:#94a3b8; font-weight:700;">WHATSAPP</label><span style="font-size:12px; font-weight:600;">${p.wa}</span></div>
+                    <div><label style="display:block; font-size:9px; color:#94a3b8; font-weight:700;">EMAIL</label><span style="font-size:12px; font-weight:600;">${p.email}</span></div>
+                    <div style="grid-column: span 2;"><label style="display:block; font-size:9px; color:#94a3b8; font-weight:700;">ALAMAT</label><span style="font-size:12px; font-weight:600;">${p.alamat}, RT${p.rt}/RW${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
                 </div>
             </div>
 
-            <div class="profile-section" style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                <div style="font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 20px;">📜</span> SERTIFIKASI KADERISASI
-                </div>
+            <div style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                <div style="font-weight:800; font-size:14px; color:#D71920; margin-bottom:10px;">🎓 PENDIDIKAN FORMAL</div>
+                <table style="width:100%; font-size:11px; border-collapse:collapse;">
+                    <tr style="color:#94a3b8; text-align:left;"><th style="padding:5px;">Jenjang</th><th>Sekolah/Kampus</th><th>Tahun</th></tr>
+                    ${f[2] ? `<tr><td style="padding:5px;">SD</td><td>${f[2]}</td><td>${f[3]}</td></tr>` : ''}
+                    ${f[4] ? `<tr><td style="padding:5px;">SMP</td><td>${f[4]}</td><td>${f[5]}</td></tr>` : ''}
+                    ${f[6] ? `<tr><td style="padding:5px;">SMA</td><td>${f[6]}</td><td>${f[8]}</td></tr>` : ''}
+                    ${f[11] ? `<tr><td style="padding:5px;">PT/Univ</td><td>${f[11]} (${f[12]})</td><td>${f[14]}</td></tr>` : ''}
+                    <tr style="border-top:1px solid #f1f5f9; font-weight:800;"><td style="padding:5px; color:#D71920;">Terakhir</td><td colspan="2">${f[19]}</td></tr>
+                </table>
+            </div>
+
+            <div style="background:#f8fafc; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                <div style="font-weight:800; font-size:14px; color:#D71920; margin-bottom:15px;">📜 KADERISASI PARTAI</div>
                 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                     ${listJenis.length > 0 && listJenis[0] !== "" ? listJenis.map((val, idx) => `
-                        <div style="background: white; border: 1px solid #e2e8f0; padding: 12px; border-radius: 15px; flex: 1 1 calc(50% - 10px); min-width: 140px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                            <div style="color: #D71920; font-weight: 800; font-size: 13px;">${val}</div>
-                            <div style="font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.2;">
-                                ${listPenyel[idx] || '-'}<br><b>Tahun ${listTahun[idx] || '-'}</b>
-                            </div>
+                        <div style="background: white; border: 1px solid #cbd5e1; padding: 10px; border-radius: 12px; flex: 1 1 calc(50% - 10px); min-width: 140px;">
+                            <div style="color: #D71920; font-weight: 800; font-size: 11px;">${val}</div>
+                            <div style="font-size: 9px; color: #64748b; margin-top: 3px;">${listPenyel[idx]}<br>Loc: ${listLokasi[idx]}<br><b>Tahun: ${listTahun[idx]}</b></div>
                         </div>
-                    `).join('') : '<div style="color:#94a3b8; font-style:italic;">Data belum tersedia</div>'}
+                    `).join('') : '<div style="font-size:11px; color:#94a3b8;">Belum mengikuti kaderisasi jenjang.</div>'}
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                <div style="background: white; padding: 15px; border-radius: 20px; border: 1px solid #f1f5f9;">
-                    <label style="display:block; color:#94a3b8; font-weight:600; font-size:10px;">PENDIDIKAN TERAKHIR</label>
-                    <span style="color:#1e293b; font-weight:800; font-size:14px;">${f[19] || '-'}</span>
-                </div>
-                <div style="background: white; padding: 15px; border-radius: 20px; border: 1px solid #f1f5f9;">
-                    <label style="display:block; color:#94a3b8; font-weight:600; font-size:10px;">PEKERJAAN</label>
-                    <span style="color:#1e293b; font-weight:800; font-size:14px;">${p.kerja_skrg || '-'}</span>
-                </div>
-            </div>
-
-            <div class="profile-section" style="background: white; padding: 20px; border-radius: 20px; border: 1px solid #f1f5f9; margin-bottom: 25px;">
-                <div style="font-weight: 800; color: #1e293b; margin-bottom: 12px; font-size: 14px;">🚩 RIWAYAT JABATAN & TUGAS</div>
-                <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                <div style="font-weight:800; font-size:14px; color:#D71920; margin-bottom:10px;">🚩 STRUKTUR & PENUGASAN</div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
                     ${j.length > 0 ? j.map(row => `
-                        <div style="background: #f1f5f9; padding: 10px 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="background:#f1f5f9; padding:10px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
                             <div>
-                                <div style="font-weight: 700; font-size: 12px; color: #1e293b;">${row[5] || row[12]}</div>
-                                <div style="font-size: 10px; color: #64748b;">${row[4] || row[10]}</div>
+                                <div style="font-weight:700; font-size:11px;">${row[5] || row[12]}</div>
+                                <div style="font-size:9px; color:#64748b;">${row[4] || row[10]}</div>
                             </div>
-                            <div style="font-size: 10px; font-weight: 800; color: #D71920;">${row[8] || row[14]}</div>
+                            <div style="font-size:9px; font-weight:800; color:#D71920;">${row[8] || row[14]}</div>
                         </div>
-                    `).join('') : '<div style="color:#94a3b8; font-size:11px;">Tidak ada riwayat jabatan</div>'}
+                    `).join('') : '<div style="font-size:11px; color:#94a3b8;">Tidak ada riwayat jabatan partai.</div>'}
                 </div>
             </div>
+
+            <div style="background:white; padding:20px; border-radius:20px; border:1px solid #e2e8f0;">
+                <div style="font-weight:800; font-size:14px; color:#D71920; margin-bottom:10px;">💼 PEKERJAAN & ORGANISASI</div>
+                <div style="margin-bottom:10px;"><label style="display:block; font-size:9px; color:#94a3b8; font-weight:700;">PEKERJAAN SEKARANG</label><span style="font-size:12px; font-weight:700;">${p.kerja_skrg}</span></div>
+                <div style="font-size:10px; color:#475569;">
+                    <strong>Riwayat Organisasi:</strong><br>
+                    ${org && org.length > 0 ? org.map(o => `• ${o[2]} sebagai ${o[4]} (${o[5]})`).join('<br>') : '-'}
+                </div>
+            </div>
+
+            <div style="background:#1e293b; padding:20px; border-radius:20px; color:white;">
+                <div style="font-weight:800; font-size:14px; color:#fbbf24; margin-bottom:15px;">🌐 KOMPETENSI & MEDIA SOSIAL</div>
+                <div style="font-size:11px; margin-bottom:15px; background:rgba(255,255,255,0.1); padding:10px; border-radius:10px;">
+                    <b>Bahasa:</b> ${p.bahasa || '-'}<br>
+                    <b>Skill IT:</b> ${ms[8] || '-'}
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    ${ms[9] && ms[9] !== '-' ? `<div style="background:#1877F2; padding:5px 10px; border-radius:8px; font-size:10px; font-weight:700;">FB: ${ms[9]}</div>` : ''}
+                    ${ms[10] && ms[10] !== '-' ? `<div style="background:#E4405F; padding:5px 10px; border-radius:8px; font-size:10px; font-weight:700;">IG: ${ms[10]}</div>` : ''}
+                    ${ms[11] && ms[11] !== '-' ? `<div style="background:#000000; border:1px solid #333; padding:5px 10px; border-radius:8px; font-size:10px; font-weight:700;">TikTok: ${ms[11]}</div>` : ''}
+                </div>
+            </div>
+
         </div>
 
-        <div style="text-align:center; padding-bottom: 30px;">
-             <button onclick="window.print()" style="background: #D71920; color:white; border:none; padding:15px 40px; border-radius:18px; font-weight:800; cursor:pointer; box-shadow: 0 10px 20px rgba(215,25,32,0.2); width: 100%;">
-                🖨️ DOWNLOAD DOSSIER LENGKAP
-             </button>
-        </div>
+        <button onclick="window.print()" style="width:100%; background:#D71920; color:white; border:none; padding:18px; border-radius:20px; font-weight:800; cursor:pointer; margin-bottom:20px; box-shadow:0 10px 20px rgba(215,25,32,0.2);">
+            🖨️ CETAK DOSSIER KADER
+        </button>
     `;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
