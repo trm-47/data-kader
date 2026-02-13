@@ -92,6 +92,7 @@ body {
 /* 7. FORM ELEMENTS */
 .input-group {
     margin-bottom: 20px;
+    position: relative;
 }
 
 .input-group label {
@@ -111,6 +112,9 @@ body {
     color: var(--dark-void) !important;
     outline: none;
     transition: 0.3s;
+    position: relative;
+    z-index: 10; /* Angka tinggi agar tidak tertindih */
+    cursor: pointer;
 }
 
 .input-field:focus {
