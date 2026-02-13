@@ -101,114 +101,83 @@ function formatDriveUrl(url) {
 }
 
 
-// --- CORE RENDERING ---
-// --- CORE RENDERING (VERSI PERBAIKAN) ---
+// --- CORE RENDERING (VERSI HYPER PREMIUM & CLEAN) ---
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
     if (!body) return;
+    
+    // 1. BERSIHKAN BODY (Cegah tampilan dobel)
     body.innerHTML = "";
 
     if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px; color:#64748b;">Data tidak ditemukan.</td></tr>';
         return;
     }
 
+    // Urutkan dari yang terbaru masuk
     const displayData = [...data].reverse();
 
     displayData.forEach((item) => {
         if (!item || !item.pribadi) return;
+        
         const p = item.pribadi;
         const f = item.formal || [];
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- LOGIKA KADERISASI ---
-        const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
-        const textTahunKader = k[5] ? k[5].toString() : ""; 
-
-        // Ambil tahun Pratama
-        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
-        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
-        
-        const isMadya = textJenisKader.includes("madya");
-        const hasPratama = textJenisKader.includes("pratama");
-        
-        let rowClass = "";
-        let badgeWarning = "";
-
-        if (hasPratama && !isMadya && tahunPratama) {
-            const currentYear = new Date().getFullYear();
-            const masaTunggu = currentYear - tahunPratama;
-
-            if (masaTunggu >= 5) {
-                rowClass = "urgent-row"; 
-                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
-            } else {
-                rowClass = "warning-row"; 
-                badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
-            }
-        }
-
+        // --- LOGIKA BADGE KADERISASI (BIAR KECIL BERJEJER) ---
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
+            // Pecah berdasarkan baris baru, bersihkan, dan tampilkan berjejer (inline-block)
             const listJenjang = k[2].toString().split("\n");
+            htmlBadgeKader = `<div style="display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;">`;
             listJenjang.forEach(jenjangText => {
                 if(jenjangText.trim()) {
-                    htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjangText.trim()}</span>`;
+                    // Warna otomatis: Pratama (Merah), Madya (Emas/Dark), Lainnya (Gray)
+                    let bColor = "#fee2e2"; let tColor = "#D71920";
+                    if(jenjangText.toUpperCase().includes("MADYA")) { bColor = "#1e293b"; tColor = "#fbbf24"; }
+                    
+                    htmlBadgeKader += `<span style="background:${bColor}; color:${tColor}; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:800; border:1px solid rgba(0,0,0,0.05); white-space:nowrap;">${jenjangText.trim().toUpperCase()}</span>`;
                 }
             });
+            htmlBadgeKader += `</div>`;
         } else {
-            htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
+            htmlBadgeKader = `<span class="badge badge-gray">ANGGOTA</span>`;
         }
 
-        // --- WHATSAPP ---
+        // --- WHATSAPP LOGIC ---
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
-        const btnWA = waNumber ?
-            `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">💬 Chat</a>` :
-            `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
-
-        // --- PENDIDIKAN ---
-        let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`;
-        const listEdu = [
-            { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
-            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
-        ];
-
-        for (let edu of listEdu) {
-            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                let detail = (edu.label === "S1") ? `<br><small>${(f[12] && f[12] !== "-") ? f[12] : f[11]}</small>` : `<br><small>${f[edu.idx]}</small>`;
-                infoPendidikan = `<strong>${edu.label}</strong>${detail}`;
-                break;
-            }
-        }
 
         const originalIdx = databaseKader.indexOf(item);
 
-        // --- RENDER BARIS ---
-        body.innerHTML += `
-            <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
-                <td data-label="Foto">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
-                </td>
-                <td data-label="Identitas">
-                    <strong style="font-size:15px;">${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}
-                    <br>
-                    <small style="color: #D71920; font-weight: 700;">No. KTA: ${p.kta || '-'}</small>
-                </td>
-                <td data-label="Usia" style="text-align:center;">
-                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
-                </td>
-                <td data-label="Pendidikan">
-                    ${infoPendidikan}
-                </td>
-                <td data-label="Kaderisasi">
-                    ${htmlBadgeKader}
-                </td>
-                <td data-label="Aksi" style="text-align:center;">
-                    ${btnWA}
-                </td>
-            </tr>`;
+        // --- RENDER ROW ---
+        const tr = document.createElement('tr');
+        tr.onclick = () => openDetail(originalIdx);
+        tr.innerHTML = `
+            <td data-label="Foto">
+                <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'" style="width:45px; height:45px; border-radius:12px; object-fit:cover; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+            </td>
+            <td data-label="Identitas">
+                <div style="font-weight:800; color:#1e293b; font-size:14px;">${p.nama || 'TANPA NAMA'}</div>
+                <div style="font-size:10px; color:#D71920; font-weight:700; letter-spacing:0.5px;">KTA: ${p.kta || '-'}</div>
+            </td>
+            <td data-label="Usia" style="text-align:center;">
+                <div style="font-weight:700;">${ageInfo.age}</div>
+                <div style="font-size:10px; color:#64748b;">${ageInfo.gen}</div>
+            </td>
+            <td data-label="Wilayah">
+                <div style="font-weight:600; font-size:12px;">${p.kec || '-'}</div>
+                <div style="font-size:10px; color:#94a3b8;">${p.desa || '-'}</div>
+            </td>
+            <td data-label="Kaderisasi">
+                ${htmlBadgeKader}
+            </td>
+            <td data-label="Aksi" style="text-align:center;">
+                ${waNumber ? `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; width:32px; height:32px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; box-shadow:0 4px 8px rgba(37,211,102,0.3);">💬</a>` : '-'}
+            </td>
+        `;
+        body.appendChild(tr);
     });
 }
 
