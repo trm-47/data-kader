@@ -1,5 +1,5 @@
 const CONFIG = {
-    URL: "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec",
+    URL: "https://script.google.com/macros/s/AKfycbwNnLpzYiZKtFCnZjRqDLc0c0l6bXBVfahBwC7eV8PE-hhbzmpiE2kKj0NziNTmUJuyfg/exec",
     YEAR: 2026
 };
 
