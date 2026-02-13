@@ -1,4 +1,4 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbymocP9faBGHUX9_aQOof1zXpNO3L4O5TRcSHrL-wRcBdIfaxpblkV5i3Fbu33Txw1bCQ/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec";
 let databaseKader = [];
 
 // --- INITIALIZATION ---
@@ -102,6 +102,7 @@ function formatDriveUrl(url) {
 
 
 // --- CORE RENDERING ---
+// --- CORE RENDERING (VERSI PERBAIKAN) ---
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
     if (!body) return;
@@ -121,15 +122,12 @@ function renderTable(data) {
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
-        // --- LOGIKA KADERISASI BARU (MODIFIKASI) ---
+        // --- LOGIKA KADERISASI ---
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
 
+        // Ambil tahun Pratama
         const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
-        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
-
-        // Parsing tahun Pratama dari format "1. YYYY"
-        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/);
         const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
         
         const isMadya = textJenisKader.includes("madya");
@@ -143,13 +141,13 @@ function renderTable(data) {
             const masaTunggu = currentYear - tahunPratama;
 
             if (masaTunggu >= 5) {
-        rowClass = "urgent-row"; 
-        badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
-    } else {
-        rowClass = "warning-row"; 
-        badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
-    }
-}
+                rowClass = "urgent-row"; 
+                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+            } else {
+                rowClass = "warning-row"; 
+                badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+            }
+        }
 
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
@@ -162,14 +160,15 @@ function renderTable(data) {
         } else {
             htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
         }
-        // --- SELESAI MODIFIKASI KADERISASI ---
 
+        // --- WHATSAPP ---
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
         const btnWA = waNumber ?
             `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">💬 Chat</a>` :
             `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
 
+        // --- PENDIDIKAN ---
         let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`;
         const listEdu = [
             { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
@@ -186,30 +185,30 @@ function renderTable(data) {
 
         const originalIdx = databaseKader.indexOf(item);
 
-        // Cari bagian ini di dalam fungsi renderTable Anda:
-
-body.innerHTML += `
-    <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
-        <td data-label="Foto">
-            <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
-        </td>
-        <td data-label="Identitas">
-            <strong>${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}<br>
-            <small style="color: #D71920; font-weight: 700;">No. KTA: ${p.kta || '-'}</small>
-        </td>
-        <td data-label="Usia" style="text-align:center;">
-            ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
-        </td>
-        <td data-label="Pendidikan">
-            ${infoPendidikan}
-        </td>
-        <td data-label="Kaderisasi">
-            ${htmlBadgeKader}
-        </td>
-        <td data-label="Aksi" style="text-align:center;">
-            ${btnWA}
-        </td>
-    </tr>`;
+        // --- RENDER BARIS ---
+        body.innerHTML += `
+            <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
+                <td data-label="Foto">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
+                </td>
+                <td data-label="Identitas">
+                    <strong style="font-size:15px;">${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}
+                    <br>
+                    <small style="color: #D71920; font-weight: 700;">No. KTA: ${p.kta || '-'}</small>
+                </td>
+                <td data-label="Usia" style="text-align:center;">
+                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
+                </td>
+                <td data-label="Pendidikan">
+                    ${infoPendidikan}
+                </td>
+                <td data-label="Kaderisasi">
+                    ${htmlBadgeKader}
+                </td>
+                <td data-label="Aksi" style="text-align:center;">
+                    ${btnWA}
+                </td>
+            </tr>`;
     });
 }
 
