@@ -61,6 +61,7 @@ body {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 5px;
     background: var(--primary-red);
+    pointer-events: none;
 }
 
 /* 6. HEADER & TYPOGRAPHY - INI YANG TADI ERROR */
