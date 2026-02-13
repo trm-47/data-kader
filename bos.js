@@ -1,160 +1,130 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec";
+// ---------------------------
+// bos.js - Dashboard Kaderisasi
+// ---------------------------
 
+// URL GAS lama (doGet?action=read)
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwAbaGgSWdlZ3AwtPk3Guwu-izM6AIsmf4CrW5WFFytVOQd9jHymA_4SQVU83EiFWBaZA/exec?action=read";
+
+// Variabel global untuk data
 let BOS_DATA = [];
 
-// ================= LOGIN =================
+// ---------------------------
+// LOGIN SEDERHANA
+// ---------------------------
+function login() {
+    const user = document.getElementById("username").value;
+    const pass = document.getElementById("password").value;
 
-function login(){
-    const u = document.getElementById("username").value;
-    const p = document.getElementById("password").value;
-
-    if(u === "dpd" && p === "bos2026"){
-        document.getElementById("loginScreen").style.display="none";
-        document.getElementById("mainApp").style.display="block";
+    // Contoh login sederhana (bisa diganti DB / Google Auth)
+    if (user === "admin" && pass === "pdi123") {
+        document.getElementById("login-section").style.display = "none";
+        document.getElementById("dashboard-section").style.display = "block";
         loadData();
     } else {
-        alert("Login gagal");
+        alert("Username / Password salah!");
     }
 }
 
-function logout(){
-    location.reload();
+// ---------------------------
+// LOAD DATA DARI GAS (JSONP)
+// ---------------------------
+function loadData() {
+    // Buat tag <script> untuk JSONP
+    const script = document.createElement("script");
+    script.src = GAS_URL + "&callback=handleData";
+    document.body.appendChild(script);
 }
 
-// ================= LOAD DATA =================
-
-async function loadData(){
-    try{
-        const res = await fetch(GAS_URL);
-        const data = await res.json();
-        BOS_DATA = data;
-
-        renderKPI();
-        renderTable();
-
-    }catch(err){
-        alert("Gagal mengambil data");
-        console.error(err);
+// ---------------------------
+// CALLBACK JSONP dari GAS
+// ---------------------------
+function handleData(data) {
+    if (!data || data.error) {
+        alert("Gagal mengambil data: " + (data ? data.error : "tidak ada data"));
+        return;
     }
+
+    BOS_DATA = data;
+
+    // Render dashboard
+    renderKPI();
+    renderTable();
 }
 
-// ================= KPI =================
+// ---------------------------
+// RENDER KPI / STATISTIK
+// ---------------------------
+function renderKPI() {
+    const totalKader = BOS_DATA.length;
+    const genZMilenial = BOS_DATA.filter(k => {
+        const umur = parseInt(k.pribadi.umur);
+        return umur >= 17 && umur <= 40;
+    }).length;
+    const rasioPerempuan = (BOS_DATA.filter(k => k.pribadi.jk === "Perempuan").length / totalKader * 100).toFixed(1);
 
-function renderKPI(){
+    // Update HTML
+    document.getElementById("total-kader").innerText = totalKader;
+    document.getElementById("percent-genz-milenial").innerText = genZMilenial + " orang";
+    document.getElementById("rasio-perempuan").innerText = rasioPerempuan + " %";
 
-    const total = BOS_DATA.length;
-
-    let perempuan = 0;
-    let pratama = 0;
-    let madya = 0;
-    let utama = 0;
-    let young = 0;
-
-    BOS_DATA.forEach(d => {
-        const p = d.pribadi;
-        const k = d.kaderisasi;
-
-        if(p.jk === "Perempuan") perempuan++;
-
-        const umur = parseInt(p.umur);
-        if(umur <= 43) young++;
-
-        if(k[2]) pratama++;  // pt
-        if(k[4]) madya++;    // mt
-        if(k[6]) utama++;    // ut
+    // Hitung total Pratama / Madya / Utama
+    let totalPratama = 0, totalMadya = 0, totalUtama = 0;
+    BOS_DATA.forEach(k => {
+        const kdr = k.kaderisasi;
+        if (kdr[2] && kdr[2] !== "") totalPratama++;
+        if (kdr[4] && kdr[4] !== "") totalMadya++;
+        if (kdr[6] && kdr[6] !== "") totalUtama++;
     });
 
-    document.getElementById("kpiTotal").innerText = total;
-    document.getElementById("kpiYoung").innerText = total ? Math.round((young/total)*100)+"%" : "0%";
-    document.getElementById("kpiPratama").innerText = pratama;
-    document.getElementById("kpiMadya").innerText = madya;
-    document.getElementById("kpiUtama").innerText = utama;
-    document.getElementById("kpiPerempuan").innerText = total ? Math.round((perempuan/total)*100)+"%" : "0%";
+    document.getElementById("total-pratama").innerText = totalPratama;
+    document.getElementById("total-madya").innerText = totalMadya;
+    document.getElementById("total-utama").innerText = totalUtama;
 }
 
-// ================= TABLE =================
+// ---------------------------
+// RENDER TABEL KADER
+// ---------------------------
+function renderTable() {
+    const tableBody = document.getElementById("kader-table-body");
+    tableBody.innerHTML = "";
 
-function renderTable(){
-    const tbody = document.getElementById("tableBody");
-    tbody.innerHTML="";
+    BOS_DATA.forEach(k => {
+        const row = document.createElement("tr");
 
-    BOS_DATA.forEach((d,i)=>{
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-            <td>${d.pribadi.nama}</td>
-            <td>${d.pribadi.umur}</td>
-            <td>${d.pribadi.kota}</td>
-            <td>${getJenjang(d.kaderisasi)}</td>
-            <td>${getJabatan(d.jabatan)}</td>
+        row.innerHTML = `
+            <td>${k.pribadi.nama}</td>
+            <td>${k.pribadi.nik}</td>
+            <td>${k.pribadi.kota}</td>
+            <td>${k.pribadi.kec}</td>
+            <td>${k.pribadi.desa}</td>
+            <td>${k.pribadi.jk}</td>
+            <td>${k.pribadi.umur}</td>
+            <td>${k.kaderisasi[2] || "-"}</td>
+            <td>${k.kaderisasi[4] || "-"}</td>
+            <td>${k.kaderisasi[6] || "-"}</td>
         `;
 
-        tr.onclick = ()=> openDrawer(d);
+        // Klik row untuk lihat detail
+        row.addEventListener("click", () => showDetail(k));
 
-        tbody.appendChild(tr);
+        tableBody.appendChild(row);
     });
 }
 
-function getJenjang(k){
-    if(k[6]) return "Utama";
-    if(k[4]) return "Madya";
-    if(k[2]) return "Pratama";
-    return "-";
-}
-
-function getJabatan(j){
-    if(!j || j.length===0) return "-";
-    return j[0][5] || "-";
-}
-
-// ================= SEARCH =================
-
-function searchTable(){
-    const val = document.getElementById("searchInput").value.toLowerCase();
-    const rows = document.querySelectorAll("#tableBody tr");
-
-    rows.forEach(r=>{
-        r.style.display = r.innerText.toLowerCase().includes(val) ? "" : "none";
-    });
-}
-
-// ================= DRAWER =================
-
-function openDrawer(d){
-    const div = document.getElementById("drawerContent");
-
-    div.innerHTML = `
-        <h2>${d.pribadi.nama}</h2>
-        <img src="${d.pribadi.foto}" style="width:120px;border-radius:10px;margin-bottom:15px;">
-        <p><b>NIK:</b> ${d.pribadi.nik}</p>
-        <p><b>KTA:</b> ${d.pribadi.kta}</p>
-        <p><b>Usia:</b> ${d.pribadi.umur}</p>
-        <p><b>Alamat:</b> ${d.pribadi.alamat}, ${d.pribadi.desa}, ${d.pribadi.kec}, ${d.pribadi.kota}</p>
-        <p><b>Pekerjaan:</b> ${d.pribadi.kerja_skrg}</p>
-        <p><b>Email:</b> ${d.pribadi.email}</p>
-        <hr>
-        <h3>Kaderisasi</h3>
-        <p>Pratama: ${d.kaderisasi[2] || "-"}</p>
-        <p>Madya: ${d.kaderisasi[4] || "-"}</p>
-        <p>Utama: ${d.kaderisasi[6] || "-"}</p>
+// ---------------------------
+// DETAIL KADER
+// ---------------------------
+function showDetail(k) {
+    const detailDiv = document.getElementById("detail-kader");
+    detailDiv.innerHTML = `
+        <h3>${k.pribadi.nama}</h3>
+        <img src="${k.pribadi.foto}" width="150" />
+        <p><b>NIK:</b> ${k.pribadi.nik}</p>
+        <p><b>Alamat:</b> ${k.pribadi.alamat}, ${k.pribadi.desa}, ${k.pribadi.kec}, ${k.pribadi.kota}</p>
+        <p><b>Umur:</b> ${k.pribadi.umur}</p>
+        <p><b>Jenis Kelamin:</b> ${k.pribadi.jk}</p>
+        <p><b>Pendidikan Terakhir:</b> ${k.formal[19] || "-"}</p>
+        <p><b>Kaderisasi:</b> Pratama ${k.kaderisasi[2] || "-"}, Madya ${k.kaderisasi[4] || "-"}, Utama ${k.kaderisasi[6] || "-"}</p>
+        <p><b>Jabatan:</b> ${k.jabatan.map(j => j[5]).join(", ") || "-"}</p>
     `;
-
-    document.getElementById("drawer").classList.add("active");
-}
-
-function closeDrawer(){
-    document.getElementById("drawer").classList.remove("active");
-}
-
-// ================= EXPORT PDF =================
-
-async function exportPDF(){
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    await html2canvas(document.body).then(canvas=>{
-        const img = canvas.toDataURL("image/png");
-        doc.addImage(img,'PNG',10,10,190,0);
-        doc.save("Executive_Dashboard_DPD_DIY.pdf");
-    });
 }
