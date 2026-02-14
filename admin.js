@@ -213,9 +213,24 @@ function renderTable(data) {
                 <td style="padding:12px 5px; width:150px; text-align:center;">
                     ${htmlBadgeKader}
                 </td>
-                <td style="text-align:center; width:95px; padding:12px 5px;">
+                <td style="text-align:center; width:100px; padding:12px 5px;">
                     ${waNumber ? `
-                        <a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                        <a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 8px;
+                            background: #ffffff;
+                            border: 1px solid #e2e8f0;
+                            border-left: 3px solid #16a34a;
+                            color: #16a34a;
+                            padding: 5px 10px;
+                            border-radius: 4px;
+                            text-decoration: none;
+                            font-size: 9px;
+                            font-weight: 800;
+                            letter-spacing: 0.5px;
+                            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+                        ">
                             <img src="${icons.wa}" style="width:14px; height:14px; object-fit:contain;"> CHAT
                         </a>` : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
@@ -598,8 +613,8 @@ function openDetail(originalIndex) {
                                 <strong style="color:#0284c7; font-size:13px;">${cap(r[12] || '-')}</strong><br>
                                 <span style="font-weight:600; color:#475569;">Lembaga: ${cap(r[11] || '-')}</span><br>
                                 <div style="margin-top:4px; color:#64748b;">
-                                    <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small><br>
-                                    <small>📅 Periode: <b>${r[14] || '-'}</b></small>
+                                    <small>Wilayah: <b>${cap(r[13] || '-')}</b></small><br>
+                                    <small>Periode: <b>${r[14] || '-'}</b></small>
                                 </div>
                             </div>
                         `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px; text-align:center; padding:20px;">Tidak ada data penugasan</div>'}
@@ -635,7 +650,7 @@ function openDetail(originalIndex) {
             </div>
 
             <div style="background: #1e293b; padding: 20px; border-radius: 24px; text-align: center; color:#fff;">
-                <div style="font-size:10px; font-weight:700; letter-spacing:2px; opacity:0.6; margin-bottom:15px;">MEDIA SOSIAL RESMI</div>
+                <div style="font-size:10px; font-weight:700; letter-spacing:2px; opacity:0.6; margin-bottom:15px;">MEDIA SOSIAL</div>
                 <div style="display: flex; gap: 15px; justify-content: center;">
                     ${renderMedsosIcoPremium('facebook', m.fb, '#1877F2')}
                     ${renderMedsosIcoPremium('instagram', m.ig, '#E4405F')}
