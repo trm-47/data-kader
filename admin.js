@@ -380,6 +380,7 @@ function renderStep(label, year, color) {
 }
 
 // --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL PRESISI) ---
+// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL PRESISI TOTAL) ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
@@ -408,9 +409,19 @@ function openDetail(originalIndex) {
         return null;
     };
 
-    const getYearOnly = (keyword) => {
-        const data = getKaderData(keyword);
-        return data ? data.tahun : null;
+    // Helper render step dengan Lokasi di bawahnya (Permintaan Bos)
+    const renderKaderStep = (label, color) => {
+        const data = getKaderData(label);
+        const isActive = data !== null;
+        return `
+            <div style="flex:1; padding: 0 5px;">
+                <div style="width:15px; height:15px; border-radius:50%; background:${isActive ? color : '#e5e7eb'}; margin: 0 auto 5px; border: 2px solid #fff; box-shadow: 0 0 0 1px ${isActive ? color : '#ccc'};"></div>
+                <div style="font-weight:bold; font-size:10px; color:${isActive ? '#333' : '#999'}; text-transform:uppercase;">${label}</div>
+                <div style="font-size:9px; line-height:1.2; margin-top:4px;">
+                    ${isActive ? `<span style="color:${color}; font-weight:bold;">${data.tahun}</span><br><span style="color:#666; font-style:italic;">${data.lokasi}</span>` : '<span style="color:#ccc;">-</span>'}
+                </div>
+            </div>
+        `;
     };
 
     let htmlContent = `
@@ -461,18 +472,14 @@ function openDetail(originalIndex) {
             <div class="fancy-card highlight-card">
                 <div class="card-title">ANALISA JENJANG KADERISASI</div>
                 <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 10px;">
-                    ${renderStep('PRATAMA', getYearOnly("Pratama"), '#ef4444')}
-                    ${renderStep('MADYA', getYearOnly("Madya"), '#dc2626')}
-                    ${renderStep('UTAMA', getYearOnly("Utama"), '#b91c1c')}
+                    ${renderKaderStep('PRATAMA', '#ef4444')}
+                    ${renderKaderStep('MADYA', '#dc2626')}
+                    ${renderKaderStep('UTAMA', '#b91c1c')}
                 </div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 15px; border-top: 1px dashed #fca5a5; padding-top: 10px;">
-                    ${renderStep('GURU', getYearOnly("Guru"), '#991b1b')}
-                    ${renderStep('WANITA', getYearOnly("Perempuan"), '#db2777')}
-                    ${renderStep('KHUSUS', getYearOnly("Khusus"), '#1e293b')}
-                </div>
-                <div style="margin-top:15px; font-size:11px; color:#333; background:rgba(255,255,255,0.4); padding:8px; border-radius:5px;">
-                    <strong>📍 LOKASI PELATIHAN:</strong><br>
-                    ${textJenis.map((t, i) => `• ${t}: <b>${listLokasi[i] || '-'}</b> (${listThn[i] || '-'})`).join(' | ')}
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 15px; border-top: 1px dashed #fca5a5; padding-top: 15px;">
+                    ${renderKaderStep('GURU', '#991b1b')}
+                    ${renderKaderStep('WANITA', '#db2777')}
+                    ${renderKaderStep('KHUSUS', '#1e293b')}
                 </div>
             </div>
 
@@ -481,10 +488,10 @@ function openDetail(originalIndex) {
                     <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
-                            <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
-                                <strong style="color:#D71920;">${r[5].toUpperCase()}</strong><br>
+                            <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
+                                <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
                                 <span>Jabatan: ${cap(r[4])}</span><br>
-                                <small>Lokasi: <b>${cap(r[7])}</b></small> | <small>Periode: ${r[8] || '-'}</small>
+                                <small>📍 Lokasi: <b>${cap(r[7] || r[6] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
                             </div>
                         `).join('') || '<small>-</small>'}
                     </div>
@@ -493,10 +500,10 @@ function openDetail(originalIndex) {
                     <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Penugasan").map(r => `
-                            <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
-                                <strong style="color:#0284c7;">${cap(r[12])}</strong><br>
+                            <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
+                                <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
                                 <span>Lembaga: ${cap(r[11])}</span><br>
-                                <small>Wilayah: <b>${cap(r[13])}</b></small> | <small>Periode: ${r[14] || '-'}</small>
+                                <small>📍 Wilayah: <b>${cap(r[13] || r[11] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
                             </div>
                         `).join('') || '<small>-</small>'}
                     </div>
@@ -515,7 +522,7 @@ function openDetail(originalIndex) {
                     </div>
                 </div>
                 <div class="fancy-card">
-                    <div class="card-title">PENDIDIKAN FORMAL (LENGKAP)</div>
+                    <div class="card-title">PENDIDIKAN FORMAL</div>
                     <div class="list-container" style="font-size:11px;">
                         ${[
                             {l: "S3", n: f[17], t: f[18]}, {l: "S2", n: f[15], t: f[16]}, {l: "S1", n: f[11], t: f[14]},
