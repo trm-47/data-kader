@@ -99,8 +99,6 @@ function formatDriveUrl(url) {
 }
 
 
-// --- CORE RENDERING ---
-// --- CORE RENDERING (VERSI PERBAIKAN) ---
 function renderTable(data) {
     const body = document.getElementById('bodyKader');
     if (!body) return;
@@ -111,7 +109,9 @@ function renderTable(data) {
         return;
     }
 
-    const displayData = [...data].reverse();
+    // --- PERBAIKAN UTAMA ---
+    // Hapus .reverse() di sini karena data sudah dibalik saat fetchData
+    const displayData = data; 
 
     displayData.forEach((item) => {
         if (!item || !item.pribadi) return;
@@ -124,7 +124,6 @@ function renderTable(data) {
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
 
-        // Ambil tahun Pratama
         const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
         const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
         
@@ -181,6 +180,7 @@ function renderTable(data) {
             }
         }
 
+        // Mencari index asli di databaseKader agar saat buka Modal Detail datanya tidak tertukar
         const originalIdx = databaseKader.indexOf(item);
 
         // --- RENDER BARIS ---
