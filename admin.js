@@ -121,55 +121,26 @@ function renderTable(data) {
             const currentYear = new Date().getFullYear();
             const masaTunggu = currentYear - tahunPratama;
             if (masaTunggu >= 5) {
-                rowStyle = "background-color: #f1f5f9; border-left: 5px solid #64748b;"; 
+                rowStyle = "background-color: #f1f5f9; border-left: 4px solid #64748b;"; 
                 badgeWarning = `<div style="color:#475569; font-size:9px; font-weight:800; margin-top:4px; letter-spacing:0.5px;">● PRIORITAS MADYA (${masaTunggu} THN)</div>`;
             } else {
-                rowStyle = "background-color: #f8fafc; border-left: 5px solid #e2e8f0;"; 
+                rowStyle = "background-color: #f8fafc; border-left: 4px solid #e2e8f0;"; 
                 badgeWarning = `<div style="color:#94a3b8; font-size:9px; font-weight:800; margin-top:4px; letter-spacing:0.5px;">● MASA TUNGGU (${masaTunggu} THN)</div>`;
             }
         }
 
-        // --- BADGE KADERISASI AKSEN MERAH MARUN ---
-        // --- RENDER BADGE KADERISASI (PREMIUM LUXURY VERSION) ---
-let htmlBadgeKader = "";
-if (k[2] && k[2] !== "" && k[2] !== "-") {
-    const listJenjang = k[2].toString().split("\n");
-    listJenjang.forEach(txt => {
-        if(txt.trim()) {
-            htmlBadgeKader += `
-                <div style="
-                    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-                    border: 1px solid #e2e8f0;
-                    color: #334155;
-                    padding: 4px 10px;
-                    border-radius: 6px;
-                    font-size: 9px;
-                    font-weight: 800;
-                    margin-bottom: 4px;
-                    text-align: center;
-                    letter-spacing: 0.8px;
-                    text-transform: uppercase;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,1);
-                    position: relative;
-                    overflow: hidden;
-                ">
-                    <span style="
-                        position: absolute; 
-                        left: 0; 
-                        top: 0; 
-                        bottom: 0; 
-                        width: 3px; 
-                        background: #D71920;
-                    "></span>
-                    ${txt.trim()}
-                </div>`;
+        let htmlBadgeKader = "";
+        if (k[2] && k[2] !== "" && k[2] !== "-") {
+            const listJenjang = k[2].toString().split("\n");
+            listJenjang.forEach(txt => {
+                if(txt.trim()) {
+                    htmlBadgeKader += `<div style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; color: #334155; padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 800; margin-bottom: 4px; text-align: center; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,1); position: relative; overflow: hidden;"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #D71920;"></span>${txt.trim()}</div>`;
+                }
+            });
+        } else {
+            htmlBadgeKader = `<span style="color: #cbd5e1; font-size: 9px; font-weight: 700; letter-spacing: 1px;">ANGGOTA</span>`;
         }
-    });
-} else {
-    htmlBadgeKader = `<span style="color: #cbd5e1; font-size: 9px; font-weight: 700; letter-spacing: 1px;">NON-KADER</span>`;
-}
 
-        // --- PENDIDIKAN (LIST LENGKAP AGAR TIDAK HILANG) ---
         let infoPendidikan = `<span style="color:#cbd5e1; font-size:10px;">${p.kec || '-'}</span>`;
         const listEdu = [
             { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
@@ -178,10 +149,8 @@ if (k[2] && k[2] !== "" && k[2] !== "-") {
 
         for (let edu of listEdu) {
             if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                // Ambil detail (jurusan/sekolah)
                 let detail = (edu.label === "S1") ? (f[12] || f[11]) : f[edu.idx];
-                infoPendidikan = `<strong style="color:#334155; font-size:12px;">${edu.label}</strong>
-                                  <div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${detail}</div>`;
+                infoPendidikan = `<strong style="color:#334155; font-size:12px;">${edu.label}</strong><div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${detail}</div>`;
                 break;
             }
         }
@@ -191,11 +160,9 @@ if (k[2] && k[2] !== "" && k[2] !== "-") {
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62'+waNumber.slice(1) : waNumber}` : '#';
 
         body.innerHTML += `
-            <tr onclick="openDetail(${originalIdx})" style="cursor:pointer; border-bottom:1px solid #f1f5f9; ${rowStyle}">
+            <tr onclick="openDetail(${originalIdx})" style="cursor:pointer; border-bottom: 1px solid #f1f5f9; ${rowStyle}">
                 <td style="width:65px; text-align:center; padding:12px 5px;">
-                    <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=f1f5f9&color=94a3b8'" 
-                         style="width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid #e2e8f0;">
+                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=f1f5f9&color=94a3b8'" style="width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid #e2e8f0;">
                 </td>
                 <td style="padding:12px 5px;">
                     <div style="font-weight:800; font-size:13px; color:#1e293b; letter-spacing:-0.2px;">${(p.nama || 'Tanpa Nama').toUpperCase()}</div>
@@ -210,14 +177,10 @@ if (k[2] && k[2] !== "" && k[2] !== "-") {
                     ${infoPendidikan}
                 </td>
                 <td style="padding:12px 5px; width:130px;">
-                    <div style="max-width:120px; margin:0 auto;">
-                        ${htmlBadgeKader}
-                    </div>
+                    <div style="max-width:120px; margin:0 auto;">${htmlBadgeKader}</div>
                 </td>
                 <td style="text-align:center; width:90px; padding:12px 5px;">
-                    ${waNumber ? 
-                        `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; transition:0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.05);">Chat</a>` 
-                        : `<span style="color:#e2e8f0;">-</span>`}
+                    ${waNumber ? `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; transition:0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.05);">CHAT</a>` : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
     });
