@@ -400,6 +400,7 @@ function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
+    // --- DATA MAPPING (TETAP SAMA) ---
     const p = item.pribadi || {};
     const f = item.formal || [];
     const k = item.kaderisasi || []; 
@@ -417,231 +418,222 @@ function openDetail(originalIndex) {
     const getKaderData = (keyword) => {
         const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
         if (idx !== -1) {
-            const thn = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : "Aktif";
-            const lem = listLembaga[idx] ? listLembaga[idx].replace(/^\d+\.\s*/, "").trim() : "-";
-            const lok = listLokasi[idx] ? listLokasi[idx].replace(/^\d+\.\s*/, "").trim() : "-";
-            return { tahun: thn, lembaga: lem, lokasi: lok };
+            return {
+                tahun: listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : "Aktif",
+                lembaga: listLembaga[idx] ? listLembaga[idx].replace(/^\d+\.\s*/, "").trim() : "-",
+                lokasi: listLokasi[idx] ? listLokasi[idx].replace(/^\d+\.\s*/, "").trim() : "-"
+            };
         }
         return null;
     };
 
+    // --- PREMIUM STEPPER RENDERER ---
     const renderKaderStep = (label, color) => {
         const data = getKaderData(label);
         const isActive = data !== null;
         return `
-            <div style="flex:1; padding: 0 5px;">
-                <div style="width:15px; height:15px; border-radius:50%; background:${isActive ? color : '#e5e7eb'}; margin: 0 auto 5px; border: 2px solid #fff; box-shadow: 0 0 0 1px ${isActive ? color : '#ccc'};"></div>
-                <div style="font-weight:bold; font-size:10px; color:${isActive ? '#333' : '#999'}; text-transform:uppercase;">${label}</div>
-                <div style="font-size:9px; line-height:1.2; margin-top:4px;">
+            <div style="flex:1; position:relative; padding: 0 5px;">
+                <div style="width:22px; height:22px; border-radius:50%; background:${isActive ? color : '#f3f4f6'}; margin: 0 auto 8px; border: 3px solid #fff; box-shadow: 0 0 0 2px ${isActive ? color : '#e5e7eb'}; display:flex; align-items:center; justify-content:center; color:white; font-size:10px; z-index:2; position:relative;">
+                    ${isActive ? '✓' : ''}
+                </div>
+                <div style="font-weight:800; font-size:10px; color:${isActive ? '#1f2937' : '#9ca3af'}; text-transform:uppercase; letter-spacing:0.5px;">${label}</div>
+                <div style="min-height:40px; margin-top:5px;">
                     ${isActive ? `
-                        <span style="color:${color}; font-weight:bold;">${data.tahun}</span><br>
-                        <span style="color:#444; font-size:8px; font-weight:bold;">${data.lembaga}</span><br>
-                        <span style="color:#666; font-style:italic;">${data.lokasi}</span>
-                    ` : '<span style="color:#ccc;">-</span>'}
+                        <div style="color:${color}; font-weight:700; font-size:11px;">${data.tahun}</div>
+                        <div style="color:#4b5563; font-size:9px; font-weight:600; line-height:1.1;">${data.lembaga}</div>
+                    ` : '<div style="color:#d1d5db; font-size:14px;">•</div>'}
                 </div>
             </div>
         `;
     };
 
-    // Mulai render HTML Content
+    // --- MULAI RENDER HTML (HYPER PREMIUM) ---
     let htmlContent = `
-        <div class="modal-header-fancy">
-            <div class="header-main-info">
-                <div class="photo-container">
+    <div style="font-family:'Inter', sans-serif; background:#f4f7f6; color:#334155;">
+        
+        <div style="background: linear-gradient(135deg, #D71920 0%, #a50f15 100%); padding: 40px 25px; border-radius: 0 0 30px 30px; position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(215, 25, 32, 0.2);">
+            <div style="position: absolute; top: -20px; right: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+            
+            <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+                <div style="position: relative;">
                     <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
-                         class="profile-pic-large">
-                    <div class="logo-overlay"><img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png"></div>
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=fff&color=D71920&size=128'"
+                         style="width: 130px; height: 130px; border-radius: 25px; object-fit: cover; border: 4px solid #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+                    <div style="position: absolute; bottom: -8px; right: -8px; background: #fff; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                        <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" style="width: 24px;">
+                    </div>
                 </div>
-                <div class="name-container">
-                    <h2>${(p.nama || 'TANPA NAMA').toUpperCase()}</h2>
-                    <span class="kta-badge">ID KADER: ${p.kta || '-'} | NIK: ${p.nik || '-'}</span>
-                    <div class="location-sub">📍 ${cap(p.desa)}, ${cap(p.kec)}, ${cap(p.kab_kota)}</div>
+                
+                <div style="color: #fff;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">KADER AKTIF</span>
+                        <span style="font-size: 13px; font-weight: 500; opacity: 0.9;">KTA: ${p.kta || '-'}</span>
+                    </div>
+                    <h2 style="margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.5px;">${(p.nama || 'TANPA NAMA').toUpperCase()}</h2>
+                    <div style="margin-top: 10px; font-size: 15px; opacity: 0.9; display: flex; align-items: center; gap: 15px;">
+                        <span><i class="fa-solid fa-fingerprint"></i> ${p.nik || '-'}</span>
+                        <span><i class="fa-solid fa-location-dot"></i> ${cap(p.kab_kota)}</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-<div class="fancy-card" style="background:#fff; padding:18px; border-radius:12px; border-left: 5px solid #D71920; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <div class="card-title" style="font-weight:800; border-bottom:2px solid #eee; margin-bottom:15px; padding-bottom:8px; color:#D71920; display:flex; align-items:center; gap:8px;">
-                        <i class="fa-solid fa-address-card"></i> IDENTITAS PRIBADI
-                    </div>
-                    
-                    <div class="data-row" style="margin-bottom:12px;">
-                        <label style="font-weight:700; color:#888; display:block; font-size:10px; letter-spacing:1px;">NAMA LENGKAP</label>
-                        <span style="font-size:16px; font-weight:700; color:#222;">${cap(p.nama)}</span>
-                    </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">NIK</label>
-                            <span style="font-weight:600;">${p.nik || '-'}</span>
+        <div style="padding: 25px; display: flex; flex-direction: column; gap: 25px;">
+            
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+                <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
+                    <h3 style="margin-top:0; color:#D71920; font-size:16px; font-weight:800; display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                        <i class="fa-solid fa-address-card"></i> IDENTITAS LENGKAP
+                    </h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div>
+                            <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:5px;">TTL</label>
+                            <div style="font-weight:700; color:#1e293b; font-size:14px;">${cap(p.tmpt_lahir)}, ${tglLahirFormat}</div>
                         </div>
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">NO. KTA</label>
-                            <span style="font-weight:600; color:#D71920;">${p.kta || '-'}</span>
+                        <div>
+                            <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:5px;">AGAMA / GENDER</label>
+                            <div style="font-weight:700; color:#1e293b; font-size:14px;">${cap(p.agama)} / ${cap(p.jk)}</div>
                         </div>
-                    </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">TEMPAT, TGL LAHIR</label>
-                            <span>${cap(p.tmpt_lahir)}, ${tglLahirFormat}</span>
+                        <div>
+                            <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:5px;">PEKERJAAN / USIA</label>
+                            <div style="font-weight:700; color:#1e293b; font-size:14px;">${cap(p.kerja_skrg)} (${ageInfo.age})</div>
                         </div>
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">AGAMA / GENDER</label>
-                            <span>${cap(p.agama)} / ${cap(p.jk)}</span>
+                        <div>
+                            <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:5px;">WHATSAPP / EMAIL</label>
+                            <div style="font-weight:700; color:#25d366; font-size:13px;">${p.wa || '-'} <br> <span style="color:#0284c7; font-size:11px;">${(p.email || '-').toLowerCase()}</span></div>
                         </div>
                     </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">USIA</label>
-                            <span>${p.umur || ageInfo.age} (${ageInfo.gen})</span>
-                        </div>
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">PEKERJAAN</label>
-                            <span>${cap(p.kerja_skrg)}</span>
-                        </div>
-                    </div>
-
-                    <div class="data-row" style="margin-top:15px; padding-top:12px; border-top:1px dashed #eee;">
-                        <label style="font-weight:700; color:#888; display:block; font-size:10px; margin-bottom:4px;">ALAMAT DOMISILI</label>
-                        <div style="background:#f8f9fa; padding:10px; border-radius:8px; font-size:13px; line-height:1.6;">
-                            <strong>${cap(p.alamat)}</strong><br>
-                            RT ${p.rt || '00'} / RW ${p.rw || '00'}<br>
-                            Kel. ${cap(p.desa)}, Kec. ${cap(p.kec)}<br>
-                            ${cap(p.kab_kota || p.kota)}
-                        </div>
-                    </div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:15px; padding-top:12px; border-top:1px dashed #eee;">
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">WHATSAPP</label>
-                            <span style="color:#25d366; font-weight:800; font-size:13px;"><i class="fa-brands fa-whatsapp"></i> ${p.wa || '-'}</span>
-                        </div>
-                        <div class="data-row">
-                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">EMAIL</label>
-                            <span style="color:#0284c7; font-size:12px; word-break: break-all;">${(p.email || '-').toLowerCase()}</span>
+                    <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e2e8f0;">
+                        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:8px;">ALAMAT DOMISILI</label>
+                        <div style="background:#f8fafc; padding:12px; border-radius:12px; border-left: 4px solid #cbd5e1; font-size:13px; line-height:1.5;">
+                            <strong>${cap(p.alamat)}</strong>, RT ${p.rt}/RW ${p.rw}<br>
+                            Kelurahan ${cap(p.desa)}, Kecamatan ${cap(p.kec)}, ${cap(p.kab_kota)}
                         </div>
                     </div>
                 </div>
 
-                <div class="fancy-card">
-                    <div class="card-title">KOMPETENSI & SKILL</div>
-                    <div class="data-row"><label>Skill Komputer</label><span>${cap(m.komputer)}</span></div>
-                    <div class="data-row"><label>Bahasa</label>
-                        <span>
-                            ${m.bahasa_indo === "Ya" ? "Indonesia, " : ""}
-                            ${m.bahasa_inggris === "Ya" ? "Inggris, " : ""}
-                            ${m.bahasa_jawa === "Ya" ? "Jawa, " : ""}
-                            ${(m.bahasa_lain && m.bahasa_lain !== ", ") ? cap(m.bahasa_lain) : "-"}
-                        </span>
+                <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
+                    <h3 style="margin-top:0; color:#D71920; font-size:16px; font-weight:800; display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                        <i class="fa-solid fa-star"></i> SKILL & BAHASA
+                    </h3>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:5px;">SKILL KOMPUTER</label>
+                        <div style="font-weight:600; color:#1e293b; font-size:13px;">${cap(m.komputer || '-')}</div>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:10px; font-weight:700; color:#94a3b8; margin-bottom:5px;">PENGUASAAN BAHASA</label>
+                        <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">
+                            ${[
+                                {key: m.bahasa_indo, label: "Indonesia"},
+                                {key: m.bahasa_inggris, label: "Inggris"},
+                                {key: m.bahasa_jawa, label: "Jawa"}
+                            ].map(b => b.key === "Ya" ? `<span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; color:#475569;">${b.label}</span>` : '').join('')}
+                            <span style="background:#f1f5f9; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:700; color:#475569;">${(m.bahasa_lain && m.bahasa_lain !== ", ") ? cap(m.bahasa_lain) : "-"}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="fancy-card highlight-card">
-                <div class="card-title">ANALISA JENJANG KADERISASI</div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 10px;">
+            <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7; text-align:center;">
+                <h3 style="margin-top:0; color:#D71920; font-size:16px; font-weight:800; margin-bottom:25px; text-align:left;">
+                    <i class="fa-solid fa-diagram-project"></i> ANALISA JENJANG KADERISASI
+                </h3>
+                <div style="display: flex; justify-content: space-between; position: relative; margin-bottom: 20px;">
+                    <div style="position: absolute; top: 11px; left: 5%; right: 5%; height: 2px; background: #f3f4f6; z-index: 1;"></div>
                     ${renderKaderStep('PRATAMA', '#ef4444')}
                     ${renderKaderStep('MADYA', '#dc2626')}
                     ${renderKaderStep('UTAMA', '#b91c1c')}
-                </div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 15px; border-top: 1px dashed #fca5a5; padding-top: 15px;">
                     ${renderKaderStep('GURU', '#991b1b')}
                     ${renderKaderStep('WANITA', '#db2777')}
                     ${renderKaderStep('KHUSUS', '#1e293b')}
                 </div>
             </div>
 
-            <div class="fancy-grid">
-                <div class="fancy-card">
-                    <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
-                    <div class="list-container">
-                        ${jList.filter(r => String(r[2]).trim() === "Struktur Partai").map(r => `
-                            <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
-                                <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
-                                <span>Jabatan: ${cap(r[4] || '-')}</span><br>
-                                <small>📍 Wilayah: <b>${cap(r[7] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
-                            </div>
-                        `).join('') || '<small style="color:#999;">Tidak ada data struktur</small>'}
-                    </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
+                    <h3 style="margin-top:0; color:#D71920; font-size:15px; font-weight:800; margin-bottom:15px;">STRUKTUR PARTAI</h3>
+                    ${jList.filter(r => String(r[2]).trim() === "Struktur Partai").map(r => `
+                        <div style="background:#fff5f5; border-left:4px solid #D71920; padding:12px; border-radius:8px; margin-bottom:10px;">
+                            <div style="font-weight:800; color:#b91c1c; font-size:13px;">${(r[5] || '-').toUpperCase()}</div>
+                            <div style="font-size:12px; font-weight:600; color:#475569;">Jabatan: ${cap(r[4] || '-')}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;"><i class="fa-solid fa-map-pin"></i> ${cap(r[7] || '-')} | <i class="fa-solid fa-calendar"></i> ${r[8] || '-'}</div>
+                        </div>
+                    `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px;">Tidak ada data struktur</div>'}
                 </div>
 
-                <div class="fancy-card">
-                    <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
-                    <div class="list-container">
-                        ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
-                            <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
-                                <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
-                                <span>Lembaga: ${cap(r[11] || '-')}</span><br>
-                                <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
-                            </div>
-                        `).join('') || '<small style="color:#999;">Tidak ada data penugasan</small>'}
-                    </div>
+                <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
+                    <h3 style="margin-top:0; color:#0284c7; font-size:15px; font-weight:800; margin-bottom:15px;">PENUGASAN KHUSUS</h3>
+                    ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
+                        <div style="background:#f0f9ff; border-left:4px solid #0284c7; padding:12px; border-radius:8px; margin-bottom:10px;">
+                            <div style="font-weight:800; color:#0369a1; font-size:13px;">${cap(r[12] || '-')}</div>
+                            <div style="font-size:12px; font-weight:600; color:#475569;">Lembaga: ${cap(r[11] || '-')}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;"><i class="fa-solid fa-map-pin"></i> ${cap(r[13] || '-')} | <i class="fa-solid fa-calendar"></i> ${r[14] || '-'}</div>
+                        </div>
+                    `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px;">Tidak ada data penugasan</div>'}
                 </div>
             </div>
 
-            <div class="fancy-grid">
-                <div class="fancy-card">
-                    <div class="card-title">RIWAYAT ORGANISASI & KERJA</div>
-                    <div class="list-container" style="font-size:11px;">
-                        <small style="font-weight:bold; color:#D71920;">ORGANISASI LUAR</small>
-                        ${oList.map(r => `<div>• ${cap(r[2])} (${cap(r[4])}) <br><small>Tahun: ${r[5] || '-'}</small></div>`).join('') || '<div>-</div>'}
-                        <br>
-                        <small style="font-weight:bold; color:#D71920;">PENGALAMAN KERJA</small>
-                        ${wList.map(r => `<div>• ${cap(r[4])} di ${cap(r[2])} <br><small>Tahun: ${r[5] || '-'}</small></div>`).join('') || '<div>-</div>'}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="background: #fff; padding: 25px; border-radius: 24px; border: 1px solid #edf2f7;">
+                    <h3 style="margin-top:0; color:#334155; font-size:14px; font-weight:800; margin-bottom:15px; border-bottom:2px solid #f1f5f9; padding-bottom:8px;">PENGALAMAN & ORGANISASI</h3>
+                    <div style="font-size:12px; line-height:1.6;">
+                        <div style="font-weight:800; color:#D71920; font-size:10px; letter-spacing:1px; margin-bottom:5px;">ORGANISASI EKSTERNAL</div>
+                        ${oList.map(r => `<div style="margin-bottom:5px; padding-left:10px; border-left:2px solid #e2e8f0;">• ${cap(r[2])} <span style="color:#94a3b8;">(${cap(r[4])})</span></div>`).join('') || '-'}
+                        <div style="font-weight:800; color:#D71920; font-size:10px; letter-spacing:1px; margin-top:15px; margin-bottom:5px;">RIWAYAT PEKERJAAN</div>
+                        ${wList.map(r => `<div style="margin-bottom:5px; padding-left:10px; border-left:2px solid #e2e8f0;">• ${cap(r[4])} <br><small style="color:#64748b;">${cap(r[2])} (${r[5] || '-'})</small></div>`).join('') || '-'}
                     </div>
                 </div>
-                <div class="fancy-card">
-                    <div class="card-title">PENDIDIKAN FORMAL</div>
-                    <div class="list-container" style="font-size:11px;">
+
+                <div style="background: #fff; padding: 25px; border-radius: 24px; border: 1px solid #edf2f7;">
+                    <h3 style="margin-top:0; color:#334155; font-size:14px; font-weight:800; margin-bottom:15px; border-bottom:2px solid #f1f5f9; padding-bottom:8px;">PENDIDIKAN FORMAL</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
                         ${[
                             {l: "S3", n: f[17], t: f[18]}, {l: "S2", n: f[15], t: f[16]}, {l: "S1", n: f[11], t: f[14]},
                             {l: "DIPLOMA", n: f[9], t: f[10]}, {l: "SMA", n: f[6], t: f[8]}, {l: "SMP", n: f[4], t: f[5]}, {l: "SD", n: f[2], t: f[3]}
                         ].filter(e => e.n && e.n !== "-").map(e => `
-                            <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${cap(e.n)} <small>(${e.t || '-'})</small></div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="min-width:45px; font-size:9px; font-weight:900; background:#f8fafc; padding:3px 6px; border-radius:5px; color:#64748b; text-align:center;">${e.l}</div>
+                                <div style="font-size:12px; font-weight:700; color:#1e293b;">${cap(e.n)} <span style="font-weight:400; color:#94a3b8;">(${e.t || '-'})</span></div>
+                            </div>
                         `).join('') || '-'}
                     </div>
                 </div>
             </div>
 
-            <div class="fancy-card">
-                <div class="card-title">MEDIA SOSIAL RESMI</div>
-                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; padding: 10px;">
-                    ${renderMedsosIcon('facebook', m.fb, '#1877F2')}
-                    ${renderMedsosIcon('instagram', m.ig, '#E4405F')}
-                    ${renderMedsosIcon('tiktok', m.tiktok, '#000000')}
-                    ${renderMedsosIcon('twitter', m.twitter, '#1DA1F2')}
-                    ${renderMedsosIcon('youtube', m.youtube, '#FF0000')}
+            <div style="background: #1e293b; padding: 20px; border-radius: 24px; text-align: center; color:#fff;">
+                <div style="font-size:10px; font-weight:700; letter-spacing:2px; opacity:0.6; margin-bottom:15px;">MEDIA SOSIAL RESMI</div>
+                <div style="display: flex; gap: 15px; justify-content: center;">
+                    ${renderMedsosIcoPremium('facebook', m.fb, '#1877F2')}
+                    ${renderMedsosIcoPremium('instagram', m.ig, '#E4405F')}
+                    ${renderMedsosIcoPremium('tiktok', m.tiktok, '#ffffff')}
+                    ${renderMedsosIcoPremium('twitter', m.twitter, '#1DA1F2')}
+                    ${renderMedsosIcoPremium('youtube', m.youtube, '#FF0000')}
                 </div>
             </div>
+
+            <div style="text-align:center; padding-bottom:20px;">
+                <button onclick="window.print()" style="background:#D71920; color:white; border:none; padding:15px 40px; border-radius:15px; cursor:pointer; font-weight:800; font-size:14px; box-shadow:0 10px 20px rgba(215, 25, 32, 0.3); display:inline-flex; align-items:center; gap:10px;">
+                    <i class="fa-solid fa-print"></i> CETAK DOKUMEN PROFIL
+                </button>
+            </div>
         </div>
-        <div class="modal-footer" style="padding:15px; text-align:right;">
-            <button onclick="window.print()" style="background:#D71920; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">CETAK PROFIL KADER</button>
-        </div>
+    </div>
     `;
 
-    document.getElementById('modalInnerContent').innerHTML = htmlContent;
+    const modalInner = document.getElementById('modalInnerContent');
+    modalInner.innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
-    document.getElementById('modalInnerContent').scrollTop = 0;
+    modalInner.scrollTop = 0;
 }
 
-// --- FUNGSI IKON MEDSOS (POWERED BY FONT AWESOME 6) ---
-function renderMedsosIcon(icon, val, color) {
-    if (!val || val === "-" || val === "") return "";
-    
-    let iconClass = icon;
-    if (icon === 'facebook') iconClass = 'facebook-f';
-    if (icon === 'twitter') iconClass = 'x-twitter';
-
+// Fungsi pembantu Icon Medsos Premium
+function renderMedsosIcoPremium(icon, val, color) {
+    if (!val || val === "-" || val === "") return '';
+    let iconClass = icon === 'facebook' ? 'facebook-f' : icon;
     return `
-        <div style="text-align:center; min-width: 50px;">
-            <div style="width:40px; height:40px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px; font-size:18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <i class="fa-brands fa-${iconClass}" aria-hidden="true"></i>
-            </div>
-            <small style="font-size:10px; font-weight:bold; display:block; color:#333;">${val}</small>
-        </div>
+        <a href="#" title="${val}" style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; text-decoration:none; transition:0.3s;">
+            <i class="fa-brands fa-${iconClass}" style="color:${color}; font-size:20px;"></i>
+        </a>
     `;
 }
 
