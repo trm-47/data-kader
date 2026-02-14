@@ -380,13 +380,39 @@ function renderStep(label, year, color) {
     `;
 }
 
-// --- FUNGSI UTAMA: BUKA DETAIL KADER ---
+// --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
+const cap = (str) => {
+    if (!str || str === "-") return "-";
+    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "PDI", "PERJUANGAN"];
+    return str.toString().split(' ').map(word => {
+        if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ');
+};
+
+// --- FUNGSI UNTUK MERENDER BULATAN KADERISASI ---
+function renderStep(label, year, color) {
+    const isActive = year && year !== "" && year !== "-";
+    const opacity = isActive ? "1" : "0.3";
+    const border = isActive ? `2px solid ${color}` : "2px dashed #ccc";
+    const bg = isActive ? color : "transparent";
+    const textColor = isActive ? "white" : "#999";
+
+    return `
+        <div style="flex: 1; opacity: ${opacity};">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${bg}; border: ${border}; color: ${textColor}; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-weight: bold; font-size: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${isActive ? '✓' : ''}
+            </div>
+            <div style="font-size: 10px; font-weight: bold; margin-top: 5px; color: ${isActive ? '#333' : '#ccc'}">${label}</div>
+            <div style="font-size: 9px; color: ${color}; font-weight: bold;">${year || '-'}</div>
+        </div>
+    `;
+}
+
+// --- FUNGSI UTAMA: OPEN DETAIL ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
-    if (!item) {
-        alert("Data tidak ditemukan!");
-        return;
-    }
+    if (!item) return;
 
     const p = item.pribadi || {};
     const f = item.formal || [];
@@ -397,7 +423,6 @@ function openDetail(originalIndex) {
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA ANALISA TAHUN KADERISASI ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
     
@@ -436,10 +461,9 @@ function openDetail(originalIndex) {
                     <div class="data-row"><label>Agama</label><span>${cap(p.agama)}</span></div>
                     <div class="data-row"><label>TTL</label><span>${cap(p.tmpt_lahir)}, ${p.tgl_lahir}</span></div>
                     <div class="data-row"><label>Usia</label><span>${p.umur || ageInfo.age} (${ageInfo.gen})</span></div>
-                    <div class="data-row"><label>Email</label><span style="text-transform:lowercase;">${p.email || '-'}</span></div>
                     <div class="data-row"><label>WhatsApp</label><span style="color:#25d366; font-weight:bold;">${p.wa || '-'}</span></div>
                     <div class="data-row"><label>Alamat</label><span>${cap(p.alamat)}, RT ${p.rt}/RW ${p.rw}</span></div>
-                    <div class="data-row"><label>Kerja Saat Ini</label><span>${cap(p.kerja_skrg)}</span></div>
+                    <div class="data-row"><label>Kerja Sekarang</label><span>${cap(p.kerja_skrg)}</span></div>
                 </div>
 
                 <div class="fancy-card">
@@ -472,13 +496,13 @@ function openDetail(originalIndex) {
 
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">STRUKTUR PARTAI & KETUGASAN</div>
+                    <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
                             <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
                                 <strong style="color:#D71920;">${r[5].toUpperCase()}</strong><br>
                                 <span>Jabatan: ${cap(r[4])}</span><br>
-                                <small>Wilayah: ${cap(r[8])}</small>
+                                <small>Wilayah: ${cap(r[8])}</small> | <small>Tahun: ${r[9] || '-'}</small>
                             </div>
                         `).join('') || '<small>Tidak ada data struktur</small>'}
                     </div>
@@ -490,7 +514,7 @@ function openDetail(originalIndex) {
                             <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
                                 <strong style="color:#0284c7;">${cap(r[12])}</strong><br>
                                 <span>Lembaga: ${cap(r[10])}</span><br>
-                                <small>Dapil/Wilayah: ${cap(r[11])} (${r[14]})</small>
+                                <small>Dapil/Wilayah: ${cap(r[11])}</small> | <small>Periode: ${r[14] || '-'}</small>
                             </div>
                         `).join('') || '<small>Tidak ada data penugasan publik</small>'}
                     </div>
@@ -501,11 +525,11 @@ function openDetail(originalIndex) {
                 <div class="fancy-card">
                     <div class="card-title">RIWAYAT ORGANISASI & KERJA</div>
                     <div class="list-container" style="font-size:11px;">
-                        <small style="font-weight:bold; color:#D71920;">ORGANISASI LUAR PARTAI</small>
-                        ${oList.map(r => `<div>• ${cap(r[2])} (${cap(r[4])})</div>`).join('') || '<div>-</div>'}
+                        <small style="font-weight:bold; color:#D71920;">ORGANISASI LUAR</small>
+                        ${oList.map(r => `<div>• ${cap(r[2])} (${cap(r[4])}) <br><small>Tahun: ${r[5] || '-'}</small></div>`).join('') || '<div>-</div>'}
                         <br>
                         <small style="font-weight:bold; color:#D71920;">PENGALAMAN KERJA</small>
-                        ${wList.map(r => `<div>• ${cap(r[4])} di ${cap(r[2])}</div>`).join('') || '<div>-</div>'}
+                        ${wList.map(r => `<div>• ${cap(r[4])} di ${cap(r[2])} <br><small>Tahun: ${r[5] || '-'}</small></div>`).join('') || '<div>-</div>'}
                     </div>
                 </div>
                 <div class="fancy-card">
@@ -515,7 +539,7 @@ function openDetail(originalIndex) {
                             {l: "S3", n: f[17], t: f[18]}, {l: "S2", n: f[15], t: f[16]}, {l: "S1", n: f[11], t: f[14]},
                             {l: "DIPLOMA", n: f[9], t: f[10]}, {l: "SMA", n: f[6], t: f[8]}, {l: "SMP", n: f[4], t: f[5]}, {l: "SD", n: f[2], t: f[3]}
                         ].filter(e => e.n && e.n !== "-").map(e => `
-                            <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${cap(e.n)} <small>(${e.t})</small></div>
+                            <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${cap(e.n)} <small>(${e.t || '-'})</small></div>
                         `).join('') || '-'}
                     </div>
                 </div>
@@ -523,7 +547,7 @@ function openDetail(originalIndex) {
 
             <div class="fancy-card">
                 <div class="card-title">MEDIA SOSIAL RESMI</div>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; padding: 10px;">
+                <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; padding: 10px;">
                     ${renderMedsosIcon('facebook', m.fb, '#1877F2')}
                     ${renderMedsosIcon('instagram', m.ig, '#E4405F')}
                     ${renderMedsosIcon('tiktok', m.tiktok, '#000000')}
@@ -537,26 +561,25 @@ function openDetail(originalIndex) {
         </div>
     `;
 
-    const modal = document.getElementById('modalDetail');
-    const inner = document.getElementById('modalInnerContent');
-    if (modal && inner) {
-        inner.innerHTML = htmlContent;
-        modal.style.display = "block";
-        inner.scrollTop = 0;
-    } else {
-        console.error("Elemen modal tidak ditemukan!");
-    }
+    document.getElementById('modalInnerContent').innerHTML = htmlContent;
+    document.getElementById('modalDetail').style.display = "block";
+    document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
-// --- FUNGSI IKON MEDSOS DENGAN SVG (ANTI ERROR FONT) ---
-function renderMedsosIcon(type, val, color) {
+// --- FUNGSI IKON MEDSOS REAL FONT AWESOME ---
+function renderMedsosIcon(icon, val, color) {
     if (!val || val === "-") return "";
+    // Menangani nama ikon Font Awesome (twitter -> x-twitter)
+    let iconClass = icon;
+    if (icon === 'facebook') iconClass = 'facebook-f';
+    if (icon === 'twitter') iconClass = 'x-twitter';
+
     return `
         <div style="text-align:center;">
-            <div style="width:35px; height:35px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px; font-size:14px; font-weight:bold;">
-                ${type.charAt(0).toUpperCase()}
+            <div style="width:40px; height:40px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px; font-size:18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <i class="fab fa-${iconClass}"></i>
             </div>
-            <small style="font-size:9px; font-weight:bold; display:block; max-width:60px; overflow:hidden; text-overflow:ellipsis;">${val}</small>
+            <small style="font-size:10px; font-weight:bold; display:block; color:#333;">${val}</small>
         </div>
     `;
 }
