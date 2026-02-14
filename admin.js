@@ -1,4 +1,4 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbyVuJwnfHgGAtVYTalPTaAIn2qLamZ7uScDOs1pc6leqQfnH_8BlL23QGo_5Dc417L3CA/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbwqEVG-YKsNFk3xXWyeCk8Cl1CWMvemxX4sjo-zcgC14Le-kdZxD4n_7i72AsLOl9MC4w/exec";
 let databaseKader = [];
 
 // --- INITIALIZATION ---
