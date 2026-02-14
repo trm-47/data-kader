@@ -485,6 +485,30 @@ window.onclick = function(event) {
 document.addEventListener('keydown', function(event) {
     if (event.key === "Escape") closeDetail();
 });
+// ... akhir dari fungsi openDetail() ...
+
+// 1. Fungsi tutup manual (dipanggil tombol silang)
+function closeDetail() {
+    const modal = document.getElementById('modalDetail'); // Pastikan ID sesuai
+    if (modal) {
+        modal.style.display = "none";
+    }
+}
+
+// 2. Event Listener: Klik Luar Area
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('modalDetail');
+    if (event.target === modal) {
+        closeDetail();
+    }
+});
+
+// 3. Event Listener: Tombol ESC
+window.addEventListener('keydown', function(event) {
+    if (event.key === "Escape") {
+        closeDetail();
+    }
+});
 
 function updateKecamatanOptions() {
     const selectedKota = document.getElementById('fKota').value;
