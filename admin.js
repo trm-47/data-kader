@@ -452,7 +452,7 @@ function openDetail(originalIndex) {
                     <div class="data-row"><label>Nama Lengkap</label><span>${cap(p.nama)}</span></div>
                     <div class="data-row"><label>Jenis Kelamin</label><span>${cap(p.jk)}</span></div>
                     <div class="data-row"><label>Agama</label><span>${cap(p.agama)}</span></div>
-                    <div class="data-row"><label>TTL</label><span>${cap(p.tmpt_lahir)}, ${p.tgl_lahir}</span></div>
+                    <div class="data-row"><label>TTL</label><span>${cap(p.tmpt_lahir)}, ${tglLahirFormat}</span></div>
                     <div class="data-row"><label>Usia</label><span>${p.umur || ageInfo.age} (${ageInfo.gen})</span></div>
                     <div class="data-row"><label>WhatsApp</label><span style="color:#25d366; font-weight:bold;">${p.wa || '-'}</span></div>
                     <div class="data-row"><label>Alamat</label><span>${cap(p.alamat)}, RT ${p.rt}/RW ${p.rw}</span></div>
@@ -558,6 +558,23 @@ function openDetail(originalIndex) {
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
     document.getElementById('modalInnerContent').scrollTop = 0;
+}
+
+function formatTanggalIndo(isoString) {
+    if (!isoString || isoString === "-") return "-";
+    try {
+        const date = new Date(isoString);
+        // Cek apakah tanggal valid
+        if (isNaN(date.getTime())) return isoString; 
+
+        const d = date.getDate().toString().padStart(2, '0');
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const y = date.getFullYear();
+        
+        return `${d}-${m}-${y}`; // Hasil: 13-02-1970
+    } catch (e) {
+        return isoString;
+    }
 }
 
 // --- FUNGSI IKON MEDSOS (POWERED BY FONT AWESOME 6) ---
