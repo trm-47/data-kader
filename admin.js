@@ -26,37 +26,47 @@ function renderTable(data) {
         const p = item.pribadi || {};
         const k = item.kaderisasi || [];
         
-        // --- FIX FOTO DRIVE ---
-        let fotoUrl = "https://ui-avatars.com/api/?name=" + encodeURIComponent(p.nama);
-        if (p.foto && p.foto.includes("http")) {
-            // Ubah link view Drive ke link direct image
-            fotoUrl = p.foto.replace("open?id=", "uc?export=view&id=")
-                            .replace("file/d/", "uc?export=view&id=")
-                            .replace("/view?usp=sharing", "");
+        // --- LOGIKA FOTO SAKTI ---
+        let fotoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random&color=fff`;
+        
+        if (p.foto && p.foto !== "-") {
+            let fileId = "";
+            // Ambil ID file dari berbagai format link Drive
+            if (p.foto.includes("id=")) {
+                fileId = p.foto.split("id=")[1].split("&")[0];
+            } else if (p.foto.includes("file/d/")) {
+                fileId = p.foto.split("file/d/")[1].split("/")[0];
+            }
+
+            if (fileId) {
+                // Link Direct Download agar browser mau nampilin sebagai gambar
+                fotoUrl = `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+            }
         }
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align:center;">
-                <div style="width:45px; height:45px; border-radius:10px; overflow:hidden; border:1px solid #ddd; margin:auto;">
-                    <img src="${fotoUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name=${p.nama}'">
+                <div style="width:50px; height:50px; border-radius:50%; overflow:hidden; border:2px solid #D71920; margin:auto; background:#eee;">
+                    <img src="${fotoUrl}" 
+                         style="width:100%; height:100%; object-fit:cover;" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=ccc&color=666'">
                 </div>
             </td>
             <td>
-                <div style="font-weight:800;">${p.nama}</div>
+                <div style="font-weight:800; color:#1e293b;">${p.nama}</div>
                 <div style="font-size:11px; color:#64748b;">KTA: ${p.kta || '-'}</div>
             </td>
             <td style="text-align:center; font-weight:700;">${p.umur || '-'}</td>
             <td style="font-size:12px;">${item.formal[19] || '-'}</td>
             <td>${k.map(row => `<span class="badge ${row[2].toLowerCase().includes('madya') ? 'warning-badge' : 'badge-red'}">${row[2]}</span>`).join(" ")}</td>
             <td style="text-align:center;">
-                <button onclick="showDetail(${idx})" style="padding:6px 12px; background:var(--primary-red); color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;">DETAIL</button>
+                <button onclick="showDetail(${idx})" style="padding:6px 12px; background:#D71920; color:white; border:none; border-radius:8px; font-weight:800; cursor:pointer;">DETAIL</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
-
 // 3. Logika Filter Gabungan
 function applyFilters() {
     let result = [...MASTER_DATA];
