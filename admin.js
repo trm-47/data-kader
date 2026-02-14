@@ -457,121 +457,74 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
     </div>
 </div>
 
-<div class="fancy-card">
-    <div class="card-title">Pendidikan Formal</div>
-    <div class="list-container">
-        ${
-            (() => {
+// ... tepat di bawah penutup kartu Analisa Jenjang & Spesialisasi Kader (</div>) ...
+
+<div class="fancy-grid">
+    <div class="fancy-card">
+        <div class="card-title">Pendidikan Formal</div>
+        <div class="list-container">
+            ${(() => {
                 const eduMapping = [
-                    // S3: inst=Kampus, info=Jurusan/Fak, thn=Tahun
                     { label: "S3 (Doktor)", inst: f[17], info: f[18], thn: f[19] },
                     { label: "S2 (Magister)", inst: f[15], info: f[16], thn: "" }, 
                     { label: "S1 (Sarjana)", inst: f[11], info: f[12], thn: f[14] },
                     { label: "D1 - D4", inst: f[9], info: "", thn: f[10] },
-                    // SMA/SMK: f[6]=Sekolah, f[7]=Jurusan, f[8]=Tahun
                     { label: "SMA / SMK", inst: f[6], info: f[7], thn: f[8] },
                     { label: "SMP", inst: f[4], info: "", thn: f[5] },
                     { label: "SD", inst: f[2], info: "", thn: f[3] }
                 ];
-
                 const validEdu = eduMapping.filter(e => e.inst && e.inst !== "-" && e.inst !== "");
-
                 if (validEdu.length > 0) {
                     return validEdu.map(e => `
                         <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
-                            <strong style="font-size: 11px; color: #D71920; text-transform: uppercase; letter-spacing: 0.5px;">${e.label}</strong><br>
-                            <span style="font-size: 14px; font-weight: 700; color: #1e293b; display: block; margin-top: 2px;">${e.inst}</span>
-                            
-                            ${/* Logika menampilkan Jurusan/Fakultas */
-                                e.info && e.info !== "-" && e.info !== "" ? 
-                                `<span style="font-size: 12px; color: #475569; display: block; background: #f8fafc; padding: 2px 6px; border-radius: 4px; margin-top: 3px; border-left: 3px solid #cbd5e1;">
-                                    ${e.label.includes("SMA") ? 'Jurusan: ' : 'Fak/Jur: '} ${e.info}
-                                </span>` : ''
-                            }
-                            
-                            ${e.thn && e.thn !== "-" ? `<small style="color: #94a3b8; font-size: 11px;">Lulus Tahun: ${e.thn}</small>` : ''}
+                            <strong style="font-size: 11px; color: #D71920; text-transform: uppercase;">${e.label}</strong><br>
+                            <span style="font-size: 14px; font-weight: 700; color: #1e293b; display: block;">${e.inst}</span>
+                            ${e.info && e.info !== "-" ? `<span style="font-size: 12px; color: #475569; display: block; background: #f8fafc; padding: 2px 6px; border-radius: 4px; border-left: 3px solid #cbd5e1; margin: 3px 0;">${e.label.includes("SMA") ? 'Jurusan: ' : 'Fak/Jur: '} ${e.info}</span>` : ''}
+                            ${e.thn && e.thn !== "-" ? `<small style="color: #94a3b8;">Lulus: ${e.thn}</small>` : ''}
                         </div>
                     `).join('');
-                } else {
-                    return '<span class="empty-text">Data pendidikan tidak tersedia</span>';
-                }
-            })()
-        }
+                } else { return '<span class="empty-text">Data tidak tersedia</span>'; }
+            })()}
+        </div>
     </div>
-</div>
 
-<div class="fancy-card">
-    <div class="card-title">Struktur & Penugasan</div>
-    <div class="list-container">
-        ${
-            j.length > 0 ? 
-            j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5])) // Saring yang sampah
-             .map(pos => `
-                <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
-                    <strong style="color: #D71920;">${pos[5]}</strong><br>
-                    <small style="color: #64748b; font-weight: 700;">
-                        ${pos[4] || '-'} ${pos[8] && pos[8] !== "-" ? '(' + pos[8] + ')' : ''}
-                    </small>
-                </div>
-            `).join('') 
-            : '<span class="empty-text">Belum ada riwayat jabatan</span>'
-        }
-        ${
-            // Jika setelah difilter ternyata kosong semua
-            j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5])).length === 0 
-            ? '<span class="empty-text">Tidak ada riwayat aktif</span>' : ''
-        }
+    <div class="grid-column-right">
+        <div class="fancy-card" style="margin-bottom: 15px;">
+            <div class="card-title">Struktur & Penugasan</div>
+            <div class="list-container">
+                ${j.length > 0 ? 
+                  j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5]))
+                   .map(pos => `
+                    <div class="list-item" style="margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
+                        <strong style="color: #D71920; font-size: 13px;">${pos[5]}</strong><br>
+                        <small style="color: #64748b; font-weight: 700;">${pos[4] || '-'} ${pos[8] && pos[8] !== "-" ? '(' + pos[8] + ')' : ''}</small>
+                    </div>`).join('') 
+                  : '<span class="empty-text">Belum ada riwayat jabatan</span>'}
+            </div>
+        </div>
+
+        <div class="fancy-card">
+            <div class="card-title">Media Sosial</div>
+            <div class="medsos-grid-internal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                ${[
+                    { label: 'FB', val: item.medsos ? item.medsos.fb : p.fb },
+                    { label: 'IG', val: item.medsos ? item.medsos.ig : p.ig },
+                    { label: 'TikTok', val: item.medsos ? item.medsos.tiktok : p.tiktok },
+                    { label: 'X', val: item.medsos ? item.medsos.twitter : p.twitter },
+                    { label: 'YouTube', val: item.medsos ? item.medsos.youtube : p.youtube }
+                ]
+                .filter(m => m.val && m.val !== "-" && m.val !== "")
+                .map(m => `
+                    <div class="ms-item" style="padding: 5px; background: #f8fafc; border-radius: 6px; border: 1px solid #edf2f7;">
+                        <strong style="font-size: 10px; color: #64748b; display: block;">${m.label}</strong>
+                        <span style="font-size: 12px; color: #1e293b; word-break: break-all;">${m.val}</span>
+                    </div>`).join('') || '<span class="empty-text">Tidak ada data medsos</span>'}
+            </div>
+        </div>
     </div>
+</div> <div class="modal-footer">
+    <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
 </div>
-            </div>
-// ... di dalam fungsi openDetail, setelah bagian stepper/analisa kader ...
-
-            <div class="fancy-grid">
-                <div class="fancy-card">
-                    <div class="card-title">Struktur & Penugasan</div>
-                    <div class="list-container">
-                        ${
-                            j.length > 0 ? 
-                            j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5]))
-                             .map(pos => `
-                                <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
-                                    <strong style="color: #D71920;">${pos[5]}</strong><br>
-                                    <small style="color: #64748b; font-weight: 700;">
-                                        ${pos[4] || '-'} ${pos[8] && pos[8] !== "-" ? '(' + pos[8] + ')' : ''}
-                                    </small>
-                                </div>
-                            `).join('') 
-                            : '<span class="empty-text">Belum ada riwayat jabatan</span>'
-                        }
-                    </div>
-                </div>
-
-                <div class="fancy-card">
-                    <div class="card-title">Media Sosial</div>
-                    <div class="medsos-grid">
-                        ${
-                            [
-                                { label: 'FB', val: item.medsos ? item.medsos.fb : p.fb },
-                                { label: 'IG', val: item.medsos ? item.medsos.ig : p.ig },
-                                { label: 'TikTok', val: item.medsos ? item.medsos.tiktok : p.tiktok },
-                                { label: 'X', val: item.medsos ? item.medsos.twitter : p.twitter },
-                                { label: 'YouTube', val: item.medsos ? item.medsos.youtube : p.youtube }
-                            ]
-                            .filter(m => m.val && m.val !== "-" && m.val !== "")
-                            .map(m => `
-                                <div class="ms-item" style="padding: 5px 0; border-bottom: 1px dashed #eee;">
-                                    <strong style="font-size: 11px; color: #64748b;">${m.label}</strong><br>
-                                    <span style="font-size: 13px; color: #1e293b;">${m.val}</span>
-                                </div>
-                            `)
-                            .join('') || '<span class="empty-text">Media sosial tidak tersedia</span>'
-                        }
-                    </div>
-                </div>
-            </div> <div class="modal-footer">
-                <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
-            </div>
-        </div> 
     `; // AKHIR DARI VARIABEL htmlContent
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
