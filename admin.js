@@ -462,26 +462,34 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
     <div class="list-container">
         ${
             (() => {
-                // Definisi mapping index kolom untuk pendidikan formal sesuai data Bos
                 const eduMapping = [
-                    { label: "S3 (Doktor)", inst: f[17], thn: f[18] },
-                    { label: "S2 (Magister)", inst: f[15], thn: f[16] },
-                    { label: "S1 (Sarjana)", inst: f[11], thn: f[12] }, // f[12] biasanya jurusan/instansi
-                    { label: "D1 - D3", inst: f[9], thn: f[10] },
-                    { label: "SMA / SMK", inst: f[6], thn: f[7] },
-                    { label: "SMP", inst: f[4], thn: f[5] },
-                    { label: "SD", inst: f[2], thn: f[3] }
+                    // S3: inst=Kampus, info=Jurusan/Fak, thn=Tahun
+                    { label: "S3 (Doktor)", inst: f[17], info: f[18], thn: f[19] },
+                    { label: "S2 (Magister)", inst: f[15], info: f[16], thn: "" }, 
+                    { label: "S1 (Sarjana)", inst: f[11], info: f[12], thn: f[14] },
+                    { label: "D1 - D4", inst: f[9], info: "", thn: f[10] },
+                    // SMA/SMK: f[6]=Sekolah, f[7]=Jurusan, f[8]=Tahun
+                    { label: "SMA / SMK", inst: f[6], info: f[7], thn: f[8] },
+                    { label: "SMP", inst: f[4], info: "", thn: f[5] },
+                    { label: "SD", inst: f[2], info: "", thn: f[3] }
                 ];
 
-                // Filter hanya yang ada isinya (bukan "-" atau kosong)
                 const validEdu = eduMapping.filter(e => e.inst && e.inst !== "-" && e.inst !== "");
 
                 if (validEdu.length > 0) {
                     return validEdu.map(e => `
-                        <div class="list-item" style="margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
-                            <strong style="font-size: 13px; color: #334155;">${e.label}</strong><br>
-                            <span style="font-size: 14px;">${e.inst}</span>
-                            ${e.thn && e.thn !== "-" ? `<br><small style="color: #64748b;">Lulus Tahun: ${e.thn}</small>` : ''}
+                        <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+                            <strong style="font-size: 11px; color: #D71920; text-transform: uppercase; letter-spacing: 0.5px;">${e.label}</strong><br>
+                            <span style="font-size: 14px; font-weight: 700; color: #1e293b; display: block; margin-top: 2px;">${e.inst}</span>
+                            
+                            ${/* Logika menampilkan Jurusan/Fakultas */
+                                e.info && e.info !== "-" && e.info !== "" ? 
+                                `<span style="font-size: 12px; color: #475569; display: block; background: #f8fafc; padding: 2px 6px; border-radius: 4px; margin-top: 3px; border-left: 3px solid #cbd5e1;">
+                                    ${e.label.includes("SMA") ? 'Jurusan: ' : 'Fak/Jur: '} ${e.info}
+                                </span>` : ''
+                            }
+                            
+                            ${e.thn && e.thn !== "-" ? `<small style="color: #94a3b8; font-size: 11px;">Lulus Tahun: ${e.thn}</small>` : ''}
                         </div>
                     `).join('');
                 } else {
