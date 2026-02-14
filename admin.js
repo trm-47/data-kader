@@ -500,15 +500,6 @@ function renderStep(label, year, color) {
     `;
 }
 
-// --- GLOBAL EVENT LISTENERS ---
-window.onclick = function(event) {
-    const modal = document.getElementById('modalDetail');
-    if (event.target == modal) closeDetail();
-}
-
-document.addEventListener('keydown', function(event) {
-    if (event.key === "Escape") closeDetail();
-});
 // ... akhir dari fungsi openDetail() ...
 
 // 1. Fungsi tutup manual (dipanggil tombol silang)
