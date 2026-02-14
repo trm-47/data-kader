@@ -549,27 +549,38 @@ function openDetail(originalIndex) {
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
-                    <h3 style="margin-top:0; color:#D71920; font-size:15px; font-weight:800; margin-bottom:15px;">STRUKTUR PARTAI</h3>
+                    <h3 style="margin-top:0; color:#D71920; font-size:15px; font-weight:800; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-sitemap"></i> STRUKTUR PARTAI
+                    </h3>
                     ${jList.filter(r => String(r[2]).trim() === "Struktur Partai").map(r => `
-                        <div style="background:#fff5f5; border-left:4px solid #D71920; padding:12px; border-radius:8px; margin-bottom:10px;">
+                        <div style="background:#fff5f5; border-left:4px solid #D71920; padding:12px; border-radius:12px; margin-bottom:10px;">
                             <div style="font-weight:800; color:#b91c1c; font-size:13px;">${(r[5] || '-').toUpperCase()}</div>
                             <div style="font-size:12px; font-weight:600; color:#475569;">Jabatan: ${cap(r[4] || '-')}</div>
-                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;"><i class="fa-solid fa-map-pin"></i> ${cap(r[7] || '-')} | <i class="fa-solid fa-calendar"></i> ${r[8] || '-'}</div>
+                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;">
+                                <i class="fa-solid fa-map-pin"></i> <b>${cap(r[7] || '-')}</b> | <i class="fa-solid fa-calendar"></i> ${r[8] || '-'}
+                            </div>
                         </div>
-                    `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px;">Tidak ada data struktur</div>'}
+                    `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px; text-align:center; padding:20px;">Tidak ada data struktur</div>'}
                 </div>
 
                 <div style="background: #fff; padding: 25px; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid #edf2f7;">
-                    <h3 style="margin-top:0; color:#0284c7; font-size:15px; font-weight:800; margin-bottom:15px;">PENUGASAN KHUSUS</h3>
-                    ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
-                        <div style="background:#f0f9ff; border-left:4px solid #0284c7; padding:12px; border-radius:8px; margin-bottom:10px;">
-                            <div style="font-weight:800; color:#0369a1; font-size:13px;">${cap(r[12] || '-')}</div>
-                            <div style="font-size:12px; font-weight:600; color:#475569;">Lembaga: ${cap(r[11] || '-')}</div>
-                            <div style="font-size:11px; color:#94a3b8; margin-top:4px;"><i class="fa-solid fa-map-pin"></i> ${cap(r[13] || '-')} | <i class="fa-solid fa-calendar"></i> ${r[14] || '-'}</div>
-                        </div>
-                    `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px;">Tidak ada data penugasan</div>'}
+                    <h3 style="margin-top:0; color:#0284c7; font-size:15px; font-weight:800; margin-bottom:15px; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-briefcase"></i> PENUGASAN (LEGISLATIF/EKSEKUTIF)
+                    </h3>
+                    <div class="list-container">
+                        ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
+                            <div style="border-left:4px solid #0284c7; padding:12px; margin-bottom:10px; background:#f0f9ff; border-radius:12px; font-size:12px;">
+                                <strong style="color:#0284c7; font-size:13px;">${cap(r[12] || '-')}</strong><br>
+                                <span style="font-weight:600; color:#475569;">Lembaga: ${cap(r[11] || '-')}</span><br>
+                                <div style="margin-top:4px; color:#64748b;">
+                                    <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small><br>
+                                    <small>📅 Periode: <b>${r[14] || '-'}</b></small>
+                                </div>
+                            </div>
+                        `).join('') || '<div style="color:#cbd5e1; font-style:italic; font-size:12px; text-align:center; padding:20px;">Tidak ada data penugasan</div>'}
+                    </div>
                 </div>
             </div>
 
