@@ -505,22 +505,36 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
         <div class="fancy-card">
             <div class="card-title">Media Sosial</div>
             <div class="medsos-grid-internal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                ${[
-                    { label: 'FB', val: item.medsos ? item.medsos.fb : p.fb },
-                    { label: 'IG', val: item.medsos ? item.medsos.ig : p.ig },
-                    { label: 'TikTok', val: item.medsos ? item.medsos.tiktok : p.tiktok },
-                    { label: 'X', val: item.medsos ? item.medsos.twitter : p.twitter },
-                    { label: 'YouTube', val: item.medsos ? item.medsos.youtube : p.youtube }
-                ]
-                .filter(m => m.val && m.val !== "-" && m.val !== "")
-                .map(m => `
-                    <div class="ms-item" style="padding: 5px; background: #f8fafc; border-radius: 6px; border: 1px solid #edf2f7;">
-                        <strong style="font-size: 10px; color: #64748b; display: block;">${m.label}</strong>
-                        <span style="font-size: 12px; color: #1e293b; word-break: break-all;">${m.val}</span>
-                    </div>`).join('') || '<span class="empty-text">Tidak ada data medsos</span>'}
+                ${(() => {
+                    const mData = [
+                        { label: 'Facebook', val: item.medsos?.fb || p.fb, icon: '📘', base: 'https://facebook.com/' },
+                        { label: 'Instagram', val: item.medsos?.ig || p.ig, icon: '📸', base: 'https://instagram.com/' },
+                        { label: 'TikTok', val: item.medsos?.tiktok || p.tiktok, icon: '🎵', base: 'https://tiktok.com/@' },
+                        { label: 'X (Twitter)', val: item.medsos?.twitter || p.twitter, icon: '🐦', base: 'https://x.com/' },
+                        { label: 'YouTube', val: item.medsos?.youtube || p.youtube, icon: '📺', base: '' }
+                    ];
+
+                    const validMedsos = mData.filter(m => m.val && m.val !== "-" && m.val !== "");
+
+                    if (validMedsos.length > 0) {
+                        return validMedsos.map(m => {
+                            // Logika Link: Jika sudah link (http) pakai itu, jika username saja maka gabung dengan base URL
+                            let cleanVal = m.val.toString().trim().replace('@', '');
+                            let finalLink = m.val.toString().startsWith('http') ? m.val : (m.base + cleanVal);
+                            
+                            return `
+                                <a href="${finalLink}" target="_blank" class="ms-item" 
+                                   style="padding: 8px; background: #f8fafc; border-radius: 8px; border: 1px solid #edf2f7; text-decoration: none; display: block; transition: 0.2s;">
+                                    <strong style="font-size: 10px; color: #64748b; display: block; margin-bottom: 2px;">${m.icon} ${m.label}</strong>
+                                    <span style="font-size: 11px; color: #D71920; font-weight: bold; word-break: break-all;">${m.val}</span>
+                                </a>`;
+                        }).join('');
+                    } else {
+                        return '<span class="empty-text" style="grid-column: span 2;">Tidak ada data medsos</span>';
+                    }
+                })()}
             </div>
         </div>
-    </div>
 </div> <div class="modal-footer">
     <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
 </div>
