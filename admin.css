@@ -237,25 +237,87 @@ body {
 
 /* --- TABLE --- */
 .table-card {
-    background: white;
-    border-radius: 20px;
-    overflow-x: auto;
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+background: white;
+    border-radius: 24px; /* Lebih bulat lebih modern */
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
+    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 th {
-    background: #f8fafc;
-    padding: 15px;
+background: #f8fafc;
+    padding: 18px 20px;
     text-align: left;
     font-size: 11px;
-    color: #64748b;
+    font-weight: 800;
+    color: #94a3b8;
     text-transform: uppercase;
+    letter-spacing: 1px;
     border-bottom: 2px solid #f1f5f9;
+}
+
+/* Row Styling & Hover Effect */
+tr {
+    transition: all 0.2s ease;
+}
+
+tr:hover {
+    background-color: #fff1f2 !important; /* Merah PDI sangat halus */
+}
+
+/* Profile Cell */
+.cell-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 14px; /* Kotak rounded yang modern */
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Badge Premium */
+.badge-premium {
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-block;
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* Tombol Detail */
+.btn-detail-table {
+    background: var(--dark-slate);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-detail-table:hover {
+    background: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 td {
@@ -277,7 +339,11 @@ tr:hover td {
     font-weight: 800;
 }
 
-.badge-red { background: #fee2e2; color: var(--primary-red); }
+.badge-red {
+    background: #fff1f2;
+    color: var(--primary-red);
+    border: 1px solid #fecdd3;
+}
 .badge-gray { background: #f1f5f9; color: #475569; }
 
 /* Status Khusus */
