@@ -1,4 +1,4 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbw1JzcaQ4MbMjT3AqDakxvtJq3vFHvJ1NvWEYemC_s5mOSw19ZZm9-kTzN_euujNDa6mQ/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbyVuJwnfHgGAtVYTalPTaAIn2qLamZ7uScDOs1pc6leqQfnH_8BlL23QGo_5Dc417L3CA/exec";
 let databaseKader = [];
 
 // --- INITIALIZATION ---
@@ -379,7 +379,7 @@ function renderStep(label, year, color) {
     `;
 }
 
-// --- FUNGSI UTAMA: OPEN DETAIL ---
+// --- FUNGSI UTAMA: OPEN DETAIL (VERSI PRESISI TOTAL) ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
@@ -393,16 +393,26 @@ function openDetail(originalIndex) {
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
+    // --- LOGIKA PENDIDIKAN KADER (Indeks k[4]=Lokasi, k[5]=Tahun) ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
+    const listLokasi = k[4] ? k[4].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
     
     const getKaderData = (keyword) => {
         const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
         if (idx !== -1) {
-            const foundYear = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : null;
-            return foundYear || "Aktif";
+            const thn = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : "Aktif";
+            const lok = listLokasi[idx] ? listLokasi[idx].replace(/^\d+\.\s*/, "").trim() : "";
+            // Mengembalikan objek agar lokasi bisa ditampilkan juga
+            return { tahun: thn, lokasi: lok };
         }
         return null;
+    };
+
+    // Helper sederhana untuk menampilkan tahun saja di bulatan stepper
+    const getYearOnly = (keyword) => {
+        const data = getKaderData(keyword);
+        return data ? data.tahun : null;
     };
 
     let htmlContent = `
@@ -453,14 +463,17 @@ function openDetail(originalIndex) {
             <div class="fancy-card highlight-card">
                 <div class="card-title">ANALISA JENJANG KADERISASI</div>
                 <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 10px;">
-                    ${renderStep('PRATAMA', getKaderData("Pratama"), '#ef4444')}
-                    ${renderStep('MADYA', getKaderData("Madya"), '#dc2626')}
-                    ${renderStep('UTAMA', getKaderData("Utama"), '#b91c1c')}
+                    ${renderStep('PRATAMA', getYearOnly("Pratama"), '#ef4444')}
+                    ${renderStep('MADYA', getYearOnly("Madya"), '#dc2626')}
+                    ${renderStep('UTAMA', getYearOnly("Utama"), '#b91c1c')}
                 </div>
                 <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 15px; border-top: 1px dashed #fca5a5; padding-top: 10px;">
-                    ${renderStep('GURU', getKaderData("Guru"), '#991b1b')}
-                    ${renderStep('WANITA', getKaderData("Perempuan"), '#db2777')}
-                    ${renderStep('KHUSUS', getKaderData("Khusus"), '#1e293b')}
+                    ${renderStep('GURU', getYearOnly("Guru"), '#991b1b')}
+                    ${renderStep('WANITA', getYearOnly("Perempuan"), '#db2777')}
+                    ${renderStep('KHUSUS', getYearOnly("Khusus"), '#1e293b')}
+                </div>
+                <div style="margin-top:10px; font-size:10px; color:#666; font-style:italic; text-align:center;">
+                    ${textJenis.map((t, i) => `<span>${t}: ${listLokasi[i] || '-'} (${listThn[i] || '-'})</span>`).join(' | ')}
                 </div>
             </div>
 
@@ -472,9 +485,9 @@ function openDetail(originalIndex) {
                             <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
                                 <strong style="color:#D71920;">${r[5].toUpperCase()}</strong><br>
                                 <span>Jabatan: ${cap(r[4])}</span><br>
-                                <small>Wilayah: ${cap(r[8])}</small> | <small>Tahun: ${r[9] || '-'}</small>
+                                <small>Lokasi: ${cap(r[7])}</small> | <small>Periode: ${r[8] || '-'}</small>
                             </div>
-                        `).join('') || '<small>Tidak ada data struktur</small>'}
+                        `).join('') || '<small>-</small>'}
                     </div>
                 </div>
                 <div class="fancy-card">
@@ -483,10 +496,10 @@ function openDetail(originalIndex) {
                         ${jList.filter(r => r[2] === "Penugasan").map(r => `
                             <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
                                 <strong style="color:#0284c7;">${cap(r[12])}</strong><br>
-                                <span>Lembaga: ${cap(r[10])}</span><br>
-                                <small>Dapil/Wilayah: ${cap(r[11])}</small> | <small>Periode: ${r[14] || '-'}</small>
+                                <span>Lembaga: ${cap(r[11])}</span><br>
+                                <small>Wilayah: ${cap(r[13])}</small> | <small>Periode: ${r[14] || '-'}</small>
                             </div>
-                        `).join('') || '<small>Tidak ada data penugasan publik</small>'}
+                        `).join('') || '<small>-</small>'}
                     </div>
                 </div>
             </div>
@@ -536,10 +549,10 @@ function openDetail(originalIndex) {
     document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
-// --- FUNGSI IKON MEDSOS REAL FONT AWESOME ---
+// --- FUNGSI IKON MEDSOS (FIXED: MENGGUNAKAN FAB UNTUK BRAND) ---
 function renderMedsosIcon(icon, val, color) {
-    if (!val || val === "-") return "";
-    // Menangani nama ikon Font Awesome (twitter -> x-twitter)
+    if (!val || val === "-" || val === "") return "";
+    
     let iconClass = icon;
     if (icon === 'facebook') iconClass = 'facebook-f';
     if (icon === 'twitter') iconClass = 'x-twitter';
@@ -547,7 +560,7 @@ function renderMedsosIcon(icon, val, color) {
     return `
         <div style="text-align:center;">
             <div style="width:40px; height:40px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px; font-size:18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <i class="fab fa-${iconClass}"></i>
+                <i class="fa-brands fa-${iconClass}"></i>
             </div>
             <small style="font-size:10px; font-weight:bold; display:block; color:#333;">${val}</small>
         </div>
