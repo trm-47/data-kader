@@ -26,12 +26,11 @@ function renderTable(data) {
         const p = item.pribadi || {};
         const k = item.kaderisasi || [];
         
-        // --- LOGIKA FOTO SAKTI ---
+        // --- FIX LOGIKA FOTO SAKTI ---
         let fotoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random&color=fff`;
         
         if (p.foto && p.foto !== "-") {
             let fileId = "";
-            // Ambil ID file dari berbagai format link Drive
             if (p.foto.includes("id=")) {
                 fileId = p.foto.split("id=")[1].split("&")[0];
             } else if (p.foto.includes("file/d/")) {
@@ -39,15 +38,15 @@ function renderTable(data) {
             }
 
             if (fileId) {
-                // Link Direct Download agar browser mau nampilin sebagai gambar
-                fotoUrl = `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+                // Perbaikan: Gunakan backticks dan format ${fileId} yang benar
+                fotoUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
             }
         }
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align:center;">
-                      <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; border:2px solid #D71920; margin:auto; background:#eee;">
+                <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; border:2px solid #D71920; margin:auto; background:#eee;">
                     <img src="${fotoUrl}" 
                          style="width:100%; height:100%; object-fit:cover;" 
                          onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=ccc&color=666'">
