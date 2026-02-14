@@ -85,7 +85,6 @@ function formatDriveUrl(url) {
     if (!fileId && url.includes("/d/")) {
         fileId = url.split("/d/")[1].split("/")[0];
     }
-    // Perbaikan di sini: Menggunakan template literal yang benar
     return fileId ? `https://lh3.googleusercontent.com/u/0/d/${fileId}` : url;
 }
 
@@ -397,19 +396,6 @@ function formatTanggalIndo(isoString) {
     }
 }
 
-// Perbaikan Drive URL (Menghapus angka 0 yang bikin link rusak)
-function formatDriveUrl(url) {
-    if (!url || !url.includes("drive.google.com")) return url;
-    let fileId = null;
-    const idParam = url.split("id=")[1];
-    if (idParam) { fileId = idParam.split("&")[0]; }
-    if (!fileId && url.includes("/d/")) {
-        fileId = url.split("/d/")[1].split("/")[0];
-    }
-    return fileId ? `https://lh3.googleusercontent.com/u/0/d/${fileId}` : url;
-}
-
-// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL ANTI-KORUP) ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
