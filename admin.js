@@ -106,7 +106,8 @@ function renderTable(data) {
         ig: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
         tt: "https://i.ibb.co.com/0pcvzQKD/tiktok.png",
         tw: "https://i.ibb.co.com/QFS9fF1c/youtube.png",
-        yt: "https://i.ibb.co.com/PvLFcxKx/icons8-youtube-96.png"
+        yt: "https://i.ibb.co.com/PvLFcxKx/icons8-youtube-96.png",
+        li: "https://i.ibb.co.com/zWZNdQPG/twitter.png"
     };
 
     data.forEach((item) => {
@@ -639,9 +640,10 @@ function openDetail(originalIndex) {
                 <div style="display: flex; gap: 15px; justify-content: center;">
                 ${renderMedsosIcoPremium('fb', m.fb)}
                 ${renderMedsosIcoPremium('ig', m.ig)}
+                ${renderMedsosIcoPremium('li', m.linkedin)}
                 ${renderMedsosIcoPremium('tt', m.tiktok)}
                 ${renderMedsosIcoPremium('tw', m.twitter)}
-                ${renderMedsosIcoPremium('yt', m.youtube)}}
+                ${renderMedsosIcoPremium('yt', m.youtube)}
                 </div>
             </div>
 
@@ -671,7 +673,8 @@ function renderMedsosIcoPremium(type, val) {
         ig: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
         tt: "https://i.ibb.co.com/0pcvzQKD/tiktok.png",
         tw: "https://i.ibb.co.com/QFS9fF1c/youtube.png",
-        yt: "https://i.ibb.co.com/PvLFcxKx/icons8-youtube-96.png"
+        yt: "https://i.ibb.co.com/PvLFcxKx/icons8-youtube-96.png",
+        li: "https://i.ibb.co.com/zWZNdQPG/twitter.png"
     };
 
     const iconUrl = libIcons[type] || "";
