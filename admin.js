@@ -372,15 +372,27 @@ function openDetail(originalIndex) {
     const ageInfo = calculateAge(p.tgl_lahir);
 
     // --- LOGIKA ANALISA TAHUN ---
-    const listThn = k[5] ? k[5].toString().split("\n") : [];
-    const getYear = (no) => {
-        const found = listThn.find(t => t.trim().startsWith(no + "."));
-        return found ? found.replace(no + ".", "").trim() : null;
-    };
+    // --- LOGIKA ANALISA TAHUN (LENGKAP) ---
+const textJenis = k[2] ? k[2].toString().split("\n") : [];
+const listThn = k[5] ? k[5].toString().split("\n") : [];
 
-    const thnPratama = getYear("1");
-    const thnMadya = getYear("2");
-    const thnUtama = getYear("3");
+const getKaderData = (keyword) => {
+    // Cari index baris yang mengandung kata kunci (misal: "Madya")
+    const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
+    if (idx !== -1) {
+        // Ambil tahun yang sesuai dengan urutan barisnya (1. , 2. dst)
+        const foundYear = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : null;
+        return foundYear || "Aktif"; // Jika ada barisnya tapi tahun kosong, tulis Aktif
+    }
+    return null;
+};
+
+const thnPratama = getKaderData("Pratama");
+const thnMadya = getKaderData("Madya");
+const thnUtama = getKaderData("Utama");
+const thnGuru = getKaderData("Guru");
+const thnPerempuan = getKaderData("Perempuan");
+const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
 
     let htmlContent = `
         <div class="modal-header-fancy">
@@ -420,19 +432,30 @@ function openDetail(originalIndex) {
                 </div>
             </div>
 
-            <div class="fancy-card highlight-card">
-                <div class="card-title">Analisa Jenjang Kaderisasi</div>
-                <div class="stepper-wrapper">
-                    ${renderStep('PRATAMA', thnPratama, '#ef4444')}
-                    ${renderStep('MADYA', thnMadya, '#dc2626')}
-                    ${renderStep('UTAMA', thnUtama, '#b91c1c')}
-                </div>
-                
-                <div class="rekomendasi-box ${!thnMadya && thnPratama ? 'alert' : ''}">
-                    <strong>💡 Rekomendasi:</strong>
-                    <p>${!thnMadya && thnPratama ? 'Kader PRIORITAS untuk didorong mengikuti Pelatihan MADYA.' : 'Tetap aktif dalam penugasan struktur sesuai jenjang.'}</p>
-                </div>
-            </div>
+<div class="fancy-card highlight-card">
+    <div class="card-title">Analisa Jenjang & Spesialisasi Kader</div>
+    
+    <div class="stepper-wrapper">
+        ${renderStep('PRATAMA', thnPratama, '#ef4444')}
+        ${renderStep('MADYA', thnMadya, '#dc2626')}
+        ${renderStep('UTAMA', thnUtama, '#b91c1c')}
+    </div>
+
+    <div class="stepper-wrapper" style="margin-top: 20px; border-top: 1px dashed #fca5a5; padding-top: 15px;">
+        ${renderStep('GURU KADER', thnGuru, '#991b1b')}
+        ${renderStep('PEREMPUAN', thnPerempuan, '#db2777')}
+        ${renderStep('KHUSUS', thnKhusus, '#1e293b')}
+    </div>
+    
+    <div class="rekomendasi-box ${!thnMadya && thnPratama ? 'alert' : ''}">
+        <strong>💡 Status Analisa:</strong>
+        <p>
+            ${thnGuru ? 'Kader telah mencapai kualifikasi <strong>Guru Kader</strong>.' : 
+              (!thnMadya && thnPratama ? 'Kader <strong>Prioritas</strong> untuk didorong Pelatihan Madya.' : 
+              'Pantau terus keaktifan kader dalam penugasan partai.')}
+        </p>
+    </div>
+</div>
 
 <div class="fancy-card">
     <div class="card-title">Struktur & Penugasan</div>
