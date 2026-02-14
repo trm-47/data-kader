@@ -108,6 +108,7 @@ body {
     text-transform: uppercase;
 }
 
+/* GANTI BAGIAN INI DI CSS ABANG */
 .filter-body {
     padding: 30px;
     display: none;
@@ -117,6 +118,11 @@ body {
     border-radius: 0 0 30px 30px;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* Tambahkan ini supaya tabel bisa di-scroll kiri-kanan di HP */
+.table-card {
+    overflow-x: auto;
 }
 
 .filter-body.active {
