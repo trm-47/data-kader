@@ -459,6 +459,7 @@ function openDetail(originalIndex) {
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
+    document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
 // Helper untuk Stepper Kaderisasi
