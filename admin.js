@@ -376,7 +376,7 @@ function applyFilters() {
 // --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
 const cap = (str) => {
     if (!str || str === "-") return "-";
-    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "DIY", "UGM", "PDI", "PERJUANGAN"];
+    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "DIY", "UGM", "PDI", "PERJUANGAN", "DPR"];
     return str.toString().split(' ').map(word => {
         if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
