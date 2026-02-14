@@ -637,11 +637,11 @@ function openDetail(originalIndex) {
             <div style="background: #1e293b; padding: 20px; border-radius: 24px; text-align: center; color:#fff;">
                 <div style="font-size:10px; font-weight:700; letter-spacing:2px; opacity:0.6; margin-bottom:15px;">MEDIA SOSIAL</div>
                 <div style="display: flex; gap: 15px; justify-content: center;">
-                    ${renderMedsosIcoPremium('facebook', m.fb, '#1877F2')}
-                    ${renderMedsosIcoPremium('instagram', m.ig, '#E4405F')}
-                    ${renderMedsosIcoPremium('tiktok', m.tiktok, '#ffffff')}
-                    ${renderMedsosIcoPremium('twitter', m.twitter, '#1DA1F2')}
-                    ${renderMedsosIcoPremium('youtube', m.youtube, '#FF0000')}
+                ${renderMedsosIcoPremium('fb', m.fb)}
+                ${renderMedsosIcoPremium('ig', m.ig)}
+                ${renderMedsosIcoPremium('tt', m.tiktok)}
+                ${renderMedsosIcoPremium('tw', m.twitter)}
+                ${renderMedsosIcoPremium('yt', m.youtube)}}
                 </div>
             </div>
 
