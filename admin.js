@@ -98,115 +98,79 @@ function formatDriveUrl(url) {
 }
 
 
-// --- CORE RENDERING ---
-// --- CORE RENDERING (VERSI PERBAIKAN) ---
 function renderTable(data) {
-    const body = document.getElementById('bodyKader');
-    if (!body) return;
-    body.innerHTML = "";
+    const body = document.getElementById('bodyKader');
+    if (!body) return;
+    body.innerHTML = "";
 
-    if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
-        return;
-    }
+    if (!data || data.length === 0) {
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px;">Data tidak ditemukan.</td></tr>';
+        return;
+    }
 
-    const displayData = [...data].reverse();
+    data.forEach((item, index) => { // Gunakan index asli dari data yang masuk
+        const p = item.pribadi || {};
+        const f = item.formal || [];
+        const k = item.kaderisasi || [];
+        const ageInfo = calculateAge(p.tgl_lahir);
 
-    displayData.forEach((item) => {
-        if (!item || !item.pribadi) return;
-        const p = item.pribadi;
-        const f = item.formal || [];
-        const k = item.kaderisasi || [];
-        const ageInfo = calculateAge(p.tgl_lahir);
+        // --- LOGIKA KADERISASI (Sesuai Struktur Baru) ---
+        // Kita cari baris yang mengandung "Pratama" atau "Madya" dalam array kaderisasi
+        const dataPratama = k.find(row => row[2] && row[2].toLowerCase().includes("pratama"));
+        const dataMadya = k.find(row => row[2] && row[2].toLowerCase().includes("madya"));
+        
+        const isMadya = !!dataMadya;
+        const hasPratama = !!dataPratama;
+        const tahunPratama = dataPratama ? parseInt(dataPratama[5]) : null;
+        
+        let rowClass = "";
+        let badgeWarning = "";
 
-        // --- LOGIKA KADERISASI ---
-        const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
-        const textTahunKader = k[5] ? k[5].toString() : ""; 
+        if (hasPratama && !isMadya && tahunPratama) {
+            const currentYear = 2026;
+            const masaTunggu = currentYear - tahunPratama;
+            if (masaTunggu >= 5) {
+                rowClass = "urgent-row"; 
+                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+            } else {
+                rowClass = "warning-row"; 
+                badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+            }
+        }
 
-        // Ambil tahun Pratama
-        const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
-        const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
-        
-        const isMadya = textJenisKader.includes("madya");
-        const hasPratama = textJenisKader.includes("pratama");
-        
-        let rowClass = "";
-        let badgeWarning = "";
+        // Gabungkan jenjang untuk Badge
+        let htmlBadgeKader = k.map(row => 
+            `<span class="badge ${row[2].toLowerCase().includes('madya') ? 'badge-orange' : 'badge-red'}" style="margin-bottom:2px; display:block;">${row[2]}</span>`
+        ).join("");
 
-        if (hasPratama && !isMadya && tahunPratama) {
-            const currentYear = new Date().getFullYear();
-            const masaTunggu = currentYear - tahunPratama;
+        if (!htmlBadgeKader) htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
 
-            if (masaTunggu >= 5) {
-                rowClass = "urgent-row"; 
-                badgeWarning = `<br><span class="urgent-badge">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
-            } else {
-                rowClass = "warning-row"; 
-                badgeWarning = `<br><span class="warning-badge">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
-            }
-        }
-
-        let htmlBadgeKader = "";
-        if (k[2] && k[2] !== "" && k[2] !== "-") {
-            const listJenjang = k[2].toString().split("\n");
-            listJenjang.forEach(jenjangText => {
-                if(jenjangText.trim()) {
-                    htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center;">${jenjangText.trim()}</span>`;
-                }
-            });
-        } else {
-            htmlBadgeKader = `<span class="badge badge-gray">Anggota</span>`;
-        }
-
-        // --- WHATSAPP ---
-        const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
-        const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
-        const btnWA = waNumber ?
-            `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 12px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">💬 Chat</a>` :
-            `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
-
-        // --- PENDIDIKAN ---
-        let infoPendidikan = `<span class="badge badge-gray">${p.kec || '-'}</span>`;
-        const listEdu = [
-            { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
-            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
-        ];
-
-        for (let edu of listEdu) {
-            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                let detail = (edu.label === "S1") ? `<br><small>${(f[12] && f[12] !== "-") ? f[12] : f[11]}</small>` : `<br><small>${f[edu.idx]}</small>`;
-                infoPendidikan = `<strong>${edu.label}</strong>${detail}`;
-                break;
-            }
-        }
-
-        const originalIdx = databaseKader.indexOf(item);
-
-        // --- RENDER BARIS ---
-        body.innerHTML += `
-            <tr class="${rowClass}" onclick="openDetail(${originalIdx})">
-                <td data-label="Foto">
-                    <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:45px; height:45px; border-radius:10px; object-fit:cover;">
-                </td>
-                <td data-label="Identitas">
-                    <strong style="font-size:15px;">${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}
-                    <br>
-                    <small style="color: #D71920; font-weight: 700;">No. KTA: ${p.kta || '-'}</small>
-                </td>
-                <td data-label="Usia" style="text-align:center;">
-                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
-                </td>
-                <td data-label="Pendidikan">
-                    ${infoPendidikan}
-                </td>
-                <td data-label="Kaderisasi">
-                    ${htmlBadgeKader}
-                </td>
-                <td data-label="Aksi" style="text-align:center;">
-                    ${btnWA}
-                </td>
-            </tr>`;
-    });
+        // --- RENDER BARIS ---
+        body.innerHTML += `
+            <tr class="${rowClass}" onclick="openDetail(${index})">
+                <td data-label="Foto">
+                    <div style="width:45px; height:45px; border-radius:10px; overflow:hidden; border:1px solid #ddd;">
+                        <img src="${formatDriveUrl(p.foto)}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=random'" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                </td>
+                <td data-label="Identitas">
+                    <strong style="font-size:15px;">${p.nama || 'Tanpa Nama'}</strong>${badgeWarning}
+                    <br><small style="color: #D71920; font-weight: 700;">KTA: ${p.kta || '-'}</small>
+                </td>
+                <td data-label="Usia" style="text-align:center;">
+                    ${ageInfo.age}<br><span class="badge badge-gray">${ageInfo.gen}</span>
+                </td>
+                <td data-label="Pendidikan">
+                    <strong>${f[19] || '-'}</strong><br><small>${f[20] || ''}</small>
+                </td>
+                <td data-label="Kaderisasi">
+                    ${htmlBadgeKader}
+                </td>
+                <td data-label="Aksi" style="text-align:center;">
+                    <button class="btn-detail">DETAIL</button>
+                </td>
+            </tr>`;
+    });
 }
 
 function updateStats(data) {
