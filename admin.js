@@ -106,18 +106,16 @@ function renderTable(data) {
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
+        // --- LOGIKA PRIORITAS ---
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
         const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
         const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
         
-        const isMadya = textJenisKader.includes("madya");
-        const hasPratama = textJenisKader.includes("pratama");
-        
         let rowStyle = "";
         let badgeWarning = "";
 
-        if (hasPratama && !isMadya && tahunPratama) {
+        if (textJenisKader.includes("pratama") && !textJenisKader.includes("madya") && tahunPratama) {
             const currentYear = new Date().getFullYear();
             const masaTunggu = currentYear - tahunPratama;
             if (masaTunggu >= 5) {
@@ -129,29 +127,58 @@ function renderTable(data) {
             }
         }
 
+        // --- BADGE KADERISASI (CENTERED CONTAINER, LEFT TEXT) ---
         let htmlBadgeKader = "";
-        if (k[2] && k[2] !== "" && k[2] !== "-") {
+        if (k[2] && k[2].toString().trim() !== "" && k[2] !== "-") {
             const listJenjang = k[2].toString().split("\n");
+            // Container div pakai margin auto agar box-nya di tengah, tapi text-align left
             listJenjang.forEach(txt => {
                 if(txt.trim()) {
-                    htmlBadgeKader += `<div style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border: 1px solid #e2e8f0; color: #334155; padding: 4px 10px; border-radius: 6px; font-size: 9px; font-weight: 800; margin-bottom: 4px; text-align: center; letter-spacing: 0.8px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,1); position: relative; overflow: hidden;"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: #D71920;"></span>${txt.trim()}</div>`;
+                    htmlBadgeKader += `
+                        <div style="
+                            background: #ffffff;
+                            border: 1px solid #e2e8f0;
+                            border-left: 3px solid #D71920;
+                            color: #334155;
+                            padding: 4px 10px;
+                            border-radius: 4px;
+                            font-size: 9px;
+                            font-weight: 800;
+                            margin: 0 auto 4px auto;
+                            width: fit-content;
+                            min-width: 90px;
+                            text-align: left;
+                            letter-spacing: 0.5px;
+                            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+                        ">
+                            ${txt.trim().toUpperCase()}
+                        </div>`;
                 }
             });
         } else {
             htmlBadgeKader = `<span style="color: #cbd5e1; font-size: 9px; font-weight: 700; letter-spacing: 1px;">ANGGOTA</span>`;
         }
 
-        let infoPendidikan = `<span style="color:#cbd5e1; font-size:10px;">${p.kec || '-'}</span>`;
+        // --- PENDIDIKAN (LOGIKA DIPERKUAT / ANTI-HILANG) ---
+        let infoPendidikan = `<div style="font-size:10px; color:#cbd5e1; font-weight:700;">${(p.kec || '-').toUpperCase()}</div>`;
+        
+        // List indeks sel formal (berurutan dari tertinggi)
         const listEdu = [
             { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
             { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
         ];
 
         for (let edu of listEdu) {
-            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                let detail = (edu.label === "S1") ? (f[12] || f[11]) : f[edu.idx];
-                infoPendidikan = `<strong style="color:#334155; font-size:12px;">${edu.label}</strong><div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${detail}</div>`;
-                break;
+            let rawData = f[edu.idx];
+            // Cek apakah data benar-benar ada isinya (bukan null, undefined, atau strip)
+            if (rawData && rawData.toString().trim() !== "" && rawData.toString().trim() !== "-") {
+                let detail = (edu.label === "S1") ? (f[12] || f[11] || rawData) : rawData;
+                infoPendidikan = `
+                    <strong style="color:#334155; font-size:12px; display:block;">${edu.label}</strong>
+                    <div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px;">
+                        ${detail.toString().toUpperCase()}
+                    </div>`;
+                break; // Stop jika sudah ketemu jenjang tertinggi
             }
         }
 
@@ -169,18 +196,18 @@ function renderTable(data) {
                     <div style="font-size:10px; color:#D71920; font-weight:700; letter-spacing:0.3px;">KTA: ${p.kta || '-'}</div>
                     ${badgeWarning}
                 </td>
-                <td style="text-align:center; width:80px; padding:12px 5px;">
+                <td style="text-align:center; width:75px; padding:12px 5px;">
                     <div style="font-weight:800; color:#1e293b; font-size:13px;">${ageInfo.age}</div>
                     <div style="font-size:9px; color:#94a3b8; font-weight:800; text-transform:uppercase;">${ageInfo.gen}</div>
                 </td>
-                <td style="padding:12px 5px; min-width:140px;">
+                <td style="padding:12px 5px; min-width:150px;">
                     ${infoPendidikan}
                 </td>
-                <td style="padding:12px 5px; width:130px;">
-                    <div style="max-width:120px; margin:0 auto;">${htmlBadgeKader}</div>
+                <td style="padding:12px 5px; width:150px; text-align:center;">
+                    ${htmlBadgeKader}
                 </td>
                 <td style="text-align:center; width:90px; padding:12px 5px;">
-                    ${waNumber ? `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; transition:0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.05);">CHAT</a>` : `<span style="color:#e2e8f0;">-</span>`}
+                    ${waNumber ? `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; box-shadow:0 1px 3px rgba(0,0,0,0.05);">CHAT</a>` : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
     });
