@@ -363,7 +363,7 @@ function openDetail(originalIndex) {
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA ANALISA TAHUN KADERISASI ---
+    // --- LOGIKA ANALISA TAHUN KADERISASI (LENGKAP 6 JENJANG) ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
 
@@ -423,6 +423,11 @@ function openDetail(originalIndex) {
                     ${renderStep('MADYA', getKaderData("Madya"), '#dc2626')}
                     ${renderStep('UTAMA', getKaderData("Utama"), '#b91c1c')}
                 </div>
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin: 10px 0; border-top: 1px dashed #fca5a5; padding-top: 10px;">
+                    ${renderStep('GURU', getKaderData("Guru"), '#991b1b')}
+                    ${renderStep('WANITA', getKaderData("Perempuan"), '#db2777')}
+                    ${renderStep('KHUSUS', getKaderData("Khusus"), '#1e293b')}
+                </div>
             </div>
 
             <div class="fancy-grid">
@@ -437,55 +442,51 @@ function openDetail(originalIndex) {
                     </div>
                 </div>
                 <div class="fancy-card">
-                    <div class="card-title">Penugasan (Publik/Lain)</div>
+                    <div class="card-title">Penugasan (Legislatif / Eksekutif)</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Penugasan").map(r => `
                             <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:5px; background:#f0f9ff; font-size:12px;">
-                                <strong>${r[12]}</strong> - ${r[10]}<br><small>${r[11]} (${r[14]})</small>
+                                <strong>${r[12]}</strong> (${r[10]})<br>
+                                <small>${r[11]} - ${r[14]}</small>
                             </div>
-                        `).join('') || '<small>Tidak ada data penugasan</small>'}
+                        `).join('') || '<small>Tidak ada data penugasan publik</small>'}
                     </div>
                 </div>
             </div>
 
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">Riwayat Organisasi Luar</div>
-                    <div class="list-container">
-                        ${oList.map(r => `
-                            <div style="border-bottom:1px solid #eee; padding:3px 0; font-size:12px;">
-                                <strong>${r[2]}</strong> (${r[4]})<br><small>Periode: ${r[5]}</small>
-                            </div>
-                        `).join('') || '<small>Tidak ada data organisasi</small>'}
-                    </div>
-                </div>
-                <div class="fancy-card">
-                    <div class="card-title">Pengalaman Kerja Professional</div>
-                    <div class="list-container">
-                        ${wList.map(r => `
-                            <div style="border-bottom:1px solid #eee; padding:3px 0; font-size:12px;">
-                                <strong>${r[4]}</strong> di ${r[2]}<br><small>${r[5]}</small>
-                            </div>
-                        `).join('') || '<small>Tidak ada data pekerjaan</small>'}
-                    </div>
-                </div>
-            </div>
-
-            <div class="fancy-grid">
-                <div class="fancy-card">
-                    <div class="card-title">Pendidikan Formal</div>
+                    <div class="card-title">Riwayat Organisasi & Pekerjaan</div>
                     <div class="list-container" style="font-size:12px;">
-                        ${[
-                            {l: "S1/S2/S3", n: f[11] || f[15] || f[17]},
-                            {l: "SMA/SMK", n: f[6]}
-                        ].filter(e => e.n && e.n !== "-").map(e => `<div><strong>${e.l}</strong>: ${e.n}</div>`).join('') || '-'}
+                        <div style="color:#D71920; font-weight:bold; margin-bottom:5px;">ORGANISASI LUAR</div>
+                        ${oList.map(r => `<div style="margin-bottom:3px;">• ${r[2]} (${r[4]})</div>`).join('') || '-'}
+                        <div style="color:#D71920; font-weight:bold; margin-top:10px; margin-bottom:5px;">PEKERJAAN</div>
+                        ${wList.map(r => `<div style="margin-bottom:3px;">• ${r[4]} di ${r[2]}</div>`).join('') || '-'}
                     </div>
                 </div>
                 <div class="fancy-card">
-                    <div class="card-title">Media Sosial Resmi</div>
-                    <div class="medsos-grid-internal" style="display: flex; gap: 5px; flex-wrap: wrap;">
-                         ${['fb', 'ig', 'tiktok'].map(key => m[key] && m[key] !== '-' ? `<span style="background:#f1f5f9; padding:2px 8px; border-radius:10px; font-size:10px; border:1px solid #ddd;">${key.toUpperCase()}: ${m[key]}</span>` : '').join('')}
+                    <div class="card-title">Pendidikan Formal (Lengkap)</div>
+                    <div class="list-container" style="font-size:11px;">
+                        ${[
+                            {l: "S3", n: f[17]}, {l: "S2", n: f[15]}, {l: "S1", n: f[11]},
+                            {l: "D3/D4", n: f[9]}, {l: "SMA", n: f[6]}, {l: "SMP", n: f[4]}, {l: "SD", n: f[2]}
+                        ].filter(e => e.n && e.n !== "-").map(e => `
+                            <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${e.n}</div>
+                        `).join('') || '-'}
                     </div>
+                </div>
+            </div>
+
+            <div class="fancy-card">
+                <div class="card-title">Media Sosial Resmi</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                    ${['fb', 'ig', 'tiktok', 'twitter', 'youtube'].map(key => {
+                        const val = m[key] || p[key];
+                        return (val && val !== '-') ? `
+                            <div style="display:flex; align-items:center; gap:5px; padding:5px 12px; background:#f1f5f9; border-radius:20px; border:1px solid #ddd; font-size:11px;">
+                                <strong style="color:#D71920;">${key.toUpperCase()}</strong>: ${val}
+                            </div>` : '';
+                    }).join('')}
                 </div>
             </div>
         </div>
