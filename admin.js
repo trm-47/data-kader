@@ -79,23 +79,14 @@ function calculateAge(birthDateString) {
 
 function formatDriveUrl(url) {
     if (!url || !url.includes("drive.google.com")) return url;
-
     let fileId = null;
-
     const idParam = url.split("id=")[1];
-    if (idParam) {
-        fileId = idParam.split("&")[0];
-    }
-
+    if (idParam) { fileId = idParam.split("&")[0]; }
     if (!fileId && url.includes("/d/")) {
         fileId = url.split("/d/")[1].split("/")[0];
     }
-
-    if (fileId) {
-        return `https://lh3.googleusercontent.com/d/${fileId}`;
-    }
-
-    return url;
+    // Perbaikan di sini: Menggunakan template literal yang benar
+    return fileId ? `https://lh3.googleusercontent.com/u/0/d/${fileId}` : url;
 }
 
 
@@ -359,7 +350,6 @@ function applyFilters() {
     updateStats(filtered);
 }
 
-// --- MODAL DETAIL LOGIC ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
@@ -368,31 +358,27 @@ function openDetail(originalIndex) {
     const f = item.formal || [];
     const k = item.kaderisasi || [];
     const j = item.jabatan || [];
-    const medsos = item.medsos || []; // Pastikan medsos terdefinisi
     const ageInfo = calculateAge(p.tgl_lahir);
 
     // --- LOGIKA ANALISA TAHUN ---
-    // --- LOGIKA ANALISA TAHUN (LENGKAP) ---
-const textJenis = k[2] ? k[2].toString().split("\n") : [];
-const listThn = k[5] ? k[5].toString().split("\n") : [];
+    const textJenis = k[2] ? k[2].toString().split("\n") : [];
+    const listThn = k[5] ? k[5].toString().split("\n") : [];
 
-const getKaderData = (keyword) => {
-    // Cari index baris yang mengandung kata kunci (misal: "Madya")
-    const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
-    if (idx !== -1) {
-        // Ambil tahun yang sesuai dengan urutan barisnya (1. , 2. dst)
-        const foundYear = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : null;
-        return foundYear || "Aktif"; // Jika ada barisnya tapi tahun kosong, tulis Aktif
-    }
-    return null;
-};
+    const getKaderData = (keyword) => {
+        const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
+        if (idx !== -1) {
+            const foundYear = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : null;
+            return foundYear || "Aktif";
+        }
+        return null;
+    };
 
-const thnPratama = getKaderData("Pratama");
-const thnMadya = getKaderData("Madya");
-const thnUtama = getKaderData("Utama");
-const thnGuru = getKaderData("Guru");
-const thnPerempuan = getKaderData("Perempuan");
-const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
+    const thnPratama = getKaderData("Pratama");
+    const thnMadya = getKaderData("Madya");
+    const thnUtama = getKaderData("Utama");
+    const thnGuru = getKaderData("Guru");
+    const thnPerempuan = getKaderData("Perempuan");
+    const thnKhusus = getKaderData("Khusus");
 
     let htmlContent = `
         <div class="modal-header-fancy">
@@ -406,9 +392,9 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
                     </div>
                 </div>
                 <div class="name-container">
-                    <h2>${p.nama ? p.nama.toUpperCase() : '-'}</h2>
+                    <h2>${(p.nama || 'Tanpa Nama').toUpperCase()}</h2>
                     <span class="kta-badge">ID KADER: ${p.kta || '-'}</span>
-                    <div class="location-sub"><i class="loc-icon">📍</i> ${p.desa}, ${p.kec}, ${p.kab_kota}</div>
+                    <div class="location-sub">📍 ${p.desa || '-'}, ${p.kec || '-'}, ${p.kab_kota || '-'}</div>
                 </div>
             </div>
         </div>
@@ -427,139 +413,90 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
                     <div class="card-title">Kontak & Alamat</div>
                     <div class="data-row"><label>WhatsApp</label><span class="highlight-wa">💬 ${p.wa || '-'}</span></div>
                     <div class="data-row"><label>Email</label><span>${p.email || '-'}</span></div>
-                    <div class="data-row"><label>Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}</span></div>
+                    <div class="data-row"><label>Domisili</label><span>${p.alamat || '-'}</span></div>
                     <div class="data-row"><label>Pekerjaan</label><span>${p.kerja_skrg || '-'}</span></div>
                 </div>
             </div>
 
-<div class="fancy-card highlight-card">
-    <div class="card-title">Analisa Jenjang & Spesialisasi Kader</div>
-    
-    <div class="stepper-wrapper">
-        ${renderStep('PRATAMA', thnPratama, '#ef4444')}
-        ${renderStep('MADYA', thnMadya, '#dc2626')}
-        ${renderStep('UTAMA', thnUtama, '#b91c1c')}
-    </div>
+            <div class="fancy-card highlight-card">
+                <div class="card-title">Analisa Jenjang & Spesialisasi Kader</div>
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin: 15px 0;">
+                    ${renderStep('PRATAMA', thnPratama, '#ef4444')}
+                    ${renderStep('MADYA', thnMadya, '#dc2626')}
+                    ${renderStep('UTAMA', thnUtama, '#b91c1c')}
+                </div>
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; border-top: 1px dashed #fca5a5; padding-top: 15px;">
+                    ${renderStep('GURU', thnGuru, '#991b1b')}
+                    ${renderStep('PEREMPUAN', thnPerempuan, '#db2777')}
+                    ${renderStep('KHUSUS', thnKhusus, '#1e293b')}
+                </div>
+                <div class="rekomendasi-box" style="margin-top:15px; padding:10px; background:#fff1f2; border-radius:8px; border-left:4px solid #D71920;">
+                    <strong>💡 Status Analisa:</strong>
+                    <p style="margin:5px 0 0 0; font-size:12px;">
+                        ${thnGuru ? 'Kader telah mencapai kualifikasi <strong>Guru Kader</strong>.' : 
+                         (!thnMadya && thnPratama ? 'Kader <strong>Prioritas</strong> untuk didorong Pelatihan Madya.' : 
+                         'Pantau terus keaktifan kader dalam penugasan partai.')}
+                    </p>
+                </div>
+            </div>
 
-    <div class="stepper-wrapper" style="margin-top: 20px; border-top: 1px dashed #fca5a5; padding-top: 15px;">
-        ${renderStep('GURU KADER', thnGuru, '#991b1b')}
-        ${renderStep('PEREMPUAN', thnPerempuan, '#db2777')}
-        ${renderStep('KHUSUS', thnKhusus, '#1e293b')}
-    </div>
-    
-    <div class="rekomendasi-box ${!thnMadya && thnPratama ? 'alert' : ''}">
-        <strong>💡 Status Analisa:</strong>
-        <p>
-            ${thnGuru ? 'Kader telah mencapai kualifikasi <strong>Guru Kader</strong>.' : 
-              (!thnMadya && thnPratama ? 'Kader <strong>Prioritas</strong> untuk didorong Pelatihan Madya.' : 
-              'Pantau terus keaktifan kader dalam penugasan partai.')}
-        </p>
-    </div>
-</div>
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">Pendidikan Formal</div>
+                    <div class="list-container">
+                        ${(() => {
+                            const eduMapping = [
+                                { label: "S3", inst: f[17], info: f[18], thn: f[19] },
+                                { label: "S2", inst: f[15], info: f[16], thn: "" },
+                                { label: "S1", inst: f[11], info: f[12], thn: f[14] },
+                                { label: "D1-D4", inst: f[9], thn: f[10] },
+                                { label: "SMA", inst: f[6], info: f[7], thn: f[8] }
+                            ];
+                            const validEdu = eduMapping.filter(e => e.inst && e.inst !== "-" && e.inst !== "");
+                            return validEdu.length > 0 ? validEdu.map(e => `
+                                <div style="margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:5px;">
+                                    <small style="color:#D71920; font-weight:bold;">${e.label}</small><br>
+                                    <strong>${e.inst}</strong>
+                                    ${e.info && e.info !== "-" ? `<br><small style="color:#666;">${e.info}</small>` : ''}
+                                </div>`).join('') : '<span class="empty-text">Data tidak tersedia</span>';
+                        })()}
+                    </div>
+                </div>
 
+                <div class="fancy-card">
+                    <div class="card-title">Media Sosial Resmi</div>
+                    <div class="medsos-grid-internal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        ${(() => {
+                            const platform = [
+                                { label: 'FB', key: 'fb', color: '#1877F2', base: 'https://fb.com/', svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.34 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg>' },
+                                { label: 'IG', key: 'ig', color: '#E4405F', base: 'https://instagram.com/', svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>' },
+                                { label: 'TikTok', key: 'tiktok', color: '#000', base: 'https://tiktok.com/@', svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.46,5.32 15.64,3.9 15.54,2.27H12.43V17.07C12.43,18.62 11.17,19.87 9.62,19.87C8.07,19.87 6.81,18.62 6.81,17.07C6.81,15.52 8.07,14.26 9.62,14.26C10.22,14.26 10.77,14.45 11.23,14.77V11.6C10.74,11.33 10.19,11.17 9.62,11.17C6.36,11.17 3.7,13.83 3.7,17.09C3.7,20.35 6.36,23.01 9.62,23.01C12.88,23.01 15.54,20.35 15.54,17.09V8.92C16.85,9.85 18.45,10.4 20.18,10.4V7.29C19.24,7.29 18.38,6.86 17.71,6.15Z"/></svg>' }
+                            ];
 
-<div class="fancy-grid">
-    <div class="fancy-card">
-        <div class="card-title">Pendidikan Formal</div>
-        <div class="list-container">
-            ${(() => {
-                const eduMapping = [
-                    { label: "S3 (Doktor)", inst: f[17], info: f[18], thn: f[19] },
-                    { label: "S2 (Magister)", inst: f[15], info: f[16], thn: "" }, 
-                    { label: "S1 (Sarjana)", inst: f[11], info: f[12], thn: f[14] },
-                    { label: "D1 - D4", inst: f[9], info: "", thn: f[10] },
-                    { label: "SMA / SMK", inst: f[6], info: f[7], thn: f[8] },
-                    { label: "SMP", inst: f[4], info: "", thn: f[5] },
-                    { label: "SD", inst: f[2], info: "", thn: f[3] }
-                ];
-                const validEdu = eduMapping.filter(e => e.inst && e.inst !== "-" && e.inst !== "");
-                if (validEdu.length > 0) {
-                    return validEdu.map(e => `
-                        <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
-                            <strong style="font-size: 11px; color: #D71920; text-transform: uppercase;">${e.label}</strong><br>
-                            <span style="font-size: 14px; font-weight: 700; color: #1e293b; display: block;">${e.inst}</span>
-                            ${e.info && e.info !== "-" ? `<span style="font-size: 12px; color: #475569; display: block; background: #f8fafc; padding: 2px 6px; border-radius: 4px; border-left: 3px solid #cbd5e1; margin: 3px 0;">${e.label.includes("SMA") ? 'Jurusan: ' : 'Fak/Jur: '} ${e.info}</span>` : ''}
-                            ${e.thn && e.thn !== "-" ? `<small style="color: #94a3b8;">Lulus: ${e.thn}</small>` : ''}
-                        </div>
-                    `).join('');
-                } else { return '<span class="empty-text">Data tidak tersedia</span>'; }
-            })()}
-        </div>
-    </div>
+                            const mAktif = platform.map(plt => {
+                                // Perbaikan: Ambil dari item.medsos atau p
+                                let val = (item.medsos && item.medsos[plt.key]) ? item.medsos[plt.key] : p[plt.key];
+                                return { ...plt, val: val };
+                            }).filter(m => m.val && m.val !== "-" && m.val !== "");
 
-    <div class="grid-column-right">
-        <div class="fancy-card" style="margin-bottom: 15px;">
-            <div class="card-title">Struktur & Penugasan</div>
-            <div class="list-container">
-                ${j.length > 0 ? 
-                  j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5]))
-                   .map(pos => `
-                    <div class="list-item" style="margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
-                        <strong style="color: #D71920; font-size: 13px;">${pos[5]}</strong><br>
-                        <small style="color: #64748b; font-weight: 700;">${pos[4] || '-'} ${pos[8] && pos[8] !== "-" ? '(' + pos[8] + ')' : ''}</small>
-                    </div>`).join('') 
-                  : '<span class="empty-text">Belum ada riwayat jabatan</span>'}
+                            return mAktif.length > 0 ? mAktif.map(m => {
+                                let cleanUser = m.val.toString().trim().replace('@', '');
+                                let finalLink = m.val.toString().startsWith('http') ? m.val : (m.base + cleanUser);
+                                return `
+                                    <a href="${finalLink}" target="_blank" style="display:flex; align-items:center; gap:5px; padding:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none;">
+                                        <span style="color:${m.color}">${m.svg}</span>
+                                        <span style="font-size:10px; font-weight:bold; color:#333; overflow:hidden; text-overflow:ellipsis;">${m.val}</span>
+                                    </a>`;
+                            }).join('') : '<small style="grid-column:span 2; color:#94a3b8;">Tidak ada medsos</small>';
+                        })()}
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="fancy-card">
-            <div class="card-title">Media Sosial Resmi</div>
-            <div class="medsos-grid-internal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                ${(() => {
-                    const platform = [
-                        { 
-                            label: 'Facebook', key: 'fb', color: '#1877F2', 
-                            base: 'https://fb.com/',
-                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.34 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg>' 
-                        },
-                        { 
-                            label: 'Instagram', key: 'ig', color: '#E4405F', 
-                            base: 'https://instagram.com/',
-                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>' 
-                        },
-                        { 
-                            label: 'TikTok', key: 'tiktok', color: '#000000', 
-                            base: 'https://tiktok.com/@',
-                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.46,5.32 15.64,3.9 15.54,2.27H12.43V17.07C12.43,18.62 11.17,19.87 9.62,19.87C8.07,19.87 6.81,18.62 6.81,17.07C6.81,15.52 8.07,14.26 9.62,14.26C10.22,14.26 10.77,14.45 11.23,14.77V11.6C10.74,11.33 10.19,11.17 9.62,11.17C6.36,11.17 3.7,13.83 3.7,17.09C3.7,20.35 6.36,23.01 9.62,23.01C12.88,23.01 15.54,20.35 15.54,17.09V8.92C16.85,9.85 18.45,10.4 20.18,10.4V7.29C19.24,7.29 18.38,6.86 17.71,6.15Z"/></svg>' 
-                        },
-                        { 
-                            label: 'Twitter/X', key: 'twitter', color: '#0F1419', 
-                            base: 'https://x.com/',
-                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' 
-                        }
-                    ];
-
-                    const mAktif = platform.map(plt => {
-                        let val = (item.medsos && item.medsos[plt.key]) ? item.medsos[plt.key] : p[plt.key];
-                        return { ...plt, val: val };
-                    }).filter(m => m.val && m.val !== "-" && m.val !== "");
-
-                    if (mAktif.length > 0) {
-                        return mAktif.map(m => {
-                            let cleanUser = m.val.toString().trim().replace('@', '');
-                            let finalLink = m.val.toString().startsWith('http') ? m.val : (m.base + cleanUser);
-                            
-                            return `
-                                <a href="${finalLink}" target="_blank" 
-                                   style="display: flex; align-items: center; gap: 8px; padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; text-decoration: none; transition: all 0.2s ease;">
-                                    <div style="color: ${m.color}; display: flex; align-items: center;">${m.svg}</div>
-                                    <div style="overflow: hidden;">
-                                        <strong style="font-size: 9px; color: #94a3b8; display: block; text-transform: uppercase;">${m.label}</strong>
-                                        <span style="font-size: 11px; color: #1e293b; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${m.val}</span>
-                                    </div>
-                                </a>`;
-                        }).join('');
-                    } else {
-                        return '<div style="grid-column: span 2; text-align: center; padding: 20px; background: #f8fafc; border-radius: 10px; color: #94a3b8; font-size: 12px; border: 1px dashed #e2e8f0;">Belum ada akun media sosial yang tertaut</div>';
-                    }
-                })()}
-            </div>
+        <div class="modal-footer" style="padding:15px; text-align:right;">
+            <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">CETAK PROFIL</button>
         </div>
-        
-</div> <div class="modal-footer">
-    <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
-</div>
-    `; // AKHIR DARI VARIABEL htmlContent
+    `;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
