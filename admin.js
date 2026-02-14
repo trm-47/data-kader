@@ -457,7 +457,6 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
     </div>
 </div>
 
-    // --- BAGIAN PENDIDIKAN FORMAL (TARUH DI SINI) ---
 <div class="fancy-card">
     <div class="card-title">Pendidikan Formal</div>
     <div class="list-container">
