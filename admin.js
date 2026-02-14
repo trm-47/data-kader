@@ -503,38 +503,59 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
         </div>
 
         <div class="fancy-card">
-            <div class="card-title">Media Sosial</div>
+            <div class="card-title">Media Sosial Resmi</div>
             <div class="medsos-grid-internal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 ${(() => {
-                    const mData = [
-                        { label: 'Facebook', val: item.medsos?.fb || p.fb, icon: '📘', base: 'https://facebook.com/' },
-                        { label: 'Instagram', val: item.medsos?.ig || p.ig, icon: '📸', base: 'https://instagram.com/' },
-                        { label: 'TikTok', val: item.medsos?.tiktok || p.tiktok, icon: '🎵', base: 'https://tiktok.com/@' },
-                        { label: 'X (Twitter)', val: item.medsos?.twitter || p.twitter, icon: '🐦', base: 'https://x.com/' },
-                        { label: 'YouTube', val: item.medsos?.youtube || p.youtube, icon: '📺', base: '' }
+                    const platform = [
+                        { 
+                            label: 'Facebook', key: 'fb', color: '#1877F2', 
+                            base: 'https://fb.com/',
+                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.34 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg>' 
+                        },
+                        { 
+                            label: 'Instagram', key: 'ig', color: '#E4405F', 
+                            base: 'https://instagram.com/',
+                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>' 
+                        },
+                        { 
+                            label: 'TikTok', key: 'tiktok', color: '#000000', 
+                            base: 'https://tiktok.com/@',
+                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.46,5.32 15.64,3.9 15.54,2.27H12.43V17.07C12.43,18.62 11.17,19.87 9.62,19.87C8.07,19.87 6.81,18.62 6.81,17.07C6.81,15.52 8.07,14.26 9.62,14.26C10.22,14.26 10.77,14.45 11.23,14.77V11.6C10.74,11.33 10.19,11.17 9.62,11.17C6.36,11.17 3.7,13.83 3.7,17.09C3.7,20.35 6.36,23.01 9.62,23.01C12.88,23.01 15.54,20.35 15.54,17.09V8.92C16.85,9.85 18.45,10.4 20.18,10.4V7.29C19.24,7.29 18.38,6.86 17.71,6.15Z"/></svg>' 
+                        },
+                        { 
+                            label: 'Twitter/X', key: 'twitter', color: '#0F1419', 
+                            base: 'https://x.com/',
+                            svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>' 
+                        }
                     ];
 
-                    const validMedsos = mData.filter(m => m.val && m.val !== "-" && m.val !== "");
+                    const mAktif = platform.map(plt => {
+                        let val = (item.medsos && item.medsos[plt.key]) ? item.medsos[plt.key] : p[plt.key];
+                        return { ...plt, val: val };
+                    }).filter(m => m.val && m.val !== "-" && m.val !== "");
 
-                    if (validMedsos.length > 0) {
-                        return validMedsos.map(m => {
-                            // Logika Link: Jika sudah link (http) pakai itu, jika username saja maka gabung dengan base URL
-                            let cleanVal = m.val.toString().trim().replace('@', '');
-                            let finalLink = m.val.toString().startsWith('http') ? m.val : (m.base + cleanVal);
+                    if (mAktif.length > 0) {
+                        return mAktif.map(m => {
+                            let cleanUser = m.val.toString().trim().replace('@', '');
+                            let finalLink = m.val.toString().startsWith('http') ? m.val : (m.base + cleanUser);
                             
                             return `
-                                <a href="${finalLink}" target="_blank" class="ms-item" 
-                                   style="padding: 8px; background: #f8fafc; border-radius: 8px; border: 1px solid #edf2f7; text-decoration: none; display: block; transition: 0.2s;">
-                                    <strong style="font-size: 10px; color: #64748b; display: block; margin-bottom: 2px;">${m.icon} ${m.label}</strong>
-                                    <span style="font-size: 11px; color: #D71920; font-weight: bold; word-break: break-all;">${m.val}</span>
+                                <a href="${finalLink}" target="_blank" 
+                                   style="display: flex; align-items: center; gap: 8px; padding: 10px; background: #fff; border-radius: 10px; border: 1px solid #e2e8f0; text-decoration: none; transition: all 0.2s ease;">
+                                    <div style="color: ${m.color}; display: flex; align-items: center;">${m.svg}</div>
+                                    <div style="overflow: hidden;">
+                                        <strong style="font-size: 9px; color: #94a3b8; display: block; text-transform: uppercase;">${m.label}</strong>
+                                        <span style="font-size: 11px; color: #1e293b; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">${m.val}</span>
+                                    </div>
                                 </a>`;
                         }).join('');
                     } else {
-                        return '<span class="empty-text" style="grid-column: span 2;">Tidak ada data medsos</span>';
+                        return '<div style="grid-column: span 2; text-align: center; padding: 20px; background: #f8fafc; border-radius: 10px; color: #94a3b8; font-size: 12px; border: 1px dashed #e2e8f0;">Belum ada akun media sosial yang tertaut</div>';
                     }
                 })()}
             </div>
         </div>
+        
 </div> <div class="modal-footer">
     <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
 </div>
