@@ -95,24 +95,20 @@ function renderTable(data) {
     body.innerHTML = "";
 
     if (!data || data.length === 0) {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px; color:#94a3b8;">Data tidak ditemukan.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:50px; color:#94a3b8; font-weight:700;">Data tidak ditemukan.</td></tr>';
         return;
     }
 
-    const displayData = data; 
-
-    displayData.forEach((item) => {
+    data.forEach((item) => {
         if (!item || !item.pribadi) return;
         const p = item.pribadi;
         const f = item.formal || [];
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
-        const tglLahirFormat = formatTanggalIndo(p.tgl_lahir);
-        
-        // --- LOGIKA KADERISASI ---
+
+        // --- LOGIKA KADERISASI & PRIORITAS ---
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
-
         const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
         const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
         
@@ -128,77 +124,77 @@ function renderTable(data) {
 
             if (masaTunggu >= 5) {
                 rowClass = "urgent-row"; 
-                badgeWarning = `<br><span class="urgent-badge" style="font-size:9px; margin-top:4px; display:inline-block;">🚨 PRIORITAS MADYA (${masaTunggu} Thn)</span>`;
+                // Gunakan teks merah tanpa blok background agar tidak "teriak"
+                badgeWarning = `<div style="color:#D71920; font-size:9px; font-weight:800; margin-top:4px;">● PRIORITAS MADYA (${masaTunggu} Thn)</div>`;
             } else {
                 rowClass = "warning-row"; 
-                badgeWarning = `<br><span class="warning-badge" style="font-size:9px; margin-top:4px; display:inline-block;">⚠️ MASA TUNGGU (${masaTunggu} Thn)</span>`;
+                badgeWarning = `<div style="color:#f59e0b; font-size:9px; font-weight:800; margin-top:4px;">● MASA TUNGGU (${masaTunggu} Thn)</div>`;
             }
         }
 
-        // --- RENDER BADGE KADERISASI ---
+        // --- RENDER BADGE KADERISASI (Warna Pastel / Lembut) ---
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
             const listJenjang = k[2].toString().split("\n");
-            listJenjang.forEach(jenjangText => {
-                if(jenjangText.trim()) {
-                    htmlBadgeKader += `<span class="badge badge-red" style="margin-bottom:2px; display:block; text-align:center; font-size:9px; font-weight:800;">${jenjangText.trim()}</span>`;
+            listJenjang.forEach(txt => {
+                if(txt.trim()) {
+                    // Pakai background tipis & border agar elegan
+                    htmlBadgeKader += `<span style="border: 1px solid #fee2e2; color: #D71920; background: #fff5f5; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; display: block; margin-bottom:2px; text-align:center;">${txt.trim()}</span>`;
                 }
             });
         } else {
-            htmlBadgeKader = `<span class="badge badge-gray" style="font-size:9px;">Anggota</span>`;
+            htmlBadgeKader = `<span style="color: #94a3b8; font-size: 9px; font-weight: 700;">Anggota</span>`;
         }
 
-        // --- WHATSAPP ---
-        const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
-        const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber}` : '#';
-        const btnWA = waNumber ?
-            `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#25D366; color:white; padding:6px 10px; border-radius:8px; text-decoration:none; font-size:11px; font-weight:bold; display:inline-flex; align-items:center; gap:5px; box-shadow:0 2px 4px rgba(0,0,0,0.1);"><i class="fa-brands fa-whatsapp"></i> Chat</a>` :
-            `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
-
-        // --- PENDIDIKAN ---
-        let infoPendidikan = `<span class="badge badge-gray" style="font-size:10px; font-weight:700;">${p.kec || '-'}</span>`;
+        // --- INFO PENDIDIKAN ---
+        let infoPendidikan = `<span style="color:#94a3b8; font-size:10px;">-</span>`;
         const listEdu = [
             { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
-            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
+            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }
         ];
 
         for (let edu of listEdu) {
             if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
-                let detail = (edu.label === "S1") ? `<br><small style="color:#64748b; font-weight:600;">${(f[12] && f[12] !== "-") ? f[12] : f[11]}</small>` : `<br><small style="color:#64748b; font-weight:600;">${f[edu.idx]}</small>`;
-                infoPendidikan = `<strong style="color:#1e293b; font-size:12px;">${edu.label}</strong>${detail}`;
+                let detail = (edu.label === "S1") ? (f[12] || f[11]) : f[edu.idx];
+                infoPendidikan = `<strong style="color:#334155; font-size:12px;">${edu.label}</strong>
+                                  <div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${detail}</div>`;
                 break;
             }
         }
 
         const originalIdx = databaseKader.indexOf(item);
+        const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
+        const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62'+waNumber.slice(1) : waNumber}` : '#';
 
-        // --- RENDER BARIS (STRUKTUR SESUAI ACUAN) ---
+        // --- RENDER BARIS ---
         body.innerHTML += `
-            <tr class="${rowClass}" onclick="openDetail(${originalIdx})" style="cursor:pointer; transition:all 0.2s;">
-                <td data-label="Foto" style="width:60px; text-align:center;">
+            <tr class="${rowClass}" onclick="openDetail(${originalIdx})" style="cursor:pointer; border-bottom: 1px solid #f1f5f9;">
+                <td style="width:65px; text-align:center; padding:12px 5px;">
                     <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff'" 
-                         style="width:45px; height:45px; border-radius:12px; object-fit:cover; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=f1f5f9&color=64748b'" 
+                         style="width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid #eee;">
                 </td>
-                <td data-label="Identitas">
-                    <strong style="font-size:14px; color:#1e293b; letter-spacing:-0.3px;">${(p.nama || 'Tanpa Nama').toUpperCase()}</strong>${badgeWarning}
-                    <br>
-                    <small style="color: #D71920; font-weight: 800; font-size:10px; letter-spacing:0.5px;">NO. KTA: ${p.kta || '-'}</small>
+                <td style="padding:12px 5px;">
+                    <div style="font-weight:800; font-size:13px; color:#1e293b; letter-spacing:-0.2px;">${(p.nama || 'Tanpa Nama').toUpperCase()}</div>
+                    <div style="font-size:10px; color:#64748b; font-weight:700;">KTA: ${p.kta || '-'}</div>
+                    ${badgeWarning}
                 </td>
-                <td data-label="Usia" style="text-align:center;">
+                <td style="text-align:center; width:80px; padding:12px 5px;">
                     <div style="font-weight:800; color:#1e293b; font-size:13px;">${ageInfo.age}</div>
-                    <span class="badge badge-gray" style="font-size:9px; font-weight:700; background:#f1f5f9; color:#64748b;">${ageInfo.gen}</span>
+                    <div style="font-size:9px; color:#cbd5e1; font-weight:800; text-transform:uppercase;">${ageInfo.gen}</div>
                 </td>
-                <td data-label="Pendidikan">
+                <td style="padding:12px 5px; min-width:140px;">
                     ${infoPendidikan}
                 </td>
-                <td data-label="Kaderisasi">
-                    <div style="max-width:120px; margin:0 auto;">
+                <td style="padding:12px 5px; width:120px;">
+                    <div style="max-width:110px; margin:0 auto;">
                         ${htmlBadgeKader}
                     </div>
                 </td>
-                <td data-label="Aksi" style="text-align:center;">
-                    ${btnWA}
+                <td style="text-align:center; width:90px; padding:12px 5px;">
+                    ${waNumber ? 
+                        `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; transition:0.2s;">Chat</a>` 
+                        : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
     });
