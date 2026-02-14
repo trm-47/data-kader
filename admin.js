@@ -675,13 +675,37 @@ function openDetail(originalIndex) {
     modalInner.scrollTop = 0;
 }
 
-// Fungsi pembantu Icon Medsos Premium
-function renderMedsosIcoPremium(icon, val, color) {
-    if (!val || val === "-" || val === "") return '';
-    let iconClass = icon === 'facebook' ? 'facebook-f' : icon;
+// Fungsi pembantu Icon Medsos Premium (SUDAH DISESUAIKAN KE IMGBB)
+function renderMedsosIcoPremium(type, val) {
+    if (!val || val === "-" || val === "" || val.toLowerCase() === "undefined") return '';
+
+    // Mapping link icon sesuai koleksi ImgBB Bos
+    const libIcons = {
+        wa: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
+        fb: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
+        ig: "https://i.ibb.co.com/MDtWd14P/instagram.png",
+        tt: "https://i.ibb.co.com/0pcvzQKD/tiktok.png",
+        tw: "https://i.ibb.co.com/zWZNdQPG/twitter.png",
+        yt: "https://i.ibb.co.com/QFS9fF1c/youtube.png"
+    };
+
+    const iconUrl = libIcons[type] || "";
+
     return `
-        <a href="#" title="${val}" style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; text-decoration:none; transition:0.3s;">
-            <i class="fa-brands fa-${iconClass}" style="color:${color}; font-size:20px;"></i>
+        <a href="${val}" target="_blank" title="${type.toUpperCase()}" style="
+            width: 44px; 
+            height: 44px; 
+            border-radius: 12px; 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none; 
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        ">
+            <img src="${iconUrl}" style="width:22px; height:22px; object-fit:contain;" onerror="this.style.display='none'">
         </a>
     `;
 }
