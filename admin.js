@@ -457,7 +457,6 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
     </div>
 </div>
 
-// ... tepat di bawah penutup kartu Analisa Jenjang & Spesialisasi Kader (</div>) ...
 
 <div class="fancy-grid">
     <div class="fancy-card">
