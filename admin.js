@@ -351,39 +351,9 @@ function applyFilters() {
 }
 
 // --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
-// Diletakkan di luar agar bisa dipakai fungsi lain
 const cap = (str) => {
     if (!str || str === "-") return "-";
-    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "PDI", "PERJUANGAN"];
-    return str.toString().split(' ').map(word => {
-        if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
-        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-    }).join(' ');
-};
-
-// --- FUNGSI UNTUK MERENDER BULATAN KADERISASI (STEPPER) ---
-function renderStep(label, year, color) {
-    const isActive = year && year !== "";
-    const opacity = isActive ? "1" : "0.3";
-    const border = isActive ? `2px solid ${color}` : "2px dashed #ccc";
-    const bg = isActive ? color : "transparent";
-    const textColor = isActive ? "white" : "#999";
-
-    return `
-        <div style="flex: 1; opacity: ${opacity};">
-            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${bg}; border: ${border}; color: ${textColor}; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-weight: bold; font-size: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                ${isActive ? '✓' : ''}
-            </div>
-            <div style="font-size: 10px; font-weight: bold; margin-top: 5px; color: ${isActive ? '#333' : '#ccc'}">${label}</div>
-            <div style="font-size: 9px; color: ${color}; font-weight: bold;">${year || '-'}</div>
-        </div>
-    `;
-}
-
-// --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
-const cap = (str) => {
-    if (!str || str === "-") return "-";
-    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "PDI", "PERJUANGAN"];
+    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "UGM", "PDI", "PERJUANGAN"];
     return str.toString().split(' ').map(word => {
         if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
