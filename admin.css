@@ -583,11 +583,19 @@ tr:hover td img {
 .stepper-wrapper {
     display: flex;
     justify-content: space-around;
+    align-items: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-around;
     margin: 30px 0;
     position: relative;
 }
 
-.step-item { text-align: center; position: relative; flex: 1; }
+.step-item { 
+    text-align: center; position: relative; flex: 1; 
+    flex: 1;
+    min-width: 80px;
+}
 .step-circle {
     width: 40px;
     height: 40px;
