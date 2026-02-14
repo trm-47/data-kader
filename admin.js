@@ -99,7 +99,7 @@ function renderTable(data) {
         return;
     }
 
-    // --- DIRECT LINKS ICON SOSMED (SUDAH DIKONVERSI KE FORMAT GAMBAR) ---
+    // --- DIRECT LINKS ICON SOSMED ---
     const icons = {
         wa: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
         fb: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
@@ -144,22 +144,7 @@ function renderTable(data) {
             listJenjang.forEach(txt => {
                 if(txt.trim()) {
                     htmlBadgeKader += `
-                        <div style="
-                            background: #ffffff;
-                            border: 1px solid #e2e8f0;
-                            border-left: 3px solid #D71920;
-                            color: #334155;
-                            padding: 4px 10px;
-                            border-radius: 4px;
-                            font-size: 9px;
-                            font-weight: 800;
-                            margin: 0 auto 4px auto;
-                            width: fit-content;
-                            min-width: 95px;
-                            text-align: left;
-                            letter-spacing: 0.5px;
-                            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-                        ">
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-left: 3px solid #D71920; color: #334155; padding: 4px 10px; border-radius: 4px; font-size: 9px; font-weight: 800; margin: 0 auto 4px auto; width: fit-content; min-width: 95px; text-align: left; letter-spacing: 0.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
                             ${txt.trim().toUpperCase()}
                         </div>`;
                 }
@@ -231,7 +216,7 @@ function renderTable(data) {
                             letter-spacing: 0.5px;
                             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
                         ">
-                            <img src="${icons.wa}" style="width:14px; height:14px; object-fit:contain;"> CHAT
+                            <img src="https://i.ibb.co.com/yn2M52Vn/whatsapp.png" style="width:14px; height:14px; object-fit:contain;"> CHAT
                         </a>` : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
