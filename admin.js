@@ -357,10 +357,13 @@ function openDetail(originalIndex) {
     const p = item.pribadi || {};
     const f = item.formal || [];
     const k = item.kaderisasi || [];
-    const j = item.jabatan || [];
+    const m = item.medsos || {};
+    const jList = item.jabatan || [];
+    const wList = item.pekerjaan || [];
+    const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA ANALISA TAHUN ---
+    // --- LOGIKA ANALISA TAHUN KADERISASI ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
 
@@ -373,13 +376,6 @@ function openDetail(originalIndex) {
         return null;
     };
 
-    const thnPratama = getKaderData("Pratama");
-    const thnMadya = getKaderData("Madya");
-    const thnUtama = getKaderData("Utama");
-    const thnGuru = getKaderData("Guru");
-    const thnPerempuan = getKaderData("Perempuan");
-    const thnKhusus = getKaderData("Khusus");
-
     let htmlContent = `
         <div class="modal-header-fancy">
             <div class="header-main-info">
@@ -387,13 +383,11 @@ function openDetail(originalIndex) {
                     <img src="${formatDriveUrl(p.foto)}" 
                          onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
                          class="profile-pic-large">
-                    <div class="logo-overlay">
-                        <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png">
-                    </div>
+                    <div class="logo-overlay"><img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png"></div>
                 </div>
                 <div class="name-container">
                     <h2>${(p.nama || 'Tanpa Nama').toUpperCase()}</h2>
-                    <span class="kta-badge">ID KADER: ${p.kta || '-'}</span>
+                    <span class="kta-badge">ID KADER: ${p.kta || '-'} | NIK: ${p.nik || '-'}</span>
                     <div class="location-sub">📍 ${p.desa || '-'}, ${p.kec || '-'}, ${p.kab_kota || '-'}</div>
                 </div>
             </div>
@@ -402,99 +396,101 @@ function openDetail(originalIndex) {
         <div class="modal-body-fancy">
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">Identitas Pribadi</div>
-                    <div class="data-row"><label>NIK</label><span>${p.nik || '-'}</span></div>
-                    <div class="data-row"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
-                    <div class="data-row"><label>Usia / Gen</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
-                    <div class="data-row"><label>Agama</label><span>${p.agama || '-'}</span></div>
+                    <div class="card-title">Identitas & Kontak</div>
+                    <div class="data-row"><label>TTL</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
+                    <div class="data-row"><label>Usia</label><span>${p.umur || ageInfo.age} Thn (${ageInfo.gen})</span></div>
+                    <div class="data-row"><label>WhatsApp</label><span style="color:#25d366; font-weight:bold;">${p.wa || '-'}</span></div>
+                    <div class="data-row"><label>Alamat</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}</span></div>
                 </div>
-
                 <div class="fancy-card">
-                    <div class="card-title">Kontak & Alamat</div>
-                    <div class="data-row"><label>WhatsApp</label><span class="highlight-wa">💬 ${p.wa || '-'}</span></div>
-                    <div class="data-row"><label>Email</label><span>${p.email || '-'}</span></div>
-                    <div class="data-row"><label>Domisili</label><span>${p.alamat || '-'}</span></div>
-                    <div class="data-row"><label>Pekerjaan</label><span>${p.kerja_skrg || '-'}</span></div>
+                    <div class="card-title">Kompetensi & Skill</div>
+                    <div class="data-row"><label>Komputer</label><span>${m.komputer || '-'}</span></div>
+                    <div class="data-row"><label>Bahasa</label>
+                        <span>
+                            ${m.bahasa_indo === "Ya" ? "Indonesia, " : ""}
+                            ${m.bahasa_inggris === "Ya" ? "Inggris, " : ""}
+                            ${m.bahasa_jawa === "Ya" ? "Jawa, " : ""}
+                            ${(m.bahasa_lain && m.bahasa_lain !== ", ") ? m.bahasa_lain : "-"}
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <div class="fancy-card highlight-card">
-                <div class="card-title">Analisa Jenjang & Spesialisasi Kader</div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin: 15px 0;">
-                    ${renderStep('PRATAMA', thnPratama, '#ef4444')}
-                    ${renderStep('MADYA', thnMadya, '#dc2626')}
-                    ${renderStep('UTAMA', thnUtama, '#b91c1c')}
+                <div class="card-title">Analisa Jenjang Kaderisasi</div>
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin: 10px 0;">
+                    ${renderStep('PRATAMA', getKaderData("Pratama"), '#ef4444')}
+                    ${renderStep('MADYA', getKaderData("Madya"), '#dc2626')}
+                    ${renderStep('UTAMA', getKaderData("Utama"), '#b91c1c')}
                 </div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; border-top: 1px dashed #fca5a5; padding-top: 15px;">
-                    ${renderStep('GURU', thnGuru, '#991b1b')}
-                    ${renderStep('PEREMPUAN', thnPerempuan, '#db2777')}
-                    ${renderStep('KHUSUS', thnKhusus, '#1e293b')}
+            </div>
+
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">Struktur Partai (Internal)</div>
+                    <div class="list-container">
+                        ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
+                            <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:5px; background:#fff5f5; font-size:12px;">
+                                <strong>${r[5]}</strong> - ${r[4]}<br><small>${r[8]}</small>
+                            </div>
+                        `).join('') || '<small>Tidak ada data struktur</small>'}
+                    </div>
                 </div>
-                <div class="rekomendasi-box" style="margin-top:15px; padding:10px; background:#fff1f2; border-radius:8px; border-left:4px solid #D71920;">
-                    <strong>💡 Status Analisa:</strong>
-                    <p style="margin:5px 0 0 0; font-size:12px;">
-                        ${thnGuru ? 'Kader telah mencapai kualifikasi <strong>Guru Kader</strong>.' : 
-                         (!thnMadya && thnPratama ? 'Kader <strong>Prioritas</strong> untuk didorong Pelatihan Madya.' : 
-                         'Pantau terus keaktifan kader dalam penugasan partai.')}
-                    </p>
+                <div class="fancy-card">
+                    <div class="card-title">Penugasan (Publik/Lain)</div>
+                    <div class="list-container">
+                        ${jList.filter(r => r[2] === "Penugasan").map(r => `
+                            <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:5px; background:#f0f9ff; font-size:12px;">
+                                <strong>${r[12]}</strong> - ${r[10]}<br><small>${r[11]} (${r[14]})</small>
+                            </div>
+                        `).join('') || '<small>Tidak ada data penugasan</small>'}
+                    </div>
+                </div>
+            </div>
+
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">Riwayat Organisasi Luar</div>
+                    <div class="list-container">
+                        ${oList.map(r => `
+                            <div style="border-bottom:1px solid #eee; padding:3px 0; font-size:12px;">
+                                <strong>${r[2]}</strong> (${r[4]})<br><small>Periode: ${r[5]}</small>
+                            </div>
+                        `).join('') || '<small>Tidak ada data organisasi</small>'}
+                    </div>
+                </div>
+                <div class="fancy-card">
+                    <div class="card-title">Pengalaman Kerja Professional</div>
+                    <div class="list-container">
+                        ${wList.map(r => `
+                            <div style="border-bottom:1px solid #eee; padding:3px 0; font-size:12px;">
+                                <strong>${r[4]}</strong> di ${r[2]}<br><small>${r[5]}</small>
+                            </div>
+                        `).join('') || '<small>Tidak ada data pekerjaan</small>'}
+                    </div>
                 </div>
             </div>
 
             <div class="fancy-grid">
                 <div class="fancy-card">
                     <div class="card-title">Pendidikan Formal</div>
-                    <div class="list-container">
-                        ${(() => {
-                            const eduMapping = [
-                                { label: "S3", inst: f[17], info: f[18], thn: f[19] },
-                                { label: "S2", inst: f[15], info: f[16], thn: "" },
-                                { label: "S1", inst: f[11], info: f[12], thn: f[14] },
-                                { label: "D1-D4", inst: f[9], thn: f[10] },
-                                { label: "SMA", inst: f[6], info: f[7], thn: f[8] }
-                            ];
-                            const validEdu = eduMapping.filter(e => e.inst && e.inst !== "-" && e.inst !== "");
-                            return validEdu.length > 0 ? validEdu.map(e => `
-                                <div style="margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:5px;">
-                                    <small style="color:#D71920; font-weight:bold;">${e.label}</small><br>
-                                    <strong>${e.inst}</strong>
-                                    ${e.info && e.info !== "-" ? `<br><small style="color:#666;">${e.info}</small>` : ''}
-                                </div>`).join('') : '<span class="empty-text">Data tidak tersedia</span>';
-                        })()}
+                    <div class="list-container" style="font-size:12px;">
+                        ${[
+                            {l: "S1/S2/S3", n: f[11] || f[15] || f[17]},
+                            {l: "SMA/SMK", n: f[6]}
+                        ].filter(e => e.n && e.n !== "-").map(e => `<div><strong>${e.l}</strong>: ${e.n}</div>`).join('') || '-'}
                     </div>
                 </div>
-
                 <div class="fancy-card">
                     <div class="card-title">Media Sosial Resmi</div>
-                    <div class="medsos-grid-internal" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                        ${(() => {
-                            const platform = [
-                                { label: 'FB', key: 'fb', color: '#1877F2', base: 'https://fb.com/', svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.34 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/></svg>' },
-                                { label: 'IG', key: 'ig', color: '#E4405F', base: 'https://instagram.com/', svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M7.8,2H16.2C19.4,2 22,4.6 22,7.8V16.2A5.8,5.8 0 0,1 16.2,22H7.8C4.6,22 2,19.4 2,16.2V7.8A5.8,5.8 0 0,1 7.8,2M7.6,4A3.6,3.6 0 0,0 4,7.6V16.4C4,18.39 5.61,20 7.6,20H16.4A3.6,3.6 0 0,0 20,16.4V7.6C20,5.61 18.39,4 16.4,4H7.6M17.25,5.5A1.25,1.25 0 0,1 18.5,6.75A1.25,1.25 0 0,1 17.25,8A1.25,1.25 0 0,1 16,6.75A1.25,1.25 0 0,1 17.25,5.5M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z"/></svg>' },
-                                { label: 'TikTok', key: 'tiktok', color: '#000', base: 'https://tiktok.com/@', svg: '<svg style="width:14px;height:14px" viewBox="0 0 24 24"><path fill="currentColor" d="M17.71,6.15C16.46,5.32 15.64,3.9 15.54,2.27H12.43V17.07C12.43,18.62 11.17,19.87 9.62,19.87C8.07,19.87 6.81,18.62 6.81,17.07C6.81,15.52 8.07,14.26 9.62,14.26C10.22,14.26 10.77,14.45 11.23,14.77V11.6C10.74,11.33 10.19,11.17 9.62,11.17C6.36,11.17 3.7,13.83 3.7,17.09C3.7,20.35 6.36,23.01 9.62,23.01C12.88,23.01 15.54,20.35 15.54,17.09V8.92C16.85,9.85 18.45,10.4 20.18,10.4V7.29C19.24,7.29 18.38,6.86 17.71,6.15Z"/></svg>' }
-                            ];
-
-                            const mAktif = platform.map(plt => {
-                                // Perbaikan: Ambil dari item.medsos atau p
-                                let val = (item.medsos && item.medsos[plt.key]) ? item.medsos[plt.key] : p[plt.key];
-                                return { ...plt, val: val };
-                            }).filter(m => m.val && m.val !== "-" && m.val !== "");
-
-                            return mAktif.length > 0 ? mAktif.map(m => {
-                                let cleanUser = m.val.toString().trim().replace('@', '');
-                                let finalLink = m.val.toString().startsWith('http') ? m.val : (m.base + cleanUser);
-                                return `
-                                    <a href="${finalLink}" target="_blank" style="display:flex; align-items:center; gap:5px; padding:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none;">
-                                        <span style="color:${m.color}">${m.svg}</span>
-                                        <span style="font-size:10px; font-weight:bold; color:#333; overflow:hidden; text-overflow:ellipsis;">${m.val}</span>
-                                    </a>`;
-                            }).join('') : '<small style="grid-column:span 2; color:#94a3b8;">Tidak ada medsos</small>';
-                        })()}
+                    <div class="medsos-grid-internal" style="display: flex; gap: 5px; flex-wrap: wrap;">
+                         ${['fb', 'ig', 'tiktok'].map(key => m[key] && m[key] !== '-' ? `<span style="background:#f1f5f9; padding:2px 8px; border-radius:10px; font-size:10px; border:1px solid #ddd;">${key.toUpperCase()}: ${m[key]}</span>` : '').join('')}
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer" style="padding:15px; text-align:right;">
-            <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">CETAK PROFIL</button>
+            <button onclick="window.print()" style="background:#D71920; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">CETAK PROFIL</button>
         </div>
     `;
 
