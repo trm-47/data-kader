@@ -350,9 +350,43 @@ function applyFilters() {
     updateStats(filtered);
 }
 
+// --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
+// Diletakkan di luar agar bisa dipakai fungsi lain
+const cap = (str) => {
+    if (!str || str === "-") return "-";
+    const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI", "PDI", "PERJUANGAN"];
+    return str.toString().split(' ').map(word => {
+        if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
+        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }).join(' ');
+};
+
+// --- FUNGSI UNTUK MERENDER BULATAN KADERISASI (STEPPER) ---
+function renderStep(label, year, color) {
+    const isActive = year && year !== "";
+    const opacity = isActive ? "1" : "0.3";
+    const border = isActive ? `2px solid ${color}` : "2px dashed #ccc";
+    const bg = isActive ? color : "transparent";
+    const textColor = isActive ? "white" : "#999";
+
+    return `
+        <div style="flex: 1; opacity: ${opacity};">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: ${bg}; border: ${border}; color: ${textColor}; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-weight: bold; font-size: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                ${isActive ? '✓' : ''}
+            </div>
+            <div style="font-size: 10px; font-weight: bold; margin-top: 5px; color: ${isActive ? '#333' : '#ccc'}">${label}</div>
+            <div style="font-size: 9px; color: ${color}; font-weight: bold;">${year || '-'}</div>
+        </div>
+    `;
+}
+
+// --- FUNGSI UTAMA: BUKA DETAIL KADER ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
-    if (!item) return;
+    if (!item) {
+        alert("Data tidak ditemukan!");
+        return;
+    }
 
     const p = item.pribadi || {};
     const f = item.formal || [];
@@ -363,19 +397,10 @@ function openDetail(originalIndex) {
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
-    const cap = (str) => {
-        if (!str || str === "-") return "-";
-        const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI"];
-        return str.toString().split(' ').map(word => {
-            if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
-            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-        }).join(' ');
-    };
-
     // --- LOGIKA ANALISA TAHUN KADERISASI ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
+    
     const getKaderData = (keyword) => {
         const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
         if (idx !== -1) {
@@ -410,17 +435,17 @@ function openDetail(originalIndex) {
                     <div class="data-row"><label>Jenis Kelamin</label><span>${cap(p.jk)}</span></div>
                     <div class="data-row"><label>Agama</label><span>${cap(p.agama)}</span></div>
                     <div class="data-row"><label>TTL</label><span>${cap(p.tmpt_lahir)}, ${p.tgl_lahir}</span></div>
-                    <div class="data-row"><label>Usia</label><span>${p.umur || ageInfo.age} Thn (${ageInfo.gen})</span></div>
+                    <div class="data-row"><label>Usia</label><span>${p.umur || ageInfo.age} (${ageInfo.gen})</span></div>
                     <div class="data-row"><label>Email</label><span style="text-transform:lowercase;">${p.email || '-'}</span></div>
                     <div class="data-row"><label>WhatsApp</label><span style="color:#25d366; font-weight:bold;">${p.wa || '-'}</span></div>
                     <div class="data-row"><label>Alamat</label><span>${cap(p.alamat)}, RT ${p.rt}/RW ${p.rw}</span></div>
-                    <div class="data-row"><label>Pekerjaan Saat Ini</label><span>${cap(p.kerja_skrg)}</span></div>
+                    <div class="data-row"><label>Kerja Saat Ini</label><span>${cap(p.kerja_skrg)}</span></div>
                 </div>
 
                 <div class="fancy-card">
                     <div class="card-title">KOMPETENSI & SKILL</div>
                     <div class="data-row"><label>Skill Komputer</label><span>${cap(m.komputer)}</span></div>
-                    <div class="data-row"><label>Kemampuan Bahasa</label>
+                    <div class="data-row"><label>Bahasa</label>
                         <span>
                             ${m.bahasa_indo === "Ya" ? "Indonesia, " : ""}
                             ${m.bahasa_inggris === "Ya" ? "Inggris, " : ""}
@@ -447,7 +472,7 @@ function openDetail(originalIndex) {
 
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">STRUKTUR PARTAI & WILAYAH KETUGASAN</div>
+                    <div class="card-title">STRUKTUR PARTAI & KETUGASAN</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
                             <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
@@ -459,7 +484,7 @@ function openDetail(originalIndex) {
                     </div>
                 </div>
                 <div class="fancy-card">
-                    <div class="card-title">PENUGASAN (LEGISLATIF / EKSEKUTIF)</div>
+                    <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Penugasan").map(r => `
                             <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
@@ -477,9 +502,9 @@ function openDetail(originalIndex) {
                     <div class="card-title">RIWAYAT ORGANISASI & KERJA</div>
                     <div class="list-container" style="font-size:11px;">
                         <small style="font-weight:bold; color:#D71920;">ORGANISASI LUAR PARTAI</small>
-                        ${oList.map(r => `<div>• ${cap(r[2])} (${cap(r[4])}) - ${r[5]}</div>`).join('') || '<div>-</div>'}
+                        ${oList.map(r => `<div>• ${cap(r[2])} (${cap(r[4])})</div>`).join('') || '<div>-</div>'}
                         <br>
-                        <small style="font-weight:bold; color:#D71920;">RIWAYAT PEKERJAAN</small>
+                        <small style="font-weight:bold; color:#D71920;">PENGALAMAN KERJA</small>
                         ${wList.map(r => `<div>• ${cap(r[4])} di ${cap(r[2])}</div>`).join('') || '<div>-</div>'}
                     </div>
                 </div>
@@ -488,7 +513,7 @@ function openDetail(originalIndex) {
                     <div class="list-container" style="font-size:11px;">
                         ${[
                             {l: "S3", n: f[17], t: f[18]}, {l: "S2", n: f[15], t: f[16]}, {l: "S1", n: f[11], t: f[14]},
-                            {l: "D3/D4", n: f[9], t: f[10]}, {l: "SMA", n: f[6], t: f[8]}, {l: "SMP", n: f[4], t: f[5]}, {l: "SD", n: f[2], t: f[3]}
+                            {l: "DIPLOMA", n: f[9], t: f[10]}, {l: "SMA", n: f[6], t: f[8]}, {l: "SMP", n: f[4], t: f[5]}, {l: "SD", n: f[2], t: f[3]}
                         ].filter(e => e.n && e.n !== "-").map(e => `
                             <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${cap(e.n)} <small>(${e.t})</small></div>
                         `).join('') || '-'}
@@ -499,11 +524,11 @@ function openDetail(originalIndex) {
             <div class="fancy-card">
                 <div class="card-title">MEDIA SOSIAL RESMI</div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; padding: 10px;">
-                    ${renderMedsosIcon('fb', m.fb, '#1877F2', 'Facebook')}
-                    ${renderMedsosIcon('ig', m.ig, '#E4405F', 'Instagram')}
-                    ${renderMedsosIcon('tiktok', m.tiktok, '#000000', 'TikTok')}
-                    ${renderMedsosIcon('twitter', m.twitter, '#1DA1F2', 'Twitter/X')}
-                    ${renderMedsosIcon('youtube', m.youtube, '#FF0000', 'YouTube')}
+                    ${renderMedsosIcon('facebook', m.fb, '#1877F2')}
+                    ${renderMedsosIcon('instagram', m.ig, '#E4405F')}
+                    ${renderMedsosIcon('tiktok', m.tiktok, '#000000')}
+                    ${renderMedsosIcon('twitter', m.twitter, '#1DA1F2')}
+                    ${renderMedsosIcon('youtube', m.youtube, '#FF0000')}
                 </div>
             </div>
         </div>
@@ -512,19 +537,26 @@ function openDetail(originalIndex) {
         </div>
     `;
 
-    document.getElementById('modalInnerContent').innerHTML = htmlContent;
-    document.getElementById('modalDetail').style.display = "block";
-    document.getElementById('modalInnerContent').scrollTop = 0;
+    const modal = document.getElementById('modalDetail');
+    const inner = document.getElementById('modalInnerContent');
+    if (modal && inner) {
+        inner.innerHTML = htmlContent;
+        modal.style.display = "block";
+        inner.scrollTop = 0;
+    } else {
+        console.error("Elemen modal tidak ditemukan!");
+    }
 }
 
-// --- FUNGSI UNTUK MERENDER IKON MEDSOS ---
-function renderMedsosIcon(key, val, color, label) {
+// --- FUNGSI IKON MEDSOS DENGAN SVG (ANTI ERROR FONT) ---
+function renderMedsosIcon(type, val, color) {
     if (!val || val === "-") return "";
     return `
         <div style="text-align:center;">
-            <div style="width:35px; height:35px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px;">
-                <i class="fab fa-${key}"></i> </div>
-            <small style="font-size:9px; font-weight:bold; display:block;">${val}</small>
+            <div style="width:35px; height:35px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px; font-size:14px; font-weight:bold;">
+                ${type.charAt(0).toUpperCase()}
+            </div>
+            <small style="font-size:9px; font-weight:bold; display:block; max-width:60px; overflow:hidden; text-overflow:ellipsis;">${val}</small>
         </div>
     `;
 }
