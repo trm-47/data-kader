@@ -491,13 +491,20 @@ function openDetail(originalIndex) {
                 <div class="fancy-card">
                     <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
                     <div class="list-container">
-                        ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
-                            <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
-                                <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
-                                <span>Jabatan: ${cap(r[4])}</span><br>
-                                <small>📍 Wilayah: <b>${cap(r[7] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
-                            </div>
-                        `).join('') || '<small>-</small>'}
+                        ${jList.filter(r => r[2] === "Struktur Partai").map(r => {
+    // Koordinat H (Wilayah) biasanya r[7], koordinat I (Periode) r[8]
+    // Jika masih kosong, kita coba ambil cadangan kolom sekitarnya
+    const wilayah = r[7] || r[6] || "-"; 
+    const periode = r[8] || r[9] || "-";
+    
+    return `
+        <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
+            <strong style="color:#D71920;">${(r[5] || r[4] || '-').toUpperCase()}</strong><br>
+            <span>Jabatan: ${cap(r[5] ? r[4] : r[3])}</span><br>
+            <small>📍 Wilayah: <b>${cap(wilayah)}</b></small> | <small>📅 Periode: ${periode}</small>
+        </div>
+    `;
+}).join('') || '<small>-</small>'}
                     </div>
                 </div>
                 <div class="fancy-card">
