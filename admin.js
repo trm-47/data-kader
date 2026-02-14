@@ -99,6 +99,16 @@ function renderTable(data) {
         return;
     }
 
+    // --- DIRECT LINKS ICON SOSMED (SUDAH DIKONVERSI KE FORMAT GAMBAR) ---
+    const icons = {
+        wa: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
+        fb: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
+        ig: "https://i.ibb.co.com/MDtWd14P/instagram.png",
+        tt: "https://i.ibb.co.com/0pcvzQKD/tiktok.png",
+        tw: "https://i.ibb.co.com/zWZNdQPG/twitter.png",
+        yt: "https://i.ibb.co.com/QFS9fF1c/youtube.png"
+    };
+
     data.forEach((item) => {
         if (!item || !item.pribadi) return;
         const p = item.pribadi;
@@ -127,11 +137,10 @@ function renderTable(data) {
             }
         }
 
-        // --- BADGE KADERISASI (CENTERED CONTAINER, LEFT TEXT) ---
+        // --- BADGE KADERISASI (CENTERED BOX, LEFT TEXT) ---
         let htmlBadgeKader = "";
         if (k[2] && k[2].toString().trim() !== "" && k[2] !== "-") {
             const listJenjang = k[2].toString().split("\n");
-            // Container div pakai margin auto agar box-nya di tengah, tapi text-align left
             listJenjang.forEach(txt => {
                 if(txt.trim()) {
                     htmlBadgeKader += `
@@ -146,7 +155,7 @@ function renderTable(data) {
                             font-weight: 800;
                             margin: 0 auto 4px auto;
                             width: fit-content;
-                            min-width: 90px;
+                            min-width: 95px;
                             text-align: left;
                             letter-spacing: 0.5px;
                             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
@@ -159,10 +168,8 @@ function renderTable(data) {
             htmlBadgeKader = `<span style="color: #cbd5e1; font-size: 9px; font-weight: 700; letter-spacing: 1px;">ANGGOTA</span>`;
         }
 
-        // --- PENDIDIKAN (LOGIKA DIPERKUAT / ANTI-HILANG) ---
+        // --- PENDIDIKAN (LOGIKA ANTI-HILANG) ---
         let infoPendidikan = `<div style="font-size:10px; color:#cbd5e1; font-weight:700;">${(p.kec || '-').toUpperCase()}</div>`;
-        
-        // List indeks sel formal (berurutan dari tertinggi)
         const listEdu = [
             { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
             { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }, { label: "SMP", idx: 4 }, { label: "SD", idx: 2 }
@@ -170,15 +177,14 @@ function renderTable(data) {
 
         for (let edu of listEdu) {
             let rawData = f[edu.idx];
-            // Cek apakah data benar-benar ada isinya (bukan null, undefined, atau strip)
-            if (rawData && rawData.toString().trim() !== "" && rawData.toString().trim() !== "-") {
+            if (rawData && rawData.toString().trim() !== "" && rawData.toString().trim() !== "-" && rawData.toString().trim().toLowerCase() !== "undefined") {
                 let detail = (edu.label === "S1") ? (f[12] || f[11] || rawData) : rawData;
                 infoPendidikan = `
-                    <strong style="color:#334155; font-size:12px; display:block;">${edu.label}</strong>
-                    <div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px;">
+                    <strong style="color:#334155; font-size:11px; display:block; line-height:1.2;">${edu.label}</strong>
+                    <div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; font-weight:600;">
                         ${detail.toString().toUpperCase()}
                     </div>`;
-                break; // Stop jika sudah ketemu jenjang tertinggi
+                break;
             }
         }
 
@@ -186,6 +192,7 @@ function renderTable(data) {
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62'+waNumber.slice(1) : waNumber}` : '#';
 
+        // --- RENDER BARIS ---
         body.innerHTML += `
             <tr onclick="openDetail(${originalIdx})" style="cursor:pointer; border-bottom: 1px solid #f1f5f9; ${rowStyle}">
                 <td style="width:65px; text-align:center; padding:12px 5px;">
@@ -206,8 +213,11 @@ function renderTable(data) {
                 <td style="padding:12px 5px; width:150px; text-align:center;">
                     ${htmlBadgeKader}
                 </td>
-                <td style="text-align:center; width:90px; padding:12px 5px;">
-                    ${waNumber ? `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; box-shadow:0 1px 3px rgba(0,0,0,0.05);">CHAT</a>` : `<span style="color:#e2e8f0;">-</span>`}
+                <td style="text-align:center; width:95px; padding:12px 5px;">
+                    ${waNumber ? `
+                        <a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-flex; align-items:center; gap:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+                            <img src="${icons.wa}" style="width:14px; height:14px; object-fit:contain;"> CHAT
+                        </a>` : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
     });
