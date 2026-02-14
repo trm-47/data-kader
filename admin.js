@@ -517,4 +517,3 @@ function updateDesaOptions() {
     applyFilters();
 }
 
-bos tolong, kenapa dia isi 5 jenjang kaderisasi kok di tabel cuma muncul 2 ya?
