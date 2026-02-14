@@ -4,33 +4,30 @@ let databaseKader = [];
 // --- INITIALIZATION ---
 window.onload = fetchData;
 
-// --- DATA FETCHING ---
 async function fetchData() {
-    try {
-        console.log("Memulai penarikan data...");
-        const response = await fetch(URL_GAS + "?action=read");
-        const data = await response.json();
+    try {
+        console.log("Memulai penarikan data...");
+        const response = await fetch(URL_GAS + "?action=read");
+        const data = await response.json();
 
-        console.log("Data diterima:", data);
+        if (data.error) throw new Error(data.error);
 
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        databaseKader = data;
-        renderTable(data);
-        updateStats(data);
-    } catch (error) {
-        console.error("Error Detail:", error);
-        document.getElementById('bodyKader').innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align:center; color:red; padding:20px;">
-                    Gagal memuat data: ${error.message}<br>
-                    <small>Pastikan Deployment GAS sudah benar dan "Anyone" bisa akses.</small>
-                </td>
-            </tr>`;
-    }
+        // BALIK DATA DI SINI: Supaya MASTER tetap terbaru di atas
+        databaseKader = data.reverse(); 
+        
+        renderTable(databaseKader);
+        updateStats(databaseKader);
+    } catch (error) {
+        console.error("Error Detail:", error);
+        document.getElementById('bodyKader').innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; color:red; padding:20px;">
+                    Gagal memuat data: ${error.message}
+                </td>
+            </tr>`;
+    }
 }
+
 
 // --- UTILITY FUNCTIONS ---
 function calculateAge(birthDateString) {
