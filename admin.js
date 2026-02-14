@@ -524,28 +524,55 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
     </div>
 </div>
             </div>
-<div class="fancy-card">
-    <div class="card-title">Media Sosial</div>
-    <div class="medsos-grid">
-        ${
-            // Mengambil data dari objek medsos yang dikirim GAS (fb, ig, tiktok)
-            // Jika datanya "-" atau kosong, tidak akan ditampilkan
-            [
-                { label: 'FB', val: item.medsos ? item.medsos.fb : p.fb },
-                { label: 'IG', val: item.medsos ? item.medsos.ig : p.ig },
-                { label: 'TikTok', val: item.medsos ? item.medsos.tiktok : p.tiktok }
-            ]
-            .filter(m => m.val && m.val !== "-" && m.val !== "")
-            .map(m => `<div class="ms-item"><strong>${m.label}:</strong> ${m.val}</div>`)
-            .join('') || '<span class="empty-text">Media sosial tidak tersedia</span>'
-        }
-    </div>
-</div>
-            <div class="modal-footer">
+// ... di dalam fungsi openDetail, setelah bagian stepper/analisa kader ...
+
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">Struktur & Penugasan</div>
+                    <div class="list-container">
+                        ${
+                            j.length > 0 ? 
+                            j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5]))
+                             .map(pos => `
+                                <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
+                                    <strong style="color: #D71920;">${pos[5]}</strong><br>
+                                    <small style="color: #64748b; font-weight: 700;">
+                                        ${pos[4] || '-'} ${pos[8] && pos[8] !== "-" ? '(' + pos[8] + ')' : ''}
+                                    </small>
+                                </div>
+                            `).join('') 
+                            : '<span class="empty-text">Belum ada riwayat jabatan</span>'
+                        }
+                    </div>
+                </div>
+
+                <div class="fancy-card">
+                    <div class="card-title">Media Sosial</div>
+                    <div class="medsos-grid">
+                        ${
+                            [
+                                { label: 'FB', val: item.medsos ? item.medsos.fb : p.fb },
+                                { label: 'IG', val: item.medsos ? item.medsos.ig : p.ig },
+                                { label: 'TikTok', val: item.medsos ? item.medsos.tiktok : p.tiktok },
+                                { label: 'X', val: item.medsos ? item.medsos.twitter : p.twitter },
+                                { label: 'YouTube', val: item.medsos ? item.medsos.youtube : p.youtube }
+                            ]
+                            .filter(m => m.val && m.val !== "-" && m.val !== "")
+                            .map(m => `
+                                <div class="ms-item" style="padding: 5px 0; border-bottom: 1px dashed #eee;">
+                                    <strong style="font-size: 11px; color: #64748b;">${m.label}</strong><br>
+                                    <span style="font-size: 13px; color: #1e293b;">${m.val}</span>
+                                </div>
+                            `)
+                            .join('') || '<span class="empty-text">Media sosial tidak tersedia</span>'
+                        }
+                    </div>
+                </div>
+            </div> <div class="modal-footer">
                 <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
             </div>
-        </div>
-    `;
+        </div> 
+    `; // AKHIR DARI VARIABEL htmlContent
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
