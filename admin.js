@@ -381,6 +381,7 @@ function renderStep(label, year, color) {
 
 // --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL KALIBRASI PRESISI) ---
 function openDetail(originalIndex) {
+    console.log("Data Jabatan NIK ini:", jList);
     const item = databaseKader[originalIndex];
     if (!item) return;
 
