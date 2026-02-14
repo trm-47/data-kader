@@ -568,7 +568,7 @@ function openDetail(originalIndex) {
                     ${renderKaderStep('MADYA', '#dc2626')}
                     ${renderKaderStep('UTAMA', '#b91c1c')}
                     ${renderKaderStep('GURU', '#991b1b')}
-                    ${renderKaderStep('WANITA', '#db2777')}
+                    ${renderKaderStep('PEREMPUAN', '#db2777')}
                     ${renderKaderStep('KHUSUS', '#1e293b')}
                 </div>
             </div>
