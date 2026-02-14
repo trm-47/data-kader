@@ -47,8 +47,7 @@ function renderTable(data) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td style="text-align:center;">
-                // Ganti bagian ini di admin.js
-                <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; border:2px solid #D71920; margin:auto; background:#eee;">
+                      <div style="width:50px; height:50px; border-radius:12px; overflow:hidden; border:2px solid #D71920; margin:auto; background:#eee;">
                     <img src="${fotoUrl}" 
                          style="width:100%; height:100%; object-fit:cover;" 
                          onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=ccc&color=666'">
