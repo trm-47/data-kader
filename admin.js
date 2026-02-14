@@ -457,6 +457,42 @@ const thnKhusus = getKaderData("Khusus"); // Untuk Tema Khusus
     </div>
 </div>
 
+    // --- BAGIAN PENDIDIKAN FORMAL (TARUH DI SINI) ---
+<div class="fancy-card">
+    <div class="card-title">Pendidikan Formal</div>
+    <div class="list-container">
+        ${
+            (() => {
+                // Definisi mapping index kolom untuk pendidikan formal sesuai data Bos
+                const eduMapping = [
+                    { label: "S3 (Doktor)", inst: f[17], thn: f[18] },
+                    { label: "S2 (Magister)", inst: f[15], thn: f[16] },
+                    { label: "S1 (Sarjana)", inst: f[11], thn: f[12] }, // f[12] biasanya jurusan/instansi
+                    { label: "D1 - D3", inst: f[9], thn: f[10] },
+                    { label: "SMA / SMK", inst: f[6], thn: f[7] },
+                    { label: "SMP", inst: f[4], thn: f[5] },
+                    { label: "SD", inst: f[2], thn: f[3] }
+                ];
+
+                // Filter hanya yang ada isinya (bukan "-" atau kosong)
+                const validEdu = eduMapping.filter(e => e.inst && e.inst !== "-" && e.inst !== "");
+
+                if (validEdu.length > 0) {
+                    return validEdu.map(e => `
+                        <div class="list-item" style="margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
+                            <strong style="font-size: 13px; color: #334155;">${e.label}</strong><br>
+                            <span style="font-size: 14px;">${e.inst}</span>
+                            ${e.thn && e.thn !== "-" ? `<br><small style="color: #64748b;">Lulus Tahun: ${e.thn}</small>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    return '<span class="empty-text">Data pendidikan tidak tersedia</span>';
+                }
+            })()
+        }
+    </div>
+</div>
+
 <div class="fancy-card">
     <div class="card-title">Struktur & Penugasan</div>
     <div class="list-container">
