@@ -1,169 +1,210 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz8ZZRmcSQsJm1m4VXk85311WDYMisGczcvZfm4j086FXjLNRobp7Q0hj9KEflmilWL2w/exec";
-let MASTER_DATA = []; // Data asli dari server
-
-// 1. Ambil Data
-async function loadData() {
-    try {
-        const response = await fetch(GAS_URL + "?action=read", { redirect: "follow" });
-        const data = await response.json();
-        
-        if (data.error) throw new Error(data.error);
-
-        // BALIK URUTAN: Biar yang terbaru masuk (paling bawah di Sheets) jadi yang paling atas
-        MASTER_DATA = data.reverse();
-        
-        renderTable(MASTER_DATA);
-        updateStats(MASTER_DATA);
-    } catch (e) {
-        document.getElementById("bodyKader").innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:30px;">Gagal memuat: ${e.message}</td></tr>`;
-    }
-}
-
-// 2. Render Tabel
-function renderTable(data) {
-    const tbody = document.getElementById("bodyKader");
-    if (!tbody) return;
-    tbody.innerHTML = "";
-
-    if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Data tidak ditemukan.</td></tr>';
-        return;
-    }
-
-    data.forEach((item, idx) => {
-        const p = item.pribadi || {};
-        const k = item.kaderisasi || [];
-        const f = item.formal || [];
-        
-        // Logika Prioritas Madya
-        const hasMadya = k.some(row => row[2].toLowerCase().includes("madya"));
-        const pratama = k.find(row => row[2].toLowerCase().includes("pratama"));
-        const isUrgent = (!hasMadya && pratama && (2026 - parseInt(pratama[5]) >= 5));
-
-        // Styling Badge Kaderisasi
-        const badges = k.map(row => {
-            let color = row[2].toLowerCase().includes("madya") ? "#f59e0b" : "#D71920";
-            return `<span class="badge" style="background:${color}15; color:${color}; border:1px solid ${color}30; font-size:10px; padding:2px 6px; margin:2px; border-radius:4px; display:inline-block; font-weight:bold;">${row[2]}</span>`;
-        }).join("");
-
-        const tr = document.createElement("tr");
-        if (isUrgent) tr.style.backgroundColor = "#fff1f2"; // Background pink tipis untuk prioritas
-
-        tr.innerHTML = `
-            <td style="text-align:center;"><img src="${p.foto || 'https://ui-avatars.com/api/?name='+p.nama}" style="width:45px; height:45px; border-radius:10px; object-fit:cover; border:1px solid #eee;"></td>
-            <td>
-                <div style="font-weight:700; color:#1e293b;">${p.nama}</div>
-                <div style="font-size:11px; color:#64748b;">KTA: ${p.kta || '-'}</div>
-                <div style="font-size:10px; color:#94a3b8;">${p.kec || '-'}</div>
-            </td>
-            <td style="text-align:center; font-weight:600;">${p.umur || '-'}</td>
-            <td style="font-size:12px;">${f[19] || '-'}</td>
-            <td>${badges || '<small style="color:#cbd5e1">Anggota</small>'}</td>
-            <td style="text-align:center;">
-                <button onclick="showDetail(${idx})" style="padding:6px 12px; cursor:pointer; background:#D71920; color:white; border:none; border-radius:6px; font-size:11px; font-weight:600;">Detail</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// 3. Fungsi Filter Gabungan (Semua Filter Aktif)
-function applyFilters() {
-    let result = [...MASTER_DATA];
-
-    // Ambil semua nilai dropdown
-    const fKota = document.getElementById("fKota").value;
-    const fJK = document.getElementById("fJK").value;
-    const fAgama = document.getElementById("fAgama").value;
-    const fPendidikan = document.getElementById("fPendidikan").value;
-    const fKader = document.getElementById("fKader").value;
-    const fStatusMadya = document.getElementById("fStatusMadya").value;
-
-    // Filter Kota
-    if (fKota !== "Semua") result = result.filter(i => i.pribadi.kota === fKota);
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Database Kader Digital</title>
     
-    // Filter JK
-    if (fJK !== "Semua") result = result.filter(i => i.pribadi.jk === fJK);
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    // Filter Agama
-    if (fAgama !== "Semua") result = result.filter(i => i.pribadi.agama === fAgama);
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
 
-    // Filter Pendidikan (Ambil dari index 19 data formal)
-    if (fPendidikan !== "Semua") result = result.filter(i => i.formal[19] === fPendidikan);
+    <div class="admin-header">
+        <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" alt="Logo PDI">
+        <div class="header-text">
+            <h1>DATA KADER</h1>
+            <p>DPD PDI PERJUANGAN D.I. YOGYAKARTA</p>
+        </div>
+    </div>
 
-    // Filter Jenjang Kader (Spesifik)
-    if (fKader !== "Semua") {
-        result = result.filter(i => i.kaderisasi.some(k => k[2].toLowerCase().includes(fKader.toLowerCase())));
-    }
+<div class="stats-grid">
+    <div class="stat-card">
+        <small>Total Kader</small>
+        <h2 id="statTotal">-</h2>
+    </div>
 
-    // Filter Status Madya / Prioritas
-    if (fStatusMadya === "Sudah") {
-        result = result.filter(i => i.kaderisasi.some(k => k[2].toLowerCase().includes("madya")));
-    } else if (fStatusMadya === "Belum") {
-        result = result.filter(i => !i.kaderisasi.some(k => k[2].toLowerCase().includes("madya")));
-    } else if (fStatusMadya === "Prioritas") {
-        result = result.filter(i => {
-            const hasMadya = i.kaderisasi.some(k => k[2].toLowerCase().includes("madya"));
-            const pratama = i.kaderisasi.find(k => k[2].toLowerCase().includes("pratama"));
-            return !hasMadya && pratama && (2026 - parseInt(pratama[5]) >= 5);
-        });
-    }
+    <div class="stat-card">
+        <small>Gen Z & Milenial</small>
+        <h2 id="statYoung">-</h2>
+    </div>
 
-    renderTable(result);
-    updateStats(result);
-}
+    <div class="stat-card" style="border-top-color: #f59e0b;">
+        <small>Butuh/Prioritas Madya</small>
+        <h2 id="statNeedMadya">-</h2>
+    </div>
 
-// 4. Pencarian Cepat (Cari di semua kolom)
-function doSearch() {
-    const val = document.getElementById("quickSearch").value.toLowerCase();
-    const result = MASTER_DATA.filter(item => 
-        item.pribadi.nama.toLowerCase().includes(val) || 
-        (item.pribadi.kta && item.pribadi.kta.includes(val)) ||
-        (item.pribadi.kec && item.pribadi.kec.toLowerCase().includes(val))
-    );
-    renderTable(result);
-}
+    <div class="stat-card">
+        <small>Total Kader Madya</small>
+        <h2 id="statArea">-</h2>
+    </div>
+</div>
 
-// 5. Update Statistik
-function updateStats(data) {
-    document.getElementById("statTotal").innerText = data.length;
-    
-    // Gen Z & Milenial (Kelahiran > 1981 / Usia < 45)
-    const young = data.filter(i => parseInt(i.pribadi.umur) < 45).length;
-    document.getElementById("statYoung").innerText = young;
+    <div class="filter-container">
+        <div class="filter-header" onclick="toggleFilter()">
+            <span>FILTER DATA</span>
+            <span id="filterIcon">▼</span>
+        </div>
 
-    // Total Madya
-    const madya = data.filter(i => i.kaderisasi.some(k => k[2].toLowerCase().includes("madya"))).length;
-    document.getElementById("statArea").innerText = madya;
+        <div class="filter-body" id="filterBody">
+            <div class="filter-group">
+                <label>Kabupaten / Kota</label>
+                <select id="fKota" onchange="updateKecamatanOptions()">
+                    <option value="Semua">Semua Wilayah</option>
+                    <option value="Yogyakarta">Kota Yogyakarta</option>
+                    <option value="Sleman">Sleman</option>
+                    <option value="Bantul">Bantul</option>
+                    <option value="Gunungkidul">Gunungkidul</option>
+                    <option value="Kulon Progo">Kulon Progo</option>
+                </select>
+            </div>
 
-    // Prioritas Madya
-    const priority = data.filter(i => {
-        const hasMadya = i.kaderisasi.some(k => k[2].toLowerCase().includes("madya"));
-        const pratama = i.kaderisasi.find(k => k[2].toLowerCase().includes("pratama"));
-        return !hasMadya && pratama && (2026 - parseInt(pratama[5]) >= 5);
-    }).length;
-    document.getElementById("statNeedMadya").innerText = priority;
-}
+<div class="filter-group">
+    <label>Kecamatan</label>
+    <select id="fKec" onchange="updateDesaOptions()">
+        <option value="Semua">Semua Kecamatan</option>
+    </select>
+</div>
 
-// 6. Reset
-function resetFilters() {
-    document.querySelectorAll('select').forEach(s => s.value = "Semua");
-    document.getElementById("quickSearch").value = "";
-    renderTable(MASTER_DATA);
-    updateStats(MASTER_DATA);
-}
+<div class="filter-group">
+    <label>Kelurahan / Desa</label>
+    <select id="fDesa" onchange="applyFilters()">
+        <option value="Semua">Semua Kelurahan/Desa</option>
+    </select>
+</div>
+            
+            <div class="filter-group">
+                <label>Jenis Kelamin</label>
+                <select id="fJK" onchange="applyFilters()">
+                    <option value="Semua">Semua Jenis Kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+            </div>
 
-// 7. Toggle Filter Mobile
-function toggleFilter() {
-    const fBody = document.getElementById("filterBody");
-    const icon = document.getElementById("filterIcon");
-    if (fBody.style.display === "grid") {
-        fBody.style.display = "none";
-        icon.innerText = "▼";
-    } else {
-        fBody.style.display = "grid";
-        icon.innerText = "▲";
-    }
-}
+            <div class="filter-group">
+                <label>Agama</label>
+                <select id="fAgama" onchange="applyFilters()">
+                    <option value="Semua">Semua Agama</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Kristen">Kristen</option>
+                    <option value="Katolik">Katolik</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Budha">Budha</option>
+                    <option value="Khonghucu">Khonghucu</option>
+                </select>
+            </div>
 
-window.onload = loadData;
+            <div class="filter-group">
+                <label>Jenjang Pendidikan</label>
+                <select id="fPendidikan" onchange="applyFilters()">
+                    <option value="Semua">Semua Jenjang</option>
+                    <option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA/SMK">SMA/SMK</option>
+                    <option value="D1">D1</option><option value="D2">D2</option><option value="D3">D3</option>
+                    <option value="S1">S1</option><option value="S2">S2</option><option value="S3">S3</option>
+                </select>
+            </div>
+
+<div class="filter-group">
+    <label>PENDIDIKAN KADER:</label>
+    <select id="fKader" class="filter-kader-khusus" onchange="applyFilters()"> 
+        <option value="Semua">Semua Jenjang</option>
+        <option value="Pratama">Pratama</option>
+        <option value="Madya">Madya</option>
+        <option value="Utama">Utama</option>
+        <option value="Guru">Guru</option>
+        <option value="Perempuan" style="color: #db2777; font-weight: bold; border-top: 1px solid #eee;">
+            Perempuan
+        </option>
+    </select>
+</div>
+
+            <div class="filter-group">
+                <label>Tingkatan Struktur</label>
+                <select id="fTingkat" onchange="applyFilters()">
+                    <option value="Semua">Semua Tingkatan</option>
+                    <option value="DPP">DPP</option><option value="DPD">DPD</option><option value="DPC">DPC</option>
+                    <option value="PAC">PAC</option><option value="Ranting">Ranting</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Jenis Penugasan</label>
+                <select id="fJenisTugas" onchange="applyFilters()">
+                    <option value="Semua">Semua Penugasan</option>
+                    <option value="Legislatif">Legislatif</option>
+                    <option value="Eksekutif">Eksekutif</option>
+                    <option value="Struktural">Struktural</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Bahasa Inggris/Asing</label>
+                <select id="fBahasa" onchange="applyFilters()">
+                    <option value="Semua">Semua Kemampuan</option>
+                    <option value="Ya">Bisa Bahasa Asing</option>
+                    <option value="-">Tidak</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Kompetensi IT</label>
+                <select id="fIT" onchange="applyFilters()">
+                    <option value="Semua">Semua</option>
+                    <option value="Ya">Bisa</option>
+                    <option value="-">Tidak Bisa</option>
+                </select>
+            </div>
+
+<div class="filter-group">
+    <label>KADERISASI MADYA:</label>
+    <select id="fStatusMadya" class="filter-priority" onchange="applyFilters()">
+        <option value="Semua">-- Semua Status --</option>
+        <option value="Sudah">Sudah Madya</option>
+        <option value="Belum">Belum Madya</option>
+        <option value="Prioritas" style="background-color: #D71920; color: white; font-weight: bold;">
+            PRIORITAS MADYA (>5 TAHUN)
+        </option>
+    </select>
+</div>
+
+            <button class="btn-reset" onclick="resetFilters()">Reset Filter</button>
+        </div>
+    </div>
+
+    <div class="control-panel">
+        <div class="search-box">
+            <input type="text" id="quickSearch" onkeyup="doSearch()" placeholder="Cari Nama, NIK, atau Kecamatan...">
+        </div>
+    </div>
+
+    <div class="table-card">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 60px;">Foto</th>
+                    <th>Identitas</th>
+                    <th style="text-align:center;">Usia</th>
+                    <th>Pendidikan</th>
+                    <th>Kaderisasi</th>
+                    <th style="text-align:center; width: 100px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="bodyKader">
+                <tr><td colspan="6" style="text-align:center; padding:50px;">Memuat data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="modalDetail" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeDetail()">×</span>
+            <div id="modalInnerContent"></div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+
+</body>
+</html>
