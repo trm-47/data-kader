@@ -379,8 +379,7 @@ function renderStep(label, year, color) {
     `;
 }
 
-// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL PRESISI) ---
-// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL PRESISI TOTAL) ---
+// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL KALIBRASI PRESISI) ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
@@ -394,7 +393,7 @@ function openDetail(originalIndex) {
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA PENDIDIKAN KADER (Indeks k[4]=Lokasi, k[5]=Tahun) ---
+    // --- LOGIKA DATA KADERISASI (LOKASI DI BAWAH JENJANG) ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listLokasi = k[4] ? k[4].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
@@ -409,7 +408,6 @@ function openDetail(originalIndex) {
         return null;
     };
 
-    // Helper render step dengan Lokasi di bawahnya (Permintaan Bos)
     const renderKaderStep = (label, color) => {
         const data = getKaderData(label);
         const isActive = data !== null;
@@ -491,7 +489,7 @@ function openDetail(originalIndex) {
                             <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
                                 <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
                                 <span>Jabatan: ${cap(r[4])}</span><br>
-                                <small>📍 Lokasi: <b>${cap(r[7] || r[6] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
+                                <small>📍 Wilayah: <b>${cap(r[7] || r[6] || r[8] || '-')}</b></small> | <small>📅 Periode: ${r[9] || r[8] || '-'}</small>
                             </div>
                         `).join('') || '<small>-</small>'}
                     </div>
@@ -502,8 +500,8 @@ function openDetail(originalIndex) {
                         ${jList.filter(r => r[2] === "Penugasan").map(r => `
                             <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
                                 <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
-                                <span>Lembaga: ${cap(r[11])}</span><br>
-                                <small>📍 Wilayah: <b>${cap(r[13] || r[11] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
+                                <span>Lembaga: ${cap(r[11] || r[10])}</span><br>
+                                <small>📍 Dapil: <b>${cap(r[13] || r[11] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
                             </div>
                         `).join('') || '<small>-</small>'}
                     </div>
@@ -555,7 +553,7 @@ function openDetail(originalIndex) {
     document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
-// --- FUNGSI IKON MEDSOS (FIXED: MENGGUNAKAN CLASS BRANDS) ---
+// --- FUNGSI IKON MEDSOS (POWERED BY FONT AWESOME 6) ---
 function renderMedsosIcon(icon, val, color) {
     if (!val || val === "-" || val === "") return "";
     
@@ -564,9 +562,9 @@ function renderMedsosIcon(icon, val, color) {
     if (icon === 'twitter') iconClass = 'x-twitter';
 
     return `
-        <div style="text-align:center;">
+        <div style="text-align:center; min-width: 50px;">
             <div style="width:40px; height:40px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px; font-size:18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                <i class="fa-brands fa-${iconClass}"></i>
+                <i class="fa-brands fa-${iconClass}" aria-hidden="true"></i>
             </div>
             <small style="font-size:10px; font-weight:bold; display:block; color:#333;">${val}</small>
         </div>
