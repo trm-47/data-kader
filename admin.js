@@ -1,4 +1,4 @@
-const URL_GAS = "https://script.google.com/macros/s/AKfycbzBSsrPtfxQZu6cel7fSp7CpFUEOsw5D0cZpST6S8_ohXRZyH0BpKYXngmctCxX12DPyw/exec";
+const URL_GAS = "https://script.google.com/macros/s/AKfycbwCVOTCUheCkQBKczQEi2iIMuxlYc5ij4a5wFLMnQ-kZS9v8pv4B3SIdS8eUtSUubXQIA/exec";
 let databaseKader = [];
 
 // --- INITIALIZATION ---
@@ -615,8 +615,17 @@ function openDetail(originalIndex) {
                         <div style="font-weight:800; color:#D71920; font-size:10px; letter-spacing:1px; margin-bottom:5px;">ORGANISASI EKSTERNAL</div>
                         ${oList.map(r => `<div style="margin-bottom:5px; padding-left:10px; border-left:2px solid #e2e8f0;">• ${cap(r[2])} <span style="color:#94a3b8;">(${cap(r[4])})</span></div>`).join('') || '-'}
                         <div style="font-weight:800; color:#D71920; font-size:10px; letter-spacing:1px; margin-top:15px; margin-bottom:5px;">RIWAYAT PEKERJAAN</div>
-                        ${wList.map(r => `<div style="margin-bottom:5px; padding-left:10px; border-left:2px solid #e2e8f0;">• ${cap(r[4])} <br><small style="color:#64748b;">${cap(r[2])} (${r[5] || '-'})</small></div>`).join('') || '-'}
-                    </div>
+${wList.map(job => `
+    <div style="margin-bottom:10px; padding-left:10px; border-left:2px solid #D71920;">
+        <div style="font-weight:800; color:#1e293b; font-size:11px; line-height:1.2;">
+            ${(job.jabatan || '-').toUpperCase()}
+        </div>
+        <div style="font-size:10px; color:#64748b; margin-top:2px;">
+            ${cap(job.perusahaan || '-')} <span style="color:#cbd5e1; margin:0 3px;">•</span> ${job.tahun || '-'}
+        </div>
+    </div>
+`).join('') || '<div style="color:#cbd5e1; font-size:11px; padding-left:10px;">-</div>'}
+                        </div>
                 </div>
 
                 <div style="background: #fff; padding: 25px; border-radius: 24px; border: 1px solid #edf2f7;">
