@@ -434,23 +434,47 @@ function openDetail(originalIndex) {
                 </div>
             </div>
 
-            <div class="fancy-grid">
-                <div class="fancy-card">
-                    <div class="card-title">Struktur & Penugasan</div>
-                    <div class="list-container">
-                        ${j.length > 0 ? j.map(pos => `<div class="list-item"><strong>${pos[5] || 'Anggota'}</strong><br><small>${pos[4] || '-'} (${pos[8] || '-'})</small></div>`).join('') : '<span class="empty-text">Belum ada riwayat jabatan</span>'}
-                    </div>
+<div class="fancy-card">
+    <div class="card-title">Struktur & Penugasan</div>
+    <div class="list-container">
+        ${
+            j.length > 0 ? 
+            j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5])) // Saring yang sampah
+             .map(pos => `
+                <div class="list-item" style="margin-bottom: 10px; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px;">
+                    <strong style="color: #D71920;">${pos[5]}</strong><br>
+                    <small style="color: #64748b; font-weight: 700;">
+                        ${pos[4] || '-'} ${pos[8] && pos[8] !== "-" ? '(' + pos[8] + ')' : ''}
+                    </small>
                 </div>
-                <div class="fancy-card">
-                    <div class="card-title">Media Sosial</div>
-                    <div class="medsos-grid">
-                        <div class="ms-item">FB: ${p.fb || '-'}</div>
-                        <div class="ms-item">IG: ${p.ig || '-'}</div>
-                        <div class="ms-item">TikTok: ${p.tiktok || '-'}</div>
-                    </div>
-                </div>
+            `).join('') 
+            : '<span class="empty-text">Belum ada riwayat jabatan</span>'
+        }
+        ${
+            // Jika setelah difilter ternyata kosong semua
+            j.filter(pos => pos[5] && !["-", "(-)", ""].includes(pos[5])).length === 0 
+            ? '<span class="empty-text">Tidak ada riwayat aktif</span>' : ''
+        }
+    </div>
+</div>
             </div>
-
+<div class="fancy-card">
+    <div class="card-title">Media Sosial</div>
+    <div class="medsos-grid">
+        ${
+            // Mengambil data dari objek medsos yang dikirim GAS (fb, ig, tiktok)
+            // Jika datanya "-" atau kosong, tidak akan ditampilkan
+            [
+                { label: 'FB', val: item.medsos ? item.medsos.fb : p.fb },
+                { label: 'IG', val: item.medsos ? item.medsos.ig : p.ig },
+                { label: 'TikTok', val: item.medsos ? item.medsos.tiktok : p.tiktok }
+            ]
+            .filter(m => m.val && m.val !== "-" && m.val !== "")
+            .map(m => `<div class="ms-item"><strong>${m.label}:</strong> ${m.val}</div>`)
+            .join('') || '<span class="empty-text">Media sosial tidak tersedia</span>'
+        }
+    </div>
+</div>
             <div class="modal-footer">
                 <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
             </div>
