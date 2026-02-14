@@ -368,10 +368,10 @@ function openDetail(originalIndex) {
     const f = item.formal || [];
     const k = item.kaderisasi || [];
     const j = item.jabatan || [];
-    const m = item.medsos || [];
+    const medsos = item.medsos || []; // Pastikan medsos terdefinisi
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- MODIFIKASI MODAL ANALISA (START) ---
+    // --- LOGIKA ANALISA TAHUN ---
     const listThn = k[5] ? k[5].toString().split("\n") : [];
     const getYear = (no) => {
         const found = listThn.find(t => t.trim().startsWith(no + "."));
@@ -381,97 +381,98 @@ function openDetail(originalIndex) {
     const thnPratama = getYear("1");
     const thnMadya = getYear("2");
     const thnUtama = getYear("3");
-    const thnGuru = getYear("4");
-    const thnWanita = getYear("5");
-
-    const listAnalisa = [
-        { label: 'PRATAMA', year: thnPratama, color: '#ef4444' },
-        { label: 'MADYA', year: thnMadya, color: '#dc2626' },
-        { label: 'UTAMA', year: thnUtama, color: '#b91c1c' },
-        { label: 'GURU', year: thnGuru, color: '#991b1b' },
-        { label: 'WANITA', year: thnWanita, color: '#db2777' }
-    ];
-    // --- MODIFIKASI MODAL ANALISA (END) ---
 
     let htmlContent = `
-        <div style="text-align:center; margin-bottom:30px; background: linear-gradient(135deg, #fff1f2 0%, #ffffff 100%); padding: 40px 20px; border-radius: 0 0 50px 50px; margin: -30px -30px 30px -30px; border-bottom: 2px solid #fee2e2;">
-            <div style="position: relative; display: inline-block;">
-                <img src="${formatDriveUrl(p.foto)}" 
-                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
-                     style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 6px solid white; box-shadow: 0 15px 35px rgba(215,25,32,0.2);">
-                <div style="position:absolute; bottom:5px; right:5px; background:white; padding:5px; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                    <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png" style="width:25px; height:auto;">
+        <div class="modal-header-fancy">
+            <div class="header-main-info">
+                <div class="photo-container">
+                    <img src="${formatDriveUrl(p.foto)}" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=D71920&color=fff&size=128'"
+                         class="profile-pic-large">
+                    <div class="logo-overlay">
+                        <img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png">
+                    </div>
                 </div>
-            </div>
-            <h2 style="margin-top:20px; color:#1e293b; font-size:26px; font-weight:800; letter-spacing:-0.5px;">${p.nama ? p.nama.toUpperCase() : '-'}</h2>
-            <p style="color:#D71920; font-weight:800; font-size:14px; margin-top:5px;">ID KADER: ${p.kta || '-'}</p>
-        </div>
-
-        <div class="profile-section">
-            <div class="section-title">Identitas Pribadi</div>
-            <div class="data-grid">
-                <div class="data-item"><label>NIK</label><span>${p.nik || '-'}</span></div>
-                <div class="data-item"><label>Jenis Kelamin</label><span>${p.jk || '-'}</span></div>
-                <div class="data-item"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
-                <div class="data-item"><label>Usia</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
-                <div class="data-item"><label>Agama</label><span>${p.agama || '-'}</span></div>
-                <div class="data-item"><label>Pekerjaan Utama</label><span>${p.kerja_skrg || '-'}</span></div>
-                <div class="data-item"><label>WhatsApp</label><span>${p.wa || '-'}</span></div>
-                <div class="data-item"><label>Email</label><span>${p.email || '-'}</span></div>
-                <div class="data-item" style="grid-column: span 2;"><label>Alamat Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}, ${p.desa}, ${p.kec}, ${p.kota}</span></div>
-            </div>
-        </div>
-
-        <div class="profile-section" style="background: #fff; border: 2px solid #D71920; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(215,25,32,0.08); margin-bottom: 30px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="font-size: 14px; font-weight: 800; color: #1e293b; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 8px;">
-                    <span style="background: #D71920; width: 4px; height: 18px; border-radius: 2px; display: inline-block;"></span>
-                    Analisa Jenjang & Masa Tunggu
-                </h3>
-            </div>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 25px;">
-                ${listAnalisa.map(lvl => {
-                    const cYear = new Date().getFullYear();
-                    const isPratamaOnly = lvl.label === 'PRATAMA' && lvl.year && !thnMadya;
-                    const waitTime = isPratamaOnly ? (cYear - parseInt(lvl.year)) : 0;
-                    const isStagnan = waitTime > 5;
-                    const cardBg = isStagnan ? '#fff1f2' : (lvl.year ? '#fff' : '#f8fafc');
-                    const borderColor = isStagnan ? '#be123c' : (lvl.year ? lvl.color : '#f1f5f9');
-                    
-                    return `
-                    <div style="text-align: center; padding: 15px 5px; border-radius: 15px; border: 2px solid ${borderColor}; background: ${cardBg}; position: relative; ${isStagnan ? 'box-shadow: 0 0 15px rgba(225, 29, 72, 0.2);' : ''}">
-                        ${lvl.year ? `<div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: ${isStagnan ? '#be123c' : lvl.color}; color: white; font-size: 8px; padding: 2px 8px; border-radius: 10px; font-weight: 800; border: 2px solid #fff;">LULUS</div>` : ''}
-                        <div style="font-size: 9px; font-weight: 800; color: ${lvl.year ? '#1e293b' : '#cbd5e1'};">${lvl.label}</div>
-                        <div style="font-size: 14px; font-weight: 900; color: ${lvl.year ? (isStagnan ? '#be123c' : lvl.color) : '#cbd5e1'}; margin-top: 5px;">${lvl.year || '—'}</div>
-                        ${isStagnan ? `<div style="font-size:7px; background:#be123c; color:white; font-weight:bold; margin-top:5px; padding: 2px 4px; border-radius: 4px;">STAGNAN ${waitTime} THN</div>` : ''}
-                    </div>`;
-                }).join('')}
-            </div>
-            
-            <div style="background: ${!thnMadya && thnPratama ? '#be123c' : '#1e293b'}; border-radius: 16px; padding: 18px; display: flex; align-items: center; gap: 15px; color: white;">
-                <div style="flex: 1;">
-                    <div style="font-size: 10px; color: ${!thnMadya && thnPratama ? '#fecdd3' : '#94a3b8'}; text-transform: uppercase; font-weight: 800;">
-                        ${!thnMadya && thnPratama ? '⚠️ PERINGATAN PRIORITAS:' : 'Rekomendasi Penugasan:'}
-                    </div>
-                    <div style="font-size: 14px; margin-top: 4px; font-weight: ${!thnMadya && thnPratama ? '700' : '400'};">
-                        ${thnGuru ? 'Ideolog Partai: Mentor/Pengajar.' : thnUtama ? 'Strategis Nasional/Provinsi.' : thnMadya ? 'Pimpinan Struktur/Legislatif.' : thnPratama ? 'Kader ini sudah terlalu lama di tingkat Pratama. Wajib didorong ke Pelatihan Madya!' : 'Segera jadwalkan Pelatihan Pratama.'}
-                    </div>
+                <div class="name-container">
+                    <h2>${p.nama ? p.nama.toUpperCase() : '-'}</h2>
+                    <span class="kta-badge">ID KADER: ${p.kta || '-'}</span>
+                    <div class="location-sub"><i class="loc-icon">📍</i> ${p.desa}, ${p.kec}, ${p.kab_kota}</div>
                 </div>
             </div>
         </div>
 
-        <div style="text-align:center; padding-top:20px;">
-             <button onclick="window.print()" style="background:#1e293b; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:800; cursor:pointer;">CETAK PROFIL</button>
+        <div class="modal-body-fancy">
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">Identitas Pribadi</div>
+                    <div class="data-row"><label>NIK</label><span>${p.nik || '-'}</span></div>
+                    <div class="data-row"><label>Tempat, Tgl Lahir</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
+                    <div class="data-row"><label>Usia / Gen</label><span>${ageInfo.age} (${ageInfo.gen})</span></div>
+                    <div class="data-row"><label>Agama</label><span>${p.agama || '-'}</span></div>
+                </div>
+
+                <div class="fancy-card">
+                    <div class="card-title">Kontak & Alamat</div>
+                    <div class="data-row"><label>WhatsApp</label><span class="highlight-wa">💬 ${p.wa || '-'}</span></div>
+                    <div class="data-row"><label>Email</label><span>${p.email || '-'}</span></div>
+                    <div class="data-row"><label>Domisili</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}</span></div>
+                    <div class="data-row"><label>Pekerjaan</label><span>${p.kerja_skrg || '-'}</span></div>
+                </div>
+            </div>
+
+            <div class="fancy-card highlight-card">
+                <div class="card-title">Analisa Jenjang Kaderisasi</div>
+                <div class="stepper-wrapper">
+                    ${renderStep('PRATAMA', thnPratama, '#ef4444')}
+                    ${renderStep('MADYA', thnMadya, '#dc2626')}
+                    ${renderStep('UTAMA', thnUtama, '#b91c1c')}
+                </div>
+                
+                <div class="rekomendasi-box ${!thnMadya && thnPratama ? 'alert' : ''}">
+                    <strong>💡 Rekomendasi:</strong>
+                    <p>${!thnMadya && thnPratama ? 'Kader PRIORITAS untuk didorong mengikuti Pelatihan MADYA.' : 'Tetap aktif dalam penugasan struktur sesuai jenjang.'}</p>
+                </div>
+            </div>
+
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">Struktur & Penugasan</div>
+                    <div class="list-container">
+                        ${j.length > 0 ? j.map(pos => `<div class="list-item"><strong>${pos[5] || 'Anggota'}</strong><br><small>${pos[4] || '-'} (${pos[8] || '-'})</small></div>`).join('') : '<span class="empty-text">Belum ada riwayat jabatan</span>'}
+                    </div>
+                </div>
+                <div class="fancy-card">
+                    <div class="card-title">Media Sosial</div>
+                    <div class="medsos-grid">
+                        <div class="ms-item">FB: ${p.fb || '-'}</div>
+                        <div class="ms-item">IG: ${p.ig || '-'}</div>
+                        <div class="ms-item">TikTok: ${p.tiktok || '-'}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="window.print()" class="btn-print">CETAK PROFIL KADER</button>
+            </div>
         </div>
     `;
 
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
-    document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
-function closeDetail() {
-    document.getElementById('modalDetail').style.display = "none";
+// Helper untuk Stepper Kaderisasi
+function renderStep(label, year, color) {
+    const isActive = year ? 'active' : 'inactive';
+    return `
+        <div class="step-item ${isActive}">
+            <div class="step-circle" style="background: ${year ? color : '#e2e8f0'}">
+                ${year ? '✓' : ''}
+            </div>
+            <div class="step-label">${label}</div>
+            <div class="step-year">${year || '—'}</div>
+        </div>
+    `;
 }
 
 // --- GLOBAL EVENT LISTENERS ---
