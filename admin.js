@@ -109,7 +109,7 @@ function renderTable(data) {
         const f = item.formal || [];
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
-
+        const tglLahirFormat = formatTanggalIndo(p.tgl_lahir);
         // --- LOGIKA KADERISASI ---
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
@@ -408,7 +408,7 @@ function openDetail(originalIndex) {
     const wList = item.pekerjaan || [];
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
-
+    const tglLahirFormat = (typeof formatTanggalIndo === 'function') ? formatTanggalIndo(p.tgl_lahir) : (p.tgl_lahir || "-");
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listLembaga = k[3] ? k[3].toString().split("\n") : []; 
     const listLokasi = k[4] ? k[4].toString().split("\n") : [];
