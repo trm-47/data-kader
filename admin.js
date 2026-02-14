@@ -487,37 +487,33 @@ function openDetail(originalIndex) {
                 </div>
             </div>
 
-            <div class="fancy-grid">
-                <div class="fancy-card">
-                    <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
-                    <div class="list-container">
-                        ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
-    <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
-        <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
-        <span>Jabatan: ${cap(r[4] || '-')}</span><br>
-        <small>📍 Wilayah: <b>${cap(r[7] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
-    </div>
-`).join('') || '<small style="color:#999;">Tidak ada data struktur</small>'}
-        </div>
-    `;
-}).join('') || '<small>-</small>'}
-                    </div>
-                </div>
-                <div class="fancy-card">
-                    <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
-                    <div class="list-container">
-                        ${jList.filter(r => r[2] === "Penugasan").map(r => `
-    <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
-        <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
-        <span>Lembaga: ${cap(r[11] || '-')}</span><br>
-        <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
-    </div>
-`).join('') || '<small style="color:#999;">Tidak ada data penugasan</small>'}
-                            </div>
-                        `).join('') || '<small>-</small>'}
-                    </div>
-                </div>
+            // --- BAGIAN STRUKTUR PARTAI ---
+<div class="fancy-card">
+    <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
+    <div class="list-container">
+        ${jList.filter(r => String(r[2]).trim() === "Struktur Partai").map(r => `
+            <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
+                <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
+                <span>Jabatan: ${cap(r[4] || '-')}</span><br>
+                <small>📍 Wilayah: <b>${cap(r[7] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
             </div>
+        `).join('') || '<small style="color:#999;">Tidak ada data struktur</small>'}
+    </div>
+</div>
+
+// --- BAGIAN PENUGASAN ---
+<div class="fancy-card">
+    <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
+    <div class="list-container">
+        ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
+            <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
+                <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
+                <span>Lembaga: ${cap(r[11] || '-')}</span><br>
+                <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
+            </div>
+        `).join('') || '<small style="color:#999;">Tidak ada data penugasan</small>'}
+    </div>
+</div>
 
             <div class="fancy-grid">
                 <div class="fancy-card">
