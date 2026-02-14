@@ -363,10 +363,19 @@ function openDetail(originalIndex) {
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA ANALISA TAHUN KADERISASI (LENGKAP 6 JENJANG) ---
+    // --- FUNGSI HELPER: CAPITALIZE EACH WORD (KECUALI SINGKATAN) ---
+    const cap = (str) => {
+        if (!str || str === "-") return "-";
+        const exceptions = ["NIK", "KTA", "KTP", "RT", "RW", "DPRD", "DPP", "DPD", "DPC", "PAC", "S1", "S2", "S3", "D3", "D4", "PT", "CV", "TNI", "POLRI"];
+        return str.toString().split(' ').map(word => {
+            if (exceptions.includes(word.toUpperCase())) return word.toUpperCase();
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+        }).join(' ');
+    };
+
+    // --- LOGIKA ANALISA TAHUN KADERISASI ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
-
     const getKaderData = (keyword) => {
         const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
         if (idx !== -1) {
@@ -386,9 +395,9 @@ function openDetail(originalIndex) {
                     <div class="logo-overlay"><img src="https://i.ibb.co.com/N2K0XRMW/logo-pdi.png"></div>
                 </div>
                 <div class="name-container">
-                    <h2>${(p.nama || 'Tanpa Nama').toUpperCase()}</h2>
+                    <h2>${(p.nama || 'TANPA NAMA').toUpperCase()}</h2>
                     <span class="kta-badge">ID KADER: ${p.kta || '-'} | NIK: ${p.nik || '-'}</span>
-                    <div class="location-sub">📍 ${p.desa || '-'}, ${p.kec || '-'}, ${p.kab_kota || '-'}</div>
+                    <div class="location-sub">📍 ${cap(p.desa)}, ${cap(p.kec)}, ${cap(p.kab_kota)}</div>
                 </div>
             </div>
         </div>
@@ -396,34 +405,40 @@ function openDetail(originalIndex) {
         <div class="modal-body-fancy">
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">Identitas & Kontak</div>
-                    <div class="data-row"><label>TTL</label><span>${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</span></div>
+                    <div class="card-title">IDENTITAS PRIBADI</div>
+                    <div class="data-row"><label>Nama Lengkap</label><span>${cap(p.nama)}</span></div>
+                    <div class="data-row"><label>Jenis Kelamin</label><span>${cap(p.jk)}</span></div>
+                    <div class="data-row"><label>Agama</label><span>${cap(p.agama)}</span></div>
+                    <div class="data-row"><label>TTL</label><span>${cap(p.tmpt_lahir)}, ${p.tgl_lahir}</span></div>
                     <div class="data-row"><label>Usia</label><span>${p.umur || ageInfo.age} Thn (${ageInfo.gen})</span></div>
+                    <div class="data-row"><label>Email</label><span style="text-transform:lowercase;">${p.email || '-'}</span></div>
                     <div class="data-row"><label>WhatsApp</label><span style="color:#25d366; font-weight:bold;">${p.wa || '-'}</span></div>
-                    <div class="data-row"><label>Alamat</label><span>${p.alamat || '-'}, RT ${p.rt}/RW ${p.rw}</span></div>
+                    <div class="data-row"><label>Alamat</label><span>${cap(p.alamat)}, RT ${p.rt}/RW ${p.rw}</span></div>
+                    <div class="data-row"><label>Pekerjaan Saat Ini</label><span>${cap(p.kerja_skrg)}</span></div>
                 </div>
+
                 <div class="fancy-card">
-                    <div class="card-title">Kompetensi & Skill</div>
-                    <div class="data-row"><label>Komputer</label><span>${m.komputer || '-'}</span></div>
-                    <div class="data-row"><label>Bahasa</label>
+                    <div class="card-title">KOMPETENSI & SKILL</div>
+                    <div class="data-row"><label>Skill Komputer</label><span>${cap(m.komputer)}</span></div>
+                    <div class="data-row"><label>Kemampuan Bahasa</label>
                         <span>
                             ${m.bahasa_indo === "Ya" ? "Indonesia, " : ""}
                             ${m.bahasa_inggris === "Ya" ? "Inggris, " : ""}
                             ${m.bahasa_jawa === "Ya" ? "Jawa, " : ""}
-                            ${(m.bahasa_lain && m.bahasa_lain !== ", ") ? m.bahasa_lain : "-"}
+                            ${(m.bahasa_lain && m.bahasa_lain !== ", ") ? cap(m.bahasa_lain) : "-"}
                         </span>
                     </div>
                 </div>
             </div>
 
             <div class="fancy-card highlight-card">
-                <div class="card-title">Analisa Jenjang Kaderisasi</div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin: 10px 0;">
+                <div class="card-title">ANALISA JENJANG KADERISASI</div>
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 10px;">
                     ${renderStep('PRATAMA', getKaderData("Pratama"), '#ef4444')}
                     ${renderStep('MADYA', getKaderData("Madya"), '#dc2626')}
                     ${renderStep('UTAMA', getKaderData("Utama"), '#b91c1c')}
                 </div>
-                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin: 10px 0; border-top: 1px dashed #fca5a5; padding-top: 10px;">
+                <div class="stepper-wrapper" style="display: flex; justify-content: space-around; text-align: center; margin-top: 15px; border-top: 1px dashed #fca5a5; padding-top: 10px;">
                     ${renderStep('GURU', getKaderData("Guru"), '#991b1b')}
                     ${renderStep('WANITA', getKaderData("Perempuan"), '#db2777')}
                     ${renderStep('KHUSUS', getKaderData("Khusus"), '#1e293b')}
@@ -432,22 +447,25 @@ function openDetail(originalIndex) {
 
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">Struktur Partai (Internal)</div>
+                    <div class="card-title">STRUKTUR PARTAI & WILAYAH KETUGASAN</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Struktur Partai").map(r => `
-                            <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:5px; background:#fff5f5; font-size:12px;">
-                                <strong>${r[5]}</strong> - ${r[4]}<br><small>${r[8]}</small>
+                            <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
+                                <strong style="color:#D71920;">${r[5].toUpperCase()}</strong><br>
+                                <span>Jabatan: ${cap(r[4])}</span><br>
+                                <small>Wilayah: ${cap(r[8])}</small>
                             </div>
                         `).join('') || '<small>Tidak ada data struktur</small>'}
                     </div>
                 </div>
                 <div class="fancy-card">
-                    <div class="card-title">Penugasan (Legislatif / Eksekutif)</div>
+                    <div class="card-title">PENUGASAN (LEGISLATIF / EKSEKUTIF)</div>
                     <div class="list-container">
                         ${jList.filter(r => r[2] === "Penugasan").map(r => `
-                            <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:5px; background:#f0f9ff; font-size:12px;">
-                                <strong>${r[12]}</strong> (${r[10]})<br>
-                                <small>${r[11]} - ${r[14]}</small>
+                            <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
+                                <strong style="color:#0284c7;">${cap(r[12])}</strong><br>
+                                <span>Lembaga: ${cap(r[10])}</span><br>
+                                <small>Dapil/Wilayah: ${cap(r[11])} (${r[14]})</small>
                             </div>
                         `).join('') || '<small>Tidak ada data penugasan publik</small>'}
                     </div>
@@ -456,42 +474,41 @@ function openDetail(originalIndex) {
 
             <div class="fancy-grid">
                 <div class="fancy-card">
-                    <div class="card-title">Riwayat Organisasi & Pekerjaan</div>
-                    <div class="list-container" style="font-size:12px;">
-                        <div style="color:#D71920; font-weight:bold; margin-bottom:5px;">ORGANISASI LUAR</div>
-                        ${oList.map(r => `<div style="margin-bottom:3px;">• ${r[2]} (${r[4]})</div>`).join('') || '-'}
-                        <div style="color:#D71920; font-weight:bold; margin-top:10px; margin-bottom:5px;">PEKERJAAN</div>
-                        ${wList.map(r => `<div style="margin-bottom:3px;">• ${r[4]} di ${r[2]}</div>`).join('') || '-'}
+                    <div class="card-title">RIWAYAT ORGANISASI & KERJA</div>
+                    <div class="list-container" style="font-size:11px;">
+                        <small style="font-weight:bold; color:#D71920;">ORGANISASI LUAR PARTAI</small>
+                        ${oList.map(r => `<div>• ${cap(r[2])} (${cap(r[4])}) - ${r[5]}</div>`).join('') || '<div>-</div>'}
+                        <br>
+                        <small style="font-weight:bold; color:#D71920;">RIWAYAT PEKERJAAN</small>
+                        ${wList.map(r => `<div>• ${cap(r[4])} di ${cap(r[2])}</div>`).join('') || '<div>-</div>'}
                     </div>
                 </div>
                 <div class="fancy-card">
-                    <div class="card-title">Pendidikan Formal (Lengkap)</div>
+                    <div class="card-title">PENDIDIKAN FORMAL (LENGKAP)</div>
                     <div class="list-container" style="font-size:11px;">
                         ${[
-                            {l: "S3", n: f[17]}, {l: "S2", n: f[15]}, {l: "S1", n: f[11]},
-                            {l: "D3/D4", n: f[9]}, {l: "SMA", n: f[6]}, {l: "SMP", n: f[4]}, {l: "SD", n: f[2]}
+                            {l: "S3", n: f[17], t: f[18]}, {l: "S2", n: f[15], t: f[16]}, {l: "S1", n: f[11], t: f[14]},
+                            {l: "D3/D4", n: f[9], t: f[10]}, {l: "SMA", n: f[6], t: f[8]}, {l: "SMP", n: f[4], t: f[5]}, {l: "SD", n: f[2], t: f[3]}
                         ].filter(e => e.n && e.n !== "-").map(e => `
-                            <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${e.n}</div>
+                            <div style="border-bottom:1px solid #eee; padding:2px 0;"><strong>${e.l}</strong>: ${cap(e.n)} <small>(${e.t})</small></div>
                         `).join('') || '-'}
                     </div>
                 </div>
             </div>
 
             <div class="fancy-card">
-                <div class="card-title">Media Sosial Resmi</div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
-                    ${['fb', 'ig', 'tiktok', 'twitter', 'youtube'].map(key => {
-                        const val = m[key] || p[key];
-                        return (val && val !== '-') ? `
-                            <div style="display:flex; align-items:center; gap:5px; padding:5px 12px; background:#f1f5f9; border-radius:20px; border:1px solid #ddd; font-size:11px;">
-                                <strong style="color:#D71920;">${key.toUpperCase()}</strong>: ${val}
-                            </div>` : '';
-                    }).join('')}
+                <div class="card-title">MEDIA SOSIAL RESMI</div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; padding: 10px;">
+                    ${renderMedsosIcon('fb', m.fb, '#1877F2', 'Facebook')}
+                    ${renderMedsosIcon('ig', m.ig, '#E4405F', 'Instagram')}
+                    ${renderMedsosIcon('tiktok', m.tiktok, '#000000', 'TikTok')}
+                    ${renderMedsosIcon('twitter', m.twitter, '#1DA1F2', 'Twitter/X')}
+                    ${renderMedsosIcon('youtube', m.youtube, '#FF0000', 'YouTube')}
                 </div>
             </div>
         </div>
         <div class="modal-footer" style="padding:15px; text-align:right;">
-            <button onclick="window.print()" style="background:#D71920; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">CETAK PROFIL</button>
+            <button onclick="window.print()" style="background:#D71920; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">CETAK PROFIL KADER</button>
         </div>
     `;
 
@@ -500,21 +517,17 @@ function openDetail(originalIndex) {
     document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
-// Helper untuk Stepper Kaderisasi
-function renderStep(label, year, color) {
-    const isActive = year ? 'active' : 'inactive';
+// --- FUNGSI UNTUK MERENDER IKON MEDSOS ---
+function renderMedsosIcon(key, val, color, label) {
+    if (!val || val === "-") return "";
     return `
-        <div class="step-item ${isActive}">
-            <div class="step-circle" style="background: ${year ? color : '#e2e8f0'}">
-                ${year ? '✓' : ''}
-            </div>
-            <div class="step-label">${label}</div>
-            <div class="step-year">${year || '—'}</div>
+        <div style="text-align:center;">
+            <div style="width:35px; height:35px; border-radius:50%; background:${color}; color:white; display:flex; align-items:center; justify-content:center; margin: 0 auto 5px;">
+                <i class="fab fa-${key}"></i> </div>
+            <small style="font-size:9px; font-weight:bold; display:block;">${val}</small>
         </div>
     `;
 }
-
-// ... akhir dari fungsi openDetail() ...
 
 // 1. Fungsi tutup manual (dipanggil tombol silang)
 function closeDetail() {
