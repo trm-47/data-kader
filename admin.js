@@ -101,12 +101,12 @@ function renderTable(data) {
 
     // --- DIRECT LINKS ICON SOSMED ---
     const icons = {
-        wa: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
-        fb: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
-        ig: "https://i.ibb.co.com/MDtWd14P/instagram.png",
+        wa: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
+        fb: "https://i.ibb.co.com/MDtWd14P/instagram.png",
+        ig: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
         tt: "https://i.ibb.co.com/0pcvzQKD/tiktok.png",
-        tw: "https://i.ibb.co.com/zWZNdQPG/twitter.png",
-        yt: "https://i.ibb.co.com/QFS9fF1c/youtube.png"
+        tw: "https://i.ibb.co.com/QFS9fF1c/youtube.png",
+        yt: "https://i.ibb.co.com/PvLFcxKx/icons8-youtube-96.png"
     };
 
     data.forEach((item) => {
@@ -216,7 +216,7 @@ function renderTable(data) {
                             letter-spacing: 0.5px;
                             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
                         ">
-                            <img src="https://i.ibb.co.com/yn2M52Vn/whatsapp.png" style="width:14px; height:14px; object-fit:contain;"> CHAT
+                            <img src="https://i.ibb.co.com/DgPcPB2m/facebook.png" style="width:14px; height:14px; object-fit:contain;"> CHAT
                         </a>` : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
@@ -666,12 +666,12 @@ function renderMedsosIcoPremium(type, val) {
 
     // Mapping link icon sesuai koleksi ImgBB Bos
     const libIcons = {
-        wa: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
-        fb: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
-        ig: "https://i.ibb.co.com/MDtWd14P/instagram.png",
+        wa: "https://i.ibb.co.com/DgPcPB2m/facebook.png",
+        fb: "https://i.ibb.co.com/MDtWd14P/instagram.png",
+        ig: "https://i.ibb.co.com/yn2M52Vn/whatsapp.png",
         tt: "https://i.ibb.co.com/0pcvzQKD/tiktok.png",
-        tw: "https://i.ibb.co.com/zWZNdQPG/twitter.png",
-        yt: "https://i.ibb.co.com/QFS9fF1c/youtube.png"
+        tw: "https://i.ibb.co.com/QFS9fF1c/youtube.png",
+        yt: "https://i.ibb.co.com/PvLFcxKx/icons8-youtube-96.png"
     };
 
     const iconUrl = libIcons[type] || "";
