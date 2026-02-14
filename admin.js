@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbz8ZZRmcSQsJm1m4VXk85311WDYMisGczcvZfm4j086FXjLNRobp7Q0hj9KEflmilWL2w/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzQA3fNn9ZcnXqfGL0yBA2SqFVx9MAQjLniltAkb5_0SHA2OGKTSXp3xpgVRVb6X7fq7g/exec;
 
 let BOS_DATA = [];
 
