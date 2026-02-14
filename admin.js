@@ -386,15 +386,16 @@ function openDetail(originalIndex) {
 
     const p = item.pribadi || {};
     const f = item.formal || [];
-    const k = item.kaderisasi || []; // k[4]=Lokasi, k[5]=Tahun
+    const k = item.kaderisasi || []; // k[3]=Penyelenggara, k[4]=Lokasi, k[5]=Tahun
     const m = item.medsos || {};
     const jList = item.jabatan || [];
     const wList = item.pekerjaan || [];
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA DATA KADERISASI (LOKASI DI BAWAH JENJANG) ---
+    // --- LOGIKA DATA KADERISASI (LEMBAGA & LOKASI DI BAWAH JENJANG) ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
+    const listLembaga = k[3] ? k[3].toString().split("\n") : []; // Tambahan Penyelenggara
     const listLokasi = k[4] ? k[4].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
     
@@ -402,8 +403,9 @@ function openDetail(originalIndex) {
         const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
         if (idx !== -1) {
             const thn = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : "Aktif";
+            const lem = listLembaga[idx] ? listLembaga[idx].replace(/^\d+\.\s*/, "").trim() : "-";
             const lok = listLokasi[idx] ? listLokasi[idx].replace(/^\d+\.\s*/, "").trim() : "-";
-            return { tahun: thn, lokasi: lok };
+            return { tahun: thn, lembaga: lem, lokasi: lok };
         }
         return null;
     };
@@ -416,7 +418,11 @@ function openDetail(originalIndex) {
                 <div style="width:15px; height:15px; border-radius:50%; background:${isActive ? color : '#e5e7eb'}; margin: 0 auto 5px; border: 2px solid #fff; box-shadow: 0 0 0 1px ${isActive ? color : '#ccc'};"></div>
                 <div style="font-weight:bold; font-size:10px; color:${isActive ? '#333' : '#999'}; text-transform:uppercase;">${label}</div>
                 <div style="font-size:9px; line-height:1.2; margin-top:4px;">
-                    ${isActive ? `<span style="color:${color}; font-weight:bold;">${data.tahun}</span><br><span style="color:#666; font-style:italic;">${data.lokasi}</span>` : '<span style="color:#ccc;">-</span>'}
+                    ${isActive ? `
+                        <span style="color:${color}; font-weight:bold;">${data.tahun}</span><br>
+                        <span style="color:#444; font-size:8px; font-weight:bold;">${data.lembaga}</span><br>
+                        <span style="color:#666; font-style:italic;">${data.lokasi}</span>
+                    ` : '<span style="color:#ccc;">-</span>'}
                 </div>
             </div>
         `;
