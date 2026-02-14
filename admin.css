@@ -461,3 +461,11 @@ tr:hover td {
     font-weight: 700;
     border: 1px solid #e2e8f0;
 }
+
+td img {
+    transition: transform 0.3s ease;
+}
+
+tr:hover td img {
+    transform: scale(1.2); /* Foto nge-zoom dikit kalau baris diklik/disentuh */
+}
