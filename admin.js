@@ -379,14 +379,14 @@ function renderStep(label, year, color) {
     `;
 }
 
-// --- FUNGSI UTAMA: OPEN DETAIL (VERSI PRESISI TOTAL) ---
+// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL PRESISI) ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
     if (!item) return;
 
     const p = item.pribadi || {};
     const f = item.formal || [];
-    const k = item.kaderisasi || [];
+    const k = item.kaderisasi || []; // k[4]=Lokasi, k[5]=Tahun
     const m = item.medsos || {};
     const jList = item.jabatan || [];
     const wList = item.pekerjaan || [];
@@ -402,14 +402,12 @@ function openDetail(originalIndex) {
         const idx = textJenis.findIndex(t => t.toLowerCase().includes(keyword.toLowerCase()));
         if (idx !== -1) {
             const thn = listThn[idx] ? listThn[idx].replace(/^\d+\.\s*/, "").trim() : "Aktif";
-            const lok = listLokasi[idx] ? listLokasi[idx].replace(/^\d+\.\s*/, "").trim() : "";
-            // Mengembalikan objek agar lokasi bisa ditampilkan juga
+            const lok = listLokasi[idx] ? listLokasi[idx].replace(/^\d+\.\s*/, "").trim() : "-";
             return { tahun: thn, lokasi: lok };
         }
         return null;
     };
 
-    // Helper sederhana untuk menampilkan tahun saja di bulatan stepper
     const getYearOnly = (keyword) => {
         const data = getKaderData(keyword);
         return data ? data.tahun : null;
@@ -472,8 +470,9 @@ function openDetail(originalIndex) {
                     ${renderStep('WANITA', getYearOnly("Perempuan"), '#db2777')}
                     ${renderStep('KHUSUS', getYearOnly("Khusus"), '#1e293b')}
                 </div>
-                <div style="margin-top:10px; font-size:10px; color:#666; font-style:italic; text-align:center;">
-                    ${textJenis.map((t, i) => `<span>${t}: ${listLokasi[i] || '-'} (${listThn[i] || '-'})</span>`).join(' | ')}
+                <div style="margin-top:15px; font-size:11px; color:#333; background:rgba(255,255,255,0.4); padding:8px; border-radius:5px;">
+                    <strong>📍 LOKASI PELATIHAN:</strong><br>
+                    ${textJenis.map((t, i) => `• ${t}: <b>${listLokasi[i] || '-'}</b> (${listThn[i] || '-'})`).join(' | ')}
                 </div>
             </div>
 
@@ -485,7 +484,7 @@ function openDetail(originalIndex) {
                             <div style="border-left:3px solid #D71920; padding:5px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
                                 <strong style="color:#D71920;">${r[5].toUpperCase()}</strong><br>
                                 <span>Jabatan: ${cap(r[4])}</span><br>
-                                <small>Lokasi: ${cap(r[7])}</small> | <small>Periode: ${r[8] || '-'}</small>
+                                <small>Lokasi: <b>${cap(r[7])}</b></small> | <small>Periode: ${r[8] || '-'}</small>
                             </div>
                         `).join('') || '<small>-</small>'}
                     </div>
@@ -497,7 +496,7 @@ function openDetail(originalIndex) {
                             <div style="border-left:3px solid #0284c7; padding:5px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
                                 <strong style="color:#0284c7;">${cap(r[12])}</strong><br>
                                 <span>Lembaga: ${cap(r[11])}</span><br>
-                                <small>Wilayah: ${cap(r[13])}</small> | <small>Periode: ${r[14] || '-'}</small>
+                                <small>Wilayah: <b>${cap(r[13])}</b></small> | <small>Periode: ${r[14] || '-'}</small>
                             </div>
                         `).join('') || '<small>-</small>'}
                     </div>
@@ -549,7 +548,7 @@ function openDetail(originalIndex) {
     document.getElementById('modalInnerContent').scrollTop = 0;
 }
 
-// --- FUNGSI IKON MEDSOS (FIXED: MENGGUNAKAN FAB UNTUK BRAND) ---
+// --- FUNGSI IKON MEDSOS (FIXED: MENGGUNAKAN CLASS BRANDS) ---
 function renderMedsosIcon(icon, val, color) {
     if (!val || val === "-" || val === "") return "";
     
