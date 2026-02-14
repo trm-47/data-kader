@@ -130,20 +130,44 @@ function renderTable(data) {
         }
 
         // --- BADGE KADERISASI AKSEN MERAH MARUN ---
-        let htmlBadgeKader = "";
-        if (k[2] && k[2] !== "" && k[2] !== "-") {
-            const listJenjang = k[2].toString().split("\n");
-            listJenjang.forEach(txt => {
-                if(txt.trim()) {
-                    htmlBadgeKader += `
-                        <span style="display:block; border:1px solid #e2e8f0; border-left:3px solid #b91c1c; color:#1e293b; background:#ffffff; padding:3px 8px; border-radius:4px; font-size:9px; font-weight:800; margin-bottom:3px; text-align:left; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-                            ${txt.trim().toUpperCase()}
-                        </span>`;
-                }
-            });
-        } else {
-            htmlBadgeKader = `<span style="color:#cbd5e1; font-size:9px; font-weight:700;">ANGGOTA</span>`;
+        // --- RENDER BADGE KADERISASI (PREMIUM LUXURY VERSION) ---
+let htmlBadgeKader = "";
+if (k[2] && k[2] !== "" && k[2] !== "-") {
+    const listJenjang = k[2].toString().split("\n");
+    listJenjang.forEach(txt => {
+        if(txt.trim()) {
+            htmlBadgeKader += `
+                <div style="
+                    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                    border: 1px solid #e2e8f0;
+                    color: #334155;
+                    padding: 4px 10px;
+                    border-radius: 6px;
+                    font-size: 9px;
+                    font-weight: 800;
+                    margin-bottom: 4px;
+                    text-align: center;
+                    letter-spacing: 0.8px;
+                    text-transform: uppercase;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.02), inset 0 1px 0 rgba(255,255,255,1);
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <span style="
+                        position: absolute; 
+                        left: 0; 
+                        top: 0; 
+                        bottom: 0; 
+                        width: 3px; 
+                        background: #D71920;
+                    "></span>
+                    ${txt.trim()}
+                </div>`;
         }
+    });
+} else {
+    htmlBadgeKader = `<span style="color: #cbd5e1; font-size: 9px; font-weight: 700; letter-spacing: 1px;">NON-KADER</span>`;
+}
 
         // --- PENDIDIKAN (LIST LENGKAP AGAR TIDAK HILANG) ---
         let infoPendidikan = `<span style="color:#cbd5e1; font-size:10px;">${p.kec || '-'}</span>`;
