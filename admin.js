@@ -461,43 +461,70 @@ function openDetail(originalIndex) {
             </div>
         </div>
 
-<div class="fancy-card" style="background:#f9f9f9; padding:15px; border-radius:10px; border-left: 4px solid #D71920;">
-    <div class="card-title" style="font-weight:bold; border-bottom:2px solid #D71920; margin-bottom:12px; padding-bottom:5px; color:#D71920;">
-        <i class="fa-solid fa-user"></i> IDENTITAS PRIBADI
-    </div>
-    
-    <div class="data-row" style="margin-bottom:8px;"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">NAMA LENGKAP</label><span style="font-size:14px;">${cap(p.nama)}</span></div>
-    
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">NIK</label><span>${p.nik || '-'}</span></div>
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">NO. KTA</label><span>${p.kta || '-'}</span></div>
-    </div>
+<div class="fancy-card" style="background:#fff; padding:18px; border-radius:12px; border-left: 5px solid #D71920; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <div class="card-title" style="font-weight:800; border-bottom:2px solid #eee; margin-bottom:15px; padding-bottom:8px; color:#D71920; display:flex; align-items:center; gap:8px;">
+                        <i class="fa-solid fa-address-card"></i> IDENTITAS PRIBADI
+                    </div>
+                    
+                    <div class="data-row" style="margin-bottom:12px;">
+                        <label style="font-weight:700; color:#888; display:block; font-size:10px; letter-spacing:1px;">NAMA LENGKAP</label>
+                        <span style="font-size:16px; font-weight:700; color:#222;">${cap(p.nama)}</span>
+                    </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">TEMPAT, TGL LAHIR</label><span>${cap(p.tmpt_lahir)}, ${tglLahirFormat}</span></div>
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">USIA / GENDER</label><span>${ageInfo.age} / ${cap(p.jk)}</span></div>
-    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">NIK</label>
+                            <span style="font-weight:600;">${p.nik || '-'}</span>
+                        </div>
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">NO. KTA</label>
+                            <span style="font-weight:600; color:#D71920;">${p.kta || '-'}</span>
+                        </div>
+                    </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">AGAMA</label><span>${cap(p.agama)}</span></div>
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">PEKERJAAN</label><span>${cap(p.kerja_skrg)}</span></div>
-    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">TEMPAT, TGL LAHIR</label>
+                            <span>${cap(p.tmpt_lahir)}, ${tglLahirFormat}</span>
+                        </div>
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">AGAMA / GENDER</label>
+                            <span>${cap(p.agama)} / ${cap(p.jk)}</span>
+                        </div>
+                    </div>
 
-    <div class="data-row" style="margin-top:12px; padding-top:10px; border-top:1px dashed #ccc;">
-        <label style="font-weight:bold; color:#555; display:block; font-size:11px;">ALAMAT DOMISILI</label>
-        <span style="display:block; line-height:1.4;">
-            ${cap(p.alamat)}<br>
-            RT ${p.rt || '00'} / RW ${p.rw || '00'}<br>
-            Kel. ${cap(p.desa)}, Kec. ${cap(p.kec)}<br>
-            ${cap(p.kab_kota || p.kota)}
-        </span>
-    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-bottom:12px;">
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">USIA</label>
+                            <span>${p.umur || ageInfo.age} (${ageInfo.gen})</span>
+                        </div>
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">PEKERJAAN</label>
+                            <span>${cap(p.kerja_skrg)}</span>
+                        </div>
+                    </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:12px; padding-top:10px; border-top:1px dashed #ccc;">
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">WHATSAPP</label><span style="color:#25d366; font-weight:bold;">${p.wa || '-'}</span></div>
-        <div class="data-row"><label style="font-weight:bold; color:#555; display:block; font-size:11px;">EMAIL</label><span style="color:#0284c7; font-size:11px;">${(p.email || '-').toLowerCase()}</span></div>
-    </div>
-</div>
+                    <div class="data-row" style="margin-top:15px; padding-top:12px; border-top:1px dashed #eee;">
+                        <label style="font-weight:700; color:#888; display:block; font-size:10px; margin-bottom:4px;">ALAMAT DOMISILI</label>
+                        <div style="background:#f8f9fa; padding:10px; border-radius:8px; font-size:13px; line-height:1.6;">
+                            <strong>${cap(p.alamat)}</strong><br>
+                            RT ${p.rt || '00'} / RW ${p.rw || '00'}<br>
+                            Kel. ${cap(p.desa)}, Kec. ${cap(p.kec)}<br>
+                            ${cap(p.kab_kota || p.kota)}
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:15px; padding-top:12px; border-top:1px dashed #eee;">
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">WHATSAPP</label>
+                            <span style="color:#25d366; font-weight:800; font-size:13px;"><i class="fa-brands fa-whatsapp"></i> ${p.wa || '-'}</span>
+                        </div>
+                        <div class="data-row">
+                            <label style="font-weight:700; color:#888; display:block; font-size:10px;">EMAIL</label>
+                            <span style="color:#0284c7; font-size:12px; word-break: break-all;">${(p.email || '-').toLowerCase()}</span>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="fancy-card">
                     <div class="card-title">KOMPETENSI & SKILL</div>
