@@ -725,3 +725,41 @@ tr:hover td img {
     border-radius: 0 0 30px 30px;
     z-index: 10003;
 }
+
+/* Styling Baris & Tabel */
+#bodyKader tr {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#bodyKader tr:hover {
+    background-color: #fff5f5 !important; /* Merah PDI sangat halus */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Badge Premium */
+.badge-edu {
+    background: #f8fafc;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+}
+
+/* Identitas Styling */
+.text-nama {
+    color: #1e293b;
+    font-size: 14px;
+    font-weight: 800;
+    display: block;
+}
+
+.text-kta {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 600;
+}
