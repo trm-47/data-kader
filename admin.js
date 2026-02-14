@@ -379,23 +379,22 @@ function renderStep(label, year, color) {
     `;
 }
 
-// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL KALIBRASI PRESISI) ---
+// --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL ANTI-KORUP) ---
 function openDetail(originalIndex) {
-        const item = databaseKader[originalIndex];
+    const item = databaseKader[originalIndex];
     if (!item) return;
 
     const p = item.pribadi || {};
     const f = item.formal || [];
-    const k = item.kaderisasi || []; // k[3]=Penyelenggara, k[4]=Lokasi, k[5]=Tahun
+    const k = item.kaderisasi || []; 
     const m = item.medsos || {};
     const jList = item.jabatan || [];
     const wList = item.pekerjaan || [];
     const oList = item.organisasi_lain || [];
     const ageInfo = calculateAge(p.tgl_lahir);
 
-    // --- LOGIKA DATA KADERISASI (LEMBAGA & LOKASI DI BAWAH JENJANG) ---
     const textJenis = k[2] ? k[2].toString().split("\n") : [];
-    const listLembaga = k[3] ? k[3].toString().split("\n") : []; // Tambahan Penyelenggara
+    const listLembaga = k[3] ? k[3].toString().split("\n") : []; 
     const listLokasi = k[4] ? k[4].toString().split("\n") : [];
     const listThn = k[5] ? k[5].toString().split("\n") : [];
     
@@ -428,6 +427,7 @@ function openDetail(originalIndex) {
         `;
     };
 
+    // Mulai render HTML Content
     let htmlContent = `
         <div class="modal-header-fancy">
             <div class="header-main-info">
@@ -487,33 +487,33 @@ function openDetail(originalIndex) {
                 </div>
             </div>
 
-            // --- BAGIAN STRUKTUR PARTAI ---
-<div class="fancy-card">
-    <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
-    <div class="list-container">
-        ${jList.filter(r => String(r[2]).trim() === "Struktur Partai").map(r => `
-            <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
-                <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
-                <span>Jabatan: ${cap(r[4] || '-')}</span><br>
-                <small>📍 Wilayah: <b>${cap(r[7] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
-            </div>
-        `).join('') || '<small style="color:#999;">Tidak ada data struktur</small>'}
-    </div>
-</div>
+            <div class="fancy-grid">
+                <div class="fancy-card">
+                    <div class="card-title">STRUKTUR PARTAI & WILAYAH</div>
+                    <div class="list-container">
+                        ${jList.filter(r => String(r[2]).trim() === "Struktur Partai").map(r => `
+                            <div style="border-left:3px solid #D71920; padding:8px; margin-bottom:8px; background:#fff5f5; font-size:12px;">
+                                <strong style="color:#D71920;">${(r[5] || '-').toUpperCase()}</strong><br>
+                                <span>Jabatan: ${cap(r[4] || '-')}</span><br>
+                                <small>📍 Wilayah: <b>${cap(r[7] || '-')}</b></small> | <small>📅 Periode: ${r[8] || '-'}</small>
+                            </div>
+                        `).join('') || '<small style="color:#999;">Tidak ada data struktur</small>'}
+                    </div>
+                </div>
 
-// --- BAGIAN PENUGASAN ---
-<div class="fancy-card">
-    <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
-    <div class="list-container">
-        ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
-            <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
-                <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
-                <span>Lembaga: ${cap(r[11] || '-')}</span><br>
-                <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
+                <div class="fancy-card">
+                    <div class="card-title">PENUGASAN (LEGISLATIF/EKSEKUTIF)</div>
+                    <div class="list-container">
+                        ${jList.filter(r => String(r[2]).trim() === "Penugasan").map(r => `
+                            <div style="border-left:3px solid #0284c7; padding:8px; margin-bottom:8px; background:#f0f9ff; font-size:12px;">
+                                <strong style="color:#0284c7;">${cap(r[12] || '-')}</strong><br>
+                                <span>Lembaga: ${cap(r[11] || '-')}</span><br>
+                                <small>📍 Wilayah: <b>${cap(r[13] || '-')}</b></small> | <small>📅 Periode: ${r[14] || '-'}</small>
+                            </div>
+                        `).join('') || '<small style="color:#999;">Tidak ada data penugasan</small>'}
+                    </div>
+                </div>
             </div>
-        `).join('') || '<small style="color:#999;">Tidak ada data penugasan</small>'}
-    </div>
-</div>
 
             <div class="fancy-grid">
                 <div class="fancy-card">
