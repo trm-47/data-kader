@@ -106,50 +106,58 @@ function renderTable(data) {
         const k = item.kaderisasi || [];
         const ageInfo = calculateAge(p.tgl_lahir);
 
+        // --- LOGIKA KADERISASI & PRIORITAS (GRADASI ABU-ABU) ---
         const textJenisKader = k[2] ? k[2].toString().toLowerCase() : ""; 
         const textTahunKader = k[5] ? k[5].toString() : ""; 
         const matchPratama = textTahunKader.match(/1\.\s*(\d{4})/) || textTahunKader.match(/^(\d{4})/);
         const tahunPratama = matchPratama ? parseInt(matchPratama[1]) : null;
         
+        const isMadya = textJenisKader.includes("madya");
+        const hasPratama = textJenisKader.includes("pratama");
+        
         let rowStyle = "";
         let badgeWarning = "";
 
-        if (textJenisKader.includes("pratama") && !textJenisKader.includes("madya") && tahunPratama) {
+        if (hasPratama && !isMadya && tahunPratama) {
             const currentYear = new Date().getFullYear();
             const masaTunggu = currentYear - tahunPratama;
 
             if (masaTunggu >= 5) {
-                // PRIORITAS: Soft Crimson (Merah Mewah Sangat Muda)
-                rowStyle = "background-color: #fff1f2; border-left: 4px solid #D71920;"; 
-                badgeWarning = `<div style="color:#be123c; font-size:9px; font-weight:800; margin-top:4px; text-transform:uppercase; letter-spacing:0.3px;">⚡ Prioritas Madya</div>`;
+                // PRIORITAS: Abu-abu lebih tua (Slate)
+                rowStyle = "background-color: #f1f5f9; border-left: 5px solid #64748b;"; 
+                badgeWarning = `<div style="color:#475569; font-size:9px; font-weight:800; margin-top:4px; letter-spacing:0.5px;">● PRIORITAS MADYA (${masaTunggu} THN)</div>`;
             } else {
-                // MASA TUNGGU: Cool Slate (Biru Abu-abu Muda)
-                rowStyle = "background-color: #f8fafc; border-left: 4px solid #cbd5e1;"; 
-                badgeWarning = `<div style="color:#64748b; font-size:9px; font-weight:800; margin-top:4px; text-transform:uppercase; letter-spacing:0.3px;">🕒 Masa Tunggu</div>`;
+                // MASA TUNGGU: Abu-abu sangat muda
+                rowStyle = "background-color: #f8fafc; border-left: 5px solid #e2e8f0;"; 
+                badgeWarning = `<div style="color:#94a3b8; font-size:9px; font-weight:800; margin-top:4px; letter-spacing:0.5px;">● MASA TUNGGU (${masaTunggu} THN)</div>`;
             }
         }
 
-        // --- BADGE KADERISASI (Clean White with Dark Text) ---
+        // --- RENDER BADGE KADERISASI (Clean Monochrome) ---
         let htmlBadgeKader = "";
         if (k[2] && k[2] !== "" && k[2] !== "-") {
             const listJenjang = k[2].toString().split("\n");
             listJenjang.forEach(txt => {
                 if(txt.trim()) {
-                    htmlBadgeKader += `<span style="border: 1px solid #e2e8f0; color: #1e293b; background: #ffffff; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; display: block; margin-bottom:2px; text-align:center;">${txt.trim()}</span>`;
+                    htmlBadgeKader += `<span style="border: 1px solid #e2e8f0; color: #475569; background: #ffffff; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; display: block; margin-bottom:2px; text-align:center; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">${txt.trim()}</span>`;
                 }
             });
         } else {
             htmlBadgeKader = `<span style="color: #cbd5e1; font-size: 9px; font-weight: 700;">Anggota</span>`;
         }
 
-        // --- PENDIDIKAN ---
+        // --- INFO PENDIDIKAN ---
         let infoPendidikan = `<span style="color:#cbd5e1; font-size:10px;">-</span>`;
-        const listEdu = [{ label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 }, { label: "SMA/SMK", idx: 6 }];
+        const listEdu = [
+            { label: "S3", idx: 17 }, { label: "S2", idx: 15 }, { label: "S1", idx: 11 },
+            { label: "D1-D3", idx: 9 }, { label: "SMA/SMK", idx: 6 }
+        ];
+
         for (let edu of listEdu) {
-            if (f[edu.idx] && f[edu.idx] !== "-") {
+            if (f[edu.idx] && f[edu.idx].toString().trim() !== "" && f[edu.idx] !== "-") {
                 let detail = (edu.label === "S1") ? (f[12] || f[11]) : f[edu.idx];
-                infoPendidikan = `<strong style="color:#0f172a; font-size:12px;">${edu.label}</strong>
-                                  <div style="font-size:10px; color:#64748b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;">${detail}</div>`;
+                infoPendidikan = `<strong style="color:#334155; font-size:12px;">${edu.label}</strong>
+                                  <div style="font-size:10px; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;">${detail}</div>`;
                 break;
             }
         }
@@ -158,32 +166,35 @@ function renderTable(data) {
         const waNumber = p.wa ? p.wa.toString().replace(/[^0-9]/g, '') : '';
         const waLink = waNumber ? `https://wa.me/${waNumber.startsWith('0') ? '62'+waNumber.slice(1) : waNumber}` : '#';
 
+        // --- RENDER BARIS ---
         body.innerHTML += `
             <tr onclick="openDetail(${originalIdx})" style="cursor:pointer; border-bottom: 1px solid #f1f5f9; ${rowStyle}">
-                <td style="width:60px; text-align:center; padding:12px 5px;">
+                <td style="width:65px; text-align:center; padding:12px 5px;">
                     <img src="${formatDriveUrl(p.foto)}" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=0f172a&color=fff'" 
-                         style="width:40px; height:40px; border-radius:8px; object-fit:cover; filter: contrast(105%); border: 1px solid rgba(0,0,0,0.05);">
+                         onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.nama)}&background=f1f5f9&color=94a3b8'" 
+                         style="width:42px; height:42px; border-radius:10px; object-fit:cover; border:1px solid #e2e8f0;">
                 </td>
                 <td style="padding:12px 5px;">
-                    <div style="font-weight:900; font-size:13px; color:#0f172a; letter-spacing:-0.2px;">${(p.nama || 'Tanpa Nama').toUpperCase()}</div>
-                    <div style="font-size:10px; color:#D71920; font-weight:800;">KTA ${p.kta || '-'}</div>
+                    <div style="font-weight:800; font-size:13px; color:#1e293b; letter-spacing:-0.2px;">${(p.nama || 'Tanpa Nama').toUpperCase()}</div>
+                    <div style="font-size:10px; color:#D71920; font-weight:700; letter-spacing:0.3px;">KTA: ${p.kta || '-'}</div>
                     ${badgeWarning}
                 </td>
-                <td style="text-align:center; width:75px; padding:12px 5px;">
-                    <div style="font-weight:900; color:#0f172a; font-size:14px;">${ageInfo.age}</div>
-                    <div style="font-size:8px; color:#94a3b8; font-weight:900; letter-spacing:0.5px;">${ageInfo.gen}</div>
+                <td style="text-align:center; width:80px; padding:12px 5px;">
+                    <div style="font-weight:800; color:#1e293b; font-size:13px;">${ageInfo.age}</div>
+                    <div style="font-size:9px; color:#94a3b8; font-weight:800; text-transform:uppercase;">${ageInfo.gen}</div>
                 </td>
-                <td style="padding:12px 5px;">
+                <td style="padding:12px 5px; min-width:140px;">
                     ${infoPendidikan}
                 </td>
-                <td style="padding:12px 5px; width:110px;">
-                    ${htmlBadgeKader}
+                <td style="padding:12px 5px; width:120px;">
+                    <div style="max-width:110px; margin:0 auto;">
+                        ${htmlBadgeKader}
+                    </div>
                 </td>
-                <td style="text-align:center; width:80px; padding:12px 5px;">
+                <td style="text-align:center; width:90px; padding:12px 5px;">
                     ${waNumber ? 
-                        `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#0f172a; color:#ffffff; padding:6px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Chat</a>` 
-                        : `-`}
+                        `<a href="${waLink}" target="_blank" onclick="event.stopPropagation()" style="background:#ffffff; color:#16a34a; border:1px solid #dcfce7; padding:5px 12px; border-radius:6px; text-decoration:none; font-size:10px; font-weight:800; display:inline-block; transition:0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">Chat</a>` 
+                        : `<span style="color:#e2e8f0;">-</span>`}
                 </td>
             </tr>`;
     });
