@@ -379,6 +379,36 @@ function renderStep(label, year, color) {
     `;
 }
 
+function formatTanggalIndo(isoString) {
+    if (!isoString || isoString === "-") return "-";
+    try {
+        // Jika input sudah objek Date dari Google Sheets
+        const date = (isoString instanceof Date) ? isoString : new Date(isoString);
+        
+        if (isNaN(date.getTime())) return isoString; 
+
+        const d = date.getDate().toString().padStart(2, '0');
+        const m = (date.getMonth() + 1).toString().padStart(2, '0');
+        const y = date.getFullYear();
+        
+        return `${d}-${m}-${y}`; 
+    } catch (e) {
+        return isoString;
+    }
+}
+
+// Perbaikan Drive URL (Menghapus angka 0 yang bikin link rusak)
+function formatDriveUrl(url) {
+    if (!url || !url.includes("drive.google.com")) return url;
+    let fileId = null;
+    const idParam = url.split("id=")[1];
+    if (idParam) { fileId = idParam.split("&")[0]; }
+    if (!fileId && url.includes("/d/")) {
+        fileId = url.split("/d/")[1].split("/")[0];
+    }
+    return fileId ? `https://lh3.googleusercontent.com/u/0/d/${fileId}` : url;
+}
+
 // --- FUNGSI UTAMA: OPEN DETAIL (VERSI FINAL ANTI-KORUP) ---
 function openDetail(originalIndex) {
     const item = databaseKader[originalIndex];
@@ -558,23 +588,6 @@ function openDetail(originalIndex) {
     document.getElementById('modalInnerContent').innerHTML = htmlContent;
     document.getElementById('modalDetail').style.display = "block";
     document.getElementById('modalInnerContent').scrollTop = 0;
-}
-
-function formatTanggalIndo(isoString) {
-    if (!isoString || isoString === "-") return "-";
-    try {
-        const date = new Date(isoString);
-        // Cek apakah tanggal valid
-        if (isNaN(date.getTime())) return isoString; 
-
-        const d = date.getDate().toString().padStart(2, '0');
-        const m = (date.getMonth() + 1).toString().padStart(2, '0');
-        const y = date.getFullYear();
-        
-        return `${d}-${m}-${y}`; // Hasil: 13-02-1970
-    } catch (e) {
-        return isoString;
-    }
 }
 
 // --- FUNGSI IKON MEDSOS (POWERED BY FONT AWESOME 6) ---
