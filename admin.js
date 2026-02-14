@@ -1,120 +1,161 @@
 const GAS_URL = "https://script.google.com/macros/s/AKfycbz8ZZRmcSQsJm1m4VXk85311WDYMisGczcvZfm4j086FXjLNRobp7Q0hj9KEflmilWL2w/exec";
+let MASTER_DATA = [];
+let FILTERED_DATA = [];
 
-let BOS_DATA = [];
-
-// --- Fetch Data ---
+// 1. Ambil Data dari Google Sheets
 async function loadData() {
     try {
-        console.log("Menghubungkan ke server...");
-        // Tambahkan ?action=read dan mode redirect agar tidak kena CORS
-        const response = await fetch(GAS_URL + "?action=read", {
-            method: "GET",
-            redirect: "follow" 
-        });
-
-        if (!response.ok) throw new Error("Server Google tidak merespon");
-
+        const response = await fetch(GAS_URL + "?action=read", { redirect: "follow" });
         const data = await response.json();
-
+        
         if (data.error) throw new Error(data.error);
 
-        BOS_DATA = data;
-        renderTable();
+        MASTER_DATA = data;
+        FILTERED_DATA = [...MASTER_DATA];
+        
+        renderTable(FILTERED_DATA);
+        updateStats(FILTERED_DATA);
     } catch (e) {
-        const tableBody = document.getElementById("kader-table-body");
-        if (tableBody) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red; padding:20px;">
-                <b>Gagal memuat data!</b><br>${e.message}
-            </td></tr>`;
-        }
-        console.error("Detail Error:", e);
+        document.getElementById("bodyKader").innerHTML = `<tr><td colspan="6" style="text-align:center; color:red; padding:30px;">Gagal memuat: ${e.message}</td></tr>`;
     }
 }
 
-// --- Render Table ---
-function renderTable() {
-    const tbody = document.getElementById("kader-table-body");
-    if (!tbody) return;
+// 2. Update Kotak Statistik di Atas
+function updateStats(data) {
+    const total = data.length;
+    const young = data.filter(item => {
+        const umur = parseInt(item.pribadi.umur);
+        return umur > 0 && umur <= 44; // Estimasi Gen Z & Milenial
+    }).length;
+
+    const madyaList = data.filter(item => 
+        item.kaderisasi.some(k => k[2].toLowerCase().includes("madya"))
+    );
+    
+    // Hitung Prioritas (Sudah Pratama > 5 tahun tapi belum Madya)
+    const priority = data.filter(item => {
+        const hasMadya = item.kaderisasi.some(k => k[2].toLowerCase().includes("madya"));
+        const pratama = item.kaderisasi.find(k => k[2].toLowerCase().includes("pratama"));
+        const thnPratama = pratama ? parseInt(pratama[5]) : 0;
+        return !hasMadya && pratama && (2026 - thnPratama >= 5);
+    }).length;
+
+    document.getElementById("statTotal").innerText = total;
+    document.getElementById("statYoung").innerText = young;
+    document.getElementById("statNeedMadya").innerText = priority;
+    document.getElementById("statArea").innerText = madyaList.length;
+}
+
+// 3. Render Tabel (Gunakan ID bodyKader)
+function renderTable(data) {
+    const tbody = document.getElementById("bodyKader");
     tbody.innerHTML = "";
 
-    if (!BOS_DATA.length) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Data tidak ditemukan</td></tr>`;
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px;">Data tidak ditemukan.</td></tr>';
         return;
     }
 
-    BOS_DATA.forEach((k, idx) => {
-        const p = k.pribadi || {};
-        const row = document.createElement("tr");
+    data.forEach((item, idx) => {
+        const p = item.pribadi;
+        const k = item.kaderisasi || [];
+        
+        // Cek status prioritas untuk styling
+        const hasMadya = k.some(row => row[2].toLowerCase().includes("madya"));
+        const pratama = k.find(row => row[2].toLowerCase().includes("pratama"));
+        const isUrgent = (!hasMadya && pratama && (2026 - parseInt(pratama[5]) >= 5));
 
-        // Nama + KTA
-        const namaKTA = `<strong>${p.nama}</strong><br><small>${p.kta || '-'}</small>`;
+        const badges = k.map(row => `<span class="badge" style="background:#fee2e2; color:#b91c1c; font-size:10px; padding:2px 5px; margin:1px; border-radius:3px; display:inline-block;">${row[2]}</span>`).join("");
 
-        // Pendidikan Formal (Ambil dari data p. formal index 19)
-        const edu = k.formal && k.formal[19] ? k.formal[19] : "-";
+        const tr = document.createElement("tr");
+        if (isUrgent) tr.style.backgroundColor = "#fff1f2";
 
-        // Pendidikan Kader (Revisi: Sekarang k.kaderisasi sudah berbentuk Array of Objects)
-        // Kita cek teks di dalam k.kaderisasi
-        const kaderList = (k.kaderisasi || []).map(item => {
-            return `<span class="badge" style="background:#fee2e2; color:#b91c1c; padding:2px 6px; border-radius:4px; font-size:10px; margin-right:2px;">${item[2]}</span>`;
-        }).join(" ");
-
-        row.innerHTML = `
-            <td>${namaKTA}</td>
-            <td style="text-align:center;">${p.umur || "-"}</td>
-            <td style="text-align:center;">${p.jk || "-"}</td>
-            <td>${edu}</td>
-            <td>${kaderList || '<span style="color:#ccc">-</span>'}</td>
+        tr.innerHTML = `
+            <td><img src="${p.foto || 'https://ui-avatars.com/api/?name='+p.nama}" style="width:45px; height:45px; border-radius:8px; object-fit:cover;"></td>
+            <td>
+                <strong>${p.nama}</strong><br>
+                <small style="color:#666">${p.kta || '-'}</small>
+            </td>
+            <td style="text-align:center;">${p.umur || '-'}</td>
+            <td>${item.formal[19] || '-'}</td>
+            <td>${badges || '<small style="color:#ccc">Anggota</small>'}</td>
+            <td style="text-align:center;">
+                <button onclick="showDetail(${idx})" style="padding:5px 10px; cursor:pointer; background:#D71920; color:white; border:none; border-radius:4px; font-size:12px;">Detail</button>
+            </td>
         `;
-
-        row.style.cursor = "pointer";
-        row.addEventListener("click", () => showDetail(idx));
-        tbody.appendChild(row);
+        tbody.appendChild(tr);
     });
 }
 
-// --- Show Detail Modal ---
+// 4. Fungsi Pencarian Cepat
+function doSearch() {
+    const val = document.getElementById("quickSearch").value.toLowerCase();
+    const result = MASTER_DATA.filter(item => 
+        item.pribadi.nama.toLowerCase().includes(val) || 
+        (item.pribadi.nik && item.pribadi.nik.includes(val)) ||
+        (item.pribadi.kec && item.pribadi.kec.toLowerCase().includes(val))
+    );
+    renderTable(result);
+}
+
+// 5. Modal Detail
 function showDetail(idx) {
-    const k = BOS_DATA[idx];
-    if (!k) return;
-
-    const p = k.pribadi || {};
-    const f = k.formal || [];
-    const kdr = k.kaderisasi || [];
-
-    // Tampilkan List Kaderisasi di Modal
-    const kaderBadges = kdr.map(item => `<span class="badge" style="background:#fee2e2; color:#b91c1c; padding:4px 8px; border-radius:4px; margin-right:5px;">${item[2]} (${item[5]})</span>`).join(" ");
+    // Ambil dari FILTERED_DATA agar indexnya cocok saat difilter
+    const item = MASTER_DATA[idx]; 
+    const p = item.pribadi;
+    const k = item.kaderisasi;
 
     const html = `
-        <div style="text-align:center; border-bottom:1px solid #eee; padding-bottom:15px; margin-bottom:15px;">
-            <img src="${p.foto || 'https://ui-avatars.com/api/?name='+encodeURIComponent(p.nama)}" width="120" height="120" style="border-radius:15px; object-fit:cover; border:3px solid #D71920;">
-            <h3 style="margin:10px 0 5px 0;">${p.nama}</h3>
-            <span style="color:#D71920; font-weight:bold;">No. KTA: ${p.kta || '-'}</span>
+        <div style="display:flex; gap:20px; align-items:start;">
+            <img src="${p.foto}" width="120" style="border-radius:10px;">
+            <div>
+                <h2 style="margin:0">${p.nama}</h2>
+                <p style="color:#D71920; font-weight:bold;">KTA: ${p.kta || '-'}</p>
+                <p><b>Wilayah:</b> ${p.kec}, ${p.kota}</p>
+                <p><b>WA:</b> ${p.wa || '-'}</p>
+            </div>
         </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:13px;">
-            <p><b>JK:</b> ${p.jk || '-'}</p>
-            <p><b>Umur:</b> ${p.umur || '-'}</p>
-            <p><b>Agama:</b> ${p.agama || '-'}</p>
-            <p><b>WA:</b> ${p.wa || '-'}</p>
-            <p style="grid-column: span 2;"><b>Tempat, Tgl Lahir:</b> ${p.tmpt_lahir || '-'}, ${p.tgl_lahir || '-'}</p>
-            <p style="grid-column: span 2;"><b>Alamat:</b> ${p.alamat || '-'}, RT ${p.rt || '-'} / RW ${p.rw || '-'}, ${p.desa || '-'}, ${p.kec || '-'}, ${p.kota || '-'}</p>
-            <p style="grid-column: span 2;"><b>Pendidikan Formal:</b> ${f[19] || '-'}</p>
-            <p style="grid-column: span 2;"><b>Pendidikan Kader:</b><br>${kaderBadges || '-'}</p>
-        </div>
+        <hr style="margin:15px 0; border:0; border-top:1px solid #eee;">
+        <p><b>Pendidikan Terakhir:</b> ${item.formal[19] || '-'}</p>
+        <p><b>Riwayat Kaderisasi:</b><br> ${k.map(r => r[2] + " (" + r[5] + ")").join(", ") || '-'}</p>
     `;
-
-    const modalContent = document.getElementById("modalInnerContent");
-    const modalDetail = document.getElementById("modalDetail");
-    
-    if (modalContent && modalDetail) {
-        modalContent.innerHTML = html;
-        modalDetail.style.display = "block";
-    }
+    document.getElementById("modalInnerContent").innerHTML = html;
+    document.getElementById("modalDetail").style.display = "block";
 }
 
 function closeDetail() {
-    const modal = document.getElementById("modalDetail");
-    if (modal) modal.style.display = "none";
+    document.getElementById("modalDetail").style.display = "none";
 }
 
-// --- Initialize ---
+// 6. Fungsi Filter (Sederhana)
+function applyFilters() {
+    let result = [...MASTER_DATA];
+    
+    const kota = document.getElementById("fKota").value;
+    const jk = document.getElementById("fJK").value;
+    const statusMadya = document.getElementById("fStatusMadya").value;
+
+    if (kota !== "Semua") result = result.filter(i => i.pribadi.kota === kota);
+    if (jk !== "Semua") result = result.filter(i => i.pribadi.jk === jk);
+    
+    if (statusMadya === "Sudah") {
+        result = result.filter(i => i.kaderisasi.some(k => k[2].toLowerCase().includes("madya")));
+    } else if (statusMadya === "Prioritas") {
+        result = result.filter(i => {
+            const hasMadya = i.kaderisasi.some(k => k[2].toLowerCase().includes("madya"));
+            const pratama = i.kaderisasi.find(k => k[2].toLowerCase().includes("pratama"));
+            return !hasMadya && pratama && (2026 - parseInt(pratama[5]) >= 5);
+        });
+    }
+
+    renderTable(result);
+    updateStats(result);
+}
+
+// Fungsi bantu untuk toggle filter di mobile
+function toggleFilter() {
+    const body = document.getElementById("filterBody");
+    body.style.display = body.style.display === "block" ? "none" : "block";
+}
+
 window.onload = loadData;
